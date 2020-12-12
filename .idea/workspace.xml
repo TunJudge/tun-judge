@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="06088fa7-e456-42c0-a4d1-5c88063b19e9" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/prettier.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/tun-judge.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/.eslintrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/.prettierrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/nest-cli.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/src/app.controller.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/src/app.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/src/app.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/src/app.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/src/main.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/test/app.e2e-spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/test/jest-e2e.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/tsconfig.build.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/tsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/judge/yarn.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/.eslintrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/.prettierrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/nest-cli.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/src/app.controller.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/src/app.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/src/app.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/src/app.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/src/main.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/test/app.e2e-spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/test/jest-e2e.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/tsconfig.build.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/tsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/yarn.lock" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1lZ2589DykohwhPZ1GBw1zsgZAJ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="javascript.nodejs.core.library.configured.version" value="12.20.0" />
+    <property name="javascript.nodejs.core.library.typings.version" value="12.19.8" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path" value="node" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/server/node_modules/prettier" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="06088fa7-e456-42c0-a4d1-5c88063b19e9" name="Default Changelist" comment="" />
+      <created>1607790106296</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1607790106296</updated>
+      <workItem from="1607790107407" duration="407000" />
+      <workItem from="1607790516537" duration="11000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/judge" />
+      <path value="$PROJECT_DIR$/server" />
+    </ignored-roots>
+  </component>
+</project>
