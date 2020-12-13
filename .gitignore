@@ -3,3 +3,5 @@
 
 yarn-debug.log*
 yarn-error.log*
+
+.db-data
