@@ -1,0 +1,5 @@
+FROM openjdk:8-jre-alpine
+
+RUN apk update && apk add bash
+
+WORKDIR /opt/code

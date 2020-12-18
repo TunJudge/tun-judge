@@ -1,9 +1,16 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { createWriteStream, mkdtempSync, readFileSync, rmdirSync, writeFileSync } from "fs";
-import * as Docker from "dockerode";
-import languageImages, { Language } from "../config/language-images";
-import { join } from "path";
-import * as os from "os";
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  createWriteStream,
+  mkdtempSync,
+  readFileSync,
+  rmdirSync,
+  writeFileSync,
+} from 'fs';
+import * as Docker from 'dockerode';
+import languageImages, { Language } from '../config/language-images';
+import { join } from 'path';
+import * as os from 'os';
+import { Container } from 'dockerode';
 
 @Injectable()
 export class DockerService {
@@ -12,22 +19,28 @@ export class DockerService {
 
   constructor() {
     this.connection = new Docker({ socketPath: '/var/run/docker.sock' });
-    // Object.entries(languageImages).forEach(([language, dockerImageTag]) => {
-    //   this.logger.log(
-    //     `Pulling docker image of language '${language}' with tag '${dockerImageTag}'`,
-    //   );
-    //   this.pullImage(dockerImageTag)
-    //     .then(() =>
-    //       this.logger.log(
-    //         `Docker image of language '${language}' with tag '${dockerImageTag}' is pulled successfully`,
-    //       ),
-    //     )
-    //     .catch((error) =>
-    //       this.logger.error(
-    //         `Could not pull docker image of language '${language}' with tag '${dockerImageTag}': ${error.message}`,
-    //       ),
-    //     );
-    // });
+    Object.entries(languageImages).forEach(
+      async ([language, dockerImageTag]) => {
+        try {
+          await this.connection.getImage(dockerImageTag).inspect();
+        } catch (e) {
+          this.logger.log(
+            `Pulling docker image of language '${language}' with tag '${dockerImageTag}'`,
+          );
+          this.pullImage(dockerImageTag)
+            .then(() =>
+              this.logger.log(
+                `Docker image of language '${language}' with tag '${dockerImageTag}' is pulled successfully`,
+              ),
+            )
+            .catch((error) =>
+              this.logger.error(
+                `Could not pull docker image of language '${language}' with tag '${dockerImageTag}': ${error.message}`,
+              ),
+            );
+        }
+      },
+    );
   }
 
   pullImage(tag: string): Promise<string> {
@@ -49,11 +62,13 @@ export class DockerService {
 
   async runFile(file: string, language: Language): Promise<string> {
     const tmpDirName = mkdtempSync(join(os.tmpdir(), 'tun-judge-judge-'));
-    const code = readFileSync(
-      '/home/nasreddine/projects/personal/codeforces_workdir/main.cpp',
-      { encoding: 'utf-8' },
+    writeFileSync(
+      join(tmpDirName, 'main.cpp'),
+      readFileSync(
+        '/home/nasreddine/projects/personal/codeforces_workdir/main.cpp',
+        { encoding: 'utf-8' },
+      ),
     );
-    writeFileSync(join(tmpDirName, 'main.cpp'), code);
     const container = await this.connection.createContainer({
       Image: languageImages[language],
       OpenStdin: true,
@@ -79,28 +94,50 @@ export class DockerService {
         })
       ).start({ hijack: true })
     ).on('end', async () => {
+      await this.execTest(container, tmpDirName, 0);
+      await this.execTest(container, tmpDirName, 1);
+      await container.kill();
+      await container.remove();
+      rmdirSync(tmpDirName, { recursive: true });
+    });
+    return container.id;
+  }
+
+  execTest(
+    container: Container,
+    tmpDirName: string,
+    testNumber: number,
+  ): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.logger.log(`Running test ${testNumber}`);
+      writeFileSync(
+        join(tmpDirName, 'test.in'),
+        readFileSync(
+          `/home/nasreddine/projects/personal/codeforces_workdir/files/test${testNumber}.in`,
+          { encoding: 'utf-8' },
+        ),
+      );
       const exec = await container.exec({
-        Cmd: ['./main'],
+        Cmd: ['sh', '-c', 'time ./main < test.in > test.out'],
         AttachStdin: true,
         AttachStdout: true,
         AttachStderr: true,
         WorkingDir: '/opt/code',
       });
       const duplex = await exec.start({ hijack: true, stdin: true });
-      this.connection.modem.demuxStream(process.stdout, process.stderr);
-      duplex.pipe(createWriteStream(join(tmpDirName, 'out')));
-      duplex.end(
-        readFileSync(
-          '/home/nasreddine/projects/personal/codeforces_workdir/files/test0.in',
-          { encoding: 'utf-8' },
-        ),
-      );
+      duplex.pipe(createWriteStream(join(tmpDirName, 'time.out')));
       duplex.on('end', async () => {
-        await container.stop();
-        await container.remove();
-        rmdirSync(tmpDirName, { recursive: true });
+        console.log(
+          'out',
+          readFileSync(join(tmpDirName, 'test.out'), 'utf-8').trim(),
+        );
+        const time = /real\s*0m([^s]*)s/g.exec(
+          readFileSync(join(tmpDirName, 'time.out'), 'utf-8'),
+        )[1];
+        console.log('time', time);
+        resolve();
       });
+      duplex.end();
     });
-    return container.id;
   }
 }

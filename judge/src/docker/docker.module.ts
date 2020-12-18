@@ -4,6 +4,6 @@ import { DockerController } from './docker.controller';
 
 @Module({
   providers: [DockerService],
-  controllers: [DockerController]
+  controllers: [DockerController],
 })
 export class DockerModule {}

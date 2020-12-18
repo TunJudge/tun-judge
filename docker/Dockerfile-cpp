@@ -1,0 +1,5 @@
+FROM gcc:7.3.0
+
+RUN apt-get update && apt-get install -y time
+
+WORKDIR /opt/code
