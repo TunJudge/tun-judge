@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Team } from './team.entity';
 import { UserRole } from './user-role.entity';
+import { compare } from 'bcrypt';
 
 @Entity()
 @Index(['team'])
@@ -23,7 +24,7 @@ export class User {
   @Column({ comment: 'User login', unique: true })
   username: string;
 
-  @Column({ comment: 'User password hash', nullable: true })
+  @Column({ comment: 'User password hash', nullable: false })
   password: string;
 
   @Column({ comment: 'User email address', nullable: true })
@@ -50,6 +51,12 @@ export class User {
   })
   team: Team;
 
-  @OneToMany(() => UserRole, (ur) => ur.user)
+  @OneToMany(() => UserRole, (ur) => ur.user, {
+    onDelete: 'CASCADE',
+    onUpdate: 'RESTRICT',
+  })
   roles: UserRole[];
+
+  checkPassword = (password: string): Promise<boolean> =>
+    compare(password, this.password);
 }

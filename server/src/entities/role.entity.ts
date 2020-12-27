@@ -1,17 +1,17 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { UserRole } from './user-role.entity';
 
 @Entity()
 export class Role {
-  @PrimaryGeneratedColumn({ comment: 'Role ID' })
-  id: number;
-
-  @Column({ comment: 'Role name', unique: true })
+  @Column({ comment: 'Role name', primary: true })
   name: string;
 
   @Column({ comment: 'Role description' })
   description: string;
 
-  @OneToMany(() => UserRole, (ur) => ur.role)
+  @OneToMany(() => UserRole, (ur) => ur.role, {
+    onDelete: 'CASCADE',
+    onUpdate: 'RESTRICT',
+  })
   users: UserRole[];
 }

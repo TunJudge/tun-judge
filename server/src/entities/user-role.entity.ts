@@ -7,6 +7,7 @@ import { Role } from './role.entity';
 export class UserRole {
   @ManyToOne(() => User, (user) => user.roles, {
     primary: true,
+    eager: true,
     onDelete: 'CASCADE',
     onUpdate: 'RESTRICT',
   })
@@ -14,6 +15,7 @@ export class UserRole {
 
   @ManyToOne(() => Role, (role) => role.users, {
     primary: true,
+    eager: true,
     onDelete: 'CASCADE',
     onUpdate: 'RESTRICT',
   })

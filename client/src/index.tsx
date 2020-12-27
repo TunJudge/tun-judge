@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'mobx-react';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import App from './App';
+import { rootStore } from './core/stores/RootStore';
+import Spinner from './pages/shared/Spinner';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider store={rootStore}>
+    <Suspense fallback={<Spinner />}>
+      <App />
+    </Suspense>
+  </Provider>,
   document.getElementById('root'),
 );
 
