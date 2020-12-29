@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { entities } from './entities';
 import { AuthModule } from './auth/auth.module';
 import { CustomRepositoryProviders } from './core/extended-repository';
+import {
+  AppController,
+  ContestsController,
+  ProblemsController,
+} from './controllers';
 
 @Module({
   imports: [
@@ -23,7 +27,7 @@ import { CustomRepositoryProviders } from './core/extended-repository';
     TypeOrmModule.forFeature(entities),
     AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ContestsController, ProblemsController],
   providers: [AppService, ...CustomRepositoryProviders],
 })
 export class AppModule {}

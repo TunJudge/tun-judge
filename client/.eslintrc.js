@@ -1,28 +1,30 @@
 module.exports = {
   extends: [
     'plugin:react/recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
     'plugin:prettier/recommended',
+    'prettier/@typescript-eslint',
   ],
-  env: {
-    es6: true,
-    node: true,
-    browser: true,
-  },
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint/eslint-plugin'],
   parserOptions: {
-    ecmaVersion: 8,
+    project: 'tsconfig.json',
     sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    },
   },
   ignorePatterns: ['/node_modules/**', '/build/**'],
   rules: {
-    'no-unused-vars': [
-      'warn',
-      { args: 'none', argsIgnorePattern: 'req|res|next|val' },
-    ],
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-inferrable-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/ban-types': 'off',
     'prettier/prettier': ['error'],
+    'react/display-name': 'off',
+    'react/prop-types': 'off',
   },
   settings: {
     react: {

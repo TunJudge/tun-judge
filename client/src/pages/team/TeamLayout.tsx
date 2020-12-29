@@ -1,12 +1,12 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import TeamNavBar from './TeamNavBar';
+import TeamNavbar from './TeamNavbar';
 import Scoreboard from '../shared/Scoreboard';
 import ProblemSet from '../shared/ProblemSet';
 
 const TeamLayout: React.FC = () => (
   <div>
-    <TeamNavBar />
+    <TeamNavbar />
     <div style={{ paddingTop: '5rem' }}>
       <Switch>
         <Route exact path="/" component={() => <>Home</>} />

@@ -8,7 +8,7 @@ const Logout: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    request('api/auth/logout', 'GET')
+    request('api/auth/logout')
       .then(() => rootStore.logout())
       .finally(() => history.push('/'));
   }, [history]);

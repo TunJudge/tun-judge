@@ -5,6 +5,7 @@ import * as passport from 'passport';
 import * as redis from 'redis';
 import * as connectRedis from 'connect-redis';
 import { RedisStore } from 'connect-redis';
+import * as bodyParser from 'body-parser';
 
 function getRedisStore(): RedisStore {
   const RedisStore = connectRedis(session);
@@ -22,6 +23,8 @@ async function bootstrap() {
     credentials: true,
   });
   app.setGlobalPrefix('api');
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.use(
     session({
       store: process.env.REDIS_HOST && getRedisStore(),

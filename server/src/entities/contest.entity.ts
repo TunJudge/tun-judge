@@ -32,13 +32,13 @@ export class Contest {
   @Column({ comment: 'Time contest starts' })
   startTime: Date;
 
-  @Column({ comment: 'Time scoreboard is frozen' })
+  @Column({ comment: 'Time scoreboard is frozen', nullable: true })
   freezeTime: Date;
 
   @Column({ comment: 'Time contest end and no submissions are accepted' })
   endTime: Date;
 
-  @Column({ comment: 'Time scoreboard is unfrozen' })
+  @Column({ comment: 'Time scoreboard is unfrozen', nullable: true })
   unfreezeTime: Date;
 
   @Column({
@@ -47,7 +47,7 @@ export class Contest {
   })
   finalizeTime: Date;
 
-  @Column({ comment: 'Comment of the finalizer' })
+  @Column({ comment: 'Comment of the finalizer', nullable: true })
   finalizeComment: string;
 
   @Column({
@@ -65,7 +65,7 @@ export class Contest {
 
   @Column({
     comment: 'Whether the balloons will be processed',
-    default: true,
+    default: false,
   })
   processBalloons: boolean;
 

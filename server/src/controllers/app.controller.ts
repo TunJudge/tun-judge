@@ -5,9 +5,9 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from './core/guards';
-import { ExtendedRepository } from './core/extended-repository';
-import { User } from './entities';
+import { AuthenticatedGuard } from '../core/guards';
+import { ExtendedRepository } from '../core/extended-repository';
+import { User } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Controller()

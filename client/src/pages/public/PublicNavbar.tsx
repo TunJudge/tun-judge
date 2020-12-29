@@ -6,7 +6,7 @@ import { rootStore } from '../../core/stores/RootStore';
 
 type Tabs = '' | 'problems';
 
-const PublicNavBar: React.FC = observer(() => {
+const PublicNavbar: React.FC = observer(() => {
   const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
   const history = useHistory();
 
@@ -33,31 +33,35 @@ const PublicNavBar: React.FC = observer(() => {
           <Icon name="file alternate" />
           Problem Set
         </Menu.Item>
-        <Menu.Item as="div" position="right">
-          {rootStore.connected ? (
-            <Button
-              color="red"
-              style={{ marginRight: '1rem' }}
-              onClick={() => location.assign('/logout')}
-            >
-              <Icon name="log out" />
-              Logout
-            </Button>
-          ) : (
-            <Button
-              color="blue"
-              style={{ marginRight: '0.5rem' }}
-              onClick={() => history.push('/login')}
-            >
-              Login
-            </Button>
-          )}
-          <Icon name="clock" />
-          contest_time
-        </Menu.Item>
+        <Menu.Menu position="right">
+          <Menu.Item>
+            {rootStore.connected ? (
+              <Button
+                color="red"
+                style={{ marginRight: '1rem' }}
+                onClick={() => location.assign('/logout')}
+              >
+                <Icon name="log out" />
+                Logout
+              </Button>
+            ) : (
+              <Button
+                color="blue"
+                style={{ marginRight: '0.5rem' }}
+                onClick={() => history.push('/login')}
+              >
+                Login
+              </Button>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            <Icon name="clock" />
+            contest_time
+          </Menu.Item>
+        </Menu.Menu>
       </Container>
     </Menu>
   );
 });
 
-export default PublicNavBar;
+export default PublicNavbar;

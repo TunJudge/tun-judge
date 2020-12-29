@@ -1,12 +1,12 @@
 import React from 'react';
-import PublicNavBar from './PublicNavBar';
+import PublicNavbar from './PublicNavbar';
 import Scoreboard from '../shared/Scoreboard';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import ProblemSet from '../shared/ProblemSet';
 
 const PublicLayout: React.FC = () => (
   <div>
-    <PublicNavBar />
+    <PublicNavbar />
     <div style={{ paddingTop: '7rem' }}>
       <Switch>
         <Route exact path="/" component={() => <Scoreboard />} />

@@ -29,14 +29,14 @@ export class Problem {
   })
   timeLimit: number;
 
-  @Column({ comment: 'Problem maximum memory (in kB)' })
+  @Column({ comment: 'Problem maximum memory (in kB)', default: 2097152 })
   memoryLimit: number;
 
-  @Column({ comment: 'Problem maximum output size (in kB)' })
+  @Column({ comment: 'Problem maximum output size (in kB)', default: 8192 })
   outputLimit: number;
 
-  @Column({ comment: 'Problem text in HTML/PDF/ASCII', type: 'bytea' })
-  problemText: Buffer;
+  @Column({ comment: 'Problem text in HTML/PDF/ASCII', type: 'text' })
+  problemText: string;
 
   @Column({ comment: 'Problem text file type' })
   problemTextType: string;
