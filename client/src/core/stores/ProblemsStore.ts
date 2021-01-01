@@ -10,6 +10,11 @@ export class ProblemsStore {
   constructor(private readonly rootStore: RootStore) {}
 
   @action
+  cleanItem = (): void => {
+    this.item = {};
+  };
+
+  @action
   fetchAll = async (): Promise<Problem[]> => {
     return (this.data = await request<Problem[]>('api/problems'));
   };
@@ -32,7 +37,7 @@ export class ProblemsStore {
   };
 
   @action
-  delete = async (id: number): Promise<void> => {
+  remove = async (id: number): Promise<void> => {
     await request<Problem>(`api/problems/${id}`, 'DELETE');
     await this.fetchAll();
   };

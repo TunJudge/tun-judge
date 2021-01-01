@@ -18,7 +18,7 @@ export class AuthService {
       { username },
       new NotFoundException('User not found!'),
     );
-    if (await user.checkPassword(password)) {
+    if (user.checkPassword(password)) {
       const { password, ...result } = user;
       return result;
     }

@@ -1,3 +1,6 @@
+import { Testcase } from './testcase.model';
+import { File } from './file.model';
+
 export interface Problem {
   id: number;
   externalId: string;
@@ -5,7 +8,7 @@ export interface Problem {
   timeLimit: number;
   memoryLimit: number;
   outputLimit: number;
-  problemText: string;
-  problemTextType: string;
+  file: File;
   specialCompareArgs: string;
+  testcases: Testcase[];
 }

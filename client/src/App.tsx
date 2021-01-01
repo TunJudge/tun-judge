@@ -10,20 +10,19 @@ import { Role } from './core/models';
 import Spinner from './pages/shared/Spinner';
 import Logout from './pages/shared/Logout';
 
-function getLayout(role: Role[]): React.FC {
-  if (role.some((s) => s.name === 'admin')) return AdminLayout;
-  if (role.some((s) => s.name === 'team')) return TeamLayout;
+function getLayout(role: Role): React.FC {
+  if (role.name === 'admin') return AdminLayout;
+  if (role.name === 'team') return TeamLayout;
   return PublicLayout;
 }
 
-export const AuthRoute: React.FC<RouteProps> = observer((props) => {
-  const { connected, returnUrl } = rootStore;
-  return !connected ? <Route {...props} /> : <Redirect to={returnUrl} />;
-});
+export const AuthRoute: React.FC<RouteProps> = observer((props) =>
+  !rootStore.connected ? <Route {...props} /> : <Redirect to={'/'} />,
+);
 
 export const App: React.FC = observer(() => {
   const { connected, profile } = rootStore;
-  const Layout = connected ? (profile ? getLayout(profile.roles) : Spinner) : PublicLayout;
+  const Layout = connected ? (profile ? getLayout(profile.role) : Spinner) : PublicLayout;
   return (
     <BrowserRouter>
       <Switch>

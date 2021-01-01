@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role, User, UserRole } from './entities';
+import { Role, User } from './entities';
 import { ExtendedRepository } from './core/extended-repository';
 import { genSalt, hash } from 'bcrypt';
 
@@ -11,8 +11,6 @@ export class AppService {
     private readonly usersRepository: ExtendedRepository<User>,
     @InjectRepository(Role)
     private readonly rolesRepository: ExtendedRepository<Role>,
-    @InjectRepository(UserRole)
-    private readonly userRolesRepository: ExtendedRepository<UserRole>,
   ) {
     this.initDatabase();
     this.initTeam();
@@ -26,14 +24,13 @@ export class AppService {
         description: 'System Administrator',
       });
     }
-    let user = await this.usersRepository.findOne({ username: 'admin' });
-    if (!user) {
-      user = await this.usersRepository.save({
+    if (!(await this.usersRepository.findOne({ username: 'admin' }))) {
+      await this.usersRepository.save({
         name: 'Super Admin',
         username: 'admin',
         password: await hash('admin', await genSalt(10)),
+        role: role,
       });
-      await this.userRolesRepository.save({ user, role });
     }
   }
 
@@ -45,14 +42,13 @@ export class AppService {
         description: 'Team',
       });
     }
-    let user = await this.usersRepository.findOne({ username: 'team' });
-    if (!user) {
-      user = await this.usersRepository.save({
+    if (!(await this.usersRepository.findOne({ username: 'team' }))) {
+      await this.usersRepository.save({
         name: 'Team',
         username: 'team',
         password: await hash('team', await genSalt(10)),
+        role: role,
       });
-      await this.userRolesRepository.save({ user, role });
     }
   }
 }

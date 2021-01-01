@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import AdminSideBar from './AdminSidebar';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import ProblemSet from '../../shared/ProblemSet';
 import Scoreboard from '../../shared/Scoreboard';
 import AdminNavbar from './AdminNavbar';
 import ContestsList from '../contests/ContestsList';
 import ProblemsList from '../problems/ProblemsList';
 import ProblemView from '../problems/ProblemView';
+import LanguagesList from '../languages/LanguagesList';
 
 const AdminLayout: React.FC = () => {
   const [sidebarVisible, toggleSidebar] = useState<boolean>(true);
@@ -31,6 +31,7 @@ const AdminLayout: React.FC = () => {
           <Route exact path="/contests" component={ContestsList} />
           <Route exact path="/problems" component={ProblemsList} />
           <Route path="/problems/:id" component={ProblemView} />
+          <Route exact path="/languages" component={LanguagesList} />
           <Route path="/scoreboard" component={Scoreboard} />
           <Route render={() => <Redirect to="/" />} />
         </Switch>

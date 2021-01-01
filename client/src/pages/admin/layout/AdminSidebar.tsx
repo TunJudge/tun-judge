@@ -20,6 +20,16 @@ const tabs: Tabs = [
     icon: 'file alternate',
   },
   {
+    key: 'languages',
+    title: 'Languages',
+    icon: 'code',
+  },
+  {
+    key: 'executables',
+    title: 'Executables',
+    icon: 'cogs',
+  },
+  {
     key: 'teams',
     title: 'Teams',
     icon: 'users',

@@ -8,7 +8,10 @@ import { CustomRepositoryProviders } from './core/extended-repository';
 import {
   AppController,
   ContestsController,
+  LanguagesController,
   ProblemsController,
+  TestcasesController,
+  JudgeHostsController,
 } from './controllers';
 
 @Module({
@@ -27,7 +30,14 @@ import {
     TypeOrmModule.forFeature(entities),
     AuthModule,
   ],
-  controllers: [AppController, ContestsController, ProblemsController],
+  controllers: [
+    AppController,
+    ContestsController,
+    ProblemsController,
+    TestcasesController,
+    LanguagesController,
+    JudgeHostsController,
+  ],
   providers: [AppService, ...CustomRepositoryProviders],
 })
 export class AppModule {}

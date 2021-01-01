@@ -10,7 +10,7 @@ const PublicLayout: React.FC = () => (
     <div style={{ paddingTop: '7rem' }}>
       <Switch>
         <Route exact path="/" component={() => <Scoreboard />} />
-        <Route path="/problems" component={() => <ProblemSet />} />
+        <Route exact path="/problems" component={() => <ProblemSet />} />
         <Route render={() => <Redirect to="/" />} />
       </Switch>
     </div>

@@ -26,12 +26,17 @@ export class ProblemsController {
   getAll(): Promise<Problem[]> {
     return this.problemsRepository.find({
       order: { id: 'ASC' },
+      relations: ['testcases', 'file', 'file.content'],
     });
   }
 
   @Get(':id')
   getById(@Param('id') id: number): Promise<Problem> {
-    return this.problemsRepository.findOneOrThrow(id, new NotFoundException());
+    return this.problemsRepository.findOneOrThrow(
+      id,
+      { relations: ['testcases', 'file', 'file.content'] },
+      new NotFoundException(),
+    );
   }
 
   @Post()

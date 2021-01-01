@@ -27,14 +27,11 @@ export class AppController {
       },
     },
   ): Promise<any> {
-    return this.usersRepository
-      .findOneOrThrow(id, { relations: ['roles'] }, new NotFoundException())
-      .then((user) => {
-        delete user.password;
-        return {
-          ...user,
-          roles: user.roles.map((r) => r.role),
-        };
-      });
+    const user = await this.usersRepository.findOneOrThrow(
+      id,
+      new NotFoundException(),
+    );
+    delete user.password;
+    return user;
   }
 }

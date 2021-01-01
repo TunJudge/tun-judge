@@ -13,13 +13,6 @@ export class Contest {
   @PrimaryGeneratedColumn({ comment: 'Contest ID' })
   id: number;
 
-  @Column({
-    comment: 'Contest ID in an external system',
-    nullable: true,
-    unique: true,
-  })
-  externalId: string;
-
   @Column({ comment: 'Contest name' })
   name: string;
 

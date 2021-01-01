@@ -8,5 +8,5 @@ export interface User {
   lastLogin: Date;
   lastIpAddress: Date;
   enabled: boolean;
-  roles: Role[];
+  role: Role;
 }

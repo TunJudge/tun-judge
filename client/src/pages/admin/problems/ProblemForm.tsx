@@ -14,12 +14,12 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ problem, dismiss, submit }) =
   const [errors, setErrors] = useState<FormErrors<Problem>>({
     name: isEmpty(problem.name),
     timeLimit: isEmpty(problem.timeLimit),
-    problemText: isEmpty(problem.problemText),
+    file: isEmpty(problem.file),
   });
 
   return (
     <Modal open onClose={dismiss} closeOnEscape={false}>
-      <Modal.Header>Create Problem</Modal.Header>
+      <Modal.Header>{problem.id ? 'Update' : 'Create'} Problem</Modal.Header>
       <Modal.Content>
         <Form>
           <Form.Group widths="equal">
@@ -33,9 +33,9 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ problem, dismiss, submit }) =
             />
             <FileField<Problem>
               entity={problem}
-              field="problemText"
-              typeField="problemTextType"
+              field="file"
               label="Problem File"
+              accept="application/pdf, text/html"
               required
               errors={errors}
               setErrors={setErrors}

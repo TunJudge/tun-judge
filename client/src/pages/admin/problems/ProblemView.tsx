@@ -4,14 +4,18 @@ import { observer } from 'mobx-react';
 import { rootStore } from '../../../core/stores/RootStore';
 import Spinner from '../../shared/Spinner';
 import { Grid, Header, Segment, Table } from 'semantic-ui-react';
+import TestcasesList from './testcases/TestcasesList';
+import { Problem } from '../../../core/models';
 
 const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {
-  const { problemsStore } = rootStore;
-  const { item } = problemsStore;
+  const {
+    problemsStore: { item, fetchById, cleanItem },
+  } = rootStore;
 
   useEffect(() => {
-    problemsStore.fetchById(parseInt(match!.params.id!)).catch(() => location.assign('/'));
-  }, [problemsStore, match]);
+    fetchById(parseInt(match!.params.id!)).catch(() => location.assign('/'));
+    return () => cleanItem();
+  }, [fetchById, cleanItem, match]);
 
   return !item.id ? (
     <Spinner />
@@ -20,7 +24,9 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
       <Grid.Row style={{ height: '93vh' }}>
         <Grid.Column style={{ paddingRight: '.5rem' }}>
           <Segment.Group>
-            <Segment as={Header}>Problem &apos;{item.name}&apos;</Segment>
+            <Segment>
+              <Header>Problem &apos;{item.name}&apos;</Header>
+            </Segment>
             <Segment>
               <Table striped celled>
                 <Table.Body>
@@ -48,14 +54,18 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
               </Table>
             </Segment>
           </Segment.Group>
-          <Segment.Group>
-            <Segment as={Header}>Test cases</Segment>
-            <Segment style={{ height: '51vh', overflowY: 'auto' }} />
-          </Segment.Group>
+          <TestcasesList problem={item as Problem} />
         </Grid.Column>
         <Grid.Column style={{ paddingLeft: '.5rem' }}>
           <Segment style={{ height: '100%' }}>
-            <embed src={item.problemText + '#view=Fit'} width="100%" height="100%" />
+            <embed
+              src={`data:${item.file?.type};headers=filename%3D${encodeURIComponent(
+                item.file!.name,
+              )};base64,${item.file?.content.payload}`}
+              type={item.file?.type}
+              width="100%"
+              height="100%"
+            />
           </Segment>
         </Grid.Column>
       </Grid.Row>

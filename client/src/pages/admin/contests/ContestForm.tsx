@@ -5,7 +5,7 @@ import { isEmpty } from '../../../core/helpers';
 import { CheckBoxField, DateTimeField, FormErrors, TextField } from '../../shared/extended-form';
 
 type ContestFormProps = {
-  contest: Partial<Contest>;
+  contest: Contest;
   dismiss: () => void;
   submit: () => void;
 };
@@ -21,7 +21,7 @@ const ContestForm: React.FC<ContestFormProps> = ({ contest, dismiss, submit }) =
 
   return (
     <Modal open onClose={dismiss} closeOnEscape={false}>
-      <Modal.Header>Create Contest</Modal.Header>
+      <Modal.Header>{contest.id ? 'Update' : 'Create'} Contest</Modal.Header>
       <Modal.Content>
         <Form>
           <Form.Group widths="equal">
@@ -48,7 +48,6 @@ const ContestForm: React.FC<ContestFormProps> = ({ contest, dismiss, submit }) =
               field="activateTime"
               label="Activate Time"
               required
-              maxDate={contest.startTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -57,8 +56,6 @@ const ContestForm: React.FC<ContestFormProps> = ({ contest, dismiss, submit }) =
               field="startTime"
               label="Start Time"
               required
-              minDate={contest.activateTime}
-              maxDate={contest.endTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -67,7 +64,6 @@ const ContestForm: React.FC<ContestFormProps> = ({ contest, dismiss, submit }) =
               field="endTime"
               label="End Time"
               required
-              minDate={contest.startTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -77,8 +73,6 @@ const ContestForm: React.FC<ContestFormProps> = ({ contest, dismiss, submit }) =
               entity={contest}
               field="freezeTime"
               label="Freeze Time"
-              minDate={contest.startTime}
-              maxDate={contest.endTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -86,7 +80,6 @@ const ContestForm: React.FC<ContestFormProps> = ({ contest, dismiss, submit }) =
               entity={contest}
               field="unfreezeTime"
               label="Unfreeze Time"
-              minDate={contest.endTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -94,7 +87,6 @@ const ContestForm: React.FC<ContestFormProps> = ({ contest, dismiss, submit }) =
               entity={contest}
               field="finalizeTime"
               label="Finalize Time"
-              minDate={contest.endTime}
               errors={errors}
               setErrors={setErrors}
             />

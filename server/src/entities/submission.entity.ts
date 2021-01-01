@@ -15,7 +15,7 @@ import { SubmissionFile } from './submission-file.entity';
 import { JudgeHost } from './judge-host.entity';
 
 @Entity()
-@Unique(['contest', 'externalId'])
+@Unique(['contest'])
 @Index(['contest', 'team'])
 @Index(['contest', 'problem'])
 @Index(['team'])
@@ -29,12 +29,6 @@ export class Submission {
 
   @Column({ comment: 'Submission time' })
   submitTime: Date;
-
-  @Column({
-    comment: 'Submission ID in an external system',
-    nullable: true,
-  })
-  externalId: string;
 
   @Column({
     comment:

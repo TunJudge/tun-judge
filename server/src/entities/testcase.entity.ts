@@ -9,7 +9,7 @@ import {
   Unique,
 } from 'typeorm';
 import { Problem } from './problem.entity';
-import { TestcaseContent } from './testcase-content.entity';
+import { File } from './file.entity';
 
 @Entity()
 @Unique(['problem', 'rank'])
@@ -19,14 +19,20 @@ export class Testcase {
   @PrimaryGeneratedColumn({ comment: 'Test case ID' })
   id: number;
 
-  @Column({ comment: 'Checksum of the input data' })
-  inputMD5Sum: string;
+  @OneToOne(() => File, { cascade: true, eager: true, nullable: false })
+  @JoinColumn()
+  input: File;
 
-  @Column({ comment: 'Checksum of the input data' })
-  outputMD5Sum: string;
+  @OneToOne(() => File, { cascade: true, eager: true, nullable: false })
+  @JoinColumn()
+  output: File;
 
   @Column({ comment: 'Test case description', nullable: true })
   description: string;
+
+  @OneToOne(() => File, { cascade: true, eager: true })
+  @JoinColumn()
+  image: File;
 
   @Column({ comment: 'Test case rank for judging' })
   rank: number;
@@ -43,13 +49,8 @@ export class Testcase {
   })
   deleted: boolean;
 
-  @OneToOne(() => TestcaseContent, (content) => content.testcase, {
-    onDelete: 'CASCADE',
-    onUpdate: 'RESTRICT',
-  })
-  content: TestcaseContent;
-
   @ManyToOne(() => Problem, (problem) => problem.testcases, {
+    nullable: false,
     onDelete: 'CASCADE',
     onUpdate: 'RESTRICT',
   })

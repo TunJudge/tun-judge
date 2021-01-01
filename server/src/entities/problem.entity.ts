@@ -2,22 +2,21 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ContestProblem } from './contest-problem.entity';
 import { Executable } from './executable.entity';
 import { Testcase } from './testcase.entity';
+import { File } from './file.entity';
 
 @Entity()
-@Index(['externalId'])
 export class Problem {
   @PrimaryGeneratedColumn({ comment: 'Problem ID' })
   id: number;
-
-  @Column({ comment: 'Problem ID in an external system', nullable: true })
-  externalId: string;
 
   @Column({ comment: 'Problem name' })
   name: string;
@@ -35,11 +34,14 @@ export class Problem {
   @Column({ comment: 'Problem maximum output size (in kB)', default: 8192 })
   outputLimit: number;
 
-  @Column({ comment: 'Problem text in HTML/PDF/ASCII', type: 'text' })
-  problemText: string;
-
-  @Column({ comment: 'Problem text file type' })
-  problemTextType: string;
+  @OneToOne(() => File, {
+    cascade: true,
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+    nullable: false,
+  })
+  @JoinColumn()
+  file: File;
 
   @ManyToOne(() => Executable, {
     onDelete: 'SET NULL',

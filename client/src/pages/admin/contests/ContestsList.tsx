@@ -9,16 +9,17 @@ import moment from 'moment';
 
 const ContestsList: React.FC = observer(() => {
   const [formOpen, setFormOpen] = useState<boolean>(false);
-  const [formContest, setFormContest] = useState<Partial<Contest>>({});
-  const { contestsStore } = rootStore;
-  const data = contestsStore.data;
+  const [formContest, setFormContest] = useState<Contest>({} as Contest);
+  const {
+    contestsStore: { data, fetchAll, create, update, remove },
+  } = rootStore;
 
   useEffect(() => {
-    contestsStore.fetchAll();
-  }, [contestsStore]);
+    fetchAll();
+  }, [fetchAll]);
 
   const dismissForm = () => {
-    setFormContest({});
+    setFormContest({} as Contest);
     setFormOpen(false);
   };
 
@@ -83,7 +84,7 @@ const ContestsList: React.FC = observer(() => {
                     <Icon
                       name="trash"
                       color="red"
-                      onClick={() => contestsStore.delete(contest.id)}
+                      onClick={() => remove(contest.id)}
                       style={{ cursor: 'pointer', marginRight: '0' }}
                     />
                   </Table.Cell>
@@ -95,13 +96,13 @@ const ContestsList: React.FC = observer(() => {
       </Segment>
       {formOpen && (
         <ContestForm
-          contest={formContest}
+          contest={formContest as Contest}
           dismiss={dismissForm}
           submit={async () => {
             if (formContest.id) {
-              await contestsStore.update(formContest);
+              await update(formContest);
             } else {
-              await contestsStore.create(formContest);
+              await create(formContest);
             }
             dismissForm();
           }}

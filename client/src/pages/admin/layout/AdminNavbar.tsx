@@ -1,11 +1,14 @@
 import React from 'react';
-import { Button, Icon, Menu } from 'semantic-ui-react';
+import { Button, Dropdown, Header, Icon, Menu } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
+import { rootStore } from '../../../core/stores/RootStore';
+import { observer } from 'mobx-react';
 
 type AdminNavbarProps = { toggleSidebar: () => void };
 
-const AdminNavbar: React.FC<AdminNavbarProps> = ({ toggleSidebar }) => {
+const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => {
   const history = useHistory();
+  const { profile } = rootStore;
 
   return (
     <Menu borderless>
@@ -13,15 +16,23 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({ toggleSidebar }) => {
         <Icon name="unordered list" />
       </Menu.Item>
       <Menu.Menu position="right">
-        <Menu.Item>
-          <Button color="red" onClick={() => history.push('/logout')}>
-            <Icon name="log out" />
-            Logout
-          </Button>
-        </Menu.Item>
+        <Dropdown
+          item
+          floating
+          icon={
+            <>
+              <Icon name="user circle" />
+              {profile?.username ?? '-'}
+            </>
+          }
+        >
+          <Dropdown.Menu>
+            <Dropdown.Item text="Logout" icon="log out" onClick={() => history.push('/logout')} />
+          </Dropdown.Menu>
+        </Dropdown>
       </Menu.Menu>
     </Menu>
   );
-};
+});
 
 export default AdminNavbar;

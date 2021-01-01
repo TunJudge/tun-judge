@@ -1,17 +1,16 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Executable } from './executable.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { File } from './file.entity';
 
 @Entity()
 export class Language {
   @PrimaryGeneratedColumn({ comment: 'Language ID' })
   id: number;
-
-  @Column({
-    comment: 'Language ID in an external system',
-    nullable: true,
-    unique: true,
-  })
-  externalId: string;
 
   @Column({ comment: 'Language name' })
   name: string;
@@ -22,17 +21,6 @@ export class Language {
     default: [],
   })
   extensions: string[];
-
-  @Column({
-    comment: 'Whether submissions require a code entry point to be specified',
-    default: false,
-  })
-  requireEntryPoint: boolean;
-
-  @Column({
-    comment: 'Entry point description',
-  })
-  entryPointDescription: string;
 
   @Column({
     comment: 'Whether to accept submissions with this language',
@@ -46,23 +34,21 @@ export class Language {
   })
   allowJudge: boolean;
 
-  @Column({
-    comment: 'Language-specific factor multiplied by problem run times',
-    type: 'float',
-    default: 1.0,
-  })
-  timeFactor: number;
-
-  @Column({
-    comment:
-      'Whether filter the files passed to the compiler by the extension list',
-    default: true,
-  })
-  filterCompilerFiles: boolean;
-
-  @ManyToOne(() => Executable, {
-    onDelete: 'SET NULL',
+  @OneToOne(() => File, {
+    cascade: true,
+    onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
+    nullable: false,
   })
-  compileScript: Executable;
+  @JoinColumn()
+  buildScript: File;
+
+  @OneToOne(() => File, {
+    cascade: true,
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+    nullable: false,
+  })
+  @JoinColumn()
+  runScript: File;
 }

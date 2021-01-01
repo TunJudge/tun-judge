@@ -10,12 +10,13 @@ const ProblemsList: React.FC = observer(() => {
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [formProblem, setFormProblem] = useState<Partial<Problem>>({});
   const history = useHistory();
-  const { problemsStore } = rootStore;
-  const data = problemsStore.data;
+  const {
+    problemsStore: { data, fetchAll, create, update, remove },
+  } = rootStore;
 
   useEffect(() => {
-    problemsStore.fetchAll();
-  }, [problemsStore]);
+    fetchAll();
+  }, [fetchAll]);
 
   const dismissForm = () => {
     setFormProblem({});
@@ -54,17 +55,18 @@ const ProblemsList: React.FC = observer(() => {
               </Table.Row>
             ) : (
               data.map((problem) => (
-                <Table.Row
-                  key={problem.id}
-                  className="cursor-pointer"
-                  onClick={() => history.push(`/problems/${problem.id}`)}
-                >
+                <Table.Row key={problem.id}>
                   <Table.Cell textAlign="center">{problem.id}</Table.Cell>
-                  <Table.Cell>{problem.name}</Table.Cell>
+                  <Table.Cell
+                    className="cursor-pointer"
+                    onClick={() => history.push(`/problems/${problem.id}`)}
+                  >
+                    {problem.name}
+                  </Table.Cell>
                   <Table.Cell>{problem.timeLimit}s</Table.Cell>
                   <Table.Cell>{problem.memoryLimit}Kb</Table.Cell>
                   <Table.Cell>{problem.outputLimit}Kb</Table.Cell>
-                  <Table.Cell>0</Table.Cell>
+                  <Table.Cell>{problem.testcases.length}</Table.Cell>
                   <Table.Cell textAlign="center">
                     <Icon
                       name="edit"
@@ -77,7 +79,7 @@ const ProblemsList: React.FC = observer(() => {
                     <Icon
                       name="trash"
                       color="red"
-                      onClick={() => problemsStore.delete(problem.id)}
+                      onClick={() => remove(problem.id)}
                       style={{ cursor: 'pointer', marginRight: '0' }}
                     />
                   </Table.Cell>
@@ -93,9 +95,9 @@ const ProblemsList: React.FC = observer(() => {
           dismiss={dismissForm}
           submit={async () => {
             if (formProblem.id) {
-              await problemsStore.update(formProblem);
+              await update(formProblem);
             } else {
-              await problemsStore.create(formProblem);
+              await create(formProblem);
             }
             dismissForm();
           }}

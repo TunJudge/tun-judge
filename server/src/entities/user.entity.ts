@@ -1,16 +1,13 @@
 import {
   Column,
   Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  JoinColumn,
   Index,
   ManyToOne,
-  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Team } from './team.entity';
-import { UserRole } from './user-role.entity';
-import { compare } from 'bcrypt';
+import { compare, compareSync } from 'bcrypt';
+import { Role } from './role.entity';
 
 @Entity()
 @Index(['team'])
@@ -51,12 +48,12 @@ export class User {
   })
   team: Team;
 
-  @OneToMany(() => UserRole, (ur) => ur.user, {
-    onDelete: 'CASCADE',
-    onUpdate: 'RESTRICT',
+  @ManyToOne(() => Role, (role) => role.users, {
+    nullable: false,
+    eager: true,
   })
-  roles: UserRole[];
+  role: Role;
 
-  checkPassword = (password: string): Promise<boolean> =>
-    compare(password, this.password);
+  checkPassword = (password: string): boolean =>
+    compareSync(password, this.password);
 }

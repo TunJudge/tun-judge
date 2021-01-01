@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { request } from '../../core/helpers';
-import { rootStore } from '../../core/stores/RootStore';
 
 const Login: React.FC = observer(() => {
   const [username, setUsername] = useState<string>('');
@@ -14,7 +13,7 @@ const Login: React.FC = observer(() => {
         data: { username, password },
       });
       localStorage.setItem('connected', `${Date.now()}`);
-      window.location.assign(rootStore.returnUrl);
+      window.location.assign('/');
     } catch (e) {}
   };
 

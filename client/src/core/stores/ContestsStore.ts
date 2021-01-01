@@ -26,7 +26,7 @@ export class ContestsStore {
   };
 
   @action
-  delete = async (id: number): Promise<void> => {
+  remove = async (id: number): Promise<void> => {
     await request<Contest>(`api/contests/${id}`, 'DELETE');
     await this.fetchAll();
   };
