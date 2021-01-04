@@ -19,7 +19,7 @@ export class AppController {
   ) {}
 
   @Get('current')
-  async ping(
+  async current(
     @Session()
     {
       passport: {

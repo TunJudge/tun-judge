@@ -68,6 +68,8 @@ export class Contest {
   })
   public: boolean;
 
-  @OneToMany(() => ContestProblem, (cp) => cp.contest)
+  @OneToMany(() => ContestProblem, (cp) => cp.contest, {
+    cascade: true,
+  })
   problems: ContestProblem[];
 }

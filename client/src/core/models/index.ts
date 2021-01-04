@@ -6,3 +6,4 @@ export * from './contest.model';
 export * from './language.model';
 export * from './testcase.model';
 export * from './file-content.model';
+export * from './contest-problem.model';

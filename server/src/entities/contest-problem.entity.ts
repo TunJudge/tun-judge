@@ -1,12 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  ManyToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToOne, Unique } from 'typeorm';
 import { Contest } from './contest.entity';
 import { Problem } from './problem.entity';
 
@@ -16,14 +8,14 @@ import { Problem } from './problem.entity';
 export class ContestProblem {
   @ManyToOne(() => Contest, (contest) => contest.problems, {
     primary: true,
-    onDelete: 'CASCADE',
+    onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
   })
   contest: Contest;
 
   @ManyToOne(() => Problem, (problem) => problem.contests, {
     primary: true,
-    onDelete: 'CASCADE',
+    onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
   })
   problem: Problem;

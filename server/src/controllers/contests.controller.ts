@@ -11,8 +11,9 @@ import {
 } from '@nestjs/common';
 import { AdminGuard, AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
-import { Contest } from '../entities';
+import { Contest, ContestProblem } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { In, Not } from 'typeorm';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -20,14 +21,23 @@ export class ContestsController {
   constructor(
     @InjectRepository(Contest)
     private readonly contestsRepository: ExtendedRepository<Contest>,
+    @InjectRepository(ContestProblem)
+    private readonly contestProblemsRepository: ExtendedRepository<ContestProblem>,
   ) {}
 
   @Get()
   getAll(): Promise<Contest[]> {
-    return this.contestsRepository.find({
-      relations: ['problems'],
-      order: { id: 'ASC' },
-    });
+    return this.contestsRepository
+      .find({
+        relations: ['problems', 'problems.problem'],
+        order: { id: 'ASC' },
+      })
+      .then((data) =>
+        data.map((c) => ({
+          ...c,
+          problems: c.problems.filter((p) => p.problem !== null),
+        })),
+      );
   }
 
   @Post()
@@ -46,12 +56,16 @@ export class ContestsController {
       id,
       new NotFoundException(),
     );
+    await this.contestProblemsRepository.delete({
+      contest: { id },
+    });
     return this.contestsRepository.save({ ...oldContest, ...contest });
   }
 
   @Delete(':id')
   @UseGuards(AdminGuard)
   async delete(@Param('id') id: number): Promise<void> {
+    await this.contestProblemsRepository.delete({ contest: { id } });
     await this.contestsRepository.delete(id);
   }
 }

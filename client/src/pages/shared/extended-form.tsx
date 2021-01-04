@@ -13,7 +13,7 @@ export const MOMENT_DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 type ExtendedFieldProps<T> = {
   entity: Partial<T>;
   field: keyof T;
-  label: string;
+  label?: string;
   placeHolder?: string;
   defaultValue?: any;
   width?: SemanticWIDTHS;
@@ -76,7 +76,7 @@ export function TextField<T>({
 }: ExtendedFieldProps<T>): any {
   return (
     <Form.Input
-      width={width}
+      width={width ?? '16'}
       required={required}
       readOnly={readOnly}
       label={label}
@@ -105,16 +105,20 @@ export function NumberField<T>({
   placeHolder,
   width,
   required,
+  defaultValue,
   readOnly,
   unit,
   errors,
   setErrors,
   onChange,
 }: NumberFieldProps<T>): any {
+  if (isEmpty(entity[field]) && !isEmpty(defaultValue)) {
+    entity[field] = defaultValue;
+  }
   return (
     <Form.Input
       type="number"
-      width={width}
+      width={width ?? '16'}
       required={required}
       readOnly={readOnly}
       label={label}
@@ -155,7 +159,7 @@ export function CheckBoxField<T>({
   }
   return (
     <Form.Checkbox
-      width={width}
+      width={width ?? '16'}
       required={required}
       readOnly={readOnly}
       label={label}
@@ -191,7 +195,7 @@ export function FileField<T>({
   return (
     <>
       <Form.Input
-        width={width}
+        width={width ?? '16'}
         required={required}
         label={label}
         readOnly
@@ -275,7 +279,7 @@ export function DropdownField<T>({
   return (
     <Form.Dropdown
       options={optionsState}
-      width={width}
+      width={width ?? '16'}
       required={required}
       label={label}
       search={search}
