@@ -1,0 +1,17 @@
+FROM node:12-alpine as build-stage
+
+WORKDIR /judge
+COPY ./judge .
+RUN yarn
+RUN yarn build
+RUN yarn --prod
+
+FROM node:12-alpine as final-stage
+
+WORKDIR /judge
+COPY --from=build-stage /judge/node_modules ./node_modules
+COPY --from=build-stage /judge/nest-cli.json ./nest-cli.json
+COPY --from=build-stage /judge/package.json ./package.json
+COPY --from=build-stage /judge/dist ./dist
+
+CMD yarn start:prod
