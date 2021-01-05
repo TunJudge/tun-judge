@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
-import { request } from '../../core/helpers';
+import http from '../../core/utils/http-client';
 
 const Login: React.FC = observer(() => {
   const [username, setUsername] = useState<string>('');
@@ -9,9 +9,7 @@ const Login: React.FC = observer(() => {
 
   const login = async () => {
     try {
-      await request('api/auth/login', 'POST', {
-        data: { username, password },
-      });
+      await http.post('api/auth/login', { username, password });
       localStorage.setItem('connected', `${Date.now()}`);
       window.location.assign('/');
     } catch (e) {}

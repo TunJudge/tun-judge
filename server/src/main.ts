@@ -18,10 +18,12 @@ function getRedisStore(): RedisStore {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({
-    origin: /.*/,
-    credentials: true,
-  });
+  if (process.env.NODE_ENV === 'development') {
+    app.enableCors({
+      origin: /.*/,
+      credentials: true,
+    });
+  }
   app.setGlobalPrefix('api');
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));

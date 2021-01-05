@@ -1,7 +1,7 @@
 import { RootStore } from './RootStore';
 import { action, autorun, observable } from 'mobx';
 import { FileContent, Testcase } from '../models';
-import { request } from '../helpers';
+import http from '../utils/http-client';
 
 export class TestcasesStore {
   @observable data: Testcase[] = [];
@@ -17,36 +17,34 @@ export class TestcasesStore {
 
   @action
   fetchAll = async (): Promise<void> => {
-    this.data = await request<Testcase[]>(`api/testcases/problem/${this.problemId}`);
+    this.data = await http.get<Testcase[]>(`api/testcases/problem/${this.problemId}`);
   };
 
   @action
   create = async (testcase: Partial<Testcase>): Promise<void> => {
-    await request<Testcase>(`api/testcases/problem/${this.problemId}`, 'POST', {
-      data: testcase,
-    });
+    await http.post<Testcase>(`api/testcases/problem/${this.problemId}`, testcase);
     await this.fetchAll();
   };
 
   @action
   update = async (testcase: Partial<Testcase>): Promise<void> => {
-    await request<Testcase>(`api/testcases/${testcase.id}`, 'PUT', { data: testcase });
+    await http.put<Testcase>(`api/testcases/${testcase.id}`, testcase);
     await this.fetchAll();
   };
 
   @action
   remove = async (id: number): Promise<void> => {
-    await request<Testcase>(`api/testcases/${id}`, 'DELETE');
+    await http.delete(`api/testcases/${id}`);
     await this.fetchAll();
   };
 
   @action
   move = async (id: number, direction: 'up' | 'down'): Promise<void> => {
-    await request<Testcase>(`api/testcases/${id}/${direction}`, 'PATCH');
+    await http.patch(`api/testcases/${id}/${direction}`);
     await this.fetchAll();
   };
 
   fetchContent = (id: number, file: 'input' | 'output'): Promise<FileContent> => {
-    return request<FileContent>(`api/testcases/${id}/content/${file}`);
+    return http.get<FileContent>(`api/testcases/${id}/content/${file}`);
   };
 }

@@ -3,8 +3,8 @@ import { User } from '../models';
 import { ContestsStore } from './ContestsStore';
 import { ProblemsStore } from './ProblemsStore';
 import { TestcasesStore } from './TestcasesStore';
-import { request } from '../helpers';
 import { LanguagesStore } from './LanguagesStore';
+import http from '../utils/http-client';
 
 const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
@@ -25,10 +25,7 @@ export class RootStore {
     this.languagesStore = new LanguagesStore(this);
     autorun(
       async () => {
-        this.connected &&
-          this.setProfile(
-            await request<User>(`api/current`, 'GET', { withCredentials: true }),
-          );
+        this.connected && this.setProfile(await http.get<User>(`api/current`));
       },
       { delay: 10 },
     );

@@ -1,7 +1,7 @@
 import { RootStore } from './RootStore';
 import { action, observable } from 'mobx';
 import { Language } from '../models';
-import { request } from '../helpers';
+import http from '../utils/http-client';
 
 export class LanguagesStore {
   @observable data: Language[] = [];
@@ -10,24 +10,24 @@ export class LanguagesStore {
 
   @action
   fetchAll = async (): Promise<Language[]> => {
-    return (this.data = await request<Language[]>('api/languages'));
+    return (this.data = await http.get<Language[]>('api/languages'));
   };
 
   @action
   create = async (language: Partial<Language>): Promise<void> => {
-    await request<Language>('api/languages', 'POST', { data: language });
+    await http.post<Language>('api/languages', language);
     await this.fetchAll();
   };
 
   @action
   update = async (language: Partial<Language>): Promise<void> => {
-    await request<Language>(`api/languages/${language.id}`, 'PUT', { data: language });
+    await http.put<Language>(`api/languages/${language.id}`, language);
     await this.fetchAll();
   };
 
   @action
   remove = async (id: number): Promise<void> => {
-    await request<Language>(`api/languages/${id}`, 'DELETE');
+    await http.delete(`api/languages/${id}`);
     await this.fetchAll();
   };
 }

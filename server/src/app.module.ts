@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { AppService } from './app.service';
 import { entities } from './entities';
 import { AuthModule } from './auth/auth.module';
 import { CustomRepositoryProviders } from './core/extended-repository';
@@ -28,6 +30,10 @@ import {
       synchronize: true,
     }),
     TypeOrmModule.forFeature(entities),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client'),
+      exclude: ['/api*'],
+    }),
     AuthModule,
   ],
   controllers: [

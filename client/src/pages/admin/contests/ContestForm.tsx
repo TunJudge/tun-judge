@@ -154,7 +154,7 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ contest, dismiss, su
             <Table.Body>
               {contest.problems.map((problem, index) => (
                 <Table.Row key={`${contest.id}-${index}`}>
-                  <Table.Cell width="4">
+                  <Table.Cell width="5">
                     <Form.Dropdown
                       fluid
                       selection
@@ -243,7 +243,7 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ contest, dismiss, su
                   colSpan="7"
                   textAlign="center"
                   className="cursor-pointer"
-                  style={{ background: 'lightgrey' }}
+                  style={{ background: '#F9FAFB' }}
                   onClick={() => (contest.problems = [...contest.problems, {} as ContestProblem])}
                 >
                   <Icon name="plus" />

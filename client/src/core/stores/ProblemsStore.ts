@@ -1,7 +1,7 @@
 import { RootStore } from './RootStore';
 import { action, observable } from 'mobx';
 import { Problem } from '../models';
-import { request } from '../helpers';
+import http from '../utils/http-client';
 
 export class ProblemsStore {
   @observable data: Problem[] = [];
@@ -16,29 +16,29 @@ export class ProblemsStore {
 
   @action
   fetchAll = async (): Promise<Problem[]> => {
-    return (this.data = await request<Problem[]>('api/problems'));
+    return (this.data = await http.get<Problem[]>('api/problems'));
   };
 
   @action
   fetchById = async (id: number): Promise<Problem> => {
-    return (this.item = await request<Problem>(`api/problems/${id}`));
+    return (this.item = await http.get<Problem>(`api/problems/${id}`));
   };
 
   @action
   create = async (problem: Partial<Problem>): Promise<void> => {
-    await request<Problem>('api/problems', 'POST', { data: problem });
+    await http.post<Problem>('api/problems', problem);
     await this.fetchAll();
   };
 
   @action
   update = async (problem: Partial<Problem>): Promise<void> => {
-    await request<Problem>(`api/problems/${problem.id}`, 'PUT', { data: problem });
+    await http.put<Problem>(`api/problems/${problem.id}`, problem);
     await this.fetchAll();
   };
 
   @action
   remove = async (id: number): Promise<void> => {
-    await request<Problem>(`api/problems/${id}`, 'DELETE');
+    await http.delete(`api/problems/${id}`);
     await this.fetchAll();
   };
 }

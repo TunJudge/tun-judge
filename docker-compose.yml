@@ -1,6 +1,25 @@
 version: '3'
 
 services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DATABASE_HOSTNAME: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: tun-judge
+      DATABASE_USERNAME: tun-judge
+      DATABASE_PASSWORD: tun-judge
+      SESSION_SECRET: secret
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+      - redis
+
   db:
     image: postgres:13
     restart: always

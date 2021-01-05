@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Dropdown, Header, Icon, Menu } from 'semantic-ui-react';
+import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
 import { rootStore } from '../../../core/stores/RootStore';
 import { observer } from 'mobx-react';

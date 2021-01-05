@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Header, Icon, Menu, Segment, Table } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../../core/stores/RootStore';
