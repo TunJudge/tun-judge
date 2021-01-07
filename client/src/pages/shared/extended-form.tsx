@@ -13,7 +13,9 @@ export const MOMENT_DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 type ExtendedFieldProps<T> = {
   entity: Partial<T>;
   field: keyof T;
+  type?: string;
   label?: string;
+  autoComplete?: string;
   placeHolder?: string;
   defaultValue?: any;
   width?: SemanticWIDTHS;
@@ -65,7 +67,9 @@ export function DateTimeField<T>({
 export function TextField<T>({
   entity,
   field,
+  type,
   label,
+  autoComplete,
   placeHolder,
   width,
   required,
@@ -79,6 +83,8 @@ export function TextField<T>({
       width={width ?? '16'}
       required={required}
       readOnly={readOnly}
+      type={type}
+      autoComplete={autoComplete}
       label={label}
       placeholder={placeHolder ?? label}
       defaultValue={entity[field]}

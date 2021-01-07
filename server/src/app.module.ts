@@ -10,22 +10,25 @@ import { CustomRepositoryProviders } from './core/extended-repository';
 import {
   AppController,
   ContestsController,
+  JudgeHostsController,
   LanguagesController,
   ProblemsController,
+  RolesController,
   TestcasesController,
-  JudgeHostsController,
+  UsersController,
 } from './controllers';
+import config from './core/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DATABASE_HOSTNAME,
-      port: parseInt(process.env.DATABASE_PORT),
-      database: process.env.DATABASE_NAME,
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
+      host: config.database.host,
+      port: config.database.port,
+      database: config.database.database,
+      username: config.database.username,
+      password: config.database.password,
       entities: entities,
       synchronize: true,
     }),
@@ -38,6 +41,8 @@ import {
   ],
   controllers: [
     AppController,
+    RolesController,
+    UsersController,
     ContestsController,
     ProblemsController,
     TestcasesController,

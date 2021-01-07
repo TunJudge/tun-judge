@@ -1,12 +1,12 @@
 FROM node:12-alpine as build-stage
 
 WORKDIR /client
-COPY ../client .
+COPY client .
 RUN yarn
 RUN yarn build
 
 WORKDIR /server
-COPY ../server .
+COPY server .
 RUN yarn
 RUN yarn build
 RUN yarn --prod

@@ -22,7 +22,7 @@ const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => 
           icon={
             <>
               <Icon name="user circle" />
-              {profile?.username ?? '-'}
+              {profile?.name ?? '-'}
             </>
           }
         >

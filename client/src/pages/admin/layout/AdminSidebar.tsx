@@ -30,6 +30,11 @@ const tabs: Tabs = [
     icon: 'cogs',
   },
   {
+    key: 'users',
+    title: 'Users',
+    icon: 'user',
+  },
+  {
     key: 'teams',
     title: 'Teams',
     icon: 'users',

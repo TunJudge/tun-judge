@@ -15,7 +15,7 @@ export class AuthService {
     password: string,
   ): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersRepository.findOneOrThrow(
-      { username },
+      { username, enabled: true },
       new NotFoundException('User not found!'),
     );
     if (user.checkPassword(password)) {

@@ -7,6 +7,7 @@ import ContestsList from '../contests/ContestsList';
 import ProblemsList from '../problems/ProblemsList';
 import ProblemView from '../problems/ProblemView';
 import LanguagesList from '../languages/LanguagesList';
+import UsersList from '../users/UsersList';
 
 const AdminLayout: React.FC = () => {
   const [sidebarVisible, toggleSidebar] = useState<boolean>(true);
@@ -32,7 +33,8 @@ const AdminLayout: React.FC = () => {
           <Route exact path="/problems" component={ProblemsList} />
           <Route path="/problems/:id" component={ProblemView} />
           <Route exact path="/languages" component={LanguagesList} />
-          <Route path="/scoreboard" component={Scoreboard} />
+          <Route exact path="/users" component={UsersList} />
+          <Route exact path="/scoreboard" component={Scoreboard} />
           <Route render={() => <Redirect to="/" />} />
         </Switch>
       </div>

@@ -5,8 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { compareSync } from 'bcrypt';
 import { Team } from './team.entity';
-import { compare, compareSync } from 'bcrypt';
 import { Role } from './role.entity';
 
 @Entity()
@@ -34,13 +34,20 @@ export class User {
     comment: 'User last IP address of successful login',
     nullable: true,
   })
-  lastIpAddress: Date;
+  lastIpAddress: string;
 
   @Column({
     comment: 'Whether the user is able to log in',
     default: true,
   })
   enabled: boolean;
+
+  @Column({
+    comment: 'User Express session ID',
+    nullable: true,
+    select: false,
+  })
+  sessionId: string;
 
   @ManyToOne(() => Team, (team) => team.users, {
     onDelete: 'SET NULL',
@@ -56,4 +63,9 @@ export class User {
 
   checkPassword = (password: string): boolean =>
     compareSync(password, this.password);
+
+  clean = (): this => {
+    delete this.password;
+    return this;
+  };
 }
