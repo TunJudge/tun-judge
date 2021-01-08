@@ -1,4 +1,5 @@
 import { ContestProblem } from './contest-problem.model';
+import { Team } from './team.model';
 
 export interface Contest {
   id: number;
@@ -17,4 +18,5 @@ export interface Contest {
   processBalloons: boolean;
   public: boolean;
   problems: ContestProblem[];
+  teams: Team[];
 }

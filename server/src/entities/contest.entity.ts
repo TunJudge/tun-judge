@@ -2,10 +2,13 @@ import {
   Column,
   Entity,
   Index,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ContestProblem } from './contest-problem.entity';
+import { Team } from './team.entity';
 
 @Entity()
 @Index(['id', 'enabled'])
@@ -72,4 +75,7 @@ export class Contest {
     cascade: true,
   })
   problems: ContestProblem[];
+
+  @ManyToMany(() => Team, (team) => team.contests, { cascade: false })
+  teams: Team[];
 }

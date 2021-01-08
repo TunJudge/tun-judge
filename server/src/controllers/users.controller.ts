@@ -31,7 +31,7 @@ export class UsersController {
     return this.usersRepository
       .find({
         order: { id: 'ASC' },
-        relations: ['role'],
+        relations: ['role', 'team'],
       })
       .then((users) => users.map((user) => user.clean()));
   }

@@ -64,6 +64,8 @@ export function DateTimeField<T>({
   );
 }
 
+type TextFieldProps<T> = ExtendedFieldProps<T> & { pattern?: string };
+
 export function TextField<T>({
   entity,
   field,
@@ -71,6 +73,48 @@ export function TextField<T>({
   label,
   autoComplete,
   placeHolder,
+  defaultValue,
+  width,
+  required,
+  readOnly,
+  pattern,
+  errors,
+  setErrors,
+  onChange,
+}: TextFieldProps<T>): any {
+  return (
+    <Form.Input
+      width={width ?? '16'}
+      required={required}
+      readOnly={readOnly}
+      pattern={pattern}
+      type={type}
+      autoComplete={autoComplete}
+      label={label}
+      placeholder={placeHolder ?? label}
+      defaultValue={entity[field] ?? defaultValue}
+      onChange={({ target: { validity } }, { value }) => {
+        entity[field] = value as any;
+        if ((required && isEmpty(value.trim())) || !validity.valid) {
+          setErrors && setErrors({ ...errors, [field]: true });
+        } else {
+          setErrors && setErrors({ ...errors, [field]: false });
+        }
+        onChange && onChange();
+      }}
+      error={errors && errors[field]}
+    />
+  );
+}
+
+export function TextAreaField<T>({
+  entity,
+  field,
+  type,
+  label,
+  autoComplete,
+  placeHolder,
+  defaultValue,
   width,
   required,
   readOnly,
@@ -79,7 +123,7 @@ export function TextField<T>({
   onChange,
 }: ExtendedFieldProps<T>): any {
   return (
-    <Form.Input
+    <Form.TextArea
       width={width ?? '16'}
       required={required}
       readOnly={readOnly}
@@ -87,10 +131,10 @@ export function TextField<T>({
       autoComplete={autoComplete}
       label={label}
       placeholder={placeHolder ?? label}
-      defaultValue={entity[field]}
-      onChange={(_, { value }) => {
+      defaultValue={entity[field] ?? defaultValue}
+      onChange={({ target: { validity } }, { value }) => {
         entity[field] = value as any;
-        if (isEmpty(value.trim())) {
+        if ((required && isEmpty((value as string).trim())) || !validity.valid) {
           setErrors && setErrors({ ...errors, [field]: true });
         } else {
           setErrors && setErrors({ ...errors, [field]: false });

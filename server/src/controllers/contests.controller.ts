@@ -13,7 +13,6 @@ import { AdminGuard, AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { Contest, ContestProblem } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Not } from 'typeorm';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -29,7 +28,7 @@ export class ContestsController {
   getAll(): Promise<Contest[]> {
     return this.contestsRepository
       .find({
-        relations: ['problems', 'problems.problem'],
+        relations: ['problems', 'problems.problem', 'teams'],
         order: { id: 'ASC' },
       })
       .then((data) =>

@@ -61,7 +61,7 @@ const TeamNavbar: React.FC = observer(() => {
             icon={
               <>
                 <Icon name="user circle" />
-                {profile?.name ?? '-'}
+                {profile?.team?.name ?? '-'}
               </>
             }
           >

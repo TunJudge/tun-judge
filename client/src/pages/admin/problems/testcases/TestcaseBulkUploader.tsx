@@ -17,12 +17,7 @@ const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ pr
   } = rootStore;
 
   return (
-    <Button
-      color="green"
-      icon
-      style={{ marginRight: '.5rem' }}
-      onClick={() => fileInputRef.current?.click()}
-    >
+    <Button color="green" icon className="mr-2" onClick={() => fileInputRef.current?.click()}>
       <Icon name="cloud upload" />
       <input
         ref={(ref) => (fileInputRef.current = ref)}

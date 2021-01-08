@@ -9,13 +9,15 @@ import { AuthModule } from './auth/auth.module';
 import { CustomRepositoryProviders } from './core/extended-repository';
 import {
   AppController,
-  ContestsController,
-  JudgeHostsController,
-  LanguagesController,
-  ProblemsController,
   RolesController,
-  TestcasesController,
   UsersController,
+  TeamsController,
+  ContestsController,
+  ProblemsController,
+  LanguagesController,
+  TestcasesController,
+  JudgeHostsController,
+  TeamCategoriesController,
 } from './controllers';
 import config from './core/config';
 
@@ -43,11 +45,13 @@ import config from './core/config';
     AppController,
     RolesController,
     UsersController,
+    TeamsController,
     ContestsController,
     ProblemsController,
     TestcasesController,
     LanguagesController,
     JudgeHostsController,
+    TeamCategoriesController,
   ],
   providers: [AppService, ...CustomRepositoryProviders],
 })

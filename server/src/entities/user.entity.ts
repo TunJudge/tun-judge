@@ -1,8 +1,8 @@
 import {
   Column,
   Entity,
-  Index,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { compareSync } from 'bcrypt';
@@ -10,7 +10,6 @@ import { Team } from './team.entity';
 import { Role } from './role.entity';
 
 @Entity()
-@Index(['team'])
 export class User {
   @PrimaryGeneratedColumn({ comment: 'User ID' })
   id: number;
@@ -49,7 +48,7 @@ export class User {
   })
   sessionId: string;
 
-  @ManyToOne(() => Team, (team) => team.users, {
+  @OneToOne(() => Team, (team) => team.user, {
     onDelete: 'SET NULL',
     onUpdate: 'RESTRICT',
   })

@@ -40,6 +40,11 @@ const tabs: Tabs = [
     icon: 'users',
   },
   {
+    key: 'team-categories',
+    title: 'Team Category',
+    icon: 'tags',
+  },
+  {
     key: 'scoreboard',
     title: 'Scoreboard',
     icon: 'list ol',

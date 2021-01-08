@@ -26,9 +26,10 @@ export class AppController {
         user: { id },
       },
     },
-  ): Promise<any> {
+  ): Promise<User> {
     const user = await this.usersRepository.findOneOrThrow(
       id,
+      { relations: ['team'] },
       new NotFoundException(),
     );
     delete user.password;

@@ -1,11 +1,16 @@
 import {
   Column,
   Entity,
-  OneToMany,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { TeamCategory } from './team-category.entity';
+import { Contest } from './contest.entity';
 
 @Entity()
 export class Team {
@@ -14,9 +19,6 @@ export class Team {
 
   @Column({ comment: 'Team name' })
   name: string;
-
-  @Column({ comment: 'Team display name' })
-  displayName: string;
 
   @Column({
     comment: 'Whether the team is visible and operational',
@@ -36,6 +38,20 @@ export class Team {
   @Column({ comment: 'Additional penalty time in minutes', default: 0 })
   penalty: number;
 
-  @OneToMany(() => User, (user) => user.team)
-  users: User[];
+  @OneToOne(() => User, (user) => user.team, {
+    onDelete: 'SET NULL',
+    onUpdate: 'RESTRICT',
+  })
+  @JoinColumn()
+  user: User;
+
+  @ManyToOne(() => TeamCategory, (category) => category.teams, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+  })
+  category: TeamCategory;
+
+  @ManyToMany(() => Contest, (contest) => contest.teams, { cascade: false })
+  @JoinTable()
+  contests: Contest[];
 }
