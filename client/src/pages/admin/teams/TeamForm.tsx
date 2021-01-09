@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { Contest, Team, TeamCategory, User } from '../../../core/models';
+import { Team } from '../../../core/models';
 import { isEmpty } from '../../../core/helpers';
 import {
   CheckBoxField,
@@ -9,28 +9,24 @@ import {
   TextAreaField,
   TextField,
 } from '../../shared/extended-form';
+import { rootStore } from '../../../core/stores/RootStore';
 
 type TeamFormProps = {
-  team: Team;
-  users: User[];
-  contests: Contest[];
-  categories: TeamCategory[];
+  item: Team;
   dismiss: () => void;
-  submit: () => void;
+  submit: (item: Team) => void;
 };
 
-const TeamForm: React.FC<TeamFormProps> = ({
-  team,
-  users,
-  contests,
-  categories,
-  dismiss,
-  submit,
-}) => {
+const TeamForm: React.FC<TeamFormProps> = ({ item: team, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Team>>({
     name: isEmpty(team.name),
     category: isEmpty(team.category),
   });
+  const {
+    usersStore: { teamUsers: users },
+    contestsStore: { data: contests },
+    teamCategoriesStore: { data: categories },
+  } = rootStore;
 
   return (
     <Modal open onClose={dismiss} closeOnEscape={false}>
@@ -122,7 +118,11 @@ const TeamForm: React.FC<TeamFormProps> = ({
         <Button color="red" onClick={dismiss}>
           Cancel
         </Button>
-        <Button color="green" onClick={submit} disabled={Object.values(errors).some((e) => e)}>
+        <Button
+          color="green"
+          onClick={() => submit(team)}
+          disabled={Object.values(errors).some((e) => e)}
+        >
           Submit
         </Button>
       </Modal.Actions>

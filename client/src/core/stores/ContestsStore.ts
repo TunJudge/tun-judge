@@ -5,14 +5,8 @@ import http from '../utils/http-client';
 
 export class ContestsStore {
   @observable data: Contest[] = [];
-  @observable item: Partial<Contest> = { problems: [] };
 
   constructor(private readonly rootStore: RootStore) {}
-
-  @action
-  setItem = (contest: Partial<Contest>): void => {
-    this.item = contest;
-  };
 
   @action
   fetchAll = async (): Promise<Contest[]> => {

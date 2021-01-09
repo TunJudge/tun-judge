@@ -13,12 +13,12 @@ import { rootStore } from '../../../core/stores/RootStore';
 import { observer } from 'mobx-react';
 
 type ContestFormProps = {
-  contest: Contest;
+  item: Contest;
   dismiss: () => void;
-  submit: () => void;
+  submit: (item: Contest) => void;
 };
 
-const ContestForm: React.FC<ContestFormProps> = observer(({ contest, dismiss, submit }) => {
+const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Contest>>({
     name: isEmpty(contest.name),
     shortName: isEmpty(contest.shortName),
@@ -259,7 +259,7 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ contest, dismiss, su
         </Button>
         <Button
           color="green"
-          onClick={submit}
+          onClick={() => submit(contest)}
           disabled={
             (problemsErrors &&
               problemsErrors.some((errors) => Object.values(errors).some((e) => e))) ||

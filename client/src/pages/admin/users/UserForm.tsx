@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { User } from '../../../core/models';
 import { isEmpty } from '../../../core/helpers';
@@ -6,19 +6,23 @@ import { CheckBoxField, FormErrors, TextField } from '../../shared/extended-form
 import { rootStore } from '../../../core/stores/RootStore';
 
 type UserFormProps = {
-  user: User;
+  item: User;
   dismiss: () => void;
-  submit: () => void;
+  submit: (item: User) => void;
 };
 
-const UserForm: React.FC<UserFormProps> = ({ user, dismiss, submit }) => {
+const UserForm: React.FC<UserFormProps> = ({ item: user, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<User>>({
     name: isEmpty(user.name),
     username: isEmpty(user.username),
     role: isEmpty(user.role),
   });
 
-  const { roles } = rootStore.usersStore;
+  const { roles, fetchAllRoles } = rootStore.usersStore;
+
+  useEffect(() => {
+    fetchAllRoles();
+  }, [fetchAllRoles]);
 
   return (
     <Modal open onClose={dismiss} closeOnEscape={false}>
@@ -79,7 +83,11 @@ const UserForm: React.FC<UserFormProps> = ({ user, dismiss, submit }) => {
         <Button color="red" onClick={dismiss}>
           Cancel
         </Button>
-        <Button color="green" onClick={submit} disabled={Object.values(errors).some((e) => e)}>
+        <Button
+          color="green"
+          onClick={() => submit(user)}
+          disabled={Object.values(errors).some((e) => e)}
+        >
           Submit
         </Button>
       </Modal.Actions>

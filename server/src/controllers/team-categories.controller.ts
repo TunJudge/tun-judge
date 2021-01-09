@@ -14,6 +14,7 @@ import { AdminGuard, AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { TeamCategory } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MoreThan } from 'typeorm';
 
 @Controller('team-categories')
 @UseGuards(AuthenticatedGuard)
@@ -88,6 +89,19 @@ export class TeamCategoriesController {
   @Delete(':id')
   @UseGuards(AdminGuard)
   async delete(@Param('id') id: number): Promise<void> {
+    const teamCategory = await this.teamCategoriesRepository.findOneOrThrow(
+      id,
+      new NotFoundException(),
+    );
     await this.teamCategoriesRepository.delete(id);
+    const teamCategories = await this.teamCategoriesRepository.find({
+      where: { sortOrder: MoreThan(teamCategory.sortOrder) },
+    });
+    for (const t of teamCategories) {
+      await this.teamCategoriesRepository.save({
+        ...t,
+        sortOrder: t.sortOrder - 1,
+      });
+    }
   }
 }

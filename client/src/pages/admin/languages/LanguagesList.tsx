@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Icon, Table } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../../core/stores/RootStore';
 import LanguageForm from './LanguageForm';
 import { Language } from '../../../core/models';
 import LanguageScriptView from './LanguageScriptView';
-import ListPage from '../../shared/ListPage';
+import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
 
 const LanguagesList: React.FC = observer(() => {
-  const [formOpen, setFormOpen] = useState<boolean>(false);
-  const [formLanguage, setFormLanguage] = useState<Language>({} as Language);
   const [scriptViewOpen, setScriptViewOpen] = useState<boolean>(false);
   const [scriptViewData, setScriptViewData] = useState<{
     language: Language;
@@ -23,95 +20,68 @@ const LanguagesList: React.FC = observer(() => {
     fetchAll();
   }, [fetchAll]);
 
-  const dismissForm = () => {
-    setFormLanguage({} as Language);
-    setFormOpen(false);
-  };
+  const columns: ListPageTableColumn<Language>[] = [
+    {
+      header: 'Name',
+      field: 'name',
+      render: (language) => language.name,
+    },
+    {
+      header: 'Build Script',
+      field: 'buildScript',
+      render: (language) => (
+        <a
+          onClick={() => {
+            setScriptViewData({ language, field: 'buildScript' });
+            setScriptViewOpen(true);
+          }}
+        >
+          {language.buildScript.name}
+        </a>
+      ),
+    },
+    {
+      header: 'Run Script',
+      field: 'runScript',
+      render: (language) => (
+        <a
+          onClick={() => {
+            setScriptViewData({ language, field: 'runScript' });
+            setScriptViewOpen(true);
+          }}
+        >
+          {language.runScript.name}
+        </a>
+      ),
+    },
+    {
+      header: 'Allow Submit?',
+      field: 'allowSubmit',
+      render: (language) => (language.allowSubmit ? 'true' : 'false'),
+    },
+    {
+      header: 'Allow Judge?',
+      field: 'allowJudge',
+      render: (language) => (language.allowJudge ? 'true' : 'false'),
+    },
+    {
+      header: 'Extensions',
+      field: 'extensions',
+      render: (language) => language.extensions.join(', '),
+    },
+  ];
 
   return (
-    <ListPage header="Languages" onRefresh={fetchAll} onAdd={() => setFormOpen(true)}>
-      <Table striped>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell textAlign="center">ID</Table.HeaderCell>
-            <Table.HeaderCell>Name</Table.HeaderCell>
-            <Table.HeaderCell>Build Script</Table.HeaderCell>
-            <Table.HeaderCell>Run Script</Table.HeaderCell>
-            <Table.HeaderCell>Allow Submit</Table.HeaderCell>
-            <Table.HeaderCell>Allow Judge</Table.HeaderCell>
-            <Table.HeaderCell>Extensions</Table.HeaderCell>
-            <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {data.length === 0 ? (
-            <Table.Row textAlign="center">
-              <Table.Cell colSpan="10">No data</Table.Cell>
-            </Table.Row>
-          ) : (
-            data.map((language) => (
-              <Table.Row key={language.id}>
-                <Table.Cell textAlign="center">{language.id}</Table.Cell>
-                <Table.Cell>{language.name}</Table.Cell>
-                <Table.Cell>
-                  <a
-                    onClick={() => {
-                      setScriptViewData({ language, field: 'buildScript' });
-                      setScriptViewOpen(true);
-                    }}
-                  >
-                    {language.buildScript.name}
-                  </a>
-                </Table.Cell>
-                <Table.Cell>
-                  {' '}
-                  <a
-                    onClick={() => {
-                      setScriptViewData({ language, field: 'runScript' });
-                      setScriptViewOpen(true);
-                    }}
-                  >
-                    {language.runScript.name}
-                  </a>
-                </Table.Cell>
-                <Table.Cell>{language.allowSubmit ? 'true' : 'false'}</Table.Cell>
-                <Table.Cell>{language.allowJudge ? 'true' : 'false'}</Table.Cell>
-                <Table.Cell>{language.extensions.join(', ')}</Table.Cell>
-                <Table.Cell textAlign="center">
-                  <Icon
-                    name="edit"
-                    onClick={() => {
-                      setFormLanguage(language);
-                      setFormOpen(true);
-                    }}
-                    style={{ cursor: 'pointer', marginRight: '25%' }}
-                  />
-                  <Icon
-                    name="trash"
-                    color="red"
-                    onClick={() => remove(language.id)}
-                    style={{ cursor: 'pointer', marginRight: '0' }}
-                  />
-                </Table.Cell>
-              </Table.Row>
-            ))
-          )}
-        </Table.Body>
-      </Table>
-      {formOpen && (
-        <LanguageForm
-          language={formLanguage as Language}
-          dismiss={dismissForm}
-          submit={async () => {
-            if (formLanguage.id) {
-              await update(formLanguage);
-            } else {
-              await create(formLanguage);
-            }
-            dismissForm();
-          }}
-        />
-      )}
+    <>
+      <ListPage<Language>
+        header="Languages"
+        data={data}
+        columns={columns}
+        ItemForm={LanguageForm}
+        onDelete={remove}
+        onRefresh={fetchAll}
+        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
+      />
       <LanguageScriptView
         open={scriptViewOpen}
         language={scriptViewData.language}
@@ -125,7 +95,7 @@ const LanguagesList: React.FC = observer(() => {
           setScriptViewOpen(false);
         }}
       />
-    </ListPage>
+    </>
   );
 });
 

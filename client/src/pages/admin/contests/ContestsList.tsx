@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Icon, Table } from 'semantic-ui-react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../../core/stores/RootStore';
 import ContestForm from './ContestForm';
 import { Contest } from '../../../core/models';
 import { MOMENT_DEFAULT_FORMAT } from '../../shared/extended-form';
 import moment from 'moment';
-import ListPage from '../../shared/ListPage';
+import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
 
 const ContestsList: React.FC = observer(() => {
-  const [formOpen, setFormOpen] = useState<boolean>(false);
   const {
-    contestsStore: { data, item, setItem, fetchAll, create, update, remove },
+    contestsStore: { data, fetchAll, create, update, remove },
     problemsStore: { fetchAll: fetchAllProblems },
   } = rootStore;
 
@@ -19,90 +17,70 @@ const ContestsList: React.FC = observer(() => {
     Promise.all([fetchAll(), fetchAllProblems()]);
   }, [fetchAll, fetchAllProblems]);
 
-  const dismissForm = async () => {
-    setItem({ problems: [] });
-    setFormOpen(false);
-    await fetchAll();
-  };
+  const columns: ListPageTableColumn<Contest>[] = [
+    {
+      header: 'Short Name',
+      field: 'shortName',
+      render: (contest) => contest.shortName,
+    },
+    {
+      header: 'Name',
+      field: 'name',
+      render: (contest) => contest.name,
+    },
+    {
+      header: 'Active Time',
+      field: 'activateTime',
+      render: (contest) => moment(contest.activateTime).format(MOMENT_DEFAULT_FORMAT),
+    },
+    {
+      header: 'Start Time',
+      field: 'startTime',
+      render: (contest) => moment(contest.startTime).format(MOMENT_DEFAULT_FORMAT),
+    },
+    {
+      header: 'End Time',
+      field: 'endTime',
+      render: (contest) => moment(contest.endTime).format(MOMENT_DEFAULT_FORMAT),
+    },
+    {
+      header: 'Process Balloons?',
+      field: 'processBalloons',
+      render: (contest) => (contest.processBalloons ? 'true' : 'false'),
+    },
+    {
+      header: 'Enabled?',
+      field: 'enabled',
+      render: (contest) => (contest.enabled ? 'true' : 'false'),
+    },
+    {
+      header: 'Public?',
+      field: 'public',
+      render: (contest) => (contest.public ? 'true' : 'false'),
+    },
+    {
+      header: 'Teams',
+      field: 'teams',
+      render: (contest) => contest.teams.length,
+    },
+    {
+      header: 'Problems',
+      field: 'problems',
+      render: (contest) => contest.problems.length,
+    },
+  ];
 
   return (
-    <ListPage
+    <ListPage<Contest>
       header="Contests"
+      data={data}
+      columns={columns}
+      formItemInitValue={{ problems: [] }}
+      ItemForm={ContestForm}
+      onDelete={remove}
       onRefresh={() => Promise.all([fetchAll(), fetchAllProblems()])}
-      onAdd={() => setFormOpen(true)}
-    >
-      <Table striped>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>ID</Table.HeaderCell>
-            <Table.HeaderCell>Short Name</Table.HeaderCell>
-            <Table.HeaderCell>Name</Table.HeaderCell>
-            <Table.HeaderCell>Active</Table.HeaderCell>
-            <Table.HeaderCell>Start</Table.HeaderCell>
-            <Table.HeaderCell>End</Table.HeaderCell>
-            <Table.HeaderCell>Process Balloons?</Table.HeaderCell>
-            <Table.HeaderCell>Public?</Table.HeaderCell>
-            <Table.HeaderCell>Teams</Table.HeaderCell>
-            <Table.HeaderCell>Problems</Table.HeaderCell>
-            <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {data.length === 0 ? (
-            <Table.Row textAlign="center">
-              <Table.Cell colSpan="10">No data</Table.Cell>
-            </Table.Row>
-          ) : (
-            data.map((contest) => (
-              <Table.Row key={contest.id}>
-                <Table.Cell textAlign="center">{contest.id}</Table.Cell>
-                <Table.Cell>{contest.shortName}</Table.Cell>
-                <Table.Cell>{contest.name}</Table.Cell>
-                <Table.Cell>
-                  {moment(contest.activateTime).format(MOMENT_DEFAULT_FORMAT)}
-                </Table.Cell>
-                <Table.Cell>{moment(contest.startTime).format(MOMENT_DEFAULT_FORMAT)}</Table.Cell>
-                <Table.Cell>{moment(contest.endTime).format(MOMENT_DEFAULT_FORMAT)}</Table.Cell>
-                <Table.Cell>{contest.processBalloons ? 'true' : 'false'}</Table.Cell>
-                <Table.Cell>{contest.public ? 'true' : 'false'}</Table.Cell>
-                <Table.Cell>{contest.teams.length}</Table.Cell>
-                <Table.Cell>{contest.problems.length}</Table.Cell>
-                <Table.Cell textAlign="center">
-                  <Icon
-                    name="edit"
-                    onClick={() => {
-                      setItem(contest);
-                      setFormOpen(true);
-                    }}
-                    style={{ cursor: 'pointer', marginRight: '25%' }}
-                  />
-                  <Icon
-                    name="trash"
-                    color="red"
-                    onClick={() => remove(contest.id)}
-                    style={{ cursor: 'pointer', marginRight: '0' }}
-                  />
-                </Table.Cell>
-              </Table.Row>
-            ))
-          )}
-        </Table.Body>
-      </Table>
-      {formOpen && (
-        <ContestForm
-          contest={item as Contest}
-          dismiss={dismissForm}
-          submit={async () => {
-            if (item.id) {
-              await update(item);
-            } else {
-              await create(item);
-            }
-            await dismissForm();
-          }}
-        />
-      )}
-    </ListPage>
+      onFormSubmit={(item) => (item.id ? update(item) : create(item))}
+    />
   );
 });
 

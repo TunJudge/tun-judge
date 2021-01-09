@@ -11,12 +11,12 @@ import {
 } from '../../shared/extended-form';
 
 type LanguageFormProps = {
-  language: Language;
+  item: Language;
   dismiss: () => void;
-  submit: () => void;
+  submit: (item: Language) => void;
 };
 
-const LanguageForm: React.FC<LanguageFormProps> = ({ language, dismiss, submit }) => {
+const LanguageForm: React.FC<LanguageFormProps> = ({ item: language, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Language>>({
     name: isEmpty(language.name),
     buildScript: isEmpty(language.buildScript),
@@ -88,7 +88,11 @@ const LanguageForm: React.FC<LanguageFormProps> = ({ language, dismiss, submit }
         <Button color="red" onClick={dismiss}>
           Cancel
         </Button>
-        <Button color="green" onClick={submit} disabled={Object.values(errors).some((e) => e)}>
+        <Button
+          color="green"
+          onClick={() => submit(language)}
+          disabled={Object.values(errors).some((e) => e)}
+        >
           Submit
         </Button>
       </Modal.Actions>

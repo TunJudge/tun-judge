@@ -5,12 +5,12 @@ import { isEmpty } from '../../../core/helpers';
 import { FileField, FormErrors, NumberField, TextField } from '../../shared/extended-form';
 
 type ProblemFormProps = {
-  problem: Partial<Problem>;
+  item: Problem;
   dismiss: () => void;
-  submit: () => void;
+  submit: (item: Problem) => void;
 };
 
-const ProblemForm: React.FC<ProblemFormProps> = ({ problem, dismiss, submit }) => {
+const ProblemForm: React.FC<ProblemFormProps> = ({ item: problem, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Problem>>({
     name: isEmpty(problem.name),
     timeLimit: isEmpty(problem.timeLimit),
@@ -87,7 +87,11 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ problem, dismiss, submit }) =
         <Button color="red" onClick={dismiss}>
           Cancel
         </Button>
-        <Button color="green" onClick={submit} disabled={Object.values(errors).some((e) => e)}>
+        <Button
+          color="green"
+          onClick={() => submit(problem)}
+          disabled={Object.values(errors).some((e) => e)}
+        >
           Submit
         </Button>
       </Modal.Actions>
