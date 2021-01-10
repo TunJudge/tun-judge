@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { Team } from '../../../core/models';
-import { isEmpty } from '../../../core/helpers';
+import { Team } from '../../../../core/models';
+import { isEmpty } from '../../../../core/helpers';
 import {
   CheckBoxField,
   FormErrors,
   NumberField,
   TextAreaField,
   TextField,
-} from '../../shared/extended-form';
-import { rootStore } from '../../../core/stores/RootStore';
+} from '../../../shared/extended-form';
+import { rootStore } from '../../../../core/stores/RootStore';
 
 type TeamFormProps = {
   item: Team;

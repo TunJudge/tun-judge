@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { Problem } from '../../../core/models';
-import { isEmpty } from '../../../core/helpers';
-import { FileField, FormErrors, NumberField, TextField } from '../../shared/extended-form';
+import { Problem } from '../../../../core/models';
+import { isEmpty } from '../../../../core/helpers';
+import { FileField, FormErrors, NumberField, TextField } from '../../../shared/extended-form';
 
 type ProblemFormProps = {
   item: Problem;

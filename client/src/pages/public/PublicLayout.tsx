@@ -11,7 +11,7 @@ const PublicLayout: React.FC = () => (
       <Switch>
         <Route exact path="/" component={() => <Scoreboard />} />
         <Route exact path="/problems" component={() => <ProblemSet />} />
-        <Route render={() => <Redirect to="/" />} />
+        <Route render={() => <Redirect to={`/login?returnUrl=${location.pathname}`} />} />
       </Switch>
     </div>
   </div>

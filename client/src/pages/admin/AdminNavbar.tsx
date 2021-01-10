@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
-import { rootStore } from '../../../core/stores/RootStore';
+import { rootStore } from '../../core/stores/RootStore';
 import { observer } from 'mobx-react';
 
 type AdminNavbarProps = { toggleSidebar: () => void };

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Redirect, Route, RouteProps, Switch } from 'react-router-dom';
 import Login from './pages/shared/Login';
 import TeamLayout from './pages/team/TeamLayout';
-import AdminLayout from './pages/admin/layout/AdminLayout';
+import AdminLayout from './pages/admin/AdminLayout';
 import PublicLayout from './pages/public/PublicLayout';
 import { rootStore } from './core/stores/RootStore';
 import { observer } from 'mobx-react';

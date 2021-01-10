@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { Testcase } from '../../../../core/models';
-import { isEmpty } from '../../../../core/helpers';
-import { FileField, FormErrors, TextField } from '../../../shared/extended-form';
+import { Testcase } from '../../../../../core/models';
+import { isEmpty } from '../../../../../core/helpers';
+import { FileField, FormErrors, TextField } from '../../../../shared/extended-form';
 
 type TestcaseFormProps = {
   open: boolean;

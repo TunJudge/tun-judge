@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { TeamCategory } from '../../../core/models';
-import { isEmpty } from '../../../core/helpers';
-import { CheckBoxField, FormErrors, TextField } from '../../shared/extended-form';
+import { TeamCategory } from '../../../../core/models';
+import { isEmpty } from '../../../../core/helpers';
+import { CheckBoxField, FormErrors, TextField } from '../../../shared/extended-form';
 
 type TeamCategoryFormProps = {
   item: TeamCategory;

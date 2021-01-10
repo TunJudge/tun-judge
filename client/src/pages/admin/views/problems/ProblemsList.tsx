@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { rootStore } from '../../../core/stores/RootStore';
+import { rootStore } from '../../../../core/stores/RootStore';
 import { useHistory } from 'react-router-dom';
-import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
-import { Problem } from '../../../core/models';
+import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import { Problem } from '../../../../core/models';
 import ProblemForm from './ProblemForm';
 
 const ProblemsList: React.FC = observer(() => {

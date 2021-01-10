@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import http from '../../core/utils/http-client';
+import qs from 'querystring';
 
 const Login: React.FC = observer(() => {
   const [username, setUsername] = useState<string>('');
@@ -11,7 +12,8 @@ const Login: React.FC = observer(() => {
     try {
       await http.post('api/auth/login', { username, password });
       localStorage.setItem('connected', `${Date.now()}`);
-      window.location.assign('/');
+      const { returnUrl } = qs.parse(location.search.substr(1));
+      window.location.assign((returnUrl as string) ?? '/');
     } catch (e) {}
   };
 

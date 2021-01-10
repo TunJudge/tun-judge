@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Icon, Menu, Sidebar } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
-import { Tabs } from '../../../core/types';
+import { Tabs } from '../../core/types';
 
 const tabs: Tabs = [
   {

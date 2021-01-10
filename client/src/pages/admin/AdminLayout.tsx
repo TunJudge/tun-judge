@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import AdminSideBar from './AdminSidebar';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import Scoreboard from '../../shared/Scoreboard';
+import Scoreboard from '../shared/Scoreboard';
 import AdminNavbar from './AdminNavbar';
-import UsersList from '../users/UsersList';
-import TeamsList from '../teams/TeamsList';
-import ProblemView from '../problems/ProblemView';
-import ContestsList from '../contests/ContestsList';
-import ProblemsList from '../problems/ProblemsList';
-import LanguagesList from '../languages/LanguagesList';
-import TeamCategoriesList from '../team-category/TeamCategoriesList';
+import UsersList from './views/users/UsersList';
+import TeamsList from './views/teams/TeamsList';
+import ProblemView from './views/problems/ProblemView';
+import ContestsList from './views/contests/ContestsList';
+import ProblemsList from './views/problems/ProblemsList';
+import LanguagesList from './views/languages/LanguagesList';
+import TeamCategoriesList from './views/team-category/TeamCategoriesList';
 
 const AdminLayout: React.FC = () => {
   const [sidebarVisible, toggleSidebar] = useState<boolean>(true);

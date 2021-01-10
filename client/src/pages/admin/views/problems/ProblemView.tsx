@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 import ResizeDetector from 'react-resize-detector';
 import { observer } from 'mobx-react';
-import { rootStore } from '../../../core/stores/RootStore';
-import Spinner from '../../shared/Spinner';
+import { rootStore } from '../../../../core/stores/RootStore';
+import Spinner from '../../../shared/Spinner';
 import { Grid, Header, Segment, Table } from 'semantic-ui-react';
 import TestcasesList from './testcases/TestcasesList';
-import { Problem } from '../../../core/models';
+import { Problem } from '../../../../core/models';
 
 const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {
   const [rowHeight, setRowHeight] = useState<number>(window.innerHeight - 84);

@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
 import { Button, Icon } from 'semantic-ui-react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { fileToBase64 } from '../../../../core/helpers';
+import { rootStore } from '../../../../../core/stores/RootStore';
+import { fileToBase64 } from '../../../../../core/helpers';
 import { MD5 } from 'crypto-js';
-import { File as DbFile, FileContent, Problem } from '../../../../core/models';
+import { File as DbFile, FileContent, Problem } from '../../../../../core/models';
 import { observer } from 'mobx-react';
 
 type TestcaseBulkUploaderProps = {

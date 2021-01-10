@@ -10,8 +10,8 @@ const TeamLayout: React.FC = () => (
     <div style={{ paddingTop: '5rem' }}>
       <Switch>
         <Route exact path="/" component={() => <>Home</>} />
-        <Route path="/problems" component={() => <ProblemSet />} />
-        <Route path="/scoreboard" component={() => <Scoreboard />} />
+        <Route exact path="/problems" component={() => <ProblemSet />} />
+        <Route exact path="/scoreboard" component={() => <Scoreboard />} />
         <Route render={() => <Redirect to="/" />} />
       </Switch>
     </div>

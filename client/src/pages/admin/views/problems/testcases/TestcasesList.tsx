@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
-import { Problem, Testcase } from '../../../../core/models';
+import { Problem, Testcase } from '../../../../../core/models';
 import { Button, Header, Icon, Menu, Popup, Segment, Table } from 'semantic-ui-react';
 import TestcaseForm from './TestcaseForm';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { CheckBoxField } from '../../../shared/extended-form';
+import { rootStore } from '../../../../../core/stores/RootStore';
+import { CheckBoxField } from '../../../../shared/extended-form';
 import TestcaseContentView from './TestcaseContentView';
 import TestcaseBulkUploader from './TestcaseBulkUploader';
 

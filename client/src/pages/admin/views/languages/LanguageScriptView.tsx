@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
-import { Language } from '../../../core/models';
+import { Language } from '../../../../core/models';
 import AceEditor from 'react-ace';
 
 import 'ace-builds/src-noconflict/mode-sh';

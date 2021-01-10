@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { rootStore } from '../../../core/stores/RootStore';
+import { rootStore } from '../../../../core/stores/RootStore';
 import UserForm from './UserForm';
-import { User } from '../../../core/models';
+import { User } from '../../../../core/models';
 import moment from 'moment';
-import { MOMENT_DEFAULT_FORMAT } from '../../shared/extended-form';
-import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
+import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
+import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 
 const rolesColors = {
   admin: '#FFC2C2',
