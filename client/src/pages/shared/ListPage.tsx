@@ -1,5 +1,6 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { Button, Header, Icon, Menu, Segment, Table } from 'semantic-ui-react';
+import { generalComparator } from '../../core/helpers';
 
 export type ListPageTableColumn<T> = {
   header: string;
@@ -40,6 +41,34 @@ function ListPage<T extends { id: number }>({
 }: ListPageProps<T>): ReactElement {
   const [formItem, setFormItem] = useState<Partial<T>>(formItemInitValue ?? {});
   const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [sortState, setSortState] = useState<{
+    column: keyof T | null;
+    data: T[];
+    direction: 'ascending' | 'descending' | null;
+  }>({
+    column: null,
+    data: data,
+    direction: null,
+  });
+
+  useEffect(() => {
+    setSortState(({ column, direction }) => {
+      if (column && direction) {
+        return {
+          column: column,
+          direction: direction,
+          data: data
+            .slice()
+            .sort((a, b) =>
+              direction === 'ascending'
+                ? generalComparator(a[column], b[column])
+                : generalComparator(b[column], a[column]),
+            ),
+        };
+      }
+      return { column: column, direction: direction, data: data };
+    });
+  }, [data]);
 
   const openForm = (item: T) => {
     onFormOpen && onFormOpen(item);
@@ -57,6 +86,23 @@ function ListPage<T extends { id: number }>({
     onRefresh && onRefresh();
     setFormItem(formItemInitValue ?? {});
     setFormOpen(false);
+  };
+
+  const handleSort = (field: keyof T): void => {
+    const { column, direction, data } = sortState;
+    if (column === field) {
+      setSortState({
+        column: field,
+        data: data.slice().reverse(),
+        direction: direction === 'ascending' ? 'descending' : 'ascending',
+      });
+    } else {
+      setSortState({
+        column: field,
+        data: data.slice().sort((a, b) => generalComparator(a[field], b[field])),
+        direction: 'ascending',
+      });
+    }
   };
 
   return (
@@ -77,23 +123,35 @@ function ListPage<T extends { id: number }>({
         </Menu.Item>
       </Segment>
       <Segment>
-        <Table striped>
+        <Table striped sortable celled>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell textAlign="center">ID</Table.HeaderCell>
+              <Table.HeaderCell
+                textAlign="center"
+                sorted={sortState.column === 'id' ? sortState.direction! : undefined}
+                onClick={() => handleSort('id')}
+              >
+                ID
+              </Table.HeaderCell>
               {columns.map((column, index) => (
-                <Table.HeaderCell key={index}>{column.header}</Table.HeaderCell>
+                <Table.HeaderCell
+                  key={index}
+                  sorted={sortState.column === column.field ? sortState.direction! : undefined}
+                  onClick={() => handleSort(column.field)}
+                >
+                  {column.header}
+                </Table.HeaderCell>
               ))}
               <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {data.length === 0 ? (
+            {sortState.data.length === 0 ? (
               <Table.Row textAlign="center">
                 <Table.Cell colSpan="10">No data</Table.Cell>
               </Table.Row>
             ) : (
-              data.map((item) => (
+              sortState.data.map((item) => (
                 <Table.Row
                   key={item.id}
                   style={{ backgroundColor: rowBackgroundColor && rowBackgroundColor(item) }}
