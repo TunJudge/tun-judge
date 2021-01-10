@@ -2,7 +2,6 @@ import {
   Column,
   Entity,
   Index,
-  JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
