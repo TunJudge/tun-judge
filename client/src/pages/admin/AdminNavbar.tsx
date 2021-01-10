@@ -3,6 +3,7 @@ import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
 import { rootStore } from '../../core/stores/RootStore';
 import { observer } from 'mobx-react';
+import ActiveContestSelector from '../shared/ActiveContestSelector';
 
 type AdminNavbarProps = { toggleSidebar: () => void };
 
@@ -16,6 +17,7 @@ const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => 
         <Icon name="unordered list" />
       </Menu.Item>
       <Menu.Menu position="right">
+        <ActiveContestSelector />
         <Dropdown
           item
           floating

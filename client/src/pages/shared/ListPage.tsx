@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Button, Header, Icon, Menu, Segment, Table } from 'semantic-ui-react';
+import cn from 'classnames';
 import { generalComparator } from '../../core/helpers';
 
 export type ListPageTableColumn<T> = {
@@ -12,10 +13,12 @@ export type ListPageTableColumn<T> = {
 
 type ListPageProps<T> = {
   header: string;
+  emptyMessage?: string;
   data: T[];
   columns: ListPageTableColumn<T>[];
   formItemInitValue?: Partial<T>;
-  ItemForm: React.FC<{ item: T; dismiss: () => void; submit: (item: T) => void }>;
+  ItemForm?: React.FC<{ item: T; dismiss: () => void; submit: (item: T) => void }>;
+  withoutActions?: boolean;
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
   onRefresh?: () => void;
@@ -27,10 +30,12 @@ type ListPageProps<T> = {
 
 function ListPage<T extends { id: number }>({
   header,
+  emptyMessage,
   data,
   columns,
   formItemInitValue,
   ItemForm,
+  withoutActions,
   onDelete,
   canDelete,
   onRefresh,
@@ -113,13 +118,15 @@ function ListPage<T extends { id: number }>({
         </Menu.Item>
         <Menu.Item position="right">
           {onRefresh && (
-            <Button color="blue" className="mr-2" icon onClick={onRefresh}>
+            <Button color="blue" className={cn({ 'mr-2': !!ItemForm })} icon onClick={onRefresh}>
               <Icon name="refresh" />
             </Button>
           )}
-          <Button color="blue" icon onClick={() => setFormOpen(true)}>
-            <Icon name="plus" />
-          </Button>
+          {ItemForm && (
+            <Button color="blue" icon onClick={() => setFormOpen(true)}>
+              <Icon name="plus" />
+            </Button>
+          )}
         </Menu.Item>
       </Segment>
       <Segment>
@@ -127,6 +134,7 @@ function ListPage<T extends { id: number }>({
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell
+                width="1"
                 textAlign="center"
                 sorted={sortState.column === 'id' ? sortState.direction! : undefined}
                 onClick={() => handleSort('id')}
@@ -142,13 +150,13 @@ function ListPage<T extends { id: number }>({
                   {column.header}
                 </Table.HeaderCell>
               ))}
-              <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>
+              {!withoutActions && <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>}
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {sortState.data.length === 0 ? (
               <Table.Row textAlign="center">
-                <Table.Cell colSpan="10">No data</Table.Cell>
+                <Table.Cell colSpan="10">{emptyMessage ?? 'No data'}</Table.Cell>
               </Table.Row>
             ) : (
               sortState.data.map((item) => (
@@ -166,21 +174,23 @@ function ListPage<T extends { id: number }>({
                       {column.render(item)}
                     </Table.Cell>
                   ))}
-                  <Table.Cell textAlign="center">
-                    <Icon
-                      name="edit"
-                      onClick={() => openForm(item)}
-                      style={{ cursor: 'pointer', marginRight: '0' }}
-                    />
-                    {(!canDelete || canDelete(item)) && (
+                  {!withoutActions && (
+                    <Table.Cell textAlign="center">
                       <Icon
-                        name="trash"
-                        color="red"
-                        onClick={() => onDelete && onDelete(item.id)}
-                        style={{ cursor: 'pointer', marginLeft: '25%', marginRight: '0' }}
+                        name="edit"
+                        onClick={() => openForm(item)}
+                        style={{ cursor: 'pointer', marginRight: '0' }}
                       />
-                    )}
-                  </Table.Cell>
+                      {(!canDelete || canDelete(item)) && (
+                        <Icon
+                          name="trash"
+                          color="red"
+                          onClick={() => onDelete && onDelete(item.id)}
+                          style={{ cursor: 'pointer', marginLeft: '25%', marginRight: '0' }}
+                        />
+                      )}
+                    </Table.Cell>
+                  )}
                 </Table.Row>
               ))
             )}

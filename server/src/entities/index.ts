@@ -12,7 +12,6 @@ import { Submission } from './submission.entity';
 import { ScoreCache } from './score-cache.entity';
 import { FileContent } from './file-content.entity';
 import { TeamCategory } from './team-category.entity';
-import { SubmissionFile } from './submission-file.entity';
 import { ContestProblem } from './contest-problem.entity';
 
 export const entities = [
@@ -31,7 +30,6 @@ export const entities = [
   FileContent,
   TeamCategory,
   ContestProblem,
-  SubmissionFile,
 ];
 
 export * from './user.entity';
@@ -48,5 +46,4 @@ export * from './judge-host.entity';
 export * from './score-cache.entity';
 export * from './file-content.entity';
 export * from './team-category.entity';
-export * from './submission-file.entity';
 export * from './contest-problem.entity';

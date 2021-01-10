@@ -8,6 +8,8 @@ import http from '../utils/http-client';
 import { UsersStore } from './UsersStore';
 import { TeamCategoriesStore } from './TeamCategoriesStore';
 import { TeamsStore } from './TeamsStore';
+import { PublicStore } from './PublicStore';
+import { TeamStore } from './TeamStore';
 
 const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
@@ -15,6 +17,10 @@ const SESSION_LENGTH = 24 * 60 * 60 * 1000;
 export class RootStore {
   @observable connected: boolean = Date.now() - new Date(lastLogin).getTime() < SESSION_LENGTH;
   @observable profile: User | undefined;
+
+  publicStore: PublicStore;
+
+  teamStore: TeamStore;
 
   usersStore: UsersStore;
   teamsStore: TeamsStore;
@@ -25,6 +31,10 @@ export class RootStore {
   teamCategoriesStore: TeamCategoriesStore;
 
   constructor() {
+    this.publicStore = new PublicStore(this);
+
+    this.teamStore = new TeamStore(this);
+
     this.usersStore = new UsersStore(this);
     this.teamsStore = new TeamsStore(this);
     this.contestsStore = new ContestsStore(this);
@@ -32,6 +42,7 @@ export class RootStore {
     this.testcasesStore = new TestcasesStore(this);
     this.languagesStore = new LanguagesStore(this);
     this.teamCategoriesStore = new TeamCategoriesStore(this);
+
     autorun(
       async () => {
         this.connected && http.get<User>(`api/current`).then(this.setProfile).catch(this.logout);
@@ -46,6 +57,7 @@ export class RootStore {
   @action
   logout = (): void => {
     this.connected = false;
+    this.profile = undefined;
     localStorage.removeItem('connected');
   };
 }

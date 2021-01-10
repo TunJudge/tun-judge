@@ -2,20 +2,19 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { Contest } from './contest.entity';
 import { Team } from './team.entity';
 import { Problem } from './problem.entity';
 import { Language } from './language.entity';
-import { SubmissionFile } from './submission-file.entity';
 import { JudgeHost } from './judge-host.entity';
+import { File } from './file.entity';
 
 @Entity()
-@Unique(['contest'])
 @Index(['contest', 'team'])
 @Index(['contest', 'problem'])
 @Index(['team'])
@@ -72,15 +71,12 @@ export class Submission {
   judgeHost: JudgeHost;
 
   @ManyToOne(() => Submission, {
-    nullable: true,
     onDelete: 'SET NULL',
     onUpdate: 'RESTRICT',
   })
   originalSubmission: Submission;
 
-  @OneToMany(() => SubmissionFile, (file) => file.submission, {
-    onDelete: 'CASCADE',
-    onUpdate: 'RESTRICT',
-  })
-  files: SubmissionFile[];
+  @OneToOne(() => File, { cascade: true, eager: true, nullable: false })
+  @JoinColumn()
+  file: File;
 }

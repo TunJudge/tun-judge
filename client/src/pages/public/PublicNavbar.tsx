@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Container, Icon, Menu } from 'semantic-ui-react';
+import { Container, Icon, Menu } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
-import { observer } from 'mobx-react';
-import { rootStore } from '../../core/stores/RootStore';
+import ActiveContestSelector from '../shared/ActiveContestSelector';
 
 type Tabs = '' | 'problems';
 
-const PublicNavbar: React.FC = observer(() => {
+const PublicNavbar: React.FC = () => {
   const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
   const history = useHistory();
 
@@ -34,34 +33,14 @@ const PublicNavbar: React.FC = observer(() => {
           Problem Set
         </Menu.Item>
         <Menu.Menu position="right">
-          <Menu.Item>
-            {rootStore.connected ? (
-              <Button
-                color="red"
-                style={{ marginRight: '1rem' }}
-                onClick={() => location.assign('/logout')}
-              >
-                <Icon name="log out" />
-                Logout
-              </Button>
-            ) : (
-              <Button
-                color="blue"
-                style={{ marginRight: '0.5rem' }}
-                onClick={() => history.push('/login')}
-              >
-                Login
-              </Button>
-            )}
+          <Menu.Item header onClick={() => history.push('/login')}>
+            Login
           </Menu.Item>
-          <Menu.Item>
-            <Icon name="clock" />
-            contest_time
-          </Menu.Item>
+          <ActiveContestSelector />
         </Menu.Menu>
       </Container>
     </Menu>
   );
-});
+};
 
 export default PublicNavbar;

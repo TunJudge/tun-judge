@@ -74,9 +74,7 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
         <Grid.Column style={{ paddingLeft: '.5rem' }}>
           <Segment style={{ height: '100%' }}>
             <embed
-              src={`data:${item.file?.type};headers=filename%3D${encodeURIComponent(
-                item.file!.name,
-              )};base64,${item.file?.content.payload}`}
+              src={`data:${item.file?.type};base64,${item.file?.content.payload}`}
               type={item.file?.type}
               width="100%"
               height="100%"

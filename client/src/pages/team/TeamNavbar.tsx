@@ -4,6 +4,10 @@ import { useHistory } from 'react-router-dom';
 import { Tabs } from '../../core/types';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../core/stores/RootStore';
+import ActiveContestSelector from '../shared/ActiveContestSelector';
+import SubmitForm from './views/SubmitForm';
+import { Submission } from '../../core/models';
+import { contestNotOver } from '../../core/helpers';
 
 const tabs: Tabs = [
   {
@@ -24,9 +28,13 @@ const tabs: Tabs = [
 ];
 
 const TeamNavbar: React.FC = observer(() => {
+  const [submitFormOpen, setSubmitFormOpen] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
   const history = useHistory();
-  const { profile } = rootStore;
+  const {
+    profile,
+    publicStore: { currentContest },
+  } = rootStore;
 
   const onLinkClick = (tab: string) => {
     setCurrentTab(tab);
@@ -51,10 +59,16 @@ const TeamNavbar: React.FC = observer(() => {
           </Menu.Item>
         ))}
         <Menu.Menu position="right">
-          <Menu.Item>
-            <Icon name="clock" />
-            contest_time
-          </Menu.Item>
+          {contestNotOver(currentContest) && (
+            <Menu.Item
+              className="cursor-pointer"
+              style={{ backgroundColor: '#21ba45' }}
+              onClick={() => setSubmitFormOpen(true)}
+            >
+              Submit
+            </Menu.Item>
+          )}
+          <ActiveContestSelector />
           <Dropdown
             item
             floating
@@ -71,6 +85,9 @@ const TeamNavbar: React.FC = observer(() => {
           </Dropdown>
         </Menu.Menu>
       </Container>
+      {submitFormOpen && (
+        <SubmitForm item={{} as Submission} dismiss={() => setSubmitFormOpen(false)} />
+      )}
     </Menu>
   );
 });

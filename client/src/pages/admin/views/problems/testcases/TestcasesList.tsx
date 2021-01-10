@@ -7,6 +7,7 @@ import { rootStore } from '../../../../../core/stores/RootStore';
 import { CheckBoxField } from '../../../../shared/extended-form';
 import TestcaseContentView from './TestcaseContentView';
 import TestcaseBulkUploader from './TestcaseBulkUploader';
+import { formatBytes } from '../../../../../core/helpers';
 
 type TestcasesListProps = {
   problem: Problem;
@@ -99,7 +100,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
                       >
                         {`test.${testcase.rank}.in`}
                       </a>{' '}
-                      ({testcase.input.size} B)
+                      {formatBytes(testcase.input.size)}
                       <Popup
                         content={testcase.input.md5Sum}
                         position="top center"
@@ -145,7 +146,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
                       >
                         {`test.${testcase.rank}.out`}
                       </a>{' '}
-                      ({testcase.output.size} B)
+                      {formatBytes(testcase.output.size)}
                       <Popup
                         content={testcase.output.md5Sum}
                         position="top center"

@@ -9,10 +9,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AdminGuard, AuthenticatedGuard, TeamGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
-import { Contest, ContestProblem } from '../entities';
+import { Contest, ContestProblem, Submission, Team } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LessThanOrEqual, MoreThan } from 'typeorm';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -22,9 +23,14 @@ export class ContestsController {
     private readonly contestsRepository: ExtendedRepository<Contest>,
     @InjectRepository(ContestProblem)
     private readonly contestProblemsRepository: ExtendedRepository<ContestProblem>,
+    @InjectRepository(Team)
+    private readonly teamsRepository: ExtendedRepository<Team>,
+    @InjectRepository(Submission)
+    private readonly submissionsRepository: ExtendedRepository<Submission>,
   ) {}
 
   @Get()
+  @UseGuards(AdminGuard)
   getAll(): Promise<Contest[]> {
     return this.contestsRepository
       .find({
@@ -66,5 +72,43 @@ export class ContestsController {
   async delete(@Param('id') id: number): Promise<void> {
     await this.contestProblemsRepository.delete({ contest: { id } });
     await this.contestsRepository.delete(id);
+  }
+
+  @Get(':id/team/:teamId/submissions')
+  @UseGuards(TeamGuard)
+  getByContestAndTeam(
+    @Param('id') contestId: number,
+    @Param('teamId') teamId: number,
+  ): Promise<Submission[]> {
+    return this.submissionsRepository.find({
+      order: { submitTime: 'DESC' },
+      where: { contest: { id: contestId }, team: { id: teamId } },
+      relations: ['language', 'problem'],
+    });
+  }
+
+  @Post(':id/team/:teamId/submit')
+  @UseGuards(TeamGuard)
+  async submit(
+    @Param('id') contestId: number,
+    @Param('teamId') teamId: number,
+    @Body() submission: Submission,
+  ): Promise<Submission> {
+    submission.submitTime = new Date();
+    const contest = await this.contestsRepository.findOneOrThrow(
+      {
+        id: contestId,
+        startTime: LessThanOrEqual(submission.submitTime),
+        endTime: MoreThan(submission.submitTime),
+      },
+      new NotFoundException('Contest not found!'),
+    );
+    const team = await this.teamsRepository.findOneOrThrow(
+      teamId,
+      new NotFoundException('Team not found!'),
+    );
+    submission.contest = contest;
+    submission.team = team;
+    return this.submissionsRepository.save(submission);
   }
 }

@@ -226,6 +226,7 @@ export function CheckBoxField<T>({
 
 type FileFieldProps<T> = ExtendedFieldProps<T> & {
   accept?: string;
+  multiple?: boolean;
 };
 
 export function FileField<T>({
@@ -239,6 +240,7 @@ export function FileField<T>({
   setErrors,
   onChange,
   accept,
+  multiple,
 }: FileFieldProps<T>): any {
   const [_fileName, setFileName] = useState<string>((entity[field] as any)?.name ?? '');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -260,6 +262,7 @@ export function FileField<T>({
         type="file"
         hidden
         accept={accept}
+        multiple={multiple}
         onChange={async ({ target: { files } }) => {
           if (files && files.length > 0) {
             const file = files[0];

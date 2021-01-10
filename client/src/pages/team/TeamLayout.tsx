@@ -3,13 +3,14 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import TeamNavbar from './TeamNavbar';
 import Scoreboard from '../shared/Scoreboard';
 import ProblemSet from '../shared/ProblemSet';
+import HomeView from './views/HomeView';
 
 const TeamLayout: React.FC = () => (
   <div>
     <TeamNavbar />
-    <div style={{ paddingTop: '5rem' }}>
+    <div style={{ padding: '1rem', paddingTop: '4rem' }}>
       <Switch>
-        <Route exact path="/" component={() => <>Home</>} />
+        <Route exact path="/" component={HomeView} />
         <Route exact path="/problems" component={() => <ProblemSet />} />
         <Route exact path="/scoreboard" component={() => <Scoreboard />} />
         <Route render={() => <Redirect to="/" />} />

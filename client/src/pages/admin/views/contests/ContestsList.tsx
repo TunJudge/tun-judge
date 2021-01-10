@@ -44,7 +44,7 @@ const ContestsList: React.FC = observer(() => {
       render: (contest) => moment(contest.endTime).format(MOMENT_DEFAULT_FORMAT),
     },
     {
-      header: 'Process Balloons?',
+      header: 'Balloons?',
       field: 'processBalloons',
       render: (contest) => (contest.processBalloons ? 'true' : 'false'),
     },
