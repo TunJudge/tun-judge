@@ -1,34 +1,32 @@
 import React from 'react';
 import { Button, Modal } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
-import { Language } from '../../../../core/models';
+import { File } from '../../core/models';
 import AceEditor from 'react-ace';
 
 import 'ace-builds/src-noconflict/mode-sh';
 import 'ace-builds/src-noconflict/theme-tomorrow_night';
 import { MD5 } from 'crypto-js';
 
-const LanguageScriptView: React.FC<{
-  open: boolean;
-  language: Language;
-  field: 'buildScript' | 'runScript';
+const ScriptEditor: React.FC<{
+  file: File;
   dismiss: () => void;
   submit: () => void;
-}> = observer(({ open, language, field, dismiss, submit }) => {
+}> = observer(({ file, dismiss, submit }) => {
   return (
-    <Modal open={open} onClose={dismiss}>
-      <Modal.Header>Language {field} file content</Modal.Header>
+    <Modal open onClose={dismiss}>
+      <Modal.Header>Edit &#39;{file.name}&#39; script file</Modal.Header>
       <Modal.Content>
         <AceEditor
           mode="sh"
           theme="tomorrow_night"
-          value={atob(language[field]?.content?.payload ?? '')}
+          value={atob(file?.content?.payload ?? '')}
           width="100%"
           onChange={(value) => {
             const payload = btoa(value);
-            language[field].size = value.length;
-            language[field].md5Sum = MD5(payload).toString();
-            language[field].content.payload = payload;
+            file.size = value.length;
+            file.md5Sum = MD5(payload).toString();
+            file.content.payload = payload;
           }}
         />
       </Modal.Content>
@@ -44,4 +42,4 @@ const LanguageScriptView: React.FC<{
   );
 });
 
-export default LanguageScriptView;
+export default ScriptEditor;

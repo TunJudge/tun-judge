@@ -59,7 +59,7 @@ export class Submission {
 
   @ManyToOne(() => Language, {
     nullable: false,
-    onDelete: 'CASCADE',
+    onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
   })
   language: Language;
@@ -76,7 +76,7 @@ export class Submission {
   })
   originalSubmission: Submission;
 
-  @OneToOne(() => File, { cascade: true, eager: true, nullable: false })
+  @OneToOne(() => File, { cascade: true, nullable: false })
   @JoinColumn()
   file: File;
 }

@@ -10,6 +10,7 @@ import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 const rolesColors = {
   admin: '#FFC2C2',
   jury: '#FFEAC2',
+  'judge-host': '#90d3ff',
   team: '#B3FFC2',
 };
 
@@ -19,6 +20,7 @@ const UsersList: React.FC = observer(() => {
     usersStore: {
       adminUsers,
       juryUsers,
+      judgeHostUsers,
       teamUsers,
       fetchAll,
       fetchAllRoles,
@@ -74,7 +76,7 @@ const UsersList: React.FC = observer(() => {
   return (
     <ListPage<User>
       header="Users"
-      data={[...adminUsers, ...juryUsers, ...teamUsers]}
+      data={[...adminUsers, ...juryUsers, ...judgeHostUsers, ...teamUsers]}
       columns={columns}
       ItemForm={UserForm}
       onDelete={remove}

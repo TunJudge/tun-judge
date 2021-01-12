@@ -15,13 +15,18 @@ export class UsersStore {
   }
 
   @computed
-  get teamUsers(): User[] {
-    return this.data.filter((user) => user.role.name === 'team');
+  get juryUsers(): User[] {
+    return this.data.filter((user) => user.role.name === 'jury');
   }
 
   @computed
-  get juryUsers(): User[] {
-    return this.data.filter((user) => user.role.name === 'jury');
+  get judgeHostUsers(): User[] {
+    return this.data.filter((user) => user.role.name === 'judge-host');
+  }
+
+  @computed
+  get teamUsers(): User[] {
+    return this.data.filter((user) => user.role.name === 'team');
   }
 
   @action

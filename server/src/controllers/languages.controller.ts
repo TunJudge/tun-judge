@@ -26,12 +26,7 @@ export class LanguagesController {
   getAll(): Promise<Language[]> {
     return this.languagesRepository.find({
       order: { id: 'ASC' },
-      relations: [
-        'buildScript',
-        'buildScript.content',
-        'runScript',
-        'runScript.content',
-      ],
+      relations: ['buildScript', 'buildScript.content'],
     });
   }
 

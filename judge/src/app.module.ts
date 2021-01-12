@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { DockerModule } from './docker/docker.module';
+import { AppController } from './app.controller';
 
 @Module({
-  imports: [DockerModule],
+  controllers: [AppController],
 })
 export class AppModule {}

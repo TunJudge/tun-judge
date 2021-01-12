@@ -15,6 +15,9 @@ export class Language {
   @Column({ comment: 'Language name' })
   name: string;
 
+  @Column({ comment: 'Language Docker Image' })
+  dockerImage: string;
+
   @Column({
     comment: "Language's file possible extensions",
     type: 'json',
@@ -42,13 +45,4 @@ export class Language {
   })
   @JoinColumn()
   buildScript: File;
-
-  @OneToOne(() => File, {
-    cascade: true,
-    onDelete: 'RESTRICT',
-    onUpdate: 'RESTRICT',
-    nullable: false,
-  })
-  @JoinColumn()
-  runScript: File;
 }

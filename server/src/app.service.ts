@@ -14,6 +14,10 @@ const roles: Partial<Role>[] = [
     description: 'Jury Member',
   },
   {
+    name: 'judge-host',
+    description: 'Judge Host',
+  },
+  {
     name: 'team',
     description: 'Team Member',
   },

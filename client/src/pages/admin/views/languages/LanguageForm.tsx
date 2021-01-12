@@ -19,8 +19,8 @@ type LanguageFormProps = {
 const LanguageForm: React.FC<LanguageFormProps> = ({ item: language, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Language>>({
     name: isEmpty(language.name),
+    dockerImage: isEmpty(language.dockerImage),
     buildScript: isEmpty(language.buildScript),
-    runScript: isEmpty(language.runScript),
   });
 
   return (
@@ -37,18 +37,18 @@ const LanguageForm: React.FC<LanguageFormProps> = ({ item: language, dismiss, su
               errors={errors}
               setErrors={setErrors}
             />
-            <FileField<Language>
+            <TextField<Language>
               entity={language}
-              field="buildScript"
-              label="Build Script"
+              field="dockerImage"
+              label="Docker Image"
               required
               errors={errors}
               setErrors={setErrors}
             />
             <FileField<Language>
               entity={language}
-              field="runScript"
-              label="Run Script"
+              field="buildScript"
+              label="Build Script"
               required
               errors={errors}
               setErrors={setErrors}

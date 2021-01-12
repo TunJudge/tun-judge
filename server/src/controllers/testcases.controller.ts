@@ -15,6 +15,7 @@ import { ExtendedRepository } from '../core/extended-repository';
 import { File, FileContent, Testcase } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan } from 'typeorm';
+import { JudgeHostGuard } from '../core/guards/judge-host.guard';
 
 @Controller('testcases')
 @UseGuards(AuthenticatedGuard)
@@ -86,7 +87,7 @@ export class TestcasesController {
   }
 
   @Get(':id/content/:file')
-  @UseGuards(AdminGuard)
+  @UseGuards(JudgeHostGuard)
   getContent(
     @Param('id') id: number,
     @Param('file') file: 'input' | 'output',
