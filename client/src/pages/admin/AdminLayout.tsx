@@ -10,6 +10,7 @@ import ContestsList from './views/contests/ContestsList';
 import ProblemsList from './views/problems/ProblemsList';
 import LanguagesList from './views/languages/LanguagesList';
 import TeamCategoriesList from './views/team-category/TeamCategoriesList';
+import ExecutablesList from './views/executables/ExecutablesList';
 
 const AdminLayout: React.FC = () => {
   const [sidebarVisible, toggleSidebar] = useState<boolean>(true);
@@ -35,6 +36,7 @@ const AdminLayout: React.FC = () => {
           <Route exact path="/problems" component={ProblemsList} />
           <Route path="/problems/:id" component={ProblemView} />
           <Route exact path="/languages" component={LanguagesList} />
+          <Route exact path="/executables" component={ExecutablesList} />
           <Route exact path="/users" component={UsersList} />
           <Route exact path="/teams" component={TeamsList} />
           <Route exact path="/team-categories" component={TeamCategoriesList} />

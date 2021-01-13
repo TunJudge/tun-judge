@@ -10,11 +10,12 @@ const ProblemsList: React.FC = observer(() => {
   const history = useHistory();
   const {
     problemsStore: { data, fetchAll, create, update, remove },
+    executablesStore: { data: executables, fetchAll: fetchAllExecutables },
   } = rootStore;
 
   useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
+    Promise.all([fetchAll(), fetchAllExecutables()]);
+  }, [fetchAll, fetchAllExecutables]);
 
   const columns: ListPageTableColumn<Problem>[] = [
     {
@@ -25,7 +26,7 @@ const ProblemsList: React.FC = observer(() => {
       render: (problem) => problem.name,
     },
     {
-      header: 'Time Limit',
+      header: 'Limits',
       field: 'timeLimit',
       render: (problem) => `${problem.timeLimit}s`,
     },
@@ -52,8 +53,12 @@ const ProblemsList: React.FC = observer(() => {
       data={data}
       columns={columns}
       ItemForm={ProblemForm}
+      formItemInitValue={{
+        runScript: executables.find((e) => e.type === 'RUNNER' && e.default),
+        checkScript: executables.find((e) => e.type === 'CHECKER' && e.default),
+      }}
       onDelete={remove}
-      onRefresh={fetchAll}
+      onRefresh={() => Promise.all([fetchAll(), fetchAllExecutables()])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
     />
   );

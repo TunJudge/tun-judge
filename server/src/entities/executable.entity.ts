@@ -1,25 +1,52 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { File } from './file.entity';
 
-export type ExecutableType = 'COMPILE' | 'RUN';
+export type ExecutableType = 'RUNNER' | 'CHECKER';
 
 @Entity()
 export class Executable {
-  @PrimaryColumn({ comment: 'Executable ID' })
-  id: string;
+  @PrimaryGeneratedColumn({ comment: 'Executable ID' })
+  id: number;
 
-  @Column({ comment: 'MD5Sum of the ZIP file' })
-  md5Sum: string;
+  @Column({ comment: 'Executable Name' })
+  name: string;
 
-  @Column({ comment: 'The ZIP file', type: 'bytea' })
-  zipFile: Buffer;
-
-  @Column({ comment: 'Description of this executable' })
+  @Column({ comment: 'Description of this executable', nullable: true })
   description: string;
+
+  @Column({ comment: 'Description of this executable', default: false })
+  default: boolean;
+
+  @Column({ comment: 'Language Docker Image', nullable: true })
+  dockerImage: string;
+
+  @OneToOne(() => File, {
+    cascade: true,
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+    nullable: false,
+  })
+  @JoinColumn()
+  file: File;
+
+  @OneToOne(() => File, {
+    cascade: true,
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+  })
+  @JoinColumn()
+  buildScript: File;
 
   @Column({
     comment: 'Type of this executable',
     type: 'enum',
-    enum: ['COMPILE', 'RUN'],
+    enum: ['RUNNER', 'CHECKER'],
   })
   type: ExecutableType;
 }

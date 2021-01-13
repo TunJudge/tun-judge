@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { Problem } from '../../../../core/models';
 import { isEmpty } from '../../../../core/helpers';
-import { FileField, FormErrors, NumberField, TextField } from '../../../shared/extended-form';
+import {
+  DropdownField,
+  FileField,
+  FormErrors,
+  NumberField,
+  TextField,
+} from '../../../shared/extended-form';
+import { rootStore } from '../../../../core/stores/RootStore';
 
 type ProblemFormProps = {
   item: Problem;
@@ -15,7 +22,10 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ item: problem, dismiss, submi
     name: isEmpty(problem.name),
     timeLimit: isEmpty(problem.timeLimit),
     file: isEmpty(problem.file),
+    runScript: isEmpty(problem.runScript),
+    checkScript: isEmpty(problem.checkScript),
   });
+  const { data: executables } = rootStore.executablesStore;
 
   return (
     <Modal open onClose={dismiss} closeOnEscape={false}>
@@ -73,10 +83,27 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ item: problem, dismiss, submi
             />
           </Form.Group>
           <Form.Group widths="equal">
-            <TextField<Problem>
+            <DropdownField<Problem>
               entity={problem}
-              field="specialCompareArgs"
-              label="Special Compare Args"
+              field="runScript"
+              label="Run Script"
+              fluid
+              required
+              selection
+              options={executables.filter((e) => e.type === 'RUNNER')}
+              optionsTextField="name"
+              errors={errors}
+              setErrors={setErrors}
+            />
+            <DropdownField<Problem>
+              entity={problem}
+              field="checkScript"
+              label="Check Script"
+              fluid
+              required
+              selection
+              options={executables.filter((e) => e.type === 'CHECKER')}
+              optionsTextField="name"
               errors={errors}
               setErrors={setErrors}
             />

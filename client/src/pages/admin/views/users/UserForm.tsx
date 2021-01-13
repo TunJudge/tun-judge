@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { User } from '../../../../core/models';
 import { isEmpty } from '../../../../core/helpers';
-import { CheckBoxField, FormErrors, TextField } from '../../../shared/extended-form';
+import { CheckBoxField, DropdownField, FormErrors, TextField } from '../../../shared/extended-form';
 import { rootStore } from '../../../../core/stores/RootStore';
 
 type UserFormProps = {
@@ -58,22 +58,19 @@ const UserForm: React.FC<UserFormProps> = ({ item: user, dismiss, submit }) => {
           </Form.Group>
           <Form.Group widths="equal">
             <TextField<User> entity={user} field="email" type="email" label="Email" />
-            <Form.Dropdown
-              placeholder="Role"
-              selection
-              required
+            <DropdownField<User>
+              entity={user}
+              field="role"
               label="Role"
-              error={errors.role}
-              defaultValue={user.role?.name}
-              options={roles.map((role) => ({
-                key: role.name,
-                text: role.description,
-                value: role.name,
-              }))}
-              onChange={(_, { value }) => {
-                user.role = roles.find((role) => role.name === value)!;
-                setErrors({ ...errors, role: false });
-              }}
+              fluid
+              required
+              selection
+              options={roles}
+              optionsIdField="name"
+              optionsTextField="description"
+              isObject
+              errors={errors}
+              setErrors={setErrors}
             />
           </Form.Group>
           <CheckBoxField<User> entity={user} field="enabled" label="Enabled" defaultValue={true} />

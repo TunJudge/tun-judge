@@ -43,24 +43,18 @@ export class Problem {
   file: File;
 
   @ManyToOne(() => Executable, {
-    onDelete: 'SET NULL',
+    onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
-    nullable: true,
+    nullable: false,
   })
-  specialRunScript: Executable;
+  runScript: Executable;
 
   @ManyToOne(() => Executable, {
-    onDelete: 'SET NULL',
+    onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
-    nullable: true,
+    nullable: false,
   })
-  specialCompareScript: Executable;
-
-  @Column({
-    comment: 'Optional args for the special compare script',
-    nullable: true,
-  })
-  specialCompareArgs: string;
+  checkScript: Executable;
 
   @OneToMany(() => ContestProblem, (cp) => cp.problem)
   contests: ContestProblem[];

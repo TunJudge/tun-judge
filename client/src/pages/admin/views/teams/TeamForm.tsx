@@ -4,6 +4,7 @@ import { Team } from '../../../../core/models';
 import { isEmpty } from '../../../../core/helpers';
 import {
   CheckBoxField,
+  DropdownField,
   FormErrors,
   NumberField,
   TextAreaField,
@@ -42,36 +43,30 @@ const TeamForm: React.FC<TeamFormProps> = ({ item: team, dismiss, submit }) => {
               errors={errors}
               setErrors={setErrors}
             />
-            <Form.Dropdown
-              required
-              selection
+            <DropdownField<Team>
+              entity={team}
+              field="category"
               label="Category"
-              placeholder="Category"
-              error={errors.category}
-              defaultValue={team.category?.id}
-              options={categories.map((role) => ({
-                key: role.id,
-                text: role.name,
-                value: role.id,
-              }))}
-              onChange={(_, { value }) => {
-                team.category = categories.find((category) => category.id === value)!;
-                setErrors({ ...errors, category: false });
-              }}
-            />
-            <Form.Dropdown
+              required
+              fluid
               selection
+              options={categories}
+              optionsTextField="name"
+              isObject
+              errors={errors}
+              setErrors={setErrors}
+            />
+            <DropdownField<Team>
+              entity={team}
+              field="user"
               label="User"
-              placeholder="User"
-              defaultValue={team.user?.id}
-              options={users
-                .filter((user) => !user.team || (team.user && team.user.id === user.id))
-                .map((user) => ({
-                  key: user.id,
-                  text: user.name,
-                  value: user.id,
-                }))}
-              onChange={(_, { value }) => (team.user = users.find((c) => c.id === value)!)}
+              fluid
+              selection
+              options={users.filter(
+                (user) => !user.team || (team.user && team.user.id === user.id),
+              )}
+              optionsTextField="name"
+              isObject
             />
           </Form.Group>
           <TextAreaField<Team>
@@ -95,21 +90,16 @@ const TeamForm: React.FC<TeamFormProps> = ({ item: team, dismiss, submit }) => {
             label="Comments"
             placeHolder="Comments..."
           />
-          <Form.Dropdown
-            search
+          <DropdownField<Team>
+            entity={team}
+            field="contests"
+            label="Contests"
+            fluid
             multiple
             selection
-            label="Contests"
-            placeholder="Contests"
-            defaultValue={team.contests?.map((contest) => contest.id)}
-            options={contests.map((contest) => ({
-              key: contest.id,
-              text: contest.name,
-              value: contest.id,
-            }))}
-            onChange={(_, { value }) =>
-              (team.contests = (value as number[]).map((v) => contests.find((c) => c.id === v)!))
-            }
+            options={contests}
+            optionsTextField="name"
+            isObject
           />
           <CheckBoxField<Team> entity={team} field="enabled" label="Enabled" defaultValue={true} />
         </Form>

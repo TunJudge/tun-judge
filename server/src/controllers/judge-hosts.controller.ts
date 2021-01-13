@@ -40,12 +40,22 @@ export class JudgeHostsController {
         'language.buildScript.content',
         'problem',
         'problem.testcases',
+        'problem.runScript',
+        'problem.runScript.file',
+        'problem.runScript.file.content',
+        'problem.runScript.buildScript',
+        'problem.runScript.buildScript.content',
+        'problem.checkScript',
+        'problem.checkScript.file',
+        'problem.checkScript.file.content',
+        'problem.checkScript.buildScript',
+        'problem.checkScript.buildScript.content',
       ],
       order: { submitTime: 'ASC' },
     });
     if (submission) {
       submission.judgeHost = judgeHost;
-      // await this.submissionsRepository.save(submission);
+      await this.submissionsRepository.save(submission);
       return submission;
     }
   }

@@ -1,15 +1,16 @@
 import { action, autorun, observable } from 'mobx';
+import http from '../utils/http-client';
 import { User } from '../models';
+import { TeamStore } from './TeamStore';
+import { UsersStore } from './UsersStore';
+import { TeamsStore } from './TeamsStore';
+import { PublicStore } from './PublicStore';
 import { ContestsStore } from './ContestsStore';
 import { ProblemsStore } from './ProblemsStore';
 import { TestcasesStore } from './TestcasesStore';
 import { LanguagesStore } from './LanguagesStore';
-import http from '../utils/http-client';
-import { UsersStore } from './UsersStore';
+import { ExecutablesStore } from './ExecutablesStore';
 import { TeamCategoriesStore } from './TeamCategoriesStore';
-import { TeamsStore } from './TeamsStore';
-import { PublicStore } from './PublicStore';
-import { TeamStore } from './TeamStore';
 
 const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
@@ -28,6 +29,7 @@ export class RootStore {
   problemsStore: ProblemsStore;
   testcasesStore: TestcasesStore;
   languagesStore: LanguagesStore;
+  executablesStore: ExecutablesStore;
   teamCategoriesStore: TeamCategoriesStore;
 
   constructor() {
@@ -41,6 +43,7 @@ export class RootStore {
     this.problemsStore = new ProblemsStore(this);
     this.testcasesStore = new TestcasesStore(this);
     this.languagesStore = new LanguagesStore(this);
+    this.executablesStore = new ExecutablesStore(this);
     this.teamCategoriesStore = new TeamCategoriesStore(this);
 
     autorun(

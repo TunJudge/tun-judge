@@ -295,7 +295,10 @@ export function FileField<T>({
 }
 
 type DropdownFieldProps<T> = ExtendedFieldProps<T> & {
-  options?: DropdownItemProps[];
+  options?: any[];
+  optionsIdField?: string;
+  optionsTextField?: string;
+  isObject?: boolean;
   search?: boolean;
   selection?: boolean;
   fluid?: boolean;
@@ -311,6 +314,9 @@ export function DropdownField<T>({
   width,
   required,
   options,
+  optionsIdField,
+  optionsTextField,
+  isObject,
   search,
   selection,
   fluid,
@@ -320,14 +326,31 @@ export function DropdownField<T>({
   setErrors,
   onChange,
 }: DropdownFieldProps<T>): any {
-  const [value, setValue] = useState(multiple ? (entity[field] as any) ?? [] : entity[field]);
+  const [value, setValue] = useState(
+    multiple
+      ? ((entity[field] as any) ?? []).map((value: any) =>
+          typeof value === 'object' ? value[optionsIdField ?? 'id'] : value,
+        )
+      : typeof entity[field] === 'object'
+      ? (entity[field] as any)[optionsIdField ?? 'id']
+      : entity[field],
+  );
   const [optionsState, setOptions] = useState<DropdownItemProps[]>(
-    options ??
-      ((entity[field] as any) ?? []).map((value: boolean | number | string) => ({
-        key: value,
-        text: value,
-        value,
-      })),
+    (options ?? (entity[field] as any) ?? []).map((value: any) => {
+      if (typeof value === 'object') {
+        return {
+          key: value[optionsIdField ?? 'id'],
+          text: value[optionsTextField ?? 'id'],
+          value: value[optionsIdField ?? 'id'],
+        };
+      } else {
+        return {
+          key: value,
+          text: value,
+          value: value,
+        };
+      }
+    }),
   );
   return (
     <Form.Dropdown
@@ -344,11 +367,13 @@ export function DropdownField<T>({
       value={value}
       onChange={(_, { value }) => {
         if (multiple) {
-          entity[field] = [...(value as any)] as any;
-          setValue((entity[field] as any) ?? []);
+          entity[field] = (isObject
+            ? [...(value as any)].map((v) => options?.find((o) => o[optionsIdField ?? 'id'] === v))
+            : [...(value as any)]) as any;
         } else {
-          entity[field] = value as any;
-          setValue({ text: entity[field], value: entity[field] });
+          entity[field] = (isObject
+            ? options?.find((o) => o[optionsIdField ?? 'id'] === value)
+            : value) as any;
         }
         if (isEmpty(value)) {
           setErrors && setErrors({ ...errors, [field]: true });
@@ -356,6 +381,7 @@ export function DropdownField<T>({
           setErrors && setErrors({ ...errors, [field]: false });
         }
         onChange && onChange();
+        setValue(value);
       }}
       onAddItem={(_, { value }) =>
         setOptions([...optionsState, { key: value, text: value, value } as any])

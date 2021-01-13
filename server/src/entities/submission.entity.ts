@@ -76,7 +76,12 @@ export class Submission {
   })
   originalSubmission: Submission;
 
-  @OneToOne(() => File, { cascade: true, nullable: false })
+  @OneToOne(() => File, {
+    cascade: true,
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+    nullable: false,
+  })
   @JoinColumn()
   file: File;
 }

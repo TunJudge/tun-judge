@@ -10,6 +10,6 @@ export class AppController {
     const submission = await http.get<Submission>(
       'api/judge-hosts/localhost/next-submission',
     );
-    return runner.run(submission);
+    return submission && runner.run(submission);
   }
 }

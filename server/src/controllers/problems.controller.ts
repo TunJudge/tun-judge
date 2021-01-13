@@ -26,7 +26,13 @@ export class ProblemsController {
   getAll(): Promise<Problem[]> {
     return this.problemsRepository.find({
       order: { id: 'ASC' },
-      relations: ['testcases', 'file', 'file.content'],
+      relations: [
+        'testcases',
+        'file',
+        'file.content',
+        'runScript',
+        'checkScript',
+      ],
     });
   }
 

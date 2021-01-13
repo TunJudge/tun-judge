@@ -3,7 +3,7 @@ import { Submission } from '../models';
 export interface RunnerStep {
   setNext(runnerStep: RunnerStep): RunnerStep;
 
-  run(submission: Submission): Promise<string>;
+  run(submission: Submission): Promise<void>;
 }
 
 export abstract class AbstractRunnerStep implements RunnerStep {
@@ -14,10 +14,7 @@ export abstract class AbstractRunnerStep implements RunnerStep {
     return this.nextStep;
   }
 
-  run(submission: Submission): Promise<string> {
-    if (this.nextStep) {
-      return this.nextStep.run(submission);
-    }
-    return null;
+  async run(submission: Submission): Promise<void> {
+    this.nextStep && (await this.nextStep.run(submission));
   }
 }

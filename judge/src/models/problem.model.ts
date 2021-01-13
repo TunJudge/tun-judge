@@ -1,5 +1,6 @@
 import { Testcase } from './testcase.model';
 import { File } from './file.model';
+import { Executable } from './executable.model';
 
 export interface Problem {
   id: number;
@@ -9,6 +10,7 @@ export interface Problem {
   memoryLimit: number;
   outputLimit: number;
   file: File;
-  specialCompareArgs: string;
+  runScript: Executable;
+  checkScript: Executable;
   testcases: Testcase[];
 }

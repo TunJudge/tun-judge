@@ -5,20 +5,22 @@ import { File } from '../../core/models';
 import AceEditor from 'react-ace';
 
 import 'ace-builds/src-noconflict/mode-sh';
+import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/theme-tomorrow_night';
 import { MD5 } from 'crypto-js';
 
 const ScriptEditor: React.FC<{
   file: File;
+  lang?: 'sh' | 'c_cpp';
   dismiss: () => void;
   submit: () => void;
-}> = observer(({ file, dismiss, submit }) => {
+}> = observer(({ file, lang, dismiss, submit }) => {
   return (
     <Modal open onClose={dismiss}>
       <Modal.Header>Edit &#39;{file.name}&#39; script file</Modal.Header>
       <Modal.Content>
         <AceEditor
-          mode="sh"
+          mode={lang ?? 'sh'}
           theme="tomorrow_night"
           value={atob(file?.content?.payload ?? '')}
           width="100%"

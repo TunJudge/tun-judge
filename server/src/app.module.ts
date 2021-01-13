@@ -18,6 +18,7 @@ import {
   LanguagesController,
   TestcasesController,
   JudgeHostsController,
+  ExecutablesController,
   TeamCategoriesController,
 } from './controllers';
 import config from './core/config';
@@ -53,6 +54,7 @@ import config from './core/config';
     TestcasesController,
     LanguagesController,
     JudgeHostsController,
+    ExecutablesController,
     TeamCategoriesController,
   ],
   providers: [AppService, ...CustomRepositoryProviders],

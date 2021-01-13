@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import * as Docker from 'dockerode';
+import { Container, ContainerCreateOptions } from 'dockerode';
 
 export class DockerService {
   private connection: Docker;
@@ -132,6 +133,9 @@ export class DockerService {
   //     duplex.end();
   //   });
   // }
+  createContainer(options: ContainerCreateOptions): Promise<Container> {
+    return this.connection.createContainer(options);
+  }
 }
 
 const dockerService = new DockerService();
