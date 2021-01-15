@@ -1,11 +1,12 @@
-import { File, Submission } from '../models';
-import { join } from 'path';
 import { mkdirSync } from 'fs';
+import { join } from 'path';
+import { File, Submission } from '../models';
 
 export const workDir = join(__dirname, '..', '..', 'workDir');
 mkdirSync(workDir, { recursive: true });
 export const dockerWorkDir = join('/', 'workDir');
-export const testLibPath = join(__dirname, '..', '..', 'assets', 'testlib.h');
+export const assetsDir = join(__dirname, '..', '..', 'assets');
+export const testLibPath = join(assetsDir, 'testlib.h');
 
 export class SubmissionHelper {
   private submission: Submission;
@@ -37,7 +38,9 @@ export class SubmissionHelper {
     return [
       'bash',
       '-c',
-      `time ${this.executableFilePath(
+      `timeout ${
+        this.submission.problem.timeLimit
+      } time ${this.executableFilePath(
         runScript.id,
         runScript.file,
         true,

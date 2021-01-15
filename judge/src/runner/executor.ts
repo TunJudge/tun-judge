@@ -1,4 +1,4 @@
-import { chmodSync, promises } from 'fs';
+import { chmodSync, promises, rmdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { AbstractRunnerStep } from './runner-step';
 import { Submission } from '../models';
@@ -23,8 +23,8 @@ export class Executor extends AbstractRunnerStep {
     );
     await runnerContainer.start();
     await checkerContainer.start();
-    for (const testcase of testcases) {
-      logger.log(`[Executor] Running test ${testcase.id}...`);
+    for (const testcase of testcases.sort((a, b) => a.rank - b.rank)) {
+      logger.log(`Running test ${testcase.rank}...`);
       await Promise.all([
         promises.copyFile(
           sh.testcaseFilePath(testcase.id, testcase.input),
@@ -36,18 +36,25 @@ export class Executor extends AbstractRunnerStep {
         ),
       ]);
       const runningResult = await execCmdInDocker(runnerContainer, sh.runCmd());
+      if (runningResult.exitCode !== 0) {
+        logger.error(
+          `Submission with id ${submission.id} failed for test ${testcase.rank}: ${runningResult.stderr}`,
+        );
+        return;
+      }
       const checkingResult = await execCmdInDocker(
         checkerContainer,
         sh.checkerRunCmd(),
       );
-      const time = runningResult.stdout
-        .match(/m(.*)s/gm)
-        .map((s) => parseFloat(s.replace(/[^0-9.]/g, '')))
-        .reduce((p, c) => p + c, 0);
-      console.log(time.toFixed(3));
-      console.log(checkingResult.exitCode);
-      await super.run(submission);
+      if (checkingResult.exitCode !== 0) {
+        logger.error(
+          `Submission with id ${submission.id} failed for test ${testcase.rank}: ${checkingResult.stdout}`,
+        );
+        return;
+      }
     }
+    logger.log(`Submission with id ${submission.id} is correct!`);
+    rmdirSync(sh.submissionDir(), { recursive: true });
     await runnerContainer.kill();
     await checkerContainer.kill();
     await runnerContainer.remove();
@@ -68,6 +75,7 @@ function createContainer(
     OpenStdin: true,
     WorkingDir: sh.submissionDir(true),
     HostConfig: {
+      CpusetCpus: '0-3',
       Mounts: [
         {
           Target: dockerWorkDir,
@@ -104,11 +112,11 @@ function execCmdInDocker(
     const duplex = await exec.start({ hijack: true });
     duplex.on('data', (chunk) => (result.stdout += chunk));
     duplex.on('error', (chunk) => (result.stderr += chunk));
-    duplex.on('end', async () => {
+    duplex.on('end', async () =>
       resolve({
         ...result,
         exitCode: (await exec.inspect()).ExitCode,
-      });
-    });
+      }),
+    );
   });
 }

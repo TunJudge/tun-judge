@@ -25,7 +25,6 @@ export class Initializer extends AbstractRunnerStep {
       writeLanguageBuildScript(submission.language),
       dockerService.pullImage(submission.language.dockerImage),
     ]);
-    logger.log(`[Submission] Submission with id ${submission.id} initialized!`);
     await super.run(submission);
   }
 }
@@ -34,7 +33,7 @@ const logger = new Logger(Initializer.name);
 
 async function writeSubmissionFile(submission: Submission): Promise<void> {
   writeFileSync(sh.filePath(), submission.file.content.payload, 'base64');
-  logger.log(`[Submission] File ${submission.file.name} written!`);
+  logger.log(`Submission File ${submission.file.name} written!`);
 }
 
 async function writeProblemTestcases(problem: Problem): Promise<void> {
@@ -46,7 +45,7 @@ async function writeProblemTestcases(problem: Problem): Promise<void> {
           `api/testcases/${testcase.id}/content/${type}`,
         );
         writeFileSync(filePath, testcase[type].content.payload, 'base64');
-        logger.log(`[Testcase] File ${testcase[type].name} written!`);
+        logger.log(`Testcase file ${testcase[type].name} written!`);
       }
     }
   }
@@ -66,7 +65,7 @@ async function writeExecutable(executable: Executable): Promise<void> {
     const filePath = sh.executableFilePath(executable.id, executable[file]);
     if (!existsSync(filePath)) {
       writeFileSync(filePath, executable[file].content.payload, 'base64');
-      logger.log(`[Executable] File ${executable[file].name} written!`);
+      logger.log(`Executable file ${executable[file].name} written!`);
     }
   }
 }
@@ -75,6 +74,6 @@ async function writeLanguageBuildScript(language: Language): Promise<void> {
   const filePath = sh.languageFilePath();
   if (!existsSync(filePath)) {
     writeFileSync(filePath, language.buildScript.content.payload, 'base64');
-    logger.log(`[Language] File ${language.buildScript.name} written!`);
+    logger.log(`Language file ${language.buildScript.name} written!`);
   }
 }

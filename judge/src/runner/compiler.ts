@@ -12,7 +12,7 @@ export class Compiler extends AbstractRunnerStep {
       compileSubmission(submission),
       compileChecker(submission),
     ]);
-    logger.log(`[Submission] Submission with id ${submission.id} compiled!`);
+    logger.log(`Submission with id ${submission.id} compiled!`);
     await super.run(submission);
   }
 }
@@ -24,7 +24,6 @@ async function compileSubmission(submission: Submission): Promise<void> {
   const container = await dockerService.createContainer({
     Image: submission.language.dockerImage,
     name: sh.containerBuildName(),
-    // OpenStdin: true,
     Cmd: sh.compileCmd(),
     WorkingDir: sh.submissionDir(true),
     HostConfig: {
@@ -40,6 +39,7 @@ async function compileSubmission(submission: Submission): Promise<void> {
   await container.start();
   await container.wait();
   await container.remove();
+  logger.log(`Submission File ${submission.file.name} compiled!`);
 }
 
 async function compileChecker(submission: Submission): Promise<void> {
@@ -76,4 +76,5 @@ async function compileChecker(submission: Submission): Promise<void> {
   await container.start();
   await container.wait();
   await container.remove();
+  logger.log(`Executable File ${checkScript.file.name} compiled!`);
 }
