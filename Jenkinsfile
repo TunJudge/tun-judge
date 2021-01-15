@@ -29,17 +29,19 @@ node("main") {
     )
 
     if (env.BRANCH_NAME == 'main') {
-        parallel(
-            "Publish Server": {
-                stage("Publish Server") {
-                    serverImage.push()
+        docker.withRegistry('', 'docker') {
+            parallel(
+                "Publish Server": {
+                    stage("Publish Server") {
+                        serverImage.push()
+                    }
+                },
+                "Publish Judge": {
+                    stage("Publish Judge") {
+                        judgeImage.push()
+                    }
                 }
-            },
-            "Publish Judge": {
-                stage("Publish Judge") {
-                    judgeImage.push()
-                }
-            }
-        )
+            )
+        }
     }
 }
