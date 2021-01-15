@@ -12,13 +12,34 @@ node("main") {
         checkout scm
     }
 
-    parallel("Build Server": {
-        stage("Build Server") {
-            sh "docker build -f docker/Dockerfile.server -t tunjudge/server ."
+    def serverImage
+    def judgeImage
+
+    parallel(
+        "Build Server": {
+            stage("Build Server") {
+                serverImage = docker.build("tunjudge/server:latest", "-f docker/Dockerfile.server")
+            }
+        },
+        "Build Judge": {
+            stage("Build Judge") {
+                judgeImage = docker.build("tunjudge/judge:latest", "-f docker/Dockerfile.judge")
+            }
         }
-    }, "Build Judge": {
-        stage("Build Judge") {
-            sh "docker build -f docker/Dockerfile.judge -t tunjudge/judge ."
-        }
-    })
+    )
+
+    if (env.BRANCH_NAME == 'main') {
+        parallel(
+            "Publish Server": {
+                stage("Publish Server") {
+                    serverImage.push()
+                }
+            },
+            "Publish Judge": {
+                stage("Publish Judge") {
+                    judgeImage.push()
+                }
+            }
+        )
+    }
 }
