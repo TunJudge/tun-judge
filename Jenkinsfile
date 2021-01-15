@@ -14,4 +14,8 @@ node("main") {
             sh "docker build -f docker/Dockerfile.judge -t tunjudge/judge ."
         }
     })
+
+    stage("List Docker images") {
+        sh "docker images"
+    }
 }
