@@ -1,5 +1,12 @@
 #!groovy
 
+properties properties: [
+    disableConcurrentBuilds(),
+    [$class: 'BuildDiscarderProperty', strategy:
+        [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '10', daysToKeepStr: '', numToKeepStr: '']
+    ]
+]
+
 node("main") {
     stage("Checkout") {
         checkout scm
