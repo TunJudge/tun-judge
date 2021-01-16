@@ -10,6 +10,8 @@ services:
       - MYSQL_DATABASE=domjudge
     ports:
       - 13306:3306
+    volumes:
+      - db_data:/var/lib/mysql
 
   domserver:
     image: domjudge/domserver:latest
@@ -39,3 +41,6 @@ services:
       - 8080:8080
     depends_on:
       - mariadb
+
+volumes:
+  db_data:

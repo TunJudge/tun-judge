@@ -3,7 +3,7 @@ import { RunnerStep } from './runner-step';
 import { Initializer } from './initializer';
 import { Compiler } from './compiler';
 import { Executor } from './executor';
-import { Submission } from '../models';
+import { Judging } from '../models';
 
 export class Runner {
   private step: RunnerStep;
@@ -12,9 +12,9 @@ export class Runner {
     this.step.setNext(new Compiler()).setNext(new Executor());
   }
 
-  run = (submission: Submission): Promise<void> => {
-    submissionHelper.setSubmission(submission);
-    return this.step.run(submission);
+  run = (judging: Judging): Promise<void> => {
+    submissionHelper.setSubmission(judging.submission);
+    return this.step.run(judging);
   };
 }
 

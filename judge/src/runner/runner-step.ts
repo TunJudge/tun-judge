@@ -1,9 +1,9 @@
-import { Submission } from '../models';
+import { Judging } from '../models';
 
 export interface RunnerStep {
   setNext(runnerStep: RunnerStep): RunnerStep;
 
-  run(submission: Submission): Promise<void>;
+  run(judging: Judging): Promise<void>;
 }
 
 export abstract class AbstractRunnerStep implements RunnerStep {
@@ -14,7 +14,7 @@ export abstract class AbstractRunnerStep implements RunnerStep {
     return this.nextStep;
   }
 
-  async run(submission: Submission): Promise<void> {
-    this.nextStep && (await this.nextStep.run(submission));
+  async run(judging: Judging): Promise<void> {
+    this.nextStep && (await this.nextStep.run(judging));
   }
 }

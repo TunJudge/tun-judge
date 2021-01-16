@@ -46,8 +46,8 @@ export function formatRestTime(time: number): string {
   const seconds = Math.floor(time % 60);
   let result = '';
   days && (result += `${days}d `);
-  hours && (result += `${hours < 10 ? '0' + hours : hours}:`);
-  minutes && (result += `${minutes < 10 ? '0' + minutes : minutes}:`);
+  (days || hours) && (result += `${hours < 10 ? '0' + hours : hours}:`);
+  (days || hours || minutes) && (result += `${minutes < 10 ? '0' + minutes : minutes}:`);
   result += `${seconds < 10 ? '0' + seconds : seconds}`;
   return result;
 }

@@ -9,6 +9,7 @@ import { ContestsStore } from './ContestsStore';
 import { ProblemsStore } from './ProblemsStore';
 import { TestcasesStore } from './TestcasesStore';
 import { LanguagesStore } from './LanguagesStore';
+import { JudgeHostsStore } from './JudgeHostsStore';
 import { ExecutablesStore } from './ExecutablesStore';
 import { TeamCategoriesStore } from './TeamCategoriesStore';
 
@@ -29,6 +30,7 @@ export class RootStore {
   problemsStore: ProblemsStore;
   testcasesStore: TestcasesStore;
   languagesStore: LanguagesStore;
+  judgeHostsStore: JudgeHostsStore;
   executablesStore: ExecutablesStore;
   teamCategoriesStore: TeamCategoriesStore;
 
@@ -43,6 +45,7 @@ export class RootStore {
     this.problemsStore = new ProblemsStore(this);
     this.testcasesStore = new TestcasesStore(this);
     this.languagesStore = new LanguagesStore(this);
+    this.judgeHostsStore = new JudgeHostsStore(this);
     this.executablesStore = new ExecutablesStore(this);
     this.teamCategoriesStore = new TeamCategoriesStore(this);
 

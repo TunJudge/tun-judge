@@ -22,6 +22,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ item: team, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Team>>({
     name: isEmpty(team.name),
     category: isEmpty(team.category),
+    contests: false,
   });
   const {
     usersStore: { teamUsers: users },
@@ -99,6 +100,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ item: team, dismiss, submit }) => {
             selection
             options={contests}
             optionsTextField="name"
+            setErrors={setErrors}
             isObject
           />
           <CheckBoxField<Team> entity={team} field="enabled" label="Enabled" defaultValue={true} />

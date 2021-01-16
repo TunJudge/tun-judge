@@ -9,8 +9,9 @@ import ProblemView from './views/problems/ProblemView';
 import ContestsList from './views/contests/ContestsList';
 import ProblemsList from './views/problems/ProblemsList';
 import LanguagesList from './views/languages/LanguagesList';
-import TeamCategoriesList from './views/team-category/TeamCategoriesList';
+import JudgeHostsList from './views/judge-hosts/JudgeHostsList';
 import ExecutablesList from './views/executables/ExecutablesList';
+import TeamCategoriesList from './views/team-category/TeamCategoriesList';
 
 const AdminLayout: React.FC = () => {
   const [sidebarVisible, toggleSidebar] = useState<boolean>(true);
@@ -40,6 +41,7 @@ const AdminLayout: React.FC = () => {
           <Route exact path="/users" component={UsersList} />
           <Route exact path="/teams" component={TeamsList} />
           <Route exact path="/team-categories" component={TeamCategoriesList} />
+          <Route exact path="/judge-hosts" component={JudgeHostsList} />
           <Route exact path="/scoreboard" component={Scoreboard} />
           <Route render={() => <Redirect to="/" />} />
         </Switch>

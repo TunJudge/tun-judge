@@ -20,7 +20,7 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
   const {
     languagesStore: { data: languages },
     publicStore: { currentContest },
-    teamStore: { sendSubmission },
+    teamStore: { sendSubmission, fetchSubmissions },
     profile,
   } = rootStore;
 
@@ -35,6 +35,18 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
             label="Source file"
             errors={errors}
             setErrors={setErrors}
+            onChange={() => {
+              if (!submission.file) return;
+              const language = languages.find((l) =>
+                l.extensions.some((e) => submission.file.name.endsWith(e)),
+              );
+              if (language) {
+                submission.language = { ...language };
+                setErrors((errors) => ({ ...errors, language: false }));
+              } else {
+                setErrors((errors) => ({ ...errors, file: true }));
+              }
+            }}
           />
           <DropdownField<Submission>
             entity={submission}
@@ -77,6 +89,7 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
           color="green"
           onClick={async () => {
             await sendSubmission(currentContest!.id, profile!.team.id, submission);
+            await fetchSubmissions(currentContest!.id, profile!.team.id);
             dismiss();
           }}
           disabled={Object.values(errors).some((e) => e)}

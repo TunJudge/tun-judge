@@ -22,7 +22,7 @@ export class SubmissionsController {
   }
 
   @Post()
-  @UseGuards(AdminGuard, TeamGuard)
+  @UseGuards(TeamGuard)
   async create(@Body() submission: Submission): Promise<Submission> {
     return this.submissionsRepository.save(submission);
   }

@@ -326,15 +326,6 @@ export function DropdownField<T>({
   setErrors,
   onChange,
 }: DropdownFieldProps<T>): any {
-  const [value, setValue] = useState(
-    multiple
-      ? ((entity[field] as any) ?? []).map((value: any) =>
-          typeof value === 'object' ? value[optionsIdField ?? 'id'] : value,
-        )
-      : typeof entity[field] === 'object'
-      ? (entity[field] as any)[optionsIdField ?? 'id']
-      : entity[field],
-  );
   const [optionsState, setOptions] = useState<DropdownItemProps[]>(
     (options ?? (entity[field] as any) ?? []).map((value: any) => {
       if (typeof value === 'object') {
@@ -364,7 +355,15 @@ export function DropdownField<T>({
       multiple={multiple}
       allowAdditions={allowAdditions}
       placeholder={placeHolder ?? label}
-      value={value}
+      value={
+        multiple
+          ? ((entity[field] as any) ?? []).map((value: any) =>
+              typeof value === 'object' ? value[optionsIdField ?? 'id'] : value,
+            )
+          : typeof entity[field] === 'object'
+          ? (entity[field] as any)[optionsIdField ?? 'id']
+          : entity[field]
+      }
       onChange={(_, { value }) => {
         if (multiple) {
           entity[field] = (isObject
@@ -381,7 +380,6 @@ export function DropdownField<T>({
           setErrors && setErrors({ ...errors, [field]: false });
         }
         onChange && onChange();
-        setValue(value);
       }}
       onAddItem={(_, { value }) =>
         setOptions([...optionsState, { key: value, text: value, value } as any])

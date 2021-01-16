@@ -45,6 +45,11 @@ const tabs: Tabs = [
     icon: 'tags',
   },
   {
+    key: 'judge-hosts',
+    title: 'Judge Hosts',
+    icon: 'server',
+  },
+  {
     key: 'scoreboard',
     title: 'Scoreboard',
     icon: 'list ol',

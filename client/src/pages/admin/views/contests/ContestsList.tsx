@@ -6,6 +6,7 @@ import { Contest } from '../../../../core/models';
 import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
 import moment from 'moment';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import { observable } from 'mobx';
 
 const ContestsList: React.FC = observer(() => {
   const {
@@ -75,7 +76,7 @@ const ContestsList: React.FC = observer(() => {
       header="Contests"
       data={data}
       columns={columns}
-      formItemInitValue={{ problems: [] }}
+      formItemInitValue={observable({ problems: [] })}
       ItemForm={ContestForm}
       onDelete={remove}
       onRefresh={() => Promise.all([fetchAll(), fetchAllProblems()])}

@@ -51,7 +51,16 @@ const SubmissionsList: React.FC = observer(() => {
     {
       header: 'Result',
       field: 'language',
-      render: (submission) => submission.id,
+      render: (submission) => {
+        const judging = submission.judgings.find((j) => j.valid && j.endTime);
+        return (
+          <b
+            style={{ color: judging ? (judging.result === 'accepted' ? 'green' : 'red') : 'grey' }}
+          >
+            {judging?.result ?? 'pending'}
+          </b>
+        );
+      },
     },
   ];
 
@@ -63,7 +72,11 @@ const SubmissionsList: React.FC = observer(() => {
       columns={columns}
       withoutActions
       onRefresh={() => fetchSubmissions(currentContest!.id, profile!.team.id)}
-      rowBackgroundColor={() => '#fbbd08'}
+      rowBackgroundColor={(submission) => {
+        const judging = submission.judgings.find((j) => j.valid && j.endTime);
+        if (!judging) return '#FFEAC2';
+        return judging.result == 'accepted' ? '#B3FFC2' : '#FFC2C2';
+      }}
     />
   );
 });

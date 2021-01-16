@@ -6,7 +6,7 @@ import config from '../config';
 axiosCookieJarSupport(axios);
 
 export class HttpClient {
-  private hostname: string = config.hostname;
+  private url: string = config.url;
   private cookieJar: CookieJar = new CookieJar();
 
   get<T>(path: string, options?: AxiosRequestConfig): Promise<T> {
@@ -40,7 +40,7 @@ export class HttpClient {
   ): Promise<T> {
     return (
       await axios.request<T>({
-        url: `${this.hostname}/${path}`,
+        url: `${this.url}/${path}`,
         method: method,
         withCredentials: true,
         jar: this.cookieJar,

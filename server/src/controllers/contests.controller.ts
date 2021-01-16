@@ -83,7 +83,7 @@ export class ContestsController {
     return this.submissionsRepository.find({
       order: { submitTime: 'DESC' },
       where: { contest: { id: contestId }, team: { id: teamId } },
-      relations: ['language', 'problem'],
+      relations: ['language', 'problem', 'judgings'],
     });
   }
 

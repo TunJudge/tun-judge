@@ -4,6 +4,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -13,6 +14,7 @@ import { Problem } from './problem.entity';
 import { Language } from './language.entity';
 import { JudgeHost } from './judge-host.entity';
 import { File } from './file.entity';
+import { Judging } from './judging.entity';
 
 @Entity()
 @Index(['contest', 'team'])
@@ -65,7 +67,7 @@ export class Submission {
   language: Language;
 
   @ManyToOne(() => JudgeHost, {
-    onDelete: 'SET NULL',
+    onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
   })
   judgeHost: JudgeHost;
@@ -84,4 +86,10 @@ export class Submission {
   })
   @JoinColumn()
   file: File;
+
+  @OneToMany(() => Judging, (judging) => judging.submission, {
+    onDelete: 'CASCADE',
+    onUpdate: 'RESTRICT',
+  })
+  judgings: Judging[];
 }

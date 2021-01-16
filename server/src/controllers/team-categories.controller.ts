@@ -25,6 +25,7 @@ export class TeamCategoriesController {
   ) {}
 
   @Get()
+  @UseGuards(AdminGuard)
   getAll(): Promise<TeamCategory[]> {
     return this.teamCategoriesRepository.find({
       order: { sortOrder: 'ASC' },

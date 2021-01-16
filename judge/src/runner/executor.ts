@@ -1,30 +1,34 @@
-import { chmodSync, promises, rmdirSync, unlinkSync } from 'fs';
+import { chmodSync, promises, readFileSync } from 'fs';
 import { join } from 'path';
 import { AbstractRunnerStep } from './runner-step';
-import { Submission } from '../models';
-import sh, { dockerWorkDir, workDir } from './submission-helper';
+import { Judging } from '../models';
+import sh from './submission-helper';
 import dockerService from '../services/docker.service';
-import { Logger } from '@nestjs/common';
-import { Container } from 'dockerode';
+import { JudgeLogger } from '../services/judge.logger';
+import http from '../http/http.client';
+import { JudgingRun } from '../models/judging-run.model';
+import { MD5 } from 'crypto-js';
 
 export class Executor extends AbstractRunnerStep {
-  async run(submission: Submission): Promise<void> {
+  async run(judging: Judging): Promise<void> {
+    const { submission } = judging;
     const { testcases, runScript } = submission.problem;
     chmodSync(sh.executableFilePath(runScript.id, runScript.file), '0775');
-    const runnerContainer = await createContainer(
-      submission,
-      sh.containerRunName(),
-      submission.language.dockerImage,
-    );
-    const checkerContainer = await createContainer(
-      submission,
-      sh.checkerRunName(),
-      submission.problem.checkScript.dockerImage,
-    );
+    const runnerContainer = await dockerService.createContainer({
+      Image: submission.language.dockerImage,
+      name: sh.containerRunName(),
+      HostConfig: {
+        Memory: submission.problem.memoryLimit * 1024,
+      },
+    });
+    const checkerContainer = await dockerService.createContainer({
+      Image: submission.problem.checkScript.dockerImage,
+      name: sh.checkerRunName(),
+    });
     await runnerContainer.start();
     await checkerContainer.start();
     for (const testcase of testcases.sort((a, b) => a.rank - b.rank)) {
-      logger.log(`Running test ${testcase.rank}...`);
+      logger.log(`Running test ${testcase.rank}...`, undefined, false);
       await Promise.all([
         promises.copyFile(
           sh.testcaseFilePath(testcase.id, testcase.input),
@@ -35,88 +39,133 @@ export class Executor extends AbstractRunnerStep {
           join(sh.submissionDir(), 'test.ans'),
         ),
       ]);
-      const runningResult = await execCmdInDocker(runnerContainer, sh.runCmd());
-      if (runningResult.exitCode !== 0) {
-        logger.error(
-          `Submission with id ${submission.id} failed for test ${testcase.rank}: ${runningResult.stderr}`,
+      const runningResult = await dockerService.execCmdInDocker(
+        runnerContainer,
+        sh.runCmd(),
+      );
+      const time = /real.*m(.*)s/.exec(runningResult.stdout);
+      if (runningResult.exitCode) {
+        const payload = Buffer.from(runningResult.stderr).toString('base64');
+        await http.post(
+          `api/judge-hosts/${submission.judgeHost.hostname}/add-judging-run/${judging.id}`,
+          {
+            judging: { id: judging.id },
+            endTime: new Date(),
+            testcase: { id: testcase.id },
+            result: 'runtime-error',
+            runTime: time.length > 1 ? parseFloat(time[1]) : 0,
+            errorOutput: {
+              name: 'program.err',
+              type: 'text/plain',
+              size: runningResult.stderr.length,
+              md5Sum: MD5(payload).toString(),
+              content: {
+                payload: payload,
+              },
+            },
+          } as Partial<JudgingRun>,
         );
+        await http.put(
+          `api/judge-hosts/${submission.judgeHost.hostname}/update-judging/${judging.id}`,
+          {
+            id: judging.id,
+            endTime: new Date(),
+            result: 'runtime-error',
+          } as Partial<Judging>,
+        );
+        process.stdout.clearLine(0);
+        process.stdout.cursorTo(0);
+        logger.error(`Running test ${testcase.rank}...\tNOT OK!`);
+        await dockerService.pruneContainer(runnerContainer);
+        await dockerService.pruneContainer(checkerContainer);
         return;
       }
-      const checkingResult = await execCmdInDocker(
+      const checkingResult = await dockerService.execCmdInDocker(
         checkerContainer,
         sh.checkerRunCmd(),
       );
-      if (checkingResult.exitCode !== 0) {
-        logger.error(
-          `Submission with id ${submission.id} failed for test ${testcase.rank}: ${checkingResult.stdout}`,
+      const runningOutput = readFileSync(
+        sh.testFilesPath('test.out'),
+      ).toString();
+      const runningPayload = Buffer.from(runningOutput).toString('base64');
+      const runOutputFile = {
+        name: 'program.out',
+        type: 'text/plain',
+        size: runningOutput.length,
+        md5Sum: MD5(runningPayload).toString(),
+        content: {
+          payload: runningPayload,
+        },
+      };
+      const checkerPayload = Buffer.from(checkingResult.stdout).toString(
+        'base64',
+      );
+      const checkerOutputFile = {
+        name: 'checker.out',
+        type: 'text/plain',
+        size: checkingResult.stdout.length,
+        md5Sum: MD5(checkerPayload).toString(),
+        content: {
+          payload: checkerPayload,
+        },
+      };
+      if (checkingResult.exitCode) {
+        await http.post(
+          `api/judge-hosts/${submission.judgeHost.hostname}/add-judging-run/${judging.id}`,
+          {
+            judging: { id: judging.id },
+            endTime: new Date(),
+            testcase: { id: testcase.id },
+            result: 'runtime-error',
+            runTime: time.length > 1 ? parseFloat(time[1]) : 0,
+            runOutput: runOutputFile,
+            checkerOutput: checkerOutputFile,
+          } as Partial<JudgingRun>,
         );
+        await http.put(
+          `api/judge-hosts/${submission.judgeHost.hostname}/update-judging/${judging.id}`,
+          {
+            id: judging.id,
+            endTime: new Date(),
+            result: 'wrong-answer',
+          } as Partial<Judging>,
+        );
+        process.stdout.clearLine(0);
+        process.stdout.cursorTo(0);
+        logger.error(`Running test ${testcase.rank}...\tNOT OK!`);
+        await dockerService.pruneContainer(runnerContainer);
+        await dockerService.pruneContainer(checkerContainer);
         return;
+      } else {
+        await http.post(
+          `api/judge-hosts/${submission.judgeHost.hostname}/add-judging-run/${judging.id}`,
+          {
+            judging: { id: judging.id },
+            endTime: new Date(),
+            testcase: { id: testcase.id },
+            result: 'accepted',
+            runTime: time.length > 1 ? parseFloat(time[1]) : 0,
+            runOutput: runOutputFile,
+            checkerOutput: checkerOutputFile,
+          } as Partial<JudgingRun>,
+        );
+        process.stdout.clearLine(0);
+        process.stdout.cursorTo(0);
+        logger.log(`Running test ${testcase.rank}...\tOK!`);
       }
     }
+    await http.put(
+      `api/judge-hosts/${submission.judgeHost.hostname}/update-judging/${judging.id}`,
+      {
+        id: judging.id,
+        endTime: new Date(),
+        result: 'accepted',
+      } as Partial<Judging>,
+    );
     logger.log(`Submission with id ${submission.id} is correct!`);
-    rmdirSync(sh.submissionDir(), { recursive: true });
-    await runnerContainer.kill();
-    await checkerContainer.kill();
-    await runnerContainer.remove();
-    await checkerContainer.remove();
+    await dockerService.pruneContainer(runnerContainer);
+    await dockerService.pruneContainer(checkerContainer);
   }
 }
 
-const logger = new Logger(Executor.name);
-
-function createContainer(
-  submission: Submission,
-  name: string,
-  dockerImage: string,
-): Promise<Container> {
-  return dockerService.createContainer({
-    Image: dockerImage,
-    name: name,
-    OpenStdin: true,
-    WorkingDir: sh.submissionDir(true),
-    HostConfig: {
-      CpusetCpus: '0-3',
-      Mounts: [
-        {
-          Target: dockerWorkDir,
-          Source: workDir,
-          Type: 'bind',
-        },
-      ],
-    },
-  });
-}
-
-type ExecResult = {
-  exitCode: number;
-  stdout: string;
-  stderr: string;
-};
-
-function execCmdInDocker(
-  container: Container,
-  cmd: string[],
-): Promise<ExecResult> {
-  return new Promise<ExecResult>(async (resolve) => {
-    const result: ExecResult = {
-      exitCode: 0,
-      stdout: '',
-      stderr: '',
-    };
-    const exec = await container.exec({
-      Cmd: cmd,
-      AttachStdout: true,
-      AttachStderr: true,
-      Tty: false,
-    });
-    const duplex = await exec.start({ hijack: true });
-    duplex.on('data', (chunk) => (result.stdout += chunk));
-    duplex.on('error', (chunk) => (result.stderr += chunk));
-    duplex.on('end', async () =>
-      resolve({
-        ...result,
-        exitCode: (await exec.inspect()).ExitCode,
-      }),
-    );
-  });
-}
+const logger = new JudgeLogger(Executor.name);

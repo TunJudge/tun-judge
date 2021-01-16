@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Container, Icon, Image } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../core/stores/RootStore';
-import { Submission } from '../../core/models';
+import { ContestProblem, Submission } from '../../core/models';
 import SubmitForm from '../team/views/SubmitForm';
 import PDFModalViewer from './PDFModalViewer';
-import { contestNotOver, formatBytes } from '../../core/helpers';
+import { contestNotOver, formatBytes, isEmpty } from '../../core/helpers';
 
 type ListLayout = 'list' | 'th';
 
@@ -17,12 +17,39 @@ const ProblemSet: React.FC = observer(() => {
   );
   const {
     publicStore: { currentContest, problems, fetchProblems },
+    teamStore: { submissions, fetchSubmissions },
     profile,
   } = rootStore;
 
   useEffect(() => {
     currentContest && fetchProblems(currentContest.id);
   }, [fetchProblems, currentContest]);
+
+  useEffect(() => {
+    if (profile?.role?.name === 'team' && currentContest) {
+      fetchSubmissions(currentContest.id, profile.team.id);
+    }
+  }, [profile, currentContest, fetchSubmissions]);
+
+  const getProblemColor = (problem: ContestProblem): string => {
+    if (isEmpty(submissions)) return '';
+    const submission = submissions.filter((s) => s.problem.id === problem.problem.id);
+    if (
+      submission.some((s) =>
+        s.judgings.find((j) => j.valid && j.endTime && j.result === 'accepted'),
+      )
+    ) {
+      return '#B3FFC2';
+    }
+    if (
+      submission.some((s) =>
+        s.judgings.find((j) => j.valid && j.endTime && j.result && j.result !== 'accepted'),
+      )
+    ) {
+      return '#FFC2C2';
+    }
+    return '';
+  };
 
   return (
     <Container>
@@ -41,7 +68,7 @@ const ProblemSet: React.FC = observer(() => {
       <Card.Group centered stackable itemsPerRow={listLayout === 'list' ? 1 : 4}>
         {problems.map((problem) => (
           <Card fluid key={problem.shortName}>
-            <Card.Content>
+            <Card.Content style={{ backgroundColor: getProblemColor(problem) }}>
               <Image
                 floated="right"
                 style={{

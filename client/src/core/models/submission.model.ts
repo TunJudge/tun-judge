@@ -3,6 +3,8 @@ import { Team } from './team.model';
 import { Problem } from './problem.model';
 import { Language } from './language.model';
 import { File } from './file.model';
+import { JudgeHost } from './judge-host.model';
+import { Judging } from './judging.model';
 
 export interface Submission {
   id: number;
@@ -12,7 +14,8 @@ export interface Submission {
   team: Team;
   problem: Problem;
   language: Language;
-  // judgeHost: JudgeHost;
+  judgeHost: JudgeHost;
   originalSubmission: Submission;
   file: File;
+  judgings: Judging[];
 }

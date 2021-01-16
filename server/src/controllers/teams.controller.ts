@@ -23,6 +23,7 @@ export class TeamsController {
   ) {}
 
   @Get()
+  @UseGuards(AdminGuard)
   getAll(): Promise<Team[]> {
     return this.teamsRepository.find({
       order: { id: 'ASC' },

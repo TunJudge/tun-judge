@@ -3,37 +3,41 @@ import { AbstractRunnerStep } from './runner-step';
 import {
   Executable,
   FileContent,
+  Judging,
   Language,
   Problem,
   Submission,
 } from '../models';
 import http from '../http/http.client';
 import dockerService from '../services/docker.service';
-import { Logger } from '@nestjs/common';
 import sh from './submission-helper';
+import { JudgeLogger } from '../services/judge.logger';
 
 export class Initializer extends AbstractRunnerStep {
   constructor() {
     super();
   }
 
-  async run(submission: Submission): Promise<void> {
-    await Promise.all([
-      writeSubmissionFile(submission),
-      writeProblemTestcases(submission.problem),
-      writeProblemExecutables(submission.problem),
-      writeLanguageBuildScript(submission.language),
-      dockerService.pullImage(submission.language.dockerImage),
-    ]);
-    await super.run(submission);
+  async run(judging: Judging): Promise<void> {
+    const { submission } = judging;
+    try {
+      await writeSubmissionFile(submission);
+      await writeProblemTestcases(submission.problem);
+      await writeProblemExecutables(submission.problem);
+      await writeLanguageBuildScript(submission.language);
+      await dockerService.pullImage(submission.language.dockerImage);
+    } catch (e) {
+      return;
+    }
+    await super.run(judging);
   }
 }
 
-const logger = new Logger(Initializer.name);
+const logger = new JudgeLogger(Initializer.name);
 
 async function writeSubmissionFile(submission: Submission): Promise<void> {
   writeFileSync(sh.filePath(), submission.file.content.payload, 'base64');
-  logger.log(`Submission File ${submission.file.name} written!`);
+  logger.debug(`Submission File ${submission.file.name} written!`);
 }
 
 async function writeProblemTestcases(problem: Problem): Promise<void> {
@@ -45,7 +49,7 @@ async function writeProblemTestcases(problem: Problem): Promise<void> {
           `api/testcases/${testcase.id}/content/${type}`,
         );
         writeFileSync(filePath, testcase[type].content.payload, 'base64');
-        logger.log(`Testcase file ${testcase[type].name} written!`);
+        logger.debug(`Testcase file ${testcase[type].name} written!`);
       }
     }
   }
@@ -65,7 +69,7 @@ async function writeExecutable(executable: Executable): Promise<void> {
     const filePath = sh.executableFilePath(executable.id, executable[file]);
     if (!existsSync(filePath)) {
       writeFileSync(filePath, executable[file].content.payload, 'base64');
-      logger.log(`Executable file ${executable[file].name} written!`);
+      logger.debug(`Executable file ${executable[file].name} written!`);
     }
   }
 }
@@ -74,6 +78,6 @@ async function writeLanguageBuildScript(language: Language): Promise<void> {
   const filePath = sh.languageFilePath();
   if (!existsSync(filePath)) {
     writeFileSync(filePath, language.buildScript.content.payload, 'base64');
-    logger.log(`Language file ${language.buildScript.name} written!`);
+    logger.debug(`Language file ${language.buildScript.name} written!`);
   }
 }

@@ -1,8 +1,18 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user.entity';
 
 @Entity()
 export class JudgeHost {
-  @PrimaryColumn({ comment: 'Judge host hostname', unique: true })
+  @PrimaryGeneratedColumn({ comment: 'Judge host ID' })
+  id: number;
+
+  @Column({ comment: 'Judge host hostname', unique: true })
   hostname: string;
 
   @Column({ comment: 'Whether the judge host is enabled', default: true })
@@ -10,4 +20,11 @@ export class JudgeHost {
 
   @Column({ comment: 'Time of last poll', nullable: true })
   pollTime: Date;
+
+  @OneToOne(() => User, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+  })
+  @JoinColumn()
+  user: User;
 }

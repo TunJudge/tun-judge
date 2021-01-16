@@ -176,17 +176,23 @@ function ListPage<T extends { id: number }>({
                   ))}
                   {!withoutActions && (
                     <Table.Cell textAlign="center">
-                      <Icon
-                        name="edit"
-                        onClick={() => openForm(item)}
-                        style={{ cursor: 'pointer', marginRight: '0' }}
-                      />
+                      {ItemForm && (
+                        <Icon
+                          name="edit"
+                          onClick={() => openForm(item)}
+                          style={{ cursor: 'pointer', marginRight: '0' }}
+                        />
+                      )}
                       {(!canDelete || canDelete(item)) && (
                         <Icon
                           name="trash"
                           color="red"
                           onClick={() => onDelete && onDelete(item.id)}
-                          style={{ cursor: 'pointer', marginLeft: '25%', marginRight: '0' }}
+                          style={{
+                            cursor: 'pointer',
+                            marginLeft: ItemForm && '25%',
+                            marginRight: '0',
+                          }}
                         />
                       )}
                     </Table.Cell>

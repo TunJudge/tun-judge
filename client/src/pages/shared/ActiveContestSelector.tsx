@@ -48,7 +48,7 @@ const ActiveContestSelector: React.FC = observer(() => {
         onChange={(_, { value }) => setCurrentContest(value as number)}
       />
       {currentContest && (
-        <Menu.Item style={{ backgroundColor: 'rgba(255,255,255,.08)' }}>
+        <Menu.Item style={{ backgroundColor: 'rgba(33, 133, 208, .2)' }}>
           <div
             className="progress-bar"
             style={{

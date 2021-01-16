@@ -38,9 +38,7 @@ export class SubmissionHelper {
     return [
       'bash',
       '-c',
-      `timeout ${
-        this.submission.problem.timeLimit
-      } time ${this.executableFilePath(
+      `time ${this.executableFilePath(
         runScript.id,
         runScript.file,
         true,

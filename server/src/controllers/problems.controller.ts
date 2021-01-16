@@ -23,6 +23,7 @@ export class ProblemsController {
   ) {}
 
   @Get()
+  @UseGuards(AdminGuard)
   getAll(): Promise<Problem[]> {
     return this.problemsRepository.find({
       order: { id: 'ASC' },
@@ -37,6 +38,7 @@ export class ProblemsController {
   }
 
   @Get(':id')
+  @UseGuards(AdminGuard)
   getById(@Param('id') id: number): Promise<Problem> {
     return this.problemsRepository.findOneOrThrow(
       id,
