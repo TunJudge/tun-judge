@@ -56,7 +56,11 @@ export class DockerService {
     return this.connection.createContainer(options);
   }
 
-  execCmdInDocker(container: Container, cmd: string[]): Promise<ExecResult> {
+  execCmdInDocker(
+    container: Container,
+    cmd: string[],
+    workDir?: string,
+  ): Promise<ExecResult> {
     return new Promise<ExecResult>(async (resolve) => {
       const result: ExecResult = {
         exitCode: 0,
@@ -68,6 +72,7 @@ export class DockerService {
         AttachStdout: true,
         AttachStderr: true,
         Tty: false,
+        WorkingDir: workDir,
       });
       const duplex = await exec.start({ hijack: true });
       duplex.on('data', (chunk) => (result.stdout += chunk));

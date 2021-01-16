@@ -1,4 +1,4 @@
-import { mkdirSync } from 'fs';
+import { copyFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { File, Submission } from '../models';
 
@@ -7,6 +7,7 @@ mkdirSync(workDir, { recursive: true });
 export const dockerWorkDir = join('/', 'workDir');
 export const assetsDir = join(__dirname, '..', '..', 'assets');
 export const testLibPath = join(assetsDir, 'testlib.h');
+export const guardCppPath = join(assetsDir, 'guard.cpp');
 
 export class SubmissionHelper {
   private submission: Submission;
@@ -38,11 +39,18 @@ export class SubmissionHelper {
     return [
       'bash',
       '-c',
-      `time ${this.executableFilePath(
-        runScript.id,
-        runScript.file,
-        true,
-      )} ${this.binPath(true)} test.in test.out`,
+      [
+        this.assetsFilePath('guard', true),
+        this.submission.problem.timeLimit * 1000,
+        this.submission.problem.memoryLimit,
+        `'${this.executableFilePath(
+          runScript.id,
+          runScript.file,
+          true,
+        )} ${this.binPath(true)}'`,
+        'test.in',
+        'test.out',
+      ].join(' '),
     ];
   };
 
@@ -53,7 +61,7 @@ export class SubmissionHelper {
     String(this.submission.problem.memoryLimit),
   ];
 
-  testFilesPath = (filename: string, docker = false): string =>
+  extraFilesPath = (filename: string, docker = false): string =>
     join(this.submissionDir(docker), filename);
 
   checkerRunCmd = (): string[] => {
@@ -62,9 +70,9 @@ export class SubmissionHelper {
     } = this.submission;
     return [
       this.executableBinPath(checkScript.id, checkScript.file, true),
-      this.testFilesPath('test.in', true),
-      this.testFilesPath('test.out', true),
-      this.testFilesPath('test.ans', true),
+      this.extraFilesPath('test.in', true),
+      this.extraFilesPath('test.out', true),
+      this.extraFilesPath('test.ans', true),
     ];
   };
 
@@ -85,6 +93,12 @@ export class SubmissionHelper {
       'submissions',
       String(this.submission.id),
     );
+    !docker && mkdirSync(dir, { recursive: true });
+    return dir;
+  };
+
+  runTestcaseDir = (rank: number, docker = false): string => {
+    const dir = join(this.submissionDir(docker), String(rank));
     !docker && mkdirSync(dir, { recursive: true });
     return dir;
   };
@@ -169,8 +183,18 @@ export class SubmissionHelper {
       /\.[^.]*$/g,
       '',
     );
+
+  assetsDir = (docker = false): string => {
+    const dir = join(docker ? dockerWorkDir : workDir, 'assets');
+    !docker && mkdirSync(dir, { recursive: true });
+    return dir;
+  };
+
+  assetsFilePath = (fileName: string, docker = false): string =>
+    join(this.assetsDir(docker), fileName);
 }
 
 const submissionHelper = new SubmissionHelper();
+copyFileSync(guardCppPath, submissionHelper.assetsFilePath('guard.cpp'));
 
 export default submissionHelper;

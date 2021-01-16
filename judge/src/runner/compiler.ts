@@ -30,6 +30,11 @@ export class Compiler extends AbstractRunnerStep {
       submissionContainer,
       sh.compileCmd(),
     );
+    await dockerService.execCmdInDocker(
+      submissionContainer,
+      'g++ -pthread -o guard guard.cpp'.split(' '),
+      sh.assetsDir(true),
+    );
     await dockerService.pruneContainer(submissionContainer);
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);

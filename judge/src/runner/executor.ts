@@ -1,4 +1,4 @@
-import { chmodSync, promises, readFileSync } from 'fs';
+import { chmodSync, promises as fs } from 'fs';
 import { join } from 'path';
 import { AbstractRunnerStep } from './runner-step';
 import { Judging } from '../models';
@@ -30,22 +30,28 @@ export class Executor extends AbstractRunnerStep {
     for (const testcase of testcases.sort((a, b) => a.rank - b.rank)) {
       logger.log(`Running test ${testcase.rank}...`, undefined, false);
       await Promise.all([
-        promises.copyFile(
+        fs.copyFile(
           sh.testcaseFilePath(testcase.id, testcase.input),
-          join(sh.submissionDir(), 'test.in'),
+          sh.extraFilesPath('test.in'),
         ),
-        promises.copyFile(
+        fs.copyFile(
           sh.testcaseFilePath(testcase.id, testcase.output),
-          join(sh.submissionDir(), 'test.ans'),
+          sh.extraFilesPath('test.ans'),
         ),
       ]);
-      const runningResult = await dockerService.execCmdInDocker(
-        runnerContainer,
-        sh.runCmd(),
+      await dockerService.execCmdInDocker(runnerContainer, sh.runCmd());
+      const guardOutput: {
+        usedTime: number;
+        usedMemory: number;
+        exitCode: number;
+      } = JSON.parse(
+        (await fs.readFile(sh.extraFilesPath('guard.json'))).toString(),
       );
-      const time = /real.*m(.*)s/.exec(runningResult.stdout);
-      if (runningResult.exitCode) {
-        const payload = Buffer.from(runningResult.stderr).toString('base64');
+      if (guardOutput.exitCode) {
+        const errorOutput = (
+          await fs.readFile(sh.extraFilesPath('test.out'))
+        ).toString();
+        const payload = Buffer.from(errorOutput).toString('base64');
         await http.post(
           `api/judge-hosts/${submission.judgeHost.hostname}/add-judging-run/${judging.id}`,
           {
@@ -53,11 +59,11 @@ export class Executor extends AbstractRunnerStep {
             endTime: new Date(),
             testcase: { id: testcase.id },
             result: 'runtime-error',
-            runTime: time.length > 1 ? parseFloat(time[1]) : 0,
+            runTime: guardOutput.usedTime / 1000,
             errorOutput: {
               name: 'program.err',
               type: 'text/plain',
-              size: runningResult.stderr.length,
+              size: errorOutput.length,
               md5Sum: MD5(payload).toString(),
               content: {
                 payload: payload,
@@ -84,8 +90,8 @@ export class Executor extends AbstractRunnerStep {
         checkerContainer,
         sh.checkerRunCmd(),
       );
-      const runningOutput = readFileSync(
-        sh.testFilesPath('test.out'),
+      const runningOutput = (
+        await fs.readFile(sh.extraFilesPath('test.out'))
       ).toString();
       const runningPayload = Buffer.from(runningOutput).toString('base64');
       const runOutputFile = {
@@ -117,7 +123,7 @@ export class Executor extends AbstractRunnerStep {
             endTime: new Date(),
             testcase: { id: testcase.id },
             result: 'runtime-error',
-            runTime: time.length > 1 ? parseFloat(time[1]) : 0,
+            runTime: guardOutput.usedTime / 1000,
             runOutput: runOutputFile,
             checkerOutput: checkerOutputFile,
           } as Partial<JudgingRun>,
@@ -144,7 +150,7 @@ export class Executor extends AbstractRunnerStep {
             endTime: new Date(),
             testcase: { id: testcase.id },
             result: 'accepted',
-            runTime: time.length > 1 ? parseFloat(time[1]) : 0,
+            runTime: guardOutput.usedTime / 1000,
             runOutput: runOutputFile,
             checkerOutput: checkerOutputFile,
           } as Partial<JudgingRun>,
@@ -152,6 +158,13 @@ export class Executor extends AbstractRunnerStep {
         process.stdout.clearLine(0);
         process.stdout.cursorTo(0);
         logger.log(`Running test ${testcase.rank}...\tOK!`);
+        for (const file of ['test.in', 'test.out', 'test.ans', 'guard.json']) {
+          await fs.copyFile(
+            sh.extraFilesPath(file),
+            join(sh.runTestcaseDir(testcase.rank), file),
+          );
+          await fs.unlink(sh.extraFilesPath(file));
+        }
       }
     }
     await http.put(
