@@ -4,7 +4,7 @@ import { File } from './file.model';
 
 export interface JudgingRun {
   id: number;
-  result: string;
+  result: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE';
   endTime: Date;
   runTime: number;
   judging: Judging;

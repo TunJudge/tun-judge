@@ -9,6 +9,12 @@ import http from '../http/http.client';
 import { JudgingRun } from '../models/judging-run.model';
 import { MD5 } from 'crypto-js';
 
+type GuardOutput = {
+  usedTime: number;
+  usedMemory: number;
+  exitCode: number;
+};
+
 export class Executor extends AbstractRunnerStep {
   async run(judging: Judging): Promise<void> {
     const { submission } = judging;
@@ -40,17 +46,18 @@ export class Executor extends AbstractRunnerStep {
         ),
       ]);
       await dockerService.execCmdInDocker(runnerContainer, sh.runCmd());
-      const guardOutput: {
-        usedTime: number;
-        usedMemory: number;
-        exitCode: number;
-      } = JSON.parse(
+      const guardOutput: GuardOutput = JSON.parse(
         (await fs.readFile(sh.extraFilesPath('guard.json'))).toString(),
       );
       if (guardOutput.exitCode) {
         const errorOutput = (
           await fs.readFile(sh.extraFilesPath('test.out'))
         ).toString();
+        const result = getResult(
+          guardOutput,
+          submission.problem.timeLimit,
+          submission.problem.memoryLimit,
+        );
         const payload = Buffer.from(errorOutput).toString('base64');
         await http.post(
           `api/judge-hosts/${submission.judgeHost.hostname}/add-judging-run/${judging.id}`,
@@ -58,7 +65,7 @@ export class Executor extends AbstractRunnerStep {
             judging: { id: judging.id },
             endTime: new Date(),
             testcase: { id: testcase.id },
-            result: 'runtime-error',
+            result: result,
             runTime: guardOutput.usedTime / 1000,
             errorOutput: {
               name: 'program.err',
@@ -76,7 +83,7 @@ export class Executor extends AbstractRunnerStep {
           {
             id: judging.id,
             endTime: new Date(),
-            result: 'runtime-error',
+            result: result,
           } as Partial<Judging>,
         );
         process.stdout.clearLine(0);
@@ -122,7 +129,7 @@ export class Executor extends AbstractRunnerStep {
             judging: { id: judging.id },
             endTime: new Date(),
             testcase: { id: testcase.id },
-            result: 'runtime-error',
+            result: 'WA',
             runTime: guardOutput.usedTime / 1000,
             runOutput: runOutputFile,
             checkerOutput: checkerOutputFile,
@@ -133,7 +140,7 @@ export class Executor extends AbstractRunnerStep {
           {
             id: judging.id,
             endTime: new Date(),
-            result: 'wrong-answer',
+            result: 'WA',
           } as Partial<Judging>,
         );
         process.stdout.clearLine(0);
@@ -149,7 +156,7 @@ export class Executor extends AbstractRunnerStep {
             judging: { id: judging.id },
             endTime: new Date(),
             testcase: { id: testcase.id },
-            result: 'accepted',
+            result: 'AC',
             runTime: guardOutput.usedTime / 1000,
             runOutput: runOutputFile,
             checkerOutput: checkerOutputFile,
@@ -172,7 +179,7 @@ export class Executor extends AbstractRunnerStep {
       {
         id: judging.id,
         endTime: new Date(),
-        result: 'accepted',
+        result: 'AC',
       } as Partial<Judging>,
     );
     logger.log(`Submission with id ${submission.id} is correct!`);
@@ -182,3 +189,17 @@ export class Executor extends AbstractRunnerStep {
 }
 
 const logger = new JudgeLogger(Executor.name);
+
+function getResult(
+  guardOutput: GuardOutput,
+  timeLimit: number,
+  memoryLimit: number,
+): 'TLE' | 'MLE' | 'RE' {
+  if (guardOutput.usedTime > timeLimit * 1000) {
+    return 'TLE';
+  }
+  if (guardOutput.usedMemory > memoryLimit) {
+    return 'MLE';
+  }
+  return 'RE';
+}
