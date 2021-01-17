@@ -1,0 +1,42 @@
+#!groovy
+
+properties properties: [
+    disableConcurrentBuilds(),
+    [$class: 'BuildDiscarderProperty', strategy:
+        [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '10', daysToKeepStr: '7', numToKeepStr: '10']
+    ]
+]
+
+node("main") {
+    stage("Checkout") {
+        checkout scm
+    }
+
+    def cppImage
+    def javaImage
+    def nodeImage
+    def pythonImage
+
+    parallel(
+        "Build C++ Image": {
+            stage("Build Server") {
+                serverImage = docker.build("tunjudge/lang-cpp:7.3.0", "-f docker/lang/Dockerfile-cpp .")
+            }
+        },
+        "Build Java Image": {
+            stage("Build Judge") {
+                judgeImage = docker.build("tunjudge/lang-java:8-jdk-alpine", "-f docker/lang/Dockerfile-java .")
+            }
+        },
+        "Build Node Image": {
+            stage("Build Judge") {
+                judgeImage = docker.build("tunjudge/lang-node:14.15.1-alpine", "-f docker/lang/Dockerfile-node .")
+            }
+        },
+        "Build Python Image": {
+            stage("Build Judge") {
+                judgeImage = docker.build("tunjudge/lang-python:3.6.1-alpine", "-f docker/lang/Dockerfile-python .")
+            }
+        }
+    )
+}
