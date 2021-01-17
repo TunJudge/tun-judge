@@ -7,6 +7,7 @@ export interface JudgingRun {
   result: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE';
   endTime: Date;
   runTime: number;
+  runMemory: number;
   judging: Judging;
   testcase: Testcase;
   runOutput: File;

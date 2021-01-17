@@ -1,10 +1,11 @@
 import config from './config';
 
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import http from './http/http.client';
 import { Logger } from '@nestjs/common';
+
+import { AppModule } from './app.module';
 import { JudgeLogger } from './services/judge.logger';
+import http from './http/http.client';
 
 async function bootstrap() {
   try {

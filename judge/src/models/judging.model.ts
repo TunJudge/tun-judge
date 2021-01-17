@@ -8,7 +8,7 @@ export interface Judging {
   id: number;
   startTime: Date;
   endTime: Date;
-  result: string;
+  result: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE' | 'CE';
   verified: boolean;
   verifyComment: string;
   valid: boolean;

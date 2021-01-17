@@ -43,7 +43,6 @@ export class DockerService {
     options.OpenStdin ??= true;
     options.WorkingDir ??= sh.submissionDir(true);
     options.HostConfig = {
-      CpusetCpus: '0',
       Mounts: [
         {
           Target: dockerWorkDir,
@@ -86,9 +85,11 @@ export class DockerService {
     });
   }
 
-  async pruneContainer(container: Container): Promise<void> {
-    await container.kill();
-    await container.remove();
+  async pruneContainer(...containers: Container[]): Promise<void> {
+    for (const container of containers) {
+      await container.kill();
+      await container.remove();
+    }
   }
 }
 

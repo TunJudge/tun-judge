@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard, TeamGuard } from '../core/guards';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AdminGuard, AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { Submission } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,13 +17,17 @@ export class SubmissionsController {
   getAll(): Promise<Submission[]> {
     return this.submissionsRepository.find({
       order: { submitTime: 'DESC' },
-      relations: ['user', 'category', 'contests'],
+      relations: [
+        'team',
+        'problem',
+        'problem.testcases',
+        'language',
+        'contest',
+        'judgings',
+        'judgings.juryMember',
+        'judgings.runs',
+        'judgings.runs.testcase',
+      ],
     });
-  }
-
-  @Post()
-  @UseGuards(TeamGuard)
-  async create(@Body() submission: Submission): Promise<Submission> {
-    return this.submissionsRepository.save(submission);
   }
 }

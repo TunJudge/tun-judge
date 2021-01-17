@@ -5,12 +5,14 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { File } from './file.entity';
 import { Judging } from './judging.entity';
 import { Testcase } from './testcase.entity';
 
 @Entity()
+@Unique(['judging', 'testcase'])
 export class JudgingRun {
   @PrimaryGeneratedColumn({ comment: 'Judging Run ID' })
   id: number;
@@ -27,7 +29,13 @@ export class JudgingRun {
   })
   runTime: number;
 
-  @ManyToOne(() => Judging, {
+  @Column({
+    comment: 'Submission used memory on this testcase',
+    type: 'float',
+  })
+  runMemory: number;
+
+  @ManyToOne(() => Judging, (judging) => judging.runs, {
     onDelete: 'CASCADE',
     onUpdate: 'RESTRICT',
   })

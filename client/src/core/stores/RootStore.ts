@@ -12,6 +12,7 @@ import { LanguagesStore } from './LanguagesStore';
 import { JudgeHostsStore } from './JudgeHostsStore';
 import { ExecutablesStore } from './ExecutablesStore';
 import { TeamCategoriesStore } from './TeamCategoriesStore';
+import { SubmissionsStore } from './SubmissionsStore';
 
 const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
@@ -32,6 +33,7 @@ export class RootStore {
   languagesStore: LanguagesStore;
   judgeHostsStore: JudgeHostsStore;
   executablesStore: ExecutablesStore;
+  submissionsStore: SubmissionsStore;
   teamCategoriesStore: TeamCategoriesStore;
 
   constructor() {
@@ -47,6 +49,7 @@ export class RootStore {
     this.languagesStore = new LanguagesStore(this);
     this.judgeHostsStore = new JudgeHostsStore(this);
     this.executablesStore = new ExecutablesStore(this);
+    this.submissionsStore = new SubmissionsStore(this);
     this.teamCategoriesStore = new TeamCategoriesStore(this);
 
     autorun(

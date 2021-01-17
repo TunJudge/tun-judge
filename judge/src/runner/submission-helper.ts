@@ -1,6 +1,7 @@
 import { copyFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { File, Submission } from '../models';
+
+import { File, Submission, Testcase } from '../models';
 
 export const workDir = join(__dirname, '..', '..', 'workDir');
 mkdirSync(workDir, { recursive: true });
@@ -9,6 +10,10 @@ export const assetsDir = join(__dirname, '..', '..', 'assets');
 export const testLibPath = join(assetsDir, 'testlib.h');
 export const guardCppPath = join(assetsDir, 'guard.cpp');
 
+/**
+ * SubmissionHelper helps creating generating the right folders and files paths
+ * that are related to the submission and also assure creating the directories
+ */
 export class SubmissionHelper {
   private submission: Submission;
 
@@ -16,23 +21,23 @@ export class SubmissionHelper {
     this.submission = submission;
   }
 
-  containerRunName = (): string =>
+  runContainerName = (): string =>
     `tun-judge-run-submission-${this.submission.id}-${Date.now()}`;
 
-  containerBuildName = (): string =>
+  compileContainerName = (): string =>
     `tun-judge-build-submission-${this.submission.id}-${Date.now()}`;
 
-  checkerRunName = (): string =>
+  runCheckerContainerName = (): string =>
     `tun-judge-run-checker-${
       this.submission.problem.checkScript.id
     }-${Date.now()}`;
 
-  checkerBuildName = (): string =>
+  compileCheckerContainerName = (): string =>
     `tun-judge-build-checker-${
       this.submission.problem.checkScript.id
     }-${Date.now()}`;
 
-  runCmd = (): string[] => {
+  runCmd = (testcase: Testcase): string[] => {
     const {
       problem: { runScript },
     } = this.submission;
@@ -48,7 +53,7 @@ export class SubmissionHelper {
           runScript.file,
           true,
         )} ${this.binPath(true)}'`,
-        'test.in',
+        this.testcaseFilePath(testcase.id, testcase.input, true),
         'test.out',
       ].join(' '),
     ];
@@ -64,15 +69,15 @@ export class SubmissionHelper {
   extraFilesPath = (filename: string, docker = false): string =>
     join(this.submissionDir(docker), filename);
 
-  checkerRunCmd = (): string[] => {
+  checkerRunCmd = (testcase: Testcase): string[] => {
     const {
       problem: { checkScript },
     } = this.submission;
     return [
       this.executableBinPath(checkScript.id, checkScript.file, true),
-      this.extraFilesPath('test.in', true),
+      this.testcaseFilePath(testcase.id, testcase.input, true),
       this.extraFilesPath('test.out', true),
-      this.extraFilesPath('test.ans', true),
+      this.testcaseFilePath(testcase.id, testcase.output, true),
     ];
   };
 
@@ -195,6 +200,8 @@ export class SubmissionHelper {
 }
 
 const submissionHelper = new SubmissionHelper();
+
+// Copy the guard code source to the workDir/assets folder to be compiled later
 copyFileSync(guardCppPath, submissionHelper.assetsFilePath('guard.cpp'));
 
 export default submissionHelper;

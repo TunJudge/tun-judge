@@ -1,4 +1,5 @@
 import { existsSync, writeFileSync } from 'fs';
+
 import { AbstractRunnerStep } from './runner-step';
 import {
   Executable,
@@ -13,6 +14,15 @@ import dockerService from '../services/docker.service';
 import sh from './submission-helper';
 import { JudgeLogger } from '../services/judge.logger';
 
+/**
+ * The Initializer assure the fetching and the creation of all files needed
+ * to run the submission such as:
+ *  - submission code source
+ *  - problem testcases files
+ *  - language build script
+ *  - checker build script and code source
+ * and also it pulls the docker images needed for the submission.
+ */
 export class Initializer extends AbstractRunnerStep {
   constructor() {
     super();
@@ -21,11 +31,18 @@ export class Initializer extends AbstractRunnerStep {
   async run(judging: Judging): Promise<void> {
     const { submission } = judging;
     try {
+      // Write the submission file
       await writeSubmissionFile(submission);
+      // Fetch and write the problem testcases files only if they don't exists
       await writeProblemTestcases(submission.problem);
+      // Write the problem executables files
       await writeProblemExecutables(submission.problem);
+      // Write the language build script file
       await writeLanguageBuildScript(submission.language);
+      // Pull the docker image needed to run the submission
       await dockerService.pullImage(submission.language.dockerImage);
+      // Pull the docker image needed to run the checker script
+      await dockerService.pullImage(submission.problem.checkScript.dockerImage);
     } catch (e) {
       return;
     }

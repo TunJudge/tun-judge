@@ -50,6 +50,11 @@ const tabs: Tabs = [
     icon: 'server',
   },
   {
+    key: 'submissions',
+    title: 'Submissions',
+    icon: 'paper plane outline',
+  },
+  {
     key: 'scoreboard',
     title: 'Scoreboard',
     icon: 'list ol',

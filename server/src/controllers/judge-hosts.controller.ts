@@ -104,7 +104,11 @@ export class JudgeHostsController {
       { id: judgingId },
       new NotFoundException(`No judging found for id ${judgingId}`),
     );
-    await this.judgingRunsRepository.save(judgingRun);
+    const oldJudgeRun = await this.judgingRunsRepository.findOne({
+      judging: { id: judgingId },
+      testcase: { id: judgingRun.testcase.id },
+    });
+    await this.judgingRunsRepository.save({ ...oldJudgeRun, ...judgingRun });
   }
 
   @Get(':hostname/next-judging')
@@ -158,7 +162,12 @@ export class JudgeHostsController {
       .orderBy('s.submitTime', 'ASC')
       .getOne();
     if (submission) {
-      const judging = await this.judgingsRepository.save({
+      let judging = await this.judgingsRepository.findOne({
+        endTime: null,
+        submission: { id: submission.id },
+      });
+      judging = await this.judgingsRepository.save({
+        ...judging,
         startTime: new Date(),
         contest: { id: submission.contest.id },
         judgeHost: { id: judgeHost.id },

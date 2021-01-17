@@ -8,5 +8,6 @@ export * from './problems.controller';
 export * from './testcases.controller';
 export * from './languages.controller';
 export * from './executables.controller';
+export * from './submissions.controller';
 export * from './judge-hosts.controller';
 export * from './team-categories.controller';

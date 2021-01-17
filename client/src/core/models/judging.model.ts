@@ -3,12 +3,13 @@ import { Submission } from './submission.model';
 import { JudgeHost } from './judge-host.model';
 import { Contest } from './contest.model';
 import { User } from './user.model';
+import { JudgingRun } from './judging-run.model';
 
 export interface Judging {
   id: number;
   startTime: Date;
   endTime: Date;
-  result: string;
+  result: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE' | 'CE';
   verified: boolean;
   verifyComment: string;
   valid: boolean;
@@ -17,4 +18,5 @@ export interface Judging {
   contest: Contest;
   judgeHost: JudgeHost;
   submission: Submission;
+  runs: JudgingRun[];
 }

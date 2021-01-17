@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
+
 import http from './http/http.client';
 import { Judging } from './models';
-import runner from './runner';
+import { Runner } from './runner';
 import { JudgeLogger } from './services/judge.logger';
 import config from './config';
 
@@ -10,6 +11,7 @@ import config from './config';
 export class AppService {
   private lock = false;
   private logger = new JudgeLogger(AppService.name);
+  private runner = new Runner();
 
   @Interval(1000)
   async run(): Promise<void> {
@@ -23,7 +25,7 @@ export class AppService {
           this.logger.log(
             `Judging '${judging.id}' for problem '${judging.submission.problem.name}' and language '${judging.submission.language.name}' received!`,
           );
-          await runner.run(judging);
+          await this.runner.run(judging);
         }
       } catch (e) {
         this.logger.error(e.message);

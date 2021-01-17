@@ -5,6 +5,9 @@ import { Compiler } from './compiler';
 import { Executor } from './executor';
 import { Judging } from '../models';
 
+/**
+ * The Runner is the chain of all the steps to run the submission.
+ */
 export class Runner {
   private step: RunnerStep;
   constructor() {
@@ -17,7 +20,3 @@ export class Runner {
     return this.step.run(judging);
   };
 }
-
-const runner = new Runner();
-
-export default runner;

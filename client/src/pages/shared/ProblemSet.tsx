@@ -34,16 +34,12 @@ const ProblemSet: React.FC = observer(() => {
   const getProblemColor = (problem: ContestProblem): string => {
     if (isEmpty(submissions)) return '';
     const submission = submissions.filter((s) => s.problem.id === problem.problem.id);
-    if (
-      submission.some((s) =>
-        s.judgings.find((j) => j.valid && j.endTime && j.result === 'accepted'),
-      )
-    ) {
+    if (submission.some((s) => s.judgings.find((j) => j.valid && j.endTime && j.result === 'AC'))) {
       return '#B3FFC2';
     }
     if (
       submission.some((s) =>
-        s.judgings.find((j) => j.valid && j.endTime && j.result && j.result !== 'accepted'),
+        s.judgings.find((j) => j.valid && j.endTime && j.result && j.result !== 'AC'),
       )
     ) {
       return '#FFC2C2';

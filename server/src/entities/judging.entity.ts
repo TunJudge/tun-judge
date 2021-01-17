@@ -3,6 +3,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -11,6 +12,7 @@ import { Submission } from './submission.entity';
 import { JudgeHost } from './judge-host.entity';
 import { User } from './user.entity';
 import { File } from './file.entity';
+import { JudgingRun } from './judging-run.entity';
 
 @Entity()
 export class Judging {
@@ -75,4 +77,10 @@ export class Judging {
     onUpdate: 'RESTRICT',
   })
   submission: Submission;
+
+  @OneToMany(() => JudgingRun, (run) => run.judging, {
+    onDelete: 'CASCADE',
+    onUpdate: 'RESTRICT',
+  })
+  runs: JudgingRun[];
 }

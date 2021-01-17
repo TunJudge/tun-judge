@@ -7,6 +7,15 @@ import { formatRestTime } from '../../../core/helpers';
 
 let interval: NodeJS.Timeout | undefined = undefined;
 
+const resultMap = {
+  AC: 'Accepted',
+  WA: 'Wrong Answer',
+  TLE: 'Time Limit Exceeded',
+  MLE: 'Memory Limit Exceeded',
+  RE: 'Runtime Error',
+  CE: 'Compile Error',
+};
+
 const SubmissionsList: React.FC = observer(() => {
   const {
     profile,
@@ -54,10 +63,8 @@ const SubmissionsList: React.FC = observer(() => {
       render: (submission) => {
         const judging = submission.judgings.find((j) => j.valid && j.endTime);
         return (
-          <b
-            style={{ color: judging ? (judging.result === 'accepted' ? 'green' : 'red') : 'grey' }}
-          >
-            {judging?.result ?? 'pending'}
+          <b style={{ color: judging ? (judging.result === 'AC' ? 'green' : 'red') : 'grey' }}>
+            {judging?.result ? resultMap[judging.result] : 'Pending'}
           </b>
         );
       },
@@ -75,7 +82,7 @@ const SubmissionsList: React.FC = observer(() => {
       rowBackgroundColor={(submission) => {
         const judging = submission.judgings.find((j) => j.valid && j.endTime);
         if (!judging) return '#FFEAC2';
-        return judging.result == 'accepted' ? '#B3FFC2' : '#FFC2C2';
+        return judging.result == 'AC' ? '#B3FFC2' : '#FFC2C2';
       }}
     />
   );
