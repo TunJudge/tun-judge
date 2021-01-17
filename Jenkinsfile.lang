@@ -24,7 +24,7 @@ node("main") {
     def language = languages[env.LANG]
 
     stage("Build ${env.LANG} Image") {
-        image = docker.build("tunjudge/${language.tag}", "-f docker/lang/${language.tag} .")
+        image = docker.build("tunjudge/${language.tag}", "-f docker/lang/${language.dockerfile} .")
     }
 
     docker.withRegistry('', 'docker') {
