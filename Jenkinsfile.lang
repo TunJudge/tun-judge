@@ -29,7 +29,7 @@ node("main") {
 
     docker.withRegistry('', 'docker') {
         stage("Publish ${env.LANG} Image") {
-            image.push(language.tag)
+            image.push()
         }
     }
 }
