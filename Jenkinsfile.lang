@@ -7,61 +7,29 @@ properties properties: [
     ]
 ]
 
+final languages = [
+    "C/C++": [tag: "lang-cpp:7.3.0", dockerfile: "Dockerfile-cpp"],
+    "Java": [tag: "lang-java:8-jdk-alpine", dockerfile: "Dockerfile-java"],
+    "NodeJs": [tag: "lang-node:14.15.1-alpine", dockerfile: "Dockerfile-node"],
+    "Python": [tag: "lang-python:3.6.1-alpine", dockerfile: "Dockerfile-python"]
+
+]
+
 node("main") {
     stage("Checkout") {
         checkout scm
     }
 
-    def cppImage
-    def javaImage
-    def nodeImage
-    def pythonImage
+    def image
+    def language = languages[env.LANG]
 
-    parallel(
-        "Build C++ Image": {
-            stage("Build C++ Image") {
-                cppImage = docker.build("tunjudge/lang-cpp:7.3.0", "-f docker/lang/Dockerfile-cpp .")
-            }
-        },
-        "Build Java Image": {
-            stage("Build Java Image") {
-                javaImage = docker.build("tunjudge/lang-java:8-jdk-alpine", "-f docker/lang/Dockerfile-java .")
-            }
-        },
-        "Build Node Image": {
-            stage("Build Node Image") {
-                nodeImage = docker.build("tunjudge/lang-node:14.15.1-alpine", "-f docker/lang/Dockerfile-node .")
-            }
-        },
-        "Build Python Image": {
-            stage("Build Python Image") {
-                pythonImage = docker.build("tunjudge/lang-python:3.6.1-alpine", "-f docker/lang/Dockerfile-python .")
-            }
-        }
-    )
+    stage("Build ${env.LANG} Image") {
+        image = docker.build("tunjudge/${language.tag}", "-f docker/lang/${language.tag} .")
+    }
 
     docker.withRegistry('', 'docker') {
-        parallel(
-            "Publish C++ Image": {
-                stage("Publish C++ Image") {
-                    cppImage.push("7.3.0")
-                }
-            },
-            "Publish Java Image": {
-                stage("Publish Java Image") {
-                    javaImage.push("8-jdk-alpine")
-                }
-            },
-            "Publish Node Image": {
-                stage("Publish Node Image") {
-                    nodeImage.push("14.15.1-alpine")
-                }
-            },
-            "Publish Python Image": {
-                stage("Publish Python Image") {
-                    pythonImage.push("3.6.1-alpine")
-                }
-            }
-        )
+        stage("Publish ${env.LANG} Image") {
+            image.push(language.tag)
+        }
     }
 }
