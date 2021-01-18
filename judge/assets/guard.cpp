@@ -215,22 +215,6 @@ char **getCommandArgs(const string &commandLine) {
 }
 
 /**
- * Whether to ignore the currently obtained memory usage value.
- * Due to the actual running process, the program may get the memory usage in
- * the JVM environment. In this case, we should ignore this value.
- * @param currentUsedMemory     -the currently acquired memory usage
- * @return Whether to ignore the currently acquired memory usage
- */
-bool isCurrentUsedMemoryIgnored(int currentUsedMemory) {
-  int jvmUsedMemory = getCurrentUsedMemory(getpid());
-  if (currentUsedMemory >= jvmUsedMemory / 2 &&
-      currentUsedMemory <= jvmUsedMemory * 2) {
-    return true;
-  }
-  return false;
-}
-
-/**
  * Get the maximum memory usage at runtime
  * @param pid          -process ID
  * @param memoryLimit  -runtime space limit (KB)
@@ -240,8 +224,7 @@ int getMaxUsedMemory(pid_t pid, int memoryLimit) {
   int maxUsedMemory = 0, currentUsedMemory = 0;
   do {
     currentUsedMemory = getCurrentUsedMemory(pid);
-    if (currentUsedMemory > maxUsedMemory &&
-        !isCurrentUsedMemoryIgnored(currentUsedMemory)) {
+    if (currentUsedMemory > maxUsedMemory) {
       maxUsedMemory = currentUsedMemory;
     }
     if (memoryLimit != 0 && maxUsedMemory > memoryLimit) {
