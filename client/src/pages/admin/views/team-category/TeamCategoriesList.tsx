@@ -56,7 +56,7 @@ const TeamCategoriesList: React.FC = observer(() => {
     {
       header: 'Visible?',
       field: 'visible',
-      render: (category) => (category.visible ? 'true' : 'false'),
+      render: (category) => (category.visible ? 'yes' : 'no'),
     },
     {
       header: 'Teams',

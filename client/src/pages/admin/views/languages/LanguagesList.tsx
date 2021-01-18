@@ -37,12 +37,12 @@ const LanguagesList: React.FC = observer(() => {
     {
       header: 'Allow Submit?',
       field: 'allowSubmit',
-      render: (language) => (language.allowSubmit ? 'true' : 'false'),
+      render: (language) => (language.allowSubmit ? 'yes' : 'no'),
     },
     {
       header: 'Allow Judge?',
       field: 'allowJudge',
-      render: (language) => (language.allowJudge ? 'true' : 'false'),
+      render: (language) => (language.allowJudge ? 'yes' : 'no'),
     },
     {
       header: 'Extensions',

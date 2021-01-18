@@ -55,6 +55,7 @@ export class SubmissionHelper {
         )} ${this.binPath(true)}'`,
         this.testcaseFilePath(testcase.id, testcase.input, true),
         'test.out',
+        'test.err',
       ].join(' '),
     ];
   };
@@ -78,6 +79,7 @@ export class SubmissionHelper {
       this.testcaseFilePath(testcase.id, testcase.input, true),
       this.extraFilesPath('test.out', true),
       this.testcaseFilePath(testcase.id, testcase.output, true),
+      this.extraFilesPath('checker.out', true),
     ];
   };
 

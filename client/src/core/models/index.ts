@@ -11,6 +11,7 @@ export * from './submission.model';
 export * from './judge-host.model';
 export * from './executable.model';
 export * from './judge-host.model';
+export * from './score-cache.model';
 export * from './file-content.model';
 export * from './team-category.model';
 export * from './contest-problem.model';

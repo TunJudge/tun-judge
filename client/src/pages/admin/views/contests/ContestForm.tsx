@@ -137,6 +137,14 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               errors={errors}
               setErrors={setErrors}
             />
+            <CheckBoxField<Contest>
+              entity={contest}
+              field="verificationRequired"
+              label="Verification required"
+              defaultValue={false}
+              errors={errors}
+              setErrors={setErrors}
+            />
           </Form.Group>
           <Label>Problems</Label>
           <Table>

@@ -21,11 +21,10 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
     const [formTestcase, setFormTestcase] = useState<Partial<Testcase>>({
       problem: problem,
     });
-    const [contentViewOpen, setContentViewOpen] = useState<boolean>(false);
     const [contentViewData, setContentViewData] = useState<{
-      testcase: Partial<Testcase>;
+      testcase: Testcase | undefined;
       field: 'input' | 'output';
-    }>({ testcase: {}, field: 'input' });
+    }>({ testcase: undefined, field: 'input' });
     const {
       testcasesStore: { data, fetchAll, create, update, remove, move },
     } = rootStore;
@@ -92,12 +91,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
                       )}
                     </Table.Cell>
                     <Table.Cell>
-                      <a
-                        onClick={() => {
-                          setContentViewData({ testcase, field: 'input' });
-                          setContentViewOpen(true);
-                        }}
-                      >
+                      <a onClick={() => setContentViewData({ testcase, field: 'input' })}>
                         {`test.${testcase.rank}.in`}
                       </a>{' '}
                       {formatBytes(testcase.input.size)}
@@ -138,12 +132,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
                   </Table.Row>,
                   <Table.Row key={`${testcase.id}-ans`}>
                     <Table.Cell>
-                      <a
-                        onClick={() => {
-                          setContentViewData({ testcase, field: 'output' });
-                          setContentViewOpen(true);
-                        }}
-                      >
+                      <a onClick={() => setContentViewData({ testcase, field: 'output' })}>
                         {`test.${testcase.rank}.out`}
                       </a>{' '}
                       {formatBytes(testcase.output.size)}
@@ -172,12 +161,13 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
             await dismissForm();
           }}
         />
-        <TestcaseContentView
-          open={contentViewOpen}
-          testcase={contentViewData.testcase as Testcase}
-          field={contentViewData.field}
-          dismiss={() => setContentViewOpen(false)}
-        />
+        {contentViewData.testcase && (
+          <TestcaseContentView
+            testcase={contentViewData.testcase}
+            field={contentViewData.field}
+            dismiss={() => setContentViewData({ testcase: undefined, field: 'input' })}
+          />
+        )}{' '}
       </Segment.Group>
     );
   },

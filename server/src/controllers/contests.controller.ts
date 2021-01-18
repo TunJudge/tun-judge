@@ -14,6 +14,7 @@ import { ExtendedRepository } from '../core/extended-repository';
 import { Contest, ContestProblem, Submission, Team } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThan } from 'typeorm';
+import { ScoreboardService } from '../scoreboard.service';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -27,6 +28,7 @@ export class ContestsController {
     private readonly teamsRepository: ExtendedRepository<Team>,
     @InjectRepository(Submission)
     private readonly submissionsRepository: ExtendedRepository<Submission>,
+    private readonly scoreboardService: ScoreboardService,
   ) {}
 
   @Get()
@@ -76,14 +78,21 @@ export class ContestsController {
 
   @Get(':id/team/:teamId/submissions')
   @UseGuards(TeamGuard)
-  getByContestAndTeam(
+  async getByContestAndTeam(
     @Param('id') contestId: number,
     @Param('teamId') teamId: number,
   ): Promise<Submission[]> {
-    return this.submissionsRepository.find({
-      order: { submitTime: 'DESC' },
-      where: { contest: { id: contestId }, team: { id: teamId } },
-      relations: ['language', 'problem', 'judgings'],
+    return (
+      await this.submissionsRepository.find({
+        order: { submitTime: 'DESC' },
+        where: { contest: { id: contestId }, team: { id: teamId } },
+        relations: ['language', 'contest', 'problem', 'judgings'],
+      })
+    ).map((submission) => {
+      if (submission.contest.verificationRequired) {
+        submission.judgings = submission.judgings.filter((j) => j.verified);
+      }
+      return submission;
     });
   }
 
@@ -93,7 +102,7 @@ export class ContestsController {
     @Param('id') contestId: number,
     @Param('teamId') teamId: number,
     @Body() submission: Submission,
-  ): Promise<Submission> {
+  ): Promise<void> {
     submission.submitTime = new Date();
     const contest = await this.contestsRepository.findOneOrThrow(
       {
@@ -109,6 +118,7 @@ export class ContestsController {
     );
     submission.contest = contest;
     submission.team = team;
-    return this.submissionsRepository.save(submission);
+    await this.submissionsRepository.save(submission);
+    await this.scoreboardService.refreshScores();
   }
 }

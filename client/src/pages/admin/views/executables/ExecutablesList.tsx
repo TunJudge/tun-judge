@@ -74,7 +74,7 @@ const ExecutablesList: React.FC = observer(() => {
     {
       header: 'Default',
       field: 'default',
-      render: (executable) => (executable.default ? 'true' : 'false'),
+      render: (executable) => (executable.default ? 'yes' : 'no'),
     },
   ];
 

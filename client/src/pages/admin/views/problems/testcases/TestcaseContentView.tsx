@@ -5,21 +5,31 @@ import { rootStore } from '../../../../../core/stores/RootStore';
 import { observer } from 'mobx-react';
 
 const TestcaseContentView: React.FC<{
-  open: boolean;
   testcase: Testcase;
   field: 'input' | 'output';
   dismiss: () => void;
-}> = observer(({ open, testcase, field, dismiss }) => {
+}> = observer(({ testcase, field, dismiss }) => {
   if (testcase.id && !testcase[field]?.content) {
     rootStore.testcasesStore
       .fetchContent(testcase.id, field as any)
       .then((content) => (testcase[field].content = content));
   }
   return (
-    <Modal open={open} onClose={dismiss} size="mini">
-      <Modal.Header>Testcase {field} file content</Modal.Header>
+    <Modal open onClose={dismiss} size="mini">
+      <Modal.Header>
+        Testcase {testcase.rank} {field}
+      </Modal.Header>
       <Modal.Content>
-        <pre style={{ margin: 0, maxHeight: '300px', overflow: 'auto' }}>
+        <pre
+          style={{
+            margin: 0,
+            maxHeight: '300px',
+            overflow: 'auto',
+            padding: '0.3rem',
+            border: '0.5px grey solid',
+            borderRadius: '.28571429rem',
+          }}
+        >
           <code>{atob(testcase[field]?.content?.payload ?? '')}</code>
         </pre>
       </Modal.Content>

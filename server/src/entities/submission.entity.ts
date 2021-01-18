@@ -38,7 +38,7 @@ export class Submission {
   })
   valid: boolean;
 
-  @ManyToOne(() => Contest, {
+  @ManyToOne(() => Contest, (contest) => contest.submissions, {
     nullable: false,
     onDelete: 'CASCADE',
     onUpdate: 'RESTRICT',

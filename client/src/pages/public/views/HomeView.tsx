@@ -1,7 +1,8 @@
 import React from 'react';
+import Scoreboard from '../../shared/Scoreboard';
 
 const HomeView: React.FC = () => {
-  return <>Home</>;
+  return <Scoreboard />;
 };
 
 export default HomeView;

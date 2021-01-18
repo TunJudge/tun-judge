@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ContestProblem } from './contest-problem.entity';
 import { Team } from './team.entity';
+import { Submission } from './submission.entity';
 
 @Entity()
 @Index(['id', 'enabled'])
@@ -69,6 +70,12 @@ export class Contest {
     default: true,
   })
   public: boolean;
+  @Column({
+    comment:
+      'Whether the submissions needs verification before showing the result to the team',
+    default: false,
+  })
+  verificationRequired: boolean;
 
   @OneToMany(() => ContestProblem, (cp) => cp.contest, {
     cascade: true,
@@ -77,4 +84,10 @@ export class Contest {
 
   @ManyToMany(() => Team, (team) => team.contests, { cascade: false })
   teams: Team[];
+
+  @OneToMany(() => Submission, (submission) => submission.contest, {
+    onDelete: 'CASCADE',
+    onUpdate: 'RESTRICT',
+  })
+  submissions: Submission[];
 }

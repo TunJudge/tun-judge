@@ -4,17 +4,9 @@ import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
 import { rootStore } from '../../../core/stores/RootStore';
 import { Submission } from '../../../core/models';
 import { formatRestTime } from '../../../core/helpers';
+import { resultMap } from '../../../core/types';
 
 let interval: NodeJS.Timeout | undefined = undefined;
-
-const resultMap = {
-  AC: 'Accepted',
-  WA: 'Wrong Answer',
-  TLE: 'Time Limit Exceeded',
-  MLE: 'Memory Limit Exceeded',
-  RE: 'Runtime Error',
-  CE: 'Compile Error',
-};
 
 const SubmissionsList: React.FC = observer(() => {
   const {
@@ -61,10 +53,17 @@ const SubmissionsList: React.FC = observer(() => {
       header: 'Result',
       field: 'language',
       render: (submission) => {
-        const judging = submission.judgings.find((j) => j.valid && j.endTime);
+        const judging = submission.judgings
+          .slice()
+          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+          .shift();
         return (
-          <b style={{ color: judging ? (judging.result === 'AC' ? 'green' : 'red') : 'grey' }}>
-            {judging?.result ? resultMap[judging.result] : 'Pending'}
+          <b
+            style={{
+              color: judging?.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey',
+            }}
+          >
+            {resultMap[judging?.result ?? 'PD']}
           </b>
         );
       },

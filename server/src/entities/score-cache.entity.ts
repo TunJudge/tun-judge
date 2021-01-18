@@ -53,9 +53,6 @@ export class ScoreCache {
   })
   firstToSolve: boolean;
 
-  @Column({ comment: 'Number of submissions made (restricted)', default: 0 })
-  restrictedSubmissions: number;
-
   @Column({ comment: 'Number of pending submissions (restricted)', default: 0 })
   restrictedPending: number;
 

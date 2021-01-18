@@ -1,11 +1,11 @@
-import { chmodSync, promises as fs } from 'fs';
+import { chmodSync, existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 import { MD5 } from 'crypto-js';
 
 import { AbstractRunnerStep } from './runner-step';
 import { Judging, Testcase } from '../models';
 import sh from './submission-helper';
-import dockerService, { ExecResult } from '../services/docker.service';
+import dockerService from '../services/docker.service';
 import { JudgeLogger } from '../services/judge.logger';
 import http from '../http/http.client';
 import { JudgingRun } from '../models/judging-run.model';
@@ -75,29 +75,22 @@ export class Executor extends AbstractRunnerStep {
       process.stdout.cursorTo(0);
       // In case of the exitCode of the checking script is different then zero we stop running and report the result
       if (checkingResult.exitCode) {
-        await sendJudgingRun(
-          judging,
-          testcase,
-          guardOutput,
-          'WA',
-          checkingResult,
-        );
+        await sendJudgingRun(judging, testcase, guardOutput, 'WA');
         await updateJudging(judging, 'WA');
         await dockerService.pruneContainer(runnerContainer, checkerContainer);
         logger.error(`Running test ${testcase.rank}...\tNOT OK!`);
         return;
       } else {
         // In case of submission is correct of this testcase we report the result and continue running
-        await sendJudgingRun(
-          judging,
-          testcase,
-          guardOutput,
-          result,
-          checkingResult,
-        );
+        await sendJudgingRun(judging, testcase, guardOutput, result);
         logger.log(`Running test ${testcase.rank}...\tOK!`);
         // We move the test output and the guard output in the testcase folder for backup
-        for (const file of ['test.out', 'guard.json']) {
+        for (const file of [
+          'test.out',
+          'test.err',
+          'checker.out',
+          'guard.json',
+        ]) {
           await fs.copyFile(
             sh.extraFilesPath(file),
             join(sh.runTestcaseDir(testcase.rank), file),
@@ -151,7 +144,6 @@ async function sendJudgingRun(
   testcase: Testcase,
   guardOutput: GuardOutput,
   result: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE',
-  checkingResult?: ExecResult,
 ): Promise<void> {
   const {
     submission: {
@@ -172,26 +164,44 @@ async function sendJudgingRun(
     checkerOutput: undefined,
   };
 
-  const errorOutput = (
+  const runOutput = (
     await fs.readFile(sh.extraFilesPath('test.out'))
   ).toString();
-  const payload = Buffer.from(errorOutput).toString('base64');
-  judgingRun[guardOutput.exitCode ? 'errorOutput' : 'runOutput'] = {
+  const payload = Buffer.from(runOutput).toString('base64');
+  judgingRun.runOutput = {
     id: undefined,
-    name: `program.${guardOutput.exitCode ? 'err' : 'out'}`,
+    name: `program.out`,
     type: 'text/plain',
-    size: errorOutput.length,
+    size: runOutput.length,
     md5Sum: MD5(payload).toString(),
     content: { id: undefined, payload: payload },
   };
 
-  if (checkingResult) {
-    const payload = Buffer.from(checkingResult.stdout).toString('base64');
+  if (guardOutput.exitCode) {
+    const errorOutput = (
+      await fs.readFile(sh.extraFilesPath('test.err'))
+    ).toString();
+    const payload = Buffer.from(errorOutput).toString('base64');
+    judgingRun.errorOutput = {
+      id: undefined,
+      name: `program.err`,
+      type: 'text/plain',
+      size: errorOutput.length,
+      md5Sum: MD5(payload).toString(),
+      content: { id: undefined, payload: payload },
+    };
+  }
+
+  if (existsSync(sh.extraFilesPath('checker.out'))) {
+    const checkerOutput = (
+      await fs.readFile(sh.extraFilesPath('checker.out'))
+    ).toString();
+    const payload = Buffer.from(checkerOutput).toString('base64');
     judgingRun.checkerOutput = {
       id: undefined,
       name: 'checker.out',
       type: 'text/plain',
-      size: checkingResult.stdout.length,
+      size: checkerOutput.length,
       md5Sum: MD5(payload).toString(),
       content: { id: undefined, payload: payload },
     };

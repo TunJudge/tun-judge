@@ -41,7 +41,7 @@ const TeamsList: React.FC = observer(() => {
     {
       header: 'Enabled?',
       field: 'enabled',
-      render: (team) => (team.enabled ? 'true' : 'false'),
+      render: (team) => (team.enabled ? 'yes' : 'no'),
     },
     {
       header: 'Contests',

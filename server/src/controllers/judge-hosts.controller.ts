@@ -15,6 +15,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JudgeHost, Judging, JudgingRun, Submission, User } from '../entities';
 import { ExtendedRepository } from '../core/extended-repository';
 import { JudgeHostGuard } from '../core/guards/judge-host.guard';
+import { ScoreboardService } from '../scoreboard.service';
 
 @Controller('judge-hosts')
 @UseGuards(AuthenticatedGuard)
@@ -30,6 +31,7 @@ export class JudgeHostsController {
     private readonly judgeHostsRepository: ExtendedRepository<JudgeHost>,
     @InjectRepository(Submission)
     private readonly submissionsRepository: ExtendedRepository<Submission>,
+    private readonly scoreboardService: ScoreboardService,
   ) {}
 
   @Get()
@@ -91,6 +93,7 @@ export class JudgeHostsController {
       new NotFoundException(`No judging found for id ${judgingId}`),
     );
     await this.judgingsRepository.save({ ...oldJudging, ...judging });
+    await this.scoreboardService.refreshScores();
   }
 
   @Post(':hostname/add-judging-run/:id')

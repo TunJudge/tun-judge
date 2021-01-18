@@ -69,7 +69,7 @@ const UsersList: React.FC = observer(() => {
     {
       header: 'Enabled?',
       field: 'enabled',
-      render: (user) => (user.enabled ? 'true' : 'false'),
+      render: (user) => (user.enabled ? 'yes' : 'no'),
     },
   ];
 

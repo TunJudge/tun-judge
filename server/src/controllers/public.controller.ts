@@ -1,16 +1,20 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Session } from '@nestjs/common';
 import { ExtendedRepository } from '../core/extended-repository';
-import { Contest, ContestProblem } from '../entities';
+import { Contest, ContestProblem, ScoreCache, User } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual } from 'typeorm';
 
 @Controller('public')
 export class PublicController {
   constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: ExtendedRepository<User>,
     @InjectRepository(Contest)
     private readonly contestsRepository: ExtendedRepository<Contest>,
     @InjectRepository(ContestProblem)
     private readonly contestProblemsRepository: ExtendedRepository<ContestProblem>,
+    @InjectRepository(ScoreCache)
+    private readonly scoreCachesRepository: ExtendedRepository<ScoreCache>,
   ) {}
 
   @Get('contests')
@@ -39,6 +43,29 @@ export class PublicController {
       order: { shortName: 'ASC' },
       where: { contest: { id: contestId } },
       relations: ['problem', 'problem.file', 'problem.file.content'],
+    });
+  }
+
+  @Get('contest/:id/score-caches')
+  async getScoreCaches(
+    @Param('id') contestId: number,
+    @Session() session,
+  ): Promise<ScoreCache[]> {
+    const user = await this.usersRepository.findOne({
+      id: session?.passport?.user.id,
+    });
+    return (
+      await this.scoreCachesRepository.find({
+        where: { contest: { id: contestId } },
+        relations: ['contest', 'problem', 'team'],
+      })
+    ).map((scoreCache) => {
+      if (!session.passport || !['admin', 'jury'].includes(user.role.name)) {
+        delete scoreCache.restrictedCorrect;
+        delete scoreCache.restrictedPending;
+        delete scoreCache.restrictedSolveTime;
+      }
+      return scoreCache;
     });
   }
 }

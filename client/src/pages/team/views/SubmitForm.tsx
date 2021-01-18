@@ -57,6 +57,7 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
             selection
             options={(currentContest?.problems ?? [])
               .map((p) => ({ ...p.problem, name: `${p.shortName} - ${p.problem.name}` }))
+              .slice()
               .sort((a, b) => a.name.localeCompare(b.name))}
             optionsTextField="name"
             isObject

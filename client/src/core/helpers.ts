@@ -1,4 +1,4 @@
-import { Contest } from './models';
+import { Contest, Judging, User } from './models';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isEmpty(s: any): boolean {
@@ -64,16 +64,24 @@ export function getContestTimeProgress(contest?: Contest): number {
 }
 
 export function formatBytes(size: number): string {
-  if (size < 1024) return `${size}B`;
+  if (size < 1024) return `${size} B`;
   size /= 1024;
-  if (size < 1024) return `${roundN(size)}KB`;
+  if (size < 1024) return `${roundN(size)} KB`;
   size /= 1024;
-  if (size < 1024) return `${roundN(size)}MB`;
+  if (size < 1024) return `${roundN(size)} MB`;
   size /= 1024;
-  return `${roundN(size)}GB`;
+  return `${roundN(size)} GB`;
 }
 
 function roundN(value: number, digits: number = 2) {
   const tenToN = 10 ** digits;
   return Math.round(value * tenToN) / tenToN;
+}
+
+export function isSubmissionClaimedByMe(judging?: Judging, user?: User): boolean {
+  return (
+    !!judging?.juryMember?.username &&
+    !!user?.username &&
+    judging?.juryMember?.username === user?.username
+  );
 }

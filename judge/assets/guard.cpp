@@ -29,7 +29,8 @@ using namespace std;
  * Function Prototypes.
  */
 bool createProcess(pid_t &, sigset_t &);
-void setupIoRedirection(const std::string &, const std::string &);
+void setupIoRedirection(const std::string &, const std::string &,
+                        const std::string &);
 int runProcess(pid_t, sigset_t, const string &, int, int, int &, int &);
 char **getCommandArgs(const string &commandLine);
 int getMaxUsedMemory(pid_t, int);
@@ -38,9 +39,9 @@ long long getMillisecondsNow();
 int killProcess(pid_t &);
 
 int main(int argc, char **argv) {
-  if (argc != 6) {
+  if (argc != 7) {
     cerr << "Run the guard with: ./guard {timeLimit} {memoryLimit} "
-            "'{runScriptWithArgs}' {inputFile} {outputFile}"
+            "'{runScriptWithArgs}' {inputFile} {outputFile} {errorFile}"
          << endl;
     return -1;
   }
@@ -52,6 +53,7 @@ int main(int argc, char **argv) {
   string commandLine = string(argv[3]);
   string inputFilePath = string(argv[4]);
   string outputFilePath = string(argv[5]);
+  string errorFilePath = string(argv[6]);
 
   int usedTime = 0;
   int usedMemory = 0;
@@ -66,7 +68,7 @@ int main(int argc, char **argv) {
 
   // Setup I/O Redirection for Child Process
   if (pid == 0) {
-    setupIoRedirection(inputFilePath, outputFilePath);
+    setupIoRedirection(inputFilePath, outputFilePath, errorFilePath);
   }
   exitCode = runProcess(pid, sigset, commandLine, timeLimit, memoryLimit,
                         usedTime, usedMemory);
@@ -168,7 +170,8 @@ int runProcess(pid_t pid, sigset_t sigset, const string &commandLine,
  * (can be NULL)
  */
 void setupIoRedirection(const std::string &inputFilePath,
-                        const std::string &outputFilePath) {
+                        const std::string &outputFilePath,
+                        const std::string &errorFilePath) {
   if (inputFilePath != "") {
     int inputFileDescriptor = open(inputFilePath.c_str(), O_RDONLY);
     dup2(inputFileDescriptor, STDIN);
@@ -178,8 +181,13 @@ void setupIoRedirection(const std::string &inputFilePath,
     int outputFileDescriptor = open(outputFilePath.c_str(), O_CREAT | O_WRONLY);
     chmod(outputFilePath.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     dup2(outputFileDescriptor, STDOUT);
-    dup2(outputFileDescriptor, STDERR);
     close(outputFileDescriptor);
+  }
+  if (errorFilePath != "") {
+    int errorFileDescriptor = open(errorFilePath.c_str(), O_CREAT | O_WRONLY);
+    chmod(errorFilePath.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    dup2(errorFileDescriptor, STDERR);
+    close(errorFileDescriptor);
   }
 }
 

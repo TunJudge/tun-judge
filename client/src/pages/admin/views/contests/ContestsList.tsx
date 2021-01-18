@@ -47,17 +47,22 @@ const ContestsList: React.FC = observer(() => {
     {
       header: 'Balloons?',
       field: 'processBalloons',
-      render: (contest) => (contest.processBalloons ? 'true' : 'false'),
+      render: (contest) => (contest.processBalloons ? 'yes' : 'no'),
     },
     {
       header: 'Enabled?',
       field: 'enabled',
-      render: (contest) => (contest.enabled ? 'true' : 'false'),
+      render: (contest) => (contest.enabled ? 'yes' : 'no'),
     },
     {
       header: 'Public?',
       field: 'public',
-      render: (contest) => (contest.public ? 'true' : 'false'),
+      render: (contest) => (contest.public ? 'yes' : 'no'),
+    },
+    {
+      header: 'Verification Required?',
+      field: 'verificationRequired',
+      render: (contest) => (contest.verificationRequired ? 'yes' : 'no'),
     },
     {
       header: 'Teams',

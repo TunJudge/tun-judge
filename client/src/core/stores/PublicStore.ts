@@ -1,11 +1,12 @@
 import { RootStore } from './RootStore';
 import { action, observable } from 'mobx';
-import { Contest, ContestProblem } from '../models';
+import { Contest, ContestProblem, ScoreCache } from '../models';
 import http from '../utils/http-client';
 
 export class PublicStore {
   @observable problems: ContestProblem[] = [];
   @observable contests: Contest[] = [];
+  @observable scoreCaches: ScoreCache[] = [];
   @observable currentContest: Contest | undefined;
 
   constructor(private readonly rootStore: RootStore) {}
@@ -22,6 +23,11 @@ export class PublicStore {
   @action
   fetchProblems = async (contestId: number): Promise<void> => {
     this.problems = await http.get<ContestProblem[]>(`api/public/contest/${contestId}/problems`);
+  };
+
+  @action
+  fetchScoreCaches = async (contestId: number): Promise<void> => {
+    this.scoreCaches = await http.get<ScoreCache[]>(`api/public/contest/${contestId}/score-caches`);
   };
 
   @action

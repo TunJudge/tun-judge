@@ -17,6 +17,7 @@ export interface Contest {
   enabled: boolean;
   processBalloons: boolean;
   public: boolean;
+  verificationRequired: boolean;
   problems: ContestProblem[];
   teams: Team[];
 }

@@ -2,11 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ScheduleModule } from '@nestjs/schedule';
 import { join } from 'path';
 import { AppService } from './app.service';
 import { entities } from './entities';
 import { AuthModule } from './auth/auth.module';
 import { CustomRepositoryProviders } from './core/extended-repository';
+import { ScoreboardService } from './scoreboard.service';
 import {
   AppController,
   RolesController,
@@ -27,6 +29,7 @@ import config from './core/config';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: config.database.host,
@@ -59,6 +62,6 @@ import config from './core/config';
     SubmissionsController,
     TeamCategoriesController,
   ],
-  providers: [AppService, ...CustomRepositoryProviders],
+  providers: [AppService, ScoreboardService, ...CustomRepositoryProviders],
 })
 export class AppModule {}

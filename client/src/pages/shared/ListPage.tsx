@@ -16,6 +16,8 @@ type ListPageProps<T> = {
   emptyMessage?: string;
   data: T[];
   columns: ListPageTableColumn<T>[];
+  filters?: any;
+  pagination?: any;
   formItemInitValue?: Partial<T>;
   ItemForm?: React.FC<{ item: T; dismiss: () => void; submit: (item: T) => void }>;
   withoutActions?: boolean;
@@ -33,6 +35,8 @@ function ListPage<T extends { id: number }>({
   emptyMessage,
   data,
   columns,
+  filters,
+  pagination,
   formItemInitValue,
   ItemForm,
   withoutActions,
@@ -111,7 +115,7 @@ function ListPage<T extends { id: number }>({
   };
 
   return (
-    <Segment.Group>
+    <>
       <Segment as={Menu} style={{ padding: 0 }} borderless>
         <Menu.Item>
           <Header>{header}</Header>
@@ -129,84 +133,84 @@ function ListPage<T extends { id: number }>({
           )}
         </Menu.Item>
       </Segment>
-      <Segment>
-        <Table striped sortable celled>
-          <Table.Header>
-            <Table.Row>
+      {filters}
+      <Table striped sortable celled>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell
+              width="1"
+              textAlign="center"
+              sorted={sortState.column === 'id' ? sortState.direction! : undefined}
+              onClick={() => handleSort('id')}
+            >
+              #
+            </Table.HeaderCell>
+            {columns.map((column, index) => (
               <Table.HeaderCell
-                width="1"
-                textAlign="center"
-                sorted={sortState.column === 'id' ? sortState.direction! : undefined}
-                onClick={() => handleSort('id')}
+                key={index}
+                sorted={sortState.column === column.field ? sortState.direction! : undefined}
+                onClick={() => handleSort(column.field)}
               >
-                ID
+                {column.header}
               </Table.HeaderCell>
-              {columns.map((column, index) => (
-                <Table.HeaderCell
-                  key={index}
-                  sorted={sortState.column === column.field ? sortState.direction! : undefined}
-                  onClick={() => handleSort(column.field)}
-                >
-                  {column.header}
-                </Table.HeaderCell>
-              ))}
-              {!withoutActions && <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>}
+            ))}
+            {!withoutActions && <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>}
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {sortState.data.length === 0 ? (
+            <Table.Row textAlign="center">
+              <Table.Cell colSpan="10">{emptyMessage ?? 'No data'}</Table.Cell>
             </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {sortState.data.length === 0 ? (
-              <Table.Row textAlign="center">
-                <Table.Cell colSpan="10">{emptyMessage ?? 'No data'}</Table.Cell>
+          ) : (
+            sortState.data.map((item) => (
+              <Table.Row
+                key={item.id}
+                style={{ backgroundColor: rowBackgroundColor && rowBackgroundColor(item) }}
+              >
+                <Table.Cell textAlign="center">{item.id}</Table.Cell>
+                {columns.map((column, index) => (
+                  <Table.Cell
+                    key={`${item.id}-${index}`}
+                    className={column.className}
+                    onClick={() => column.onClick && column.onClick(item)}
+                  >
+                    {column.render(item)}
+                  </Table.Cell>
+                ))}
+                {!withoutActions && (
+                  <Table.Cell textAlign="center">
+                    {ItemForm && (
+                      <Icon
+                        name="edit"
+                        onClick={() => openForm(item)}
+                        style={{ cursor: 'pointer', marginRight: '0' }}
+                      />
+                    )}
+                    {(!canDelete || canDelete(item)) && (
+                      <Icon
+                        name="trash"
+                        color="red"
+                        onClick={() => onDelete && onDelete(item.id)}
+                        style={{
+                          cursor: 'pointer',
+                          marginLeft: ItemForm && '25%',
+                          marginRight: '0',
+                        }}
+                      />
+                    )}
+                  </Table.Cell>
+                )}
               </Table.Row>
-            ) : (
-              sortState.data.map((item) => (
-                <Table.Row
-                  key={item.id}
-                  style={{ backgroundColor: rowBackgroundColor && rowBackgroundColor(item) }}
-                >
-                  <Table.Cell textAlign="center">{item.id}</Table.Cell>
-                  {columns.map((column, index) => (
-                    <Table.Cell
-                      key={`${item.id}-${index}`}
-                      className={column.className}
-                      onClick={() => column.onClick && column.onClick(item)}
-                    >
-                      {column.render(item)}
-                    </Table.Cell>
-                  ))}
-                  {!withoutActions && (
-                    <Table.Cell textAlign="center">
-                      {ItemForm && (
-                        <Icon
-                          name="edit"
-                          onClick={() => openForm(item)}
-                          style={{ cursor: 'pointer', marginRight: '0' }}
-                        />
-                      )}
-                      {(!canDelete || canDelete(item)) && (
-                        <Icon
-                          name="trash"
-                          color="red"
-                          onClick={() => onDelete && onDelete(item.id)}
-                          style={{
-                            cursor: 'pointer',
-                            marginLeft: ItemForm && '25%',
-                            marginRight: '0',
-                          }}
-                        />
-                      )}
-                    </Table.Cell>
-                  )}
-                </Table.Row>
-              ))
-            )}
-          </Table.Body>
-        </Table>
-        {formOpen && ItemForm && (
-          <ItemForm item={formItem as T} dismiss={dismissForm} submit={submitForm} />
-        )}
-      </Segment>
-    </Segment.Group>
+            ))
+          )}
+        </Table.Body>
+        {pagination}
+      </Table>
+      {formOpen && ItemForm && (
+        <ItemForm item={formItem as T} dismiss={dismissForm} submit={submitForm} />
+      )}
+    </>
   );
 }
 
