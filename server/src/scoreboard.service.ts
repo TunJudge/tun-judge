@@ -137,10 +137,13 @@ function submissionIsPending(
   contest: Contest,
   submission: Submission,
 ): boolean {
-  return submission.judgings.some(
-    (judging) =>
-      !judging.result ||
-      (judging.result && contest.verificationRequired && !judging.verified),
+  return (
+    !submission.judgings.length ||
+    submission.judgings.some(
+      (judging) =>
+        !judging.result ||
+        (judging.result && contest.verificationRequired && !judging.verified),
+    )
   );
 }
 

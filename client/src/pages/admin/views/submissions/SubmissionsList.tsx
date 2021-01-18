@@ -77,7 +77,7 @@ const SubmissionsList: React.FC = observer(() => {
           .slice()
           .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
           .shift();
-        return judging ? (
+        return judging && judging.result ? (
           judging.verified ? (
             `Yes by ${judging.juryMember.username}`
           ) : judging.juryMember ? (

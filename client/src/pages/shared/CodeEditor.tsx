@@ -5,13 +5,23 @@ import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-sh';
 import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/mode-java';
+import 'ace-builds/src-noconflict/mode-scala';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/theme-tomorrow_night';
 
+export type CodeEditorLanguages =
+  | 'sh'
+  | 'text'
+  | 'c_cpp'
+  | 'java'
+  | 'scala'
+  | 'javascript'
+  | 'python';
+
 type CodeEditorProps = {
-  lang?: 'sh' | 'text' | 'c_cpp' | 'java' | 'javascript' | 'python';
+  lang?: CodeEditorLanguages;
   value: string;
   dark?: boolean;
   readOnly?: boolean;

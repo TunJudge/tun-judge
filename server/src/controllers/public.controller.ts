@@ -57,7 +57,13 @@ export class PublicController {
     return (
       await this.scoreCachesRepository.find({
         where: { contest: { id: contestId } },
-        relations: ['contest', 'problem', 'team'],
+        relations: [
+          'contest',
+          'contest.problems',
+          'contest.problems.problem',
+          'problem',
+          'team',
+        ],
       })
     ).map((scoreCache) => {
       if (!session.passport || !['admin', 'jury'].includes(user.role.name)) {

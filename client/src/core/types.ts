@@ -1,4 +1,5 @@
 import { SemanticICONS } from 'semantic-ui-react';
+import { CodeEditorLanguages } from '../pages/shared/CodeEditor';
 
 export type Tabs = {
   key: string;
@@ -16,14 +17,12 @@ export const resultMap = {
   PD: 'Pending',
 };
 
-export const languageMap: Record<
-  string,
-  'text' | 'sh' | 'c_cpp' | 'java' | 'javascript' | 'python'
-> = {
+export const languageMap: Record<string, CodeEditorLanguages> = {
   Text: 'text',
   C: 'c_cpp',
   'C++': 'c_cpp',
   Java: 'java',
+  Scala: 'scala',
   JavaScript: 'javascript',
   Python: 'python',
 };
