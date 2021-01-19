@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Header, Table } from 'semantic-ui-react';
+import { Button, Grid, Header, Icon, Segment } from 'semantic-ui-react';
 import { rootStore } from '../../core/stores/RootStore';
 import { observer } from 'mobx-react';
 import { formatRestTime } from '../../core/helpers';
+
+import './Scoreboard.scss';
 
 let interval: NodeJS.Timeout | undefined = undefined;
 
@@ -23,10 +25,13 @@ type TeamStandingRow = {
   problemsScores: TeamProblemScore[];
 };
 
-const Scoreboard: React.FC = observer(() => {
+const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
   const [standing, setStanding] = useState<TeamStandingRow[]>([]);
   const {
+    profile,
+    isUserJury,
     publicStore: { currentContest, scoreCaches, fetchScoreCaches },
+    contestsStore: { refreshScoreboardCache },
   } = rootStore;
 
   useEffect(() => {
@@ -48,9 +53,14 @@ const Scoreboard: React.FC = observer(() => {
           problem,
           correct,
           pending,
-          firstToSolve,
-          submissions,
           solveTime,
+          submissions,
+          firstToSolve,
+          restrictedCorrect,
+          restrictedPending,
+          restrictedSolveTime,
+          restrictedSubmissions,
+          restrictedFirstToSolve,
         } = scoreCache;
         if (!cache[team.id]) {
           cache[team.id] = {
@@ -74,13 +84,15 @@ const Scoreboard: React.FC = observer(() => {
         }
         cache[team.id].problemsScores.push({
           problemName: contest.problems.find((p) => p.problem.id === problem.id)!.shortName,
-          pending: !!pending,
-          correct: correct,
-          firstToSolve: firstToSolve,
+          pending: !!(isUserJury ? restrictedPending : pending),
+          correct: isUserJury ? restrictedCorrect : correct,
+          firstToSolve: isUserJury ? restrictedFirstToSolve : firstToSolve,
           solvedTime: formatRestTime(
-            (new Date(solveTime).getTime() - new Date(contest.startTime).getTime()) / 1000,
+            (new Date(isUserJury ? restrictedSolveTime : solveTime).getTime() -
+              new Date(contest.startTime).getTime()) /
+              1000,
           ),
-          numberOfAttempts: submissions,
+          numberOfAttempts: isUserJury ? restrictedSubmissions : submissions,
         });
       }
       setStanding(
@@ -98,74 +110,147 @@ const Scoreboard: React.FC = observer(() => {
           }),
       );
     }
-  }, [scoreCaches]);
+  }, [scoreCaches, isUserJury]);
 
   return !currentContest ? (
     <>No Active Contest</>
   ) : (
-    <Container textAlign="center">
-      <Header>Scoreboard of {currentContest?.name}</Header>
-      <Table textAlign="center" celled>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell width="1">Rank</Table.HeaderCell>
-            <Table.HeaderCell width="4">Team</Table.HeaderCell>
-            <Table.HeaderCell style={{ width: '3%' }}>=</Table.HeaderCell>
-            <Table.HeaderCell width="1">Score</Table.HeaderCell>
-            {currentContest.problems
-              .slice()
-              .sort((a, b) => a.shortName.localeCompare(b.shortName))
-              .map((problem) => (
-                <Table.HeaderCell key={problem.shortName} width="1">
-                  {problem.shortName}
-                </Table.HeaderCell>
-              ))}
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {standing.map(
-            ({ teamId, teamName, solvedProblems, totalScore, problemsScores }, index) => (
-              <Table.Row key={`team-${teamId}`}>
-                <Table.Cell>{index + 1}</Table.Cell>
-                <Table.Cell textAlign="left">{teamName}</Table.Cell>
-                <Table.Cell>{solvedProblems}</Table.Cell>
-                <Table.Cell>{totalScore}</Table.Cell>
-                {problemsScores.map((problemScore) => (
-                  <Table.Cell
-                    key={`score-${teamId}-${problemScore.problemName}`}
-                    style={{
-                      backgroundColor: getScoreboardCellColor(problemScore),
-                    }}
-                  >
-                    {problemScore.numberOfAttempts ? (
-                      <b>
-                        {problemScore.correct ? '+' : '-'}
-                        {problemScore.correct
-                          ? problemScore.numberOfAttempts - 1 || ''
-                          : problemScore.numberOfAttempts}
-                      </b>
-                    ) : (
-                      ''
-                    )}
-                    <br />
-                    {problemScore.correct ? problemScore.solvedTime : ''}
-                  </Table.Cell>
-                ))}
-              </Table.Row>
-            ),
+    <div className="scoreboard">
+      {!compact && (
+        <Header className="scoreboard-header">
+          Scoreboard of {currentContest?.name}
+          {isUserJury && (
+            <Button
+              floated="right"
+              style={{ position: 'absolute', right: '2.5rem' }}
+              color="blue"
+              onClick={() => refreshScoreboardCache(currentContest?.id)}
+            >
+              <Icon name="refresh" />
+              Refresh
+            </Button>
           )}
-        </Table.Body>
-      </Table>
-    </Container>
+        </Header>
+      )}
+      <Grid
+        columns="equal"
+        className={`scoreboard-grid-${Math.ceil(currentContest.problems.length / 3) * 3}`}
+      >
+        <Grid.Row className="scoreboard-header-row">
+          <Grid.Column
+            style={{ maxWidth: currentContest.problems.length > 8 ? '33%' : '40%' }}
+            className="scoreboard-sub-column"
+          >
+            <Grid columns="equal" className="scoreboard-sub-grid">
+              <Grid.Row>
+                <Grid.Column width="2">
+                  <Segment>#</Segment>
+                </Grid.Column>
+                <Grid.Column>
+                  <Segment>Team</Segment>
+                </Grid.Column>
+                <Grid.Column width="2">
+                  <Segment>=</Segment>
+                </Grid.Column>
+                <Grid.Column width="3">
+                  <Segment>Score</Segment>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Grid.Column>
+          <Grid.Column className="scoreboard-sub-column">
+            <Grid columns="equal" className="scoreboard-sub-grid">
+              <Grid.Row>
+                {currentContest.problems
+                  .slice()
+                  .sort((a, b) => a.shortName.localeCompare(b.shortName))
+                  .map((problem) => (
+                    <Grid.Column key={problem.shortName}>
+                      <Segment style={{ borderBottom: `2px solid ${problem.color}` }}>
+                        {problem.shortName}
+                      </Segment>
+                    </Grid.Column>
+                  ))}
+              </Grid.Row>
+            </Grid>
+          </Grid.Column>
+        </Grid.Row>
+        {standing.map(({ teamId, teamName, solvedProblems, totalScore, problemsScores }, index) => {
+          return (
+            (!compact || teamId === profile?.team.id) && (
+              <Grid.Row key={`team-${teamId}`}>
+                <Grid.Column
+                  style={{ maxWidth: currentContest.problems.length > 8 ? '33%' : '40%' }}
+                  className="scoreboard-sub-column"
+                >
+                  <Grid columns="equal" className="scoreboard-sub-grid">
+                    <Grid.Row>
+                      <Grid.Column width="2">
+                        <Segment>
+                          <p className="content-center">{index + 1}</p>
+                        </Segment>
+                      </Grid.Column>
+                      <Grid.Column textAlign="left">
+                        <Segment>
+                          <p className="content-left">
+                            <i>{teamName}</i>
+                          </p>
+                        </Segment>
+                      </Grid.Column>
+                      <Grid.Column width="2">
+                        <Segment>
+                          <p className="content-center">{solvedProblems}</p>
+                        </Segment>
+                      </Grid.Column>
+                      <Grid.Column width="3">
+                        <Segment>
+                          <p className="content-center">{totalScore}</p>
+                        </Segment>
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                </Grid.Column>
+                <Grid.Column className="scoreboard-sub-column">
+                  <Grid columns="equal" className="scoreboard-sub-grid">
+                    <Grid.Row>
+                      {problemsScores.map((problemScore) => (
+                        <Grid.Column key={`score-${teamId}-${problemScore.problemName}`}>
+                          <Segment
+                            style={{ backgroundColor: getScoreboardCellColor(problemScore) }}
+                          >
+                            {problemScore.numberOfAttempts ? (
+                              <b>
+                                {problemScore.correct ? '+' : !problemScore.pending ? '-' : ''}
+                                {problemScore.correct
+                                  ? problemScore.numberOfAttempts - 1 || ''
+                                  : problemScore.numberOfAttempts}
+                              </b>
+                            ) : (
+                              <br />
+                            )}
+                            <br />
+                            <small>{problemScore.correct ? problemScore.solvedTime : ''}</small>
+                          </Segment>
+                        </Grid.Column>
+                      ))}
+                    </Grid.Row>
+                  </Grid>
+                </Grid.Column>
+              </Grid.Row>
+            )
+          );
+        })}
+      </Grid>
+    </div>
   );
 });
 
 export default Scoreboard;
 
 function getScoreboardCellColor(problemScore: TeamProblemScore): string {
+  if (problemScore.pending) return '#fff368';
   if (problemScore.firstToSolve) return '#1daa1d';
   if (problemScore.correct) return '#60e760';
-  if (problemScore.pending) return '#fff368';
   if (problemScore.numberOfAttempts) return '#e87272';
   return 'white';
 }

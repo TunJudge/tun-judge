@@ -67,4 +67,14 @@ export class ScoreCache {
     default: false,
   })
   restrictedCorrect: boolean;
+
+  @Column({ comment: 'Number of submissions made (restricted)', default: 0 })
+  restrictedSubmissions: number;
+
+  @Column({
+    comment:
+      'Whether there is the first solution for this problem (restricted)',
+    default: false,
+  })
+  restrictedFirstToSolve: boolean;
 }

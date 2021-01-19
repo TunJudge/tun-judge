@@ -6,12 +6,14 @@ export interface ScoreCache {
   contest: Contest;
   team: Team;
   problem: Problem;
-  submissions: number;
+  correct: boolean;
   pending: number;
   solveTime: Date;
-  correct: boolean;
+  submissions: number;
   firstToSolve: boolean;
+  restrictedCorrect: boolean;
   restrictedPending: number;
   restrictedSolveTime: Date;
-  restrictedCorrect: boolean;
+  restrictedSubmissions: number;
+  restrictedFirstToSolve: boolean;
 }

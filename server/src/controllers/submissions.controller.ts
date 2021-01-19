@@ -135,18 +135,28 @@ export class SubmissionsController {
       },
     },
   ): Promise<void> {
-    const judging = await this.judgingsRepository.findOneOrThrow(
+    const {
+      id: judgingId,
+      contest,
+      submission: { team, problem },
+    } = await this.judgingsRepository.findOneOrThrow(
       {
-        order: { startTime: 'DESC' },
         where: { submission: { id } },
+        relations: [
+          'contest',
+          'submission',
+          'submission.team',
+          'submission.problem',
+        ],
+        order: { startTime: 'DESC' },
       },
       new NotFoundException(),
     );
-    await this.judgingsRepository.update(judging.id, {
+    await this.judgingsRepository.update(judgingId, {
       juryMember: { id: userId },
       verified: true,
     });
-    await this.scoreboardService.refreshScores();
+    await this.scoreboardService.refreshScoreCache(contest, team, problem);
   }
 
   @Patch(':id/claim')

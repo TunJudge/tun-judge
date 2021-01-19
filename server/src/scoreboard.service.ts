@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Contest, ScoreCache, Submission } from './entities';
+import {
+  Contest,
+  Judging,
+  Problem,
+  ScoreCache,
+  Submission,
+  Team,
+} from './entities';
 import { ExtendedRepository } from './core/extended-repository';
 import { LessThanOrEqual } from 'typeorm';
 
@@ -13,6 +20,8 @@ export class ScoreboardService {
     private readonly contestsRepository: ExtendedRepository<Contest>,
     @InjectRepository(ScoreCache)
     private readonly scoreCachesRepository: ExtendedRepository<ScoreCache>,
+    @InjectRepository(Submission)
+    private readonly submissionsRepository: ExtendedRepository<Submission>,
   ) {}
 
   async refreshScores(): Promise<void> {
@@ -22,15 +31,7 @@ export class ScoreboardService {
       const now = new Date();
       const contests = await this.contestsRepository.find({
         where: { activateTime: LessThanOrEqual(now) },
-        relations: [
-          'teams',
-          'problems',
-          'problems.problem',
-          'submissions',
-          'submissions.team',
-          'submissions.problem',
-          'submissions.judgings',
-        ],
+        relations: ['teams', 'problems', 'problems.problem'],
       });
       await Promise.all(contests.map(this.refreshScoreForContest));
     } catch (e) {
@@ -40,123 +41,151 @@ export class ScoreboardService {
     }
   }
 
-  private refreshScoreForContest = async (contest: Contest): Promise<void> => {
-    const { submissions, problems, teams } = contest;
-    const sortedSubmissions = submissions
-      .filter(
-        (submission) => !submissionHasCompilationError(contest, submission),
-      )
-      .sort(
-        (a, b) =>
-          new Date(a.submitTime).getTime() - new Date(b.submitTime).getTime(),
-      );
-    for (const problem of problems.map((p) => p.problem)) {
-      const problemSubmissions = sortedSubmissions.filter(
-        (submission) => submission.problem.id === problem.id,
-      );
-      const correctProblemSubmissions = problemSubmissions.filter(
-        (submission) => submissionIsCorrect(contest, submission),
-      );
-      for (const team of teams) {
-        const correctTeamSubmissions = problemSubmissions.filter(
-          (submission) =>
-            submission.team.id === team.id &&
-            submissionIsCorrect(contest, submission),
-        );
-        const teamSubmissions = problemSubmissions.filter(
-          (submission) =>
-            submission.team.id === team.id &&
-            (!correctTeamSubmissions.length ||
-              new Date(submission.submitTime).getTime() <=
-                new Date(correctTeamSubmissions[0].submitTime).getTime()),
-        );
-        const pendingTeamSubmissions = teamSubmissions.filter((submission) =>
-          submissionIsPending(contest, submission),
-        );
+  refreshScoreCache = async (
+    contest: Contest,
+    team: Team,
+    problem: Problem,
+  ): Promise<void> => {
+    const isCorrect = submissionHasResult(contest, 'AC');
+    const hasNoCompileError = submissionHasResult(contest, 'CE', true);
+    const allSubmissions = await this.submissionsRepository.find({
+      where: { problem, contest },
+      relations: ['team', 'judgings'],
+      order: { submitTime: 'ASC' },
+    });
 
-        const publicPendingTeamSubmissions = teamSubmissions.filter(
-          (submission) =>
-            submissionIsPending(contest, submission) ||
-            !submissionIsBeforeFreezeTime(contest, submission),
-        );
-        const publicCorrectTeamSubmissions = correctTeamSubmissions.filter(
-          (submission) => submissionIsBeforeFreezeTime(contest, submission),
-        );
-        await this.scoreCachesRepository.save({
-          team: team,
-          problem: problem,
-          contest: contest,
-          correct: publicCorrectTeamSubmissions.length > 0,
-          solveTime: publicCorrectTeamSubmissions.length
-            ? publicCorrectTeamSubmissions[0].submitTime
-            : null,
-          pending: publicPendingTeamSubmissions.length,
-          submissions: teamSubmissions.length,
-          restrictedCorrect: correctTeamSubmissions.length > 0,
-          restrictedSolveTime: correctTeamSubmissions.length
-            ? correctTeamSubmissions[0].submitTime
-            : null,
-          restrictedPending: pendingTeamSubmissions.length,
-          firstToSolve: correctProblemSubmissions.length
-            ? correctProblemSubmissions[0].team.id === team.id
-            : false,
-        });
+    const allPublicTeamSubmission = allSubmissions.filter(
+      (submission) =>
+        submission.team.id === team.id &&
+        (hasNoCompileError(submission) ||
+          submissionInFreezeTime(contest, submission)),
+    );
+    const firstPublicAcceptedIndex = allPublicTeamSubmission.findIndex(
+      (submission) =>
+        !submissionInFreezeTime(contest, submission) &&
+        submission.valid &&
+        isCorrect(submission),
+    );
+
+    // Get problem submission that does not have a compile error result
+    const problemSubmissions = allSubmissions.filter(hasNoCompileError);
+
+    // Sort all the judging of every submission by startTime
+    problemSubmissions.forEach((submission) =>
+      submission.judgings.sort(
+        (a, b) => b.startTime.getTime() - a.startTime.getTime(),
+      ),
+    );
+
+    // Get correct submission
+    const correctProblemSubmissions = problemSubmissions.filter(isCorrect);
+
+    // Get correct submission
+    const publicCorrectProblemSubmissions = problemSubmissions.filter(
+      (submission) => !submissionInFreezeTime(contest, submission),
+    );
+
+    // Get team submission
+    const submissions = problemSubmissions.filter(
+      (submission) => submission.team.id === team.id,
+    );
+    const firstAcceptedIndex = submissions.findIndex(
+      (submission) => submission.valid && isCorrect(submission),
+    );
+
+    // Get accepted submissions
+    const correctSubmissions = submissions.filter(isCorrect);
+
+    // Get pending submissions
+    const pendingSubmissions = submissions.filter((submission) =>
+      submissionIsPending(contest, submission),
+    );
+
+    // Get public accepted submissions
+    const publicCorrectSubmissions = correctSubmissions.filter(
+      (submission) => !submissionInFreezeTime(contest, submission),
+    );
+    // Get public pending submissions
+    const publicPendingSubmissions = [
+      ...pendingSubmissions,
+      ...submissions.filter((submission) =>
+        submissionInFreezeTime(contest, submission),
+      ),
+    ];
+    await this.scoreCachesRepository.save({
+      team: team,
+      problem: problem,
+      contest: contest,
+      correct: publicCorrectSubmissions.length > 0,
+      pending: publicPendingSubmissions.length,
+      solveTime: publicCorrectSubmissions.shift()?.submitTime ?? null,
+      submissions:
+        firstPublicAcceptedIndex !== -1
+          ? firstPublicAcceptedIndex + 1
+          : allPublicTeamSubmission.length,
+      firstToSolve:
+        publicCorrectProblemSubmissions.shift()?.team.id === team.id,
+      restrictedCorrect: correctSubmissions.length > 0,
+      restrictedPending: pendingSubmissions.length,
+      restrictedSolveTime: correctSubmissions.shift()?.submitTime ?? null,
+      restrictedSubmissions:
+        firstAcceptedIndex !== -1 ? firstAcceptedIndex + 1 : submissions.length,
+      restrictedFirstToSolve:
+        correctProblemSubmissions.shift()?.team.id === team.id,
+    });
+  };
+
+  refreshScoreForContest = async (contest: Contest): Promise<void> => {
+    const { problems, teams } = contest;
+    for (const team of teams) {
+      for (const { problem } of problems) {
+        await this.refreshScoreCache(contest, team, problem);
       }
     }
   };
 }
 
-function submissionIsCorrect(
-  contest: Contest,
-  submission: Submission,
-): boolean {
-  return submission.judgings.some(
-    (judging) =>
-      ((contest.verificationRequired && judging.verified) ||
-        !contest.verificationRequired) &&
-      judging.result === 'AC',
+function getFirstJudging(submission: Submission): Judging | undefined {
+  const judgings = submission.judgings.sort(
+    (a, b) => b.startTime.getTime() - a.startTime.getTime(),
   );
+  return judgings.length ? judgings[0] : undefined;
 }
 
-function submissionHasCompilationError(
-  contest: Contest,
-  submission: Submission,
-): boolean {
-  const judgings = submission.judgings.sort(
-    (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime(),
-  );
-  return (
-    judgings.length &&
-    ((contest.verificationRequired && judgings[0].verified) ||
-      !contest.verificationRequired) &&
-    judgings[0].result === 'CE'
-  );
+function submissionHasResult(
+  { verificationRequired }: Contest,
+  result: 'AC' | 'CE',
+  inverse = false,
+): (submission: Submission) => boolean {
+  return (submission) => {
+    const judging = getFirstJudging(submission);
+    const answer =
+      judging?.result === result &&
+      !(verificationRequired && !judging.verified);
+    return inverse ? !answer : answer;
+  };
 }
 
 function submissionIsPending(
-  contest: Contest,
+  { verificationRequired }: Contest,
   submission: Submission,
 ): boolean {
-  return (
-    !submission.judgings.length ||
-    submission.judgings.some(
-      (judging) =>
-        !judging.result ||
-        (judging.result && contest.verificationRequired && !judging.verified),
-    )
-  );
+  const judging = getFirstJudging(submission);
+  return !judging?.result || (verificationRequired && !judging.verified);
 }
 
-function submissionIsBeforeFreezeTime(
-  contest: Contest,
+function submissionInFreezeTime(
+  { freezeTime, unfreezeTime, endTime }: Contest,
   submission: Submission,
 ): boolean {
-  const freezeTime = contest.freezeTime ?? contest.endTime;
-  const unFreezeTime = contest.unfreezeTime ?? contest.endTime;
+  freezeTime ??= endTime;
+  unfreezeTime ??= endTime;
+  const now = Date.now();
   return (
-    new Date(submission.submitTime).getTime() <
-      new Date(freezeTime).getTime() ||
-    new Date(submission.submitTime).getTime() >=
-      new Date(unFreezeTime).getTime()
+    freezeTime !== unfreezeTime &&
+    submission.submitTime.getTime() >= freezeTime.getTime() &&
+    submission.submitTime.getTime() < unfreezeTime.getTime() &&
+    now >= freezeTime.getTime() &&
+    now < unfreezeTime.getTime()
   );
 }

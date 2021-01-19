@@ -6,7 +6,12 @@ import Spinner from '../../../shared/Spinner';
 import { Button, Header, Icon, Menu, Segment, Table } from 'semantic-ui-react';
 import { Judging, Testcase } from '../../../../core/models';
 import { languageMap, resultMap } from '../../../../core/types';
-import { formatBytes, formatRestTime, isSubmissionClaimedByMe } from '../../../../core/helpers';
+import {
+  dateComparator,
+  formatBytes,
+  formatRestTime,
+  isSubmissionClaimedByMe,
+} from '../../../../core/helpers';
 import CodeEditor from '../../../shared/CodeEditor';
 import TestcaseContentView from '../problems/testcases/TestcaseContentView';
 import { JudgingRun } from '../../../../core/models/judging-run.model';
@@ -33,12 +38,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
 
   useEffect(() => {
     if (item) {
-      setJudging(
-        item.judgings
-          .slice()
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-          .shift(),
-      );
+      setJudging(item.judgings.slice().sort(dateComparator<Judging>('startTime', true)).shift());
     }
   }, [item]);
 

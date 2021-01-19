@@ -70,6 +70,8 @@ export class PublicController {
         delete scoreCache.restrictedCorrect;
         delete scoreCache.restrictedPending;
         delete scoreCache.restrictedSolveTime;
+        delete scoreCache.restrictedSubmissions;
+        delete scoreCache.restrictedFirstToSolve;
       }
       return scoreCache;
     });

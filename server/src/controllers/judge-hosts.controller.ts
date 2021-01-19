@@ -89,11 +89,24 @@ export class JudgeHostsController {
     @Body() judging: Judging,
   ): Promise<void> {
     const oldJudging = await this.judgingsRepository.findOneOrThrow(
-      { id: judgingId },
+      {
+        where: { id: judgingId },
+        relations: [
+          'contest',
+          'submission',
+          'submission.team',
+          'submission.problem',
+        ],
+      },
+
       new NotFoundException(`No judging found for id ${judgingId}`),
     );
     await this.judgingsRepository.save({ ...oldJudging, ...judging });
-    await this.scoreboardService.refreshScores();
+    await this.scoreboardService.refreshScoreCache(
+      oldJudging.contest,
+      oldJudging.submission.team,
+      oldJudging.submission.problem,
+    );
   }
 
   @Post(':hostname/add-judging-run/:id')

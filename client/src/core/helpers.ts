@@ -85,3 +85,9 @@ export function isSubmissionClaimedByMe(judging?: Judging, user?: User): boolean
     judging?.juryMember?.username === user?.username
   );
 }
+
+export function dateComparator<T>(field: keyof T, inv = false): (a: T, b: T) => number {
+  return (a, b) =>
+    new Date((inv ? b : a)[field] as any).getTime() -
+    new Date((inv ? a : b)[field] as any).getTime();
+}

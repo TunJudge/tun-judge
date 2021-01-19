@@ -1,4 +1,4 @@
-import { action, autorun, observable } from 'mobx';
+import { action, autorun, computed, observable } from 'mobx';
 import http from '../utils/http-client';
 import { User } from '../models';
 import { TeamStore } from './TeamStore';
@@ -58,6 +58,11 @@ export class RootStore {
       },
       { delay: 10 },
     );
+  }
+
+  @computed
+  get isUserJury(): boolean {
+    return !!this.profile && ['admin', 'jury'].includes(this.profile.role.name);
   }
 
   @action

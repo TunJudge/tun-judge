@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
 import { rootStore } from '../../../core/stores/RootStore';
-import { Submission } from '../../../core/models';
-import { formatRestTime } from '../../../core/helpers';
+import { Judging, Submission } from '../../../core/models';
+import { dateComparator, formatRestTime } from '../../../core/helpers';
 import { resultMap } from '../../../core/types';
 
 let interval: NodeJS.Timeout | undefined = undefined;
@@ -79,8 +79,11 @@ const SubmissionsList: React.FC = observer(() => {
       withoutActions
       onRefresh={() => fetchSubmissions(currentContest!.id, profile!.team.id)}
       rowBackgroundColor={(submission) => {
-        const judging = submission.judgings.find((j) => j.valid && j.endTime);
-        if (!judging) return '#FFEAC2';
+        const judging = submission.judgings
+          .slice()
+          .sort(dateComparator<Judging>('startTime', true))
+          .find((j) => j.valid && j.endTime);
+        if (!judging) return '#fff9c2';
         return judging.result == 'AC' ? '#B3FFC2' : '#FFC2C2';
       }}
     />

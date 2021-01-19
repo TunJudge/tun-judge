@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect, useState } from 'react';
-import { Button, Header, Icon, Menu, Segment, Table } from 'semantic-ui-react';
+import React, { CSSProperties, ReactElement, useEffect, useState } from 'react';
+import { Button, Header, Icon, Menu, Segment, Table, SemanticWIDTHS } from 'semantic-ui-react';
 import cn from 'classnames';
 import { generalComparator } from '../../core/helpers';
 
@@ -7,6 +7,9 @@ export type ListPageTableColumn<T> = {
   header: string;
   field: keyof T;
   className?: string;
+  width?: SemanticWIDTHS;
+  textAlign?: 'center' | 'left' | 'right';
+  style?: CSSProperties;
   render: (obj: T) => React.ReactNode;
   onClick?: (obj: T) => void;
 };
@@ -18,6 +21,7 @@ type ListPageProps<T> = {
   columns: ListPageTableColumn<T>[];
   filters?: any;
   pagination?: any;
+  notSortable?: boolean;
   formItemInitValue?: Partial<T>;
   ItemForm?: React.FC<{ item: T; dismiss: () => void; submit: (item: T) => void }>;
   withoutActions?: boolean;
@@ -30,13 +34,14 @@ type ListPageProps<T> = {
   rowBackgroundColor?: (item: T) => string;
 };
 
-function ListPage<T extends { id: number }>({
+function ListPage<T extends { id: number | string }>({
   header,
   emptyMessage,
   data,
   columns,
   filters,
   pagination,
+  notSortable,
   formItemInitValue,
   ItemForm,
   withoutActions,
@@ -134,7 +139,7 @@ function ListPage<T extends { id: number }>({
         </Menu.Item>
       </Segment>
       {filters}
-      <Table striped sortable celled>
+      <Table striped sortable={!notSortable} celled>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell
@@ -149,6 +154,8 @@ function ListPage<T extends { id: number }>({
               <Table.HeaderCell
                 key={index}
                 sorted={sortState.column === column.field ? sortState.direction! : undefined}
+                textAlign={column.textAlign ?? 'left'}
+                width={column.width}
                 onClick={() => handleSort(column.field)}
               >
                 {column.header}
@@ -173,6 +180,9 @@ function ListPage<T extends { id: number }>({
                   <Table.Cell
                     key={`${item.id}-${index}`}
                     className={column.className}
+                    textAlign={column.textAlign ?? 'left'}
+                    width={column.width}
+                    style={column.style}
                     onClick={() => column.onClick && column.onClick(item)}
                   >
                     {column.render(item)}
@@ -191,7 +201,7 @@ function ListPage<T extends { id: number }>({
                       <Icon
                         name="trash"
                         color="red"
-                        onClick={() => onDelete && onDelete(item.id)}
+                        onClick={() => onDelete && onDelete(item.id as number)}
                         style={{
                           cursor: 'pointer',
                           marginLeft: ItemForm && '25%',

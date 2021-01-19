@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { Judging, Submission, Testcase } from '../../../../core/models';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
-import { formatRestTime, isEmpty } from '../../../../core/helpers';
+import { dateComparator, formatRestTime, isEmpty } from '../../../../core/helpers';
 import { Button, Form, Icon, Menu, Segment, Table } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
 import { resultMap } from '../../../../core/types';
@@ -75,7 +75,7 @@ const SubmissionsList: React.FC = observer(() => {
       render: (submission) => {
         const judging = submission.judgings
           .slice()
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+          .sort(dateComparator<Judging>('startTime', true))
           .shift();
         return judging && judging.result ? (
           judging.verified ? (
@@ -114,7 +114,7 @@ const SubmissionsList: React.FC = observer(() => {
       render: (submission) => {
         const judging = submission.judgings
           .slice()
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+          .sort(dateComparator<Judging>('startTime', true));
         return submission.problem.testcases
           .slice()
           .sort((a, b) => a.rank - b.rank)

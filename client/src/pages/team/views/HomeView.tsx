@@ -1,21 +1,26 @@
 import React from 'react';
-import { Grid } from 'semantic-ui-react';
+import { Container, Grid } from 'semantic-ui-react';
 import SubmissionsList from './SubmissionsList';
-import ClarificationsList from './ClarificationsList';
+import Scoreboard from '../../shared/Scoreboard';
+import ProblemSet from '../../shared/ProblemSet';
 
 const HomeView: React.FC = () => {
   return (
-    <Grid columns="equal" stackable>
-      <Grid.Row centered>team row</Grid.Row>
-      <Grid.Row>
-        <Grid.Column style={{ paddingRight: '.5rem' }}>
-          <SubmissionsList />
-        </Grid.Column>
-        <Grid.Column style={{ paddingLeft: '.5rem' }}>
-          <ClarificationsList />
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
+    <>
+      <Scoreboard compact />
+      <Container>
+        <Grid columns="equal" stackable>
+          <Grid.Row>
+            <Grid.Column style={{ padding: '.5rem' }}>
+              <ProblemSet listMode />
+            </Grid.Column>
+            <Grid.Column style={{ padding: '.5rem' }}>
+              <SubmissionsList />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Container>
+    </>
   );
 };
 

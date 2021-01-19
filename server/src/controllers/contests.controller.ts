@@ -5,16 +5,24 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
 import { AdminGuard, AuthenticatedGuard, TeamGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
-import { Contest, ContestProblem, Submission, Team } from '../entities';
+import {
+  Contest,
+  ContestProblem,
+  Judging,
+  Submission,
+  Team,
+} from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThan } from 'typeorm';
 import { ScoreboardService } from '../scoreboard.service';
+import { JuryGuard } from '../core/guards/jury.guard';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -69,6 +77,16 @@ export class ContestsController {
     return this.contestsRepository.save({ ...oldContest, ...contest });
   }
 
+  @Patch(':id/refresh-scoreboard-cache')
+  @UseGuards(JuryGuard)
+  async refreshScoreboardCache(@Param('id') id: number): Promise<void> {
+    const contest = await this.contestsRepository.findOneOrThrow(
+      { where: { id }, relations: ['teams', 'problems', 'problems.problem'] },
+      new NotFoundException(),
+    );
+    await this.scoreboardService.refreshScoreForContest(contest);
+  }
+
   @Delete(':id')
   @UseGuards(AdminGuard)
   async delete(@Param('id') id: number): Promise<void> {
@@ -90,7 +108,9 @@ export class ContestsController {
       })
     ).map((submission) => {
       if (submission.contest.verificationRequired) {
-        submission.judgings = submission.judgings.filter((j) => j.verified);
+        submission.judgings = submission.judgings.filter(
+          (j) => j.verified && !judgingInFreezeTime(submission.contest, j),
+        );
       }
       return submission;
     });
@@ -119,6 +139,25 @@ export class ContestsController {
     submission.contest = contest;
     submission.team = team;
     await this.submissionsRepository.save(submission);
-    await this.scoreboardService.refreshScores();
+    await this.scoreboardService.refreshScoreCache(
+      contest,
+      team,
+      submission.problem,
+    );
   }
+}
+function judgingInFreezeTime(
+  { freezeTime, unfreezeTime, endTime }: Contest,
+  judging: Judging,
+): boolean {
+  freezeTime ??= endTime;
+  unfreezeTime ??= endTime;
+  const now = Date.now();
+  return (
+    freezeTime !== unfreezeTime &&
+    judging.startTime.getTime() >= freezeTime.getTime() &&
+    judging.startTime.getTime() < unfreezeTime.getTime() &&
+    now >= freezeTime.getTime() &&
+    now < unfreezeTime.getTime()
+  );
 }
