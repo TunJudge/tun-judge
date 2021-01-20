@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, Method } from 'axios';
 import { rootStore } from '../stores/RootStore';
+import { toast } from 'react-semantic-toasts';
 
 const hostname = process && process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
 
@@ -41,6 +42,16 @@ export async function request<T>(
     ).data;
   } catch (error) {
     error?.response?.status === 401 && rootStore && rootStore.logout();
+    if (error?.response?.data) {
+      const { message } = error?.response?.data;
+      toast({
+        title: 'Error',
+        description: message,
+        type: 'error',
+        time: 3000,
+        animation: 'bounce',
+      });
+    }
     throw error;
   }
 }

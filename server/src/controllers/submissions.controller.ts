@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import {
   File,
@@ -18,9 +18,8 @@ import {
   JudgingRun,
   Submission,
 } from '../entities';
-import { JudgeHostGuard } from '../core/guards/judge-host.guard';
-import { JuryGuard } from '../core/guards/jury.guard';
 import { ScoreboardService } from '../scoreboard.service';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('submissions')
 @UseGuards(AuthenticatedGuard)
@@ -38,7 +37,7 @@ export class SubmissionsController {
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   async getAll(
     @Query('page') page: number,
     @Query('size') size: number,
@@ -95,7 +94,7 @@ export class SubmissionsController {
   }
 
   @Get(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getById(@Param('id') id: number): Promise<Submission> {
     return this.submissionsRepository.findOneOrThrow(
       {
@@ -125,7 +124,7 @@ export class SubmissionsController {
   }
 
   @Patch(':id/mark-verified')
-  @UseGuards(JuryGuard)
+  @Roles('admin', 'jury')
   async markSubmissionVerified(
     @Param('id') id: number,
     @Session()
@@ -160,7 +159,7 @@ export class SubmissionsController {
   }
 
   @Patch(':id/claim')
-  @UseGuards(JuryGuard)
+  @Roles('admin', 'jury')
   async claimSubmission(
     @Param('id') id: number,
     @Session()
@@ -183,7 +182,7 @@ export class SubmissionsController {
   }
 
   @Patch(':id/un-claim')
-  @UseGuards(JuryGuard)
+  @Roles('admin', 'jury')
   async unClaimSubmission(
     @Param('id') id: number,
     @Session()
@@ -206,7 +205,7 @@ export class SubmissionsController {
   }
 
   @Get(':id/run/:runId/content')
-  @UseGuards(JudgeHostGuard)
+  @Roles('admin', 'judge-host')
   async getRunContent(
     @Param('id') id: number,
     @Param('runId') runId: number,

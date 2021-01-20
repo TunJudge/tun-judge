@@ -9,10 +9,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { Team } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('teams')
 @UseGuards(AuthenticatedGuard)
@@ -23,7 +24,7 @@ export class TeamsController {
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getAll(): Promise<Team[]> {
     return this.teamsRepository.find({
       order: { id: 'ASC' },
@@ -32,13 +33,13 @@ export class TeamsController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async create(@Body() team: Team): Promise<Team> {
     return this.teamsRepository.save(team);
   }
 
   @Put(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async update(@Param('id') id: number, @Body() team: Team): Promise<Team> {
     const oldTeam = await this.teamsRepository.findOneOrThrow(
       id,
@@ -51,7 +52,7 @@ export class TeamsController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.teamsRepository.delete(id);
   }

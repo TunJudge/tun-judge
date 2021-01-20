@@ -26,6 +26,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
       field: 'input' | 'output';
     }>({ testcase: undefined, field: 'input' });
     const {
+      isUserAdmin,
       testcasesStore: { data, fetchAll, create, update, remove, move },
     } = rootStore;
 
@@ -41,12 +42,15 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
           <Menu.Item>
             <Header>Testcases</Header>
           </Menu.Item>
-          <Menu.Item position="right">
-            <TestcaseBulkUploader problem={problem} />
-            <Button color="blue" icon onClick={() => setFormOpen(true)}>
-              <Icon name="plus" />
-            </Button>
-          </Menu.Item>
+          {isUserAdmin && (
+            <Menu.Item position="right">
+              <TestcaseBulkUploader problem={problem} />
+
+              <Button color="blue" icon onClick={() => setFormOpen(true)}>
+                <Icon name="plus" />
+              </Button>
+            </Menu.Item>
+          )}
         </Segment>
         <Segment style={{ height: rowHeight - problemInfoHeight - 66, overflowY: 'auto' }}>
           <Table celled structured>
@@ -58,7 +62,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
                 <Table.HeaderCell>Content</Table.HeaderCell>
                 <Table.HeaderCell width="1">Sample</Table.HeaderCell>
                 <Table.HeaderCell>Description</Table.HeaderCell>
-                <Table.HeaderCell width="1" />
+                {isUserAdmin && <Table.HeaderCell width="1" />}
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -110,25 +114,27 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
                       />
                     </Table.Cell>
                     <Table.Cell rowSpan={2}>{testcase.description ?? '-'}</Table.Cell>
-                    <Table.Cell rowSpan={2} textAlign="center">
-                      <Icon
-                        className="cursor-pointer"
-                        name="edit"
-                        onClick={() => {
-                          setFormTestcase(testcase);
-                          setFormOpen(true);
-                        }}
-                        style={{ marginRight: 0 }}
-                      />
-                      <br />
-                      <Icon
-                        className="cursor-pointer"
-                        name="trash"
-                        color="red"
-                        onClick={() => remove(testcase.id)}
-                        style={{ marginRight: 0, marginTop: '.5rem' }}
-                      />
-                    </Table.Cell>
+                    {isUserAdmin && (
+                      <Table.Cell rowSpan={2} textAlign="center">
+                        <Icon
+                          className="cursor-pointer"
+                          name="edit"
+                          onClick={() => {
+                            setFormTestcase(testcase);
+                            setFormOpen(true);
+                          }}
+                          style={{ marginRight: 0 }}
+                        />
+                        <br />
+                        <Icon
+                          className="cursor-pointer"
+                          name="trash"
+                          color="red"
+                          onClick={() => remove(testcase.id)}
+                          style={{ marginRight: 0, marginTop: '.5rem' }}
+                        />
+                      </Table.Cell>
+                    )}
                   </Table.Row>,
                   <Table.Row key={`${testcase.id}-ans`}>
                     <Table.Cell>

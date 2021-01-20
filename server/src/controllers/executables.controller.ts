@@ -9,11 +9,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { Executable } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not } from 'typeorm';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('executables')
 @UseGuards(AuthenticatedGuard)
@@ -24,7 +25,7 @@ export class ExecutablesController {
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getAll(): Promise<Executable[]> {
     return this.executablesRepository.find({
       order: { id: 'ASC' },
@@ -33,7 +34,7 @@ export class ExecutablesController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async create(@Body() executable: Executable): Promise<Executable> {
     if (executable.default) {
       await this.executablesRepository.update(
@@ -45,7 +46,7 @@ export class ExecutablesController {
   }
 
   @Put(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async update(
     @Param('id') id: number,
     @Body() executable: Executable,
@@ -64,7 +65,7 @@ export class ExecutablesController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.executablesRepository.delete(id);
   }

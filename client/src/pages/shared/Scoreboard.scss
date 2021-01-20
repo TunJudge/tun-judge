@@ -1,19 +1,15 @@
 .scoreboard {
   text-align: center;
-  margin: 3rem;
+  margin: 1rem 3rem 3rem;
 
   .scoreboard-header {
     font-size: 2rem !important;
     margin-bottom: 3rem !important;
   }
 
-  .scoreboard-grid-3 {
-    margin-left: 30%;
-    margin-right: 30%;
-  }
-  .scoreboard-grid-6 {
-    margin-left: 25%;
-    margin-right: 25%;
+  .scoreboard-grid-3, .scoreboard-grid-6 {
+    margin-left: 20%;
+    margin-right: 20%;
   }
 
   .scoreboard-grid-9 {
@@ -28,8 +24,8 @@
 
   .grid {
     .row {
-      padding-top: .1rem !important;
-      padding-bottom: .1rem !important;
+      padding-top: 0.1rem !important;
+      padding-bottom: 0.1rem !important;
 
       &.scoreboard-header-row {
         font-style: italic;
@@ -37,8 +33,8 @@
         font-size: 1.1rem !important;
 
         .segment {
-          padding-left: .2rem !important;
-          padding-right: .2rem !important;
+          padding-left: 0.2rem !important;
+          padding-right: 0.2rem !important;
         }
       }
 
@@ -61,7 +57,7 @@
       .column {
         .segment {
           height: 100% !important;
-          padding: .5rem;
+          padding: 0.5rem;
 
           .content-left {
             margin: 0;

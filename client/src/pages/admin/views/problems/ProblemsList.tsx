@@ -9,6 +9,7 @@ import ProblemForm from './ProblemForm';
 const ProblemsList: React.FC = observer(() => {
   const history = useHistory();
   const {
+    isUserAdmin,
     problemsStore: { data, fetchAll, create, update, remove },
     executablesStore: { data: executables, fetchAll: fetchAllExecutables },
   } = rootStore;
@@ -52,11 +53,12 @@ const ProblemsList: React.FC = observer(() => {
       header="Problems"
       data={data}
       columns={columns}
-      ItemForm={ProblemForm}
+      ItemForm={isUserAdmin ? ProblemForm : undefined}
       formItemInitValue={{
         runScript: executables.find((e) => e.type === 'RUNNER' && e.default),
         checkScript: executables.find((e) => e.type === 'CHECKER' && e.default),
       }}
+      withoutActions={!isUserAdmin}
       onDelete={remove}
       onRefresh={() => Promise.all([fetchAll(), fetchAllExecutables()])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}

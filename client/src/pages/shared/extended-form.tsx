@@ -29,6 +29,7 @@ type ExtendedFieldProps<T> = {
 type DateTimeFieldProps<T> = ExtendedFieldProps<T> & {
   minDate?: Date;
   maxDate?: Date;
+  disabled?: boolean;
 };
 
 export function DateTimeField<T>({
@@ -39,6 +40,7 @@ export function DateTimeField<T>({
   required,
   minDate,
   maxDate,
+  disabled,
   errors,
   setErrors,
   onChange,
@@ -54,6 +56,7 @@ export function DateTimeField<T>({
       value={entity[field] ? moment(entity[field]).format(MOMENT_DEFAULT_FORMAT) : ''}
       minDate={minDate}
       maxDate={maxDate}
+      disabled={disabled}
       onChange={(_, { value }) => {
         entity[field] = moment(value, MOMENT_DEFAULT_FORMAT).toDate() as any;
         setErrors && setErrors({ ...errors, [field]: false });

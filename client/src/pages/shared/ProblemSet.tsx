@@ -8,14 +8,9 @@ import PDFModalViewer from './PDFModalViewer';
 import { contestNotOver, dateComparator, formatBytes } from '../../core/helpers';
 import ListPage, { ListPageTableColumn } from './ListPage';
 
-type ListLayout = 'list' | 'th';
-
 const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => {
   const [submission, setSubmission] = useState<Submission | undefined>(undefined);
   const [pdfData, setPdfData] = useState<string | undefined>(undefined);
-  const [listLayout, setListLayout] = useState<ListLayout>(
-    (localStorage.getItem('problems.listLayout') as ListLayout) ?? 'th',
-  );
   const {
     profile,
     isUserJury,
@@ -94,19 +89,10 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
         />
       ) : (
         <Container>
-          <Button
-            floated="right"
-            style={{ marginLeft: 0 }}
-            icon={<Icon name={listLayout === 'list' ? 'th' : 'list'} />}
-            onClick={() => {
-              setListLayout(listLayout === 'list' ? 'th' : 'list');
-              localStorage.setItem('problems.listLayout', listLayout === 'list' ? 'th' : 'list');
-            }}
-          />
           <h1 style={{ marginTop: '1rem', marginBottom: '3rem', textAlign: 'center' }}>
             Contest Problems
           </h1>
-          <Card.Group centered stackable itemsPerRow={listLayout === 'list' ? 1 : 4}>
+          <Card.Group centered stackable itemsPerRow="4">
             {problems.map((problem) => (
               <Card fluid key={problem.shortName}>
                 <Card.Content style={{ backgroundColor: getProblemColor(problem) }}>

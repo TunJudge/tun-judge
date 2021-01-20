@@ -9,6 +9,7 @@ import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 const LanguagesList: React.FC = observer(() => {
   const [scriptData, setScriptData] = useState<Language | undefined>();
   const {
+    isUserAdmin,
     languagesStore: { data, fetchAll, create, update, remove },
   } = rootStore;
 
@@ -37,12 +38,12 @@ const LanguagesList: React.FC = observer(() => {
     {
       header: 'Allow Submit?',
       field: 'allowSubmit',
-      render: (language) => (language.allowSubmit ? 'yes' : 'no'),
+      render: (language) => (language.allowSubmit ? 'Yes' : 'No'),
     },
     {
       header: 'Allow Judge?',
       field: 'allowJudge',
-      render: (language) => (language.allowJudge ? 'yes' : 'no'),
+      render: (language) => (language.allowJudge ? 'Yes' : 'No'),
     },
     {
       header: 'Extensions',
@@ -57,9 +58,10 @@ const LanguagesList: React.FC = observer(() => {
         header="Languages"
         data={data}
         columns={columns}
-        ItemForm={LanguageForm}
+        ItemForm={isUserAdmin ? LanguageForm : undefined}
         onDelete={remove}
         onRefresh={fetchAll}
+        withoutActions={!isUserAdmin}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (
@@ -69,10 +71,14 @@ const LanguagesList: React.FC = observer(() => {
             await fetchAll();
             setScriptData(undefined);
           }}
-          submit={async () => {
-            await update(scriptData);
-            setScriptData(undefined);
-          }}
+          submit={
+            isUserAdmin
+              ? async () => {
+                  await update(scriptData);
+                  setScriptData(undefined);
+                }
+              : undefined
+          }
         />
       )}
     </>

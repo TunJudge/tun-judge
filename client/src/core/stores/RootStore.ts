@@ -65,6 +65,11 @@ export class RootStore {
     return !!this.profile && ['admin', 'jury'].includes(this.profile.role.name);
   }
 
+  @computed
+  get isUserAdmin(): boolean {
+    return !!this.profile && this.profile.role.name === 'admin';
+  }
+
   @action
   setProfile = (profile: User): User => (this.profile = profile);
 

@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ScheduleModule } from '@nestjs/schedule';
+import { APP_GUARD } from '@nestjs/core';
 import { join } from 'path';
 import { AppService } from './app.service';
 import { entities } from './entities';
@@ -11,20 +12,21 @@ import { CustomRepositoryProviders } from './core/extended-repository';
 import { ScoreboardService } from './scoreboard.service';
 import {
   AppController,
-  RolesController,
-  UsersController,
-  TeamsController,
-  PublicController,
   ContestsController,
-  ProblemsController,
-  LanguagesController,
-  TestcasesController,
-  JudgeHostsController,
   ExecutablesController,
+  JudgeHostsController,
+  LanguagesController,
+  ProblemsController,
+  PublicController,
+  RolesController,
   SubmissionsController,
   TeamCategoriesController,
+  TeamsController,
+  TestcasesController,
+  UsersController,
 } from './controllers';
 import config from './core/config';
+import { RolesGuard } from './core/guards';
 
 @Module({
   imports: [
@@ -62,6 +64,11 @@ import config from './core/config';
     SubmissionsController,
     TeamCategoriesController,
   ],
-  providers: [AppService, ScoreboardService, ...CustomRepositoryProviders],
+  providers: [
+    { provide: APP_GUARD, useClass: RolesGuard },
+    AppService,
+    ScoreboardService,
+    ...CustomRepositoryProviders,
+  ],
 })
 export class AppModule {}

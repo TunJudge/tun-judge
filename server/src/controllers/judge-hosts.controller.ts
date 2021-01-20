@@ -10,12 +10,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JudgeHost, Judging, JudgingRun, Submission, User } from '../entities';
 import { ExtendedRepository } from '../core/extended-repository';
-import { JudgeHostGuard } from '../core/guards/judge-host.guard';
 import { ScoreboardService } from '../scoreboard.service';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('judge-hosts')
 @UseGuards(AuthenticatedGuard)
@@ -35,7 +35,7 @@ export class JudgeHostsController {
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getAll(): Promise<JudgeHost[]> {
     return this.judgeHostsRepository.find({
       order: { id: 'ASC' },
@@ -44,7 +44,7 @@ export class JudgeHostsController {
   }
 
   @Patch(':id/toggle/:active')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async toggle(
     @Param('id') id: number,
     @Param('active') active: string,
@@ -60,7 +60,7 @@ export class JudgeHostsController {
   }
 
   @Post('subscribe')
-  @UseGuards(JudgeHostGuard)
+  @Roles('admin', 'judge-host')
   async subscribe(@Body() { hostname, username }: any): Promise<void> {
     const user = await this.usersRepository.findOneOrThrow(
       { username },
@@ -82,7 +82,7 @@ export class JudgeHostsController {
   }
 
   @Put(':hostname/update-judging/:id')
-  @UseGuards(JudgeHostGuard)
+  @Roles('admin', 'judge-host')
   async updateJudging(
     @Param('hostname') hostname: string,
     @Param('id') judgingId: number,
@@ -110,7 +110,7 @@ export class JudgeHostsController {
   }
 
   @Post(':hostname/add-judging-run/:id')
-  @UseGuards(JudgeHostGuard)
+  @Roles('admin', 'judge-host')
   async addJudgingRun(
     @Param('hostname') hostname: string,
     @Param('id') judgingId: number,
@@ -128,7 +128,7 @@ export class JudgeHostsController {
   }
 
   @Get(':hostname/next-judging')
-  @UseGuards(JudgeHostGuard)
+  @Roles('admin', 'judge-host')
   async getNextJudging(
     @Param('hostname') hostname: string,
   ): Promise<Judging | undefined> {
@@ -197,7 +197,7 @@ export class JudgeHostsController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.judgeHostsRepository.delete(id);
   }

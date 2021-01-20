@@ -77,6 +77,9 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               field="startTime"
               label="Start Time"
               required
+              disabled={!contest.activateTime}
+              minDate={contest.activateTime}
+              maxDate={contest.endTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -85,6 +88,8 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               field="endTime"
               label="End Time"
               required
+              disabled={!contest.startTime}
+              minDate={contest.startTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -94,6 +99,9 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               entity={contest}
               field="freezeTime"
               label="Freeze Time"
+              disabled={!contest.startTime}
+              minDate={contest.startTime}
+              maxDate={contest.endTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -101,6 +109,8 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               entity={contest}
               field="unfreezeTime"
               label="Unfreeze Time"
+              disabled={!contest.freezeTime}
+              minDate={contest.freezeTime}
               errors={errors}
               setErrors={setErrors}
             />
@@ -108,6 +118,8 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               entity={contest}
               field="finalizeTime"
               label="Finalize Time"
+              disabled={!contest.endTime}
+              minDate={contest.endTime}
               errors={errors}
               setErrors={setErrors}
             />

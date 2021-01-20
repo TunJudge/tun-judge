@@ -18,7 +18,7 @@ export class AuthenticatedGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     if (!request.isAuthenticated()) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('You should be logged first');
     }
     return true;
   }

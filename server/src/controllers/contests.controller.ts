@@ -10,7 +10,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard, TeamGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import {
   Contest,
@@ -22,7 +22,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThan } from 'typeorm';
 import { ScoreboardService } from '../scoreboard.service';
-import { JuryGuard } from '../core/guards/jury.guard';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -40,7 +40,7 @@ export class ContestsController {
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getAll(): Promise<Contest[]> {
     return this.contestsRepository
       .find({
@@ -56,13 +56,13 @@ export class ContestsController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   create(@Body() contest: Contest): Promise<Contest> {
     return this.contestsRepository.save(contest);
   }
 
   @Put(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async update(
     @Param('id') id: number,
     @Body() contest: Contest,
@@ -78,7 +78,7 @@ export class ContestsController {
   }
 
   @Patch(':id/refresh-scoreboard-cache')
-  @UseGuards(JuryGuard)
+  @Roles('admin', 'jury')
   async refreshScoreboardCache(@Param('id') id: number): Promise<void> {
     const contest = await this.contestsRepository.findOneOrThrow(
       { where: { id }, relations: ['teams', 'problems', 'problems.problem'] },
@@ -88,14 +88,14 @@ export class ContestsController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.contestProblemsRepository.delete({ contest: { id } });
     await this.contestsRepository.delete(id);
   }
 
   @Get(':id/team/:teamId/submissions')
-  @UseGuards(TeamGuard)
+  @Roles('admin', 'team')
   async getByContestAndTeam(
     @Param('id') contestId: number,
     @Param('teamId') teamId: number,
@@ -117,7 +117,7 @@ export class ContestsController {
   }
 
   @Post(':id/team/:teamId/submit')
-  @UseGuards(TeamGuard)
+  @Roles('admin', 'team')
   async submit(
     @Param('id') contestId: number,
     @Param('teamId') teamId: number,
@@ -146,6 +146,7 @@ export class ContestsController {
     );
   }
 }
+
 function judgingInFreezeTime(
   { freezeTime, unfreezeTime, endTime }: Contest,
   judging: Judging,

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'mobx-react';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
 import { rootStore } from './core/stores/RootStore';

@@ -8,6 +8,7 @@ import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 
 const TeamCategoriesList: React.FC = observer(() => {
   const {
+    isUserAdmin,
     teamCategoriesStore: { data, fetchAll, create, update, move, remove },
   } = rootStore;
 
@@ -26,18 +27,19 @@ const TeamCategoriesList: React.FC = observer(() => {
       field: 'sortOrder',
       render: (category) => (
         <>
-          {category.sortOrder + 1 < data.length ? (
-            <Icon
-              className="cursor-pointer"
-              name="angle down"
-              onClick={() => move(category.id, 'down')}
-              style={{ marginRight: 0 }}
-            />
-          ) : (
-            <Icon name="angle down" style={{ opacity: 0, marginRight: 0 }} />
-          )}
+          {isUserAdmin &&
+            (category.sortOrder + 1 < data.length ? (
+              <Icon
+                className="cursor-pointer"
+                name="angle down"
+                onClick={() => move(category.id, 'down')}
+                style={{ marginRight: 0 }}
+              />
+            ) : (
+              <Icon name="angle down" style={{ opacity: 0, marginRight: 0 }} />
+            ))}
           {category.sortOrder}
-          {category.sortOrder > 0 && (
+          {isUserAdmin && category.sortOrder > 0 && (
             <Icon
               className="cursor-pointer"
               name="angle up"
@@ -56,7 +58,7 @@ const TeamCategoriesList: React.FC = observer(() => {
     {
       header: 'Visible?',
       field: 'visible',
-      render: (category) => (category.visible ? 'yes' : 'no'),
+      render: (category) => (category.visible ? 'Yes' : 'No'),
     },
     {
       header: 'Teams',
@@ -70,9 +72,10 @@ const TeamCategoriesList: React.FC = observer(() => {
       header="Team Categories"
       data={data}
       columns={columns}
-      ItemForm={TeamCategoryForm}
+      ItemForm={isUserAdmin ? TeamCategoryForm : undefined}
       onDelete={remove}
       onRefresh={fetchAll}
+      withoutActions={!isUserAdmin}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
     />
   );

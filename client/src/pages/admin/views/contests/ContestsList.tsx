@@ -10,6 +10,7 @@ import { observable } from 'mobx';
 
 const ContestsList: React.FC = observer(() => {
   const {
+    isUserAdmin,
     contestsStore: { data, fetchAll, create, update, remove },
     problemsStore: { fetchAll: fetchAllProblems },
   } = rootStore;
@@ -47,22 +48,22 @@ const ContestsList: React.FC = observer(() => {
     {
       header: 'Balloons?',
       field: 'processBalloons',
-      render: (contest) => (contest.processBalloons ? 'yes' : 'no'),
+      render: (contest) => (contest.processBalloons ? 'Yes' : 'No'),
     },
     {
       header: 'Enabled?',
       field: 'enabled',
-      render: (contest) => (contest.enabled ? 'yes' : 'no'),
+      render: (contest) => (contest.enabled ? 'Yes' : 'No'),
     },
     {
       header: 'Public?',
       field: 'public',
-      render: (contest) => (contest.public ? 'yes' : 'no'),
+      render: (contest) => (contest.public ? 'Yes' : 'No'),
     },
     {
       header: 'Verification Required?',
       field: 'verificationRequired',
-      render: (contest) => (contest.verificationRequired ? 'yes' : 'no'),
+      render: (contest) => (contest.verificationRequired ? 'Yes' : 'No'),
     },
     {
       header: 'Teams',
@@ -82,8 +83,9 @@ const ContestsList: React.FC = observer(() => {
       data={data}
       columns={columns}
       formItemInitValue={observable({ problems: [] })}
-      ItemForm={ContestForm}
+      ItemForm={isUserAdmin ? ContestForm : undefined}
       onDelete={remove}
+      withoutActions={!isUserAdmin}
       onRefresh={() => Promise.all([fetchAll(), fetchAllProblems()])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
     />

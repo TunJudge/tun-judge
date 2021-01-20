@@ -13,6 +13,7 @@ const ExecutablesList: React.FC = observer(() => {
     { executable: Executable; field: 'file' | 'buildScript' } | undefined
   >();
   const {
+    isUserAdmin,
     executablesStore: { data, fetchAll, create, update, remove },
   } = rootStore;
 
@@ -74,7 +75,7 @@ const ExecutablesList: React.FC = observer(() => {
     {
       header: 'Default',
       field: 'default',
-      render: (executable) => (executable.default ? 'yes' : 'no'),
+      render: (executable) => (executable.default ? 'Yes' : 'No'),
     },
   ];
 
@@ -84,9 +85,10 @@ const ExecutablesList: React.FC = observer(() => {
         header="Executables"
         data={data}
         columns={columns}
-        ItemForm={ExecutableForm}
+        ItemForm={isUserAdmin ? ExecutableForm : undefined}
         onDelete={remove}
         onRefresh={fetchAll}
+        withoutActions={!isUserAdmin}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (
@@ -97,10 +99,14 @@ const ExecutablesList: React.FC = observer(() => {
             await fetchAll();
             setScriptData(undefined);
           }}
-          submit={async () => {
-            await update(scriptData.executable);
-            setScriptData(undefined);
-          }}
+          submit={
+            isUserAdmin
+              ? async () => {
+                  await update(scriptData.executable);
+                  setScriptData(undefined);
+                }
+              : undefined
+          }
         />
       )}
     </>

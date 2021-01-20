@@ -9,10 +9,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { Problem } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('problems')
 @UseGuards(AuthenticatedGuard)
@@ -23,7 +24,7 @@ export class ProblemsController {
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getAll(): Promise<Problem[]> {
     return this.problemsRepository.find({
       order: { id: 'ASC' },
@@ -38,7 +39,7 @@ export class ProblemsController {
   }
 
   @Get(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getById(@Param('id') id: number): Promise<Problem> {
     return this.problemsRepository.findOneOrThrow(
       id,
@@ -48,13 +49,13 @@ export class ProblemsController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   create(@Body() problem: Problem): Promise<Problem> {
     return this.problemsRepository.save(problem);
   }
 
   @Put(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async update(
     @Param('id') id: number,
     @Body() problem: Problem,
@@ -67,7 +68,7 @@ export class ProblemsController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.problemsRepository.delete(id);
   }

@@ -10,11 +10,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { TeamCategory } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan } from 'typeorm';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('team-categories')
 @UseGuards(AuthenticatedGuard)
@@ -25,7 +26,7 @@ export class TeamCategoriesController {
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getAll(): Promise<TeamCategory[]> {
     return this.teamCategoriesRepository.find({
       order: { sortOrder: 'ASC' },
@@ -34,14 +35,14 @@ export class TeamCategoriesController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async create(@Body() teamCategory: TeamCategory): Promise<TeamCategory> {
     teamCategory.sortOrder = await this.teamCategoriesRepository.count();
     return this.teamCategoriesRepository.save(teamCategory);
   }
 
   @Put(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async update(
     @Param('id') id: number,
     @Body() teamCategory: TeamCategory,
@@ -57,7 +58,7 @@ export class TeamCategoriesController {
   }
 
   @Patch(':id/:dir')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async move(
     @Param('id') id: number,
     @Param('dir') direction: 'up' | 'down',
@@ -88,7 +89,7 @@ export class TeamCategoriesController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     const teamCategory = await this.teamCategoriesRepository.findOneOrThrow(
       id,

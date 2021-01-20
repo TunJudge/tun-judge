@@ -7,6 +7,7 @@ import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 
 const TeamsList: React.FC = observer(() => {
   const {
+    isUserAdmin,
     teamsStore: { data, fetchAll, create, update, remove },
     usersStore: { fetchAll: fetchAllCategories },
     contestsStore: { fetchAll: fetchAllContests },
@@ -41,7 +42,7 @@ const TeamsList: React.FC = observer(() => {
     {
       header: 'Enabled?',
       field: 'enabled',
-      render: (team) => (team.enabled ? 'yes' : 'no'),
+      render: (team) => (team.enabled ? 'Yes' : 'No'),
     },
     {
       header: 'Contests',
@@ -55,11 +56,12 @@ const TeamsList: React.FC = observer(() => {
       header="Teams"
       data={data}
       columns={columns}
-      ItemForm={TeamForm}
+      ItemForm={isUserAdmin ? TeamForm : undefined}
       onDelete={remove}
       onRefresh={() =>
         Promise.all([fetchAll(), fetchAllUsers(), fetchAllContests(), fetchAllCategories()])
       }
+      withoutActions={!isUserAdmin}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       rowBackgroundColor={(item) => (!item.user ? '#FFC2C2' : 'white')}
     />

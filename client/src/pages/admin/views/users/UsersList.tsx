@@ -17,6 +17,7 @@ const rolesColors = {
 const UsersList: React.FC = observer(() => {
   const {
     profile,
+    isUserAdmin,
     usersStore: {
       adminUsers,
       juryUsers,
@@ -31,8 +32,8 @@ const UsersList: React.FC = observer(() => {
   } = rootStore;
 
   useEffect(() => {
-    Promise.all([fetchAll(), fetchAllRoles()]);
-  }, [fetchAll, fetchAllRoles]);
+    Promise.all([fetchAll(), isUserAdmin ? fetchAllRoles() : undefined]);
+  }, [isUserAdmin, fetchAll, fetchAllRoles]);
 
   const columns: ListPageTableColumn<User>[] = [
     {
@@ -69,7 +70,7 @@ const UsersList: React.FC = observer(() => {
     {
       header: 'Enabled?',
       field: 'enabled',
-      render: (user) => (user.enabled ? 'yes' : 'no'),
+      render: (user) => (user.enabled ? 'Yes' : 'No'),
     },
   ];
 
@@ -78,10 +79,11 @@ const UsersList: React.FC = observer(() => {
       header="Users"
       data={[...adminUsers, ...juryUsers, ...judgeHostUsers, ...teamUsers]}
       columns={columns}
-      ItemForm={UserForm}
+      ItemForm={isUserAdmin ? UserForm : undefined}
       onDelete={remove}
+      withoutActions={!isUserAdmin}
       canDelete={(item) => !!profile && item.username !== profile.username}
-      onRefresh={() => Promise.all([fetchAll(), fetchAllRoles()])}
+      onRefresh={() => Promise.all([fetchAll(), isUserAdmin ? fetchAllRoles() : undefined])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       rowBackgroundColor={(item) => (rolesColors as any)[item.role.name]}
     />

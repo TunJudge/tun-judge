@@ -9,7 +9,7 @@ const ScriptEditor: React.FC<{
   file: File;
   lang?: 'sh' | 'c_cpp';
   dismiss: () => void;
-  submit: () => void;
+  submit?: () => void;
 }> = observer(({ file, lang, dismiss, submit }) => {
   return (
     <Modal open onClose={dismiss}>
@@ -31,9 +31,11 @@ const ScriptEditor: React.FC<{
         <Button color="red" onClick={dismiss}>
           Close
         </Button>
-        <Button color="green" onClick={submit}>
-          Save
-        </Button>
+        {submit && (
+          <Button color="green" onClick={submit}>
+            Save
+          </Button>
+        )}
       </Modal.Actions>
     </Modal>
   );

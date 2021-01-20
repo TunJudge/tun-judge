@@ -10,12 +10,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { File, FileContent, Testcase } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan } from 'typeorm';
-import { JudgeHostGuard } from '../core/guards/judge-host.guard';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('testcases')
 @UseGuards(AuthenticatedGuard)
@@ -28,7 +28,7 @@ export class TestcasesController {
   ) {}
 
   @Get('problem/:id')
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getByProblemId(@Param('id') id: number): Promise<Testcase[]> {
     return this.testcasesRepository.find({
       where: { problem: { id } },
@@ -37,7 +37,7 @@ export class TestcasesController {
   }
 
   @Post('problem/:id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async create(
     @Param('id') id: number,
     @Body() testcase: Testcase,
@@ -50,7 +50,7 @@ export class TestcasesController {
   }
 
   @Put(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async update(
     @Param('id') id: number,
     @Body() testcase: Testcase,
@@ -63,7 +63,7 @@ export class TestcasesController {
   }
 
   @Patch(':id/:dir')
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   async move(
     @Param('id') id: number,
     @Param('dir') direction: 'up' | 'down',
@@ -87,7 +87,7 @@ export class TestcasesController {
   }
 
   @Get(':id/content/:file')
-  @UseGuards(JudgeHostGuard)
+  @Roles('admin', 'jury', 'judge-host')
   getContent(
     @Param('id') id: number,
     @Param('file') file: 'input' | 'output',
@@ -105,7 +105,7 @@ export class TestcasesController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     const testcase = await this.testcasesRepository.findOneOrThrow(
       id,

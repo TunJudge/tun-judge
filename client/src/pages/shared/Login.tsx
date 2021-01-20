@@ -16,7 +16,6 @@ const Login: React.FC = observer(() => {
       window.location.assign((returnUrl as string) ?? '/');
     } catch (e) {}
   };
-
   return (
     <Grid textAlign="center" verticalAlign="middle" style={{ height: '100vh' }}>
       <Grid.Column style={{ maxWidth: 450 }}>

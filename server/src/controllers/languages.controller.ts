@@ -7,12 +7,14 @@ import {
   Param,
   Post,
   Put,
+  Session,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { Language } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('languages')
 @UseGuards(AuthenticatedGuard)
@@ -23,21 +25,34 @@ export class LanguagesController {
   ) {}
 
   @Get()
-  getAll(): Promise<Language[]> {
+  @Roles('admin', 'jury', 'team')
+  getAll(
+    @Session()
+    {
+      passport: {
+        user: {
+          role: { name },
+        },
+      },
+    },
+  ): Promise<Language[]> {
     return this.languagesRepository.find({
       order: { id: 'ASC' },
-      relations: ['buildScript', 'buildScript.content'],
+      relations: ['admin', 'jury'].includes(name) && [
+        'buildScript',
+        'buildScript.content',
+      ],
     });
   }
 
   @Post()
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   create(@Body() language: Language): Promise<Language> {
     return this.languagesRepository.save(language);
   }
 
   @Put(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async update(
     @Param('id') id: number,
     @Body() language: Language,
@@ -50,7 +65,7 @@ export class LanguagesController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.languagesRepository.delete(id);
   }

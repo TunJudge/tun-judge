@@ -11,6 +11,7 @@ let interval: NodeJS.Timeout | undefined = undefined;
 
 const JudgeHostsList: React.FC = observer(() => {
   const {
+    isUserAdmin,
     judgeHostsStore: { data, fetchAll, toggle, remove },
   } = rootStore;
 
@@ -42,14 +43,19 @@ const JudgeHostsList: React.FC = observer(() => {
     {
       header: 'Active',
       field: 'active',
-      render: (judgeHost) => (
-        <Button
-          color={judgeHost.active ? 'red' : 'green'}
-          onClick={() => toggle(judgeHost.id, !judgeHost.active)}
-        >
-          {judgeHost.active ? 'Deactivate' : 'Activate'}
-        </Button>
-      ),
+      render: (judgeHost) =>
+        isUserAdmin ? (
+          <Button
+            color={judgeHost.active ? 'red' : 'green'}
+            onClick={() => toggle(judgeHost.id, !judgeHost.active)}
+          >
+            {judgeHost.active ? 'Deactivate' : 'Activate'}
+          </Button>
+        ) : judgeHost.active ? (
+          'Yes'
+        ) : (
+          'No'
+        ),
     },
   ];
 
@@ -60,6 +66,7 @@ const JudgeHostsList: React.FC = observer(() => {
       columns={columns}
       onDelete={remove}
       onRefresh={fetchAll}
+      withoutActions={!isUserAdmin}
       rowBackgroundColor={(judgeHost) => {
         if (!judgeHost.active) return '';
         const diff = Date.now() - new Date(judgeHost.pollTime).getTime();

@@ -11,11 +11,12 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard, AuthenticatedGuard } from '../core/guards';
+import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
 import { User } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { genSalt, hash } from 'bcrypt';
+import { Roles } from '../core/roles.decorator';
 
 @Controller('users')
 @UseGuards(AuthenticatedGuard)
@@ -26,7 +27,7 @@ export class UsersController {
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
+  @Roles('admin', 'jury')
   getAll(): Promise<User[]> {
     return this.usersRepository
       .find({
@@ -37,7 +38,7 @@ export class UsersController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async create(@Body() user: User): Promise<User> {
     user.password = await hash(
       user.password || Math.random().toString(36).substring(2),
@@ -47,7 +48,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async update(@Param('id') id: number, @Body() user: User): Promise<User> {
     const oldUser = await this.usersRepository.findOneOrThrow(
       id,
@@ -59,7 +60,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
+  @Roles('admin')
   async delete(
     @Param('id') id: string,
     @Session()
