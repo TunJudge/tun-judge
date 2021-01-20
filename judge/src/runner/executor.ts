@@ -1,4 +1,5 @@
 import { chmodSync, existsSync, promises as fs } from 'fs';
+import { clearLine, cursorTo } from 'readline';
 import { join } from 'path';
 import { MD5 } from 'crypto-js';
 
@@ -60,8 +61,8 @@ export class Executor extends AbstractRunnerStep {
       if (guardOutput.exitCode) {
         await sendJudgingRun(judging, testcase, guardOutput, result);
         await updateJudging(judging, result);
-        process.stdout.clearLine(0);
-        process.stdout.cursorTo(0);
+        clearLine(process.stdout, 0);
+        cursorTo(process.stdout, 0);
         await dockerService.pruneContainer(runnerContainer, checkerContainer);
         logger.error(`Running test ${testcase.rank}...\tNOT OK!`);
         return;
@@ -71,8 +72,8 @@ export class Executor extends AbstractRunnerStep {
         checkerContainer,
         sh.checkerRunCmd(testcase),
       );
-      process.stdout.clearLine(0);
-      process.stdout.cursorTo(0);
+      clearLine(process.stdout, 0);
+      cursorTo(process.stdout, 0);
       // In case of the exitCode of the checking script is different then zero we stop running and report the result
       if (checkingResult.exitCode) {
         await sendJudgingRun(judging, testcase, guardOutput, 'WA');

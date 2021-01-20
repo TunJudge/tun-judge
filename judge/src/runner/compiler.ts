@@ -1,5 +1,6 @@
 import { existsSync, promises as fs } from 'fs';
 import { join } from 'path';
+import { clearLine, cursorTo } from 'readline';
 import { MD5 } from 'crypto-js';
 
 import { AbstractRunnerStep } from './runner-step';
@@ -46,8 +47,8 @@ export class Compiler extends AbstractRunnerStep {
     // Report the result of the submission file compilation
     await updateJudging(judging, submissionCompileResult);
     await dockerService.pruneContainer(submissionCompilerContainer);
-    process.stdout.clearLine(0);
-    process.stdout.cursorTo(0);
+    clearLine(process.stdout, 0);
+    cursorTo(process.stdout, 0);
     if (!submissionCompileResult.exitCode) {
       logger.log(`Compiling submission file ${submission.file.name}...\tOK!`);
     } else {
@@ -96,8 +97,8 @@ export class Compiler extends AbstractRunnerStep {
       );
       await dockerService.pruneContainer(checkerContainer);
 
-      process.stdout.clearLine(0);
-      process.stdout.cursorTo(0);
+      clearLine(process.stdout, 0);
+      cursorTo(process.stdout, 0);
       if (!checkerCompileResult.exitCode) {
         logger.log(
           `Compiling executable file ${checkScript.file.name}...\tOK!`,
