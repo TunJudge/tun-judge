@@ -18,8 +18,13 @@ import {
   JudgingRun,
   Submission,
 } from '../entities';
-import { ScoreboardService } from '../scoreboard.service';
 import { Roles } from '../core/roles.decorator';
+import {
+  JudgingsService,
+  ScoreboardService,
+  SubmissionsService,
+} from '../services';
+import { AppGateway } from '../app.gateway';
 
 @Controller('submissions')
 @UseGuards(AuthenticatedGuard)
@@ -33,7 +38,10 @@ export class SubmissionsController {
     private readonly judgingRunsRepository: ExtendedRepository<JudgingRun>,
     @InjectRepository(File)
     private readonly filesRepository: ExtendedRepository<File>,
+    private readonly judgingsService: JudgingsService,
     private readonly scoreboardService: ScoreboardService,
+    private readonly submissionsService: SubmissionsService,
+    private readonly socketService: AppGateway,
   ) {}
 
   @Get()
@@ -47,80 +55,21 @@ export class SubmissionsController {
     @Query('notJudged') _notJudged: string,
     @Query('notVerified') _notVerified: string,
   ): Promise<[Submission[], number]> {
-    page ??= 0;
-    size ??= 10;
-    const notJudged = Boolean(_notJudged === 'true');
-    const notVerified = Boolean(_notVerified === 'true');
-    let query = this.submissionsRepository
-      .createQueryBuilder('submission')
-      .leftJoinAndSelect('submission.team', 'team')
-      .leftJoinAndSelect('submission.problem', 'problem')
-      .leftJoinAndSelect('submission.language', 'language')
-      .leftJoinAndSelect('problem.testcases', 'testcases')
-      .leftJoinAndSelect('submission.contest', 'contest')
-      .leftJoinAndSelect('submission.judgings', 'judgings')
-      .leftJoinAndSelect('judgings.juryMember', 'juryMember')
-      .leftJoinAndSelect('judgings.runs', 'runs')
-      .leftJoinAndSelect('runs.testcase', 'testcase')
-      .orderBy('submission.submitTime', 'DESC')
-      .take(size)
-      .skip(size * page);
-    if (problems) {
-      query = query.andWhere('problem.id IN (:...problemIds)', {
-        problemIds: problems.split(',').map((i) => parseInt(i)),
-      });
-    }
-    if (teams) {
-      query = query.andWhere('team.id IN (:...teamIds)', {
-        teamIds: teams.split(',').map((i) => parseInt(i)),
-      });
-    }
-    if (languages) {
-      query = query.andWhere('language.id IN (:...languageIds)', {
-        languageIds: languages.split(',').map((i) => parseInt(i)),
-      });
-    }
-    if (notJudged) {
-      query = query.andWhere(
-        '(SELECT COUNT(*) FROM judging WHERE "judging"."submissionId" = "submission"."id") = 0',
-      );
-    }
-    if (notVerified) {
-      query = query.andWhere(
-        '(SELECT COUNT(*) FROM judging WHERE "judging"."submissionId" = "submission"."id" AND "judging"."verified" = FALSE) > 0',
-      );
-    }
-    return query.getManyAndCount();
+    return this.submissionsService.search(
+      page,
+      size,
+      problems,
+      teams,
+      languages,
+      _notJudged,
+      _notVerified,
+    );
   }
 
   @Get(':id')
   @Roles('admin', 'jury')
   getById(@Param('id') id: number): Promise<Submission> {
-    return this.submissionsRepository.findOneOrThrow(
-      {
-        where: { id },
-        order: { submitTime: 'DESC' },
-        relations: [
-          'team',
-          'file',
-          'file.content',
-          'problem',
-          'problem.testcases',
-          'language',
-          'contest',
-          'judgings',
-          'judgings.juryMember',
-          'judgings.runs',
-          'judgings.runs.testcase',
-          'judgings.runs.runOutput',
-          'judgings.runs.checkerOutput',
-          'judgings.runs.checkerOutput.content',
-          'judgings.runs.errorOutput',
-          'judgings.runs.errorOutput.content',
-        ],
-      },
-      new NotFoundException(),
-    );
+    return this.submissionsService.getOneById(id);
   }
 
   @Patch(':id/mark-verified')
@@ -134,28 +83,8 @@ export class SubmissionsController {
       },
     },
   ): Promise<void> {
-    const {
-      id: judgingId,
-      contest,
-      submission: { team, problem },
-    } = await this.judgingsRepository.findOneOrThrow(
-      {
-        where: { submission: { id } },
-        relations: [
-          'contest',
-          'submission',
-          'submission.team',
-          'submission.problem',
-        ],
-        order: { startTime: 'DESC' },
-      },
-      new NotFoundException(),
-    );
-    await this.judgingsRepository.update(judgingId, {
-      juryMember: { id: userId },
-      verified: true,
-    });
-    await this.scoreboardService.refreshScoreCache(contest, team, problem);
+    await this.judgingsService.setVerified(id, userId);
+    this.socketService.pingForUpdates('submissions');
   }
 
   @Patch(':id/claim')
@@ -169,16 +98,7 @@ export class SubmissionsController {
       },
     },
   ): Promise<void> {
-    const judging = await this.judgingsRepository.findOneOrThrow(
-      {
-        where: { submission: { id }, juryMember: null },
-        order: { startTime: 'DESC' },
-      },
-      new NotFoundException(),
-    );
-    await this.judgingsRepository.update(judging.id, {
-      juryMember: { id: userId },
-    });
+    await this.judgingsService.setJuryMember(id, userId);
   }
 
   @Patch(':id/un-claim')
@@ -192,16 +112,21 @@ export class SubmissionsController {
       },
     },
   ): Promise<void> {
-    const judging = await this.judgingsRepository.findOneOrThrow(
-      {
-        order: { startTime: 'DESC' },
-        where: { submission: { id }, juryMember: { id: userId } },
-      },
-      new NotFoundException(),
-    );
-    await this.judgingsRepository.update(judging.id, {
-      juryMember: null,
-    });
+    await this.judgingsService.setJuryMember(id, userId, null);
+  }
+
+  @Patch(':id/ignore')
+  @Roles('admin', 'jury')
+  async ignoreSubmission(@Param('id') id: number): Promise<void> {
+    await this.submissionsService.setValid(id, false);
+    this.socketService.pingForUpdates('submissions');
+  }
+
+  @Patch(':id/un-ignore')
+  @Roles('admin', 'jury')
+  async unIgnoreSubmission(@Param('id') id: number): Promise<void> {
+    await this.submissionsService.setValid(id, true);
+    this.socketService.pingForUpdates('submissions');
   }
 
   @Get(':id/run/:runId/content')

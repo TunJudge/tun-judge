@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role, User } from './entities';
-import { ExtendedRepository } from './core/extended-repository';
+import { Role, User } from '../entities';
+import { ExtendedRepository } from '../core/extended-repository';
 import { genSalt, hash } from 'bcrypt';
+import { AppGateway } from '../app.gateway';
 
 const roles: Partial<Role>[] = [
   {
@@ -30,6 +31,7 @@ export class AppService {
     private readonly usersRepository: ExtendedRepository<User>,
     @InjectRepository(Role)
     private readonly rolesRepository: ExtendedRepository<Role>,
+    private readonly socketService: AppGateway,
   ) {
     this.initDatabase();
   }

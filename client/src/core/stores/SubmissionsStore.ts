@@ -55,6 +55,14 @@ export class SubmissionsStore {
     await http.patch(`api/submissions/${id}/un-claim`);
   };
 
+  ignore = async (id: number): Promise<void> => {
+    await http.patch(`api/submissions/${id}/ignore`);
+  };
+
+  unIgnore = async (id: number): Promise<void> => {
+    await http.patch(`api/submissions/${id}/un-ignore`);
+  };
+
   markVerified = async (id: number): Promise<void> => {
     await http.patch(`api/submissions/${id}/mark-verified`);
   };

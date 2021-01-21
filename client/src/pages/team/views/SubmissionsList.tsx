@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
 import { rootStore } from '../../../core/stores/RootStore';
@@ -6,25 +6,12 @@ import { Judging, Submission } from '../../../core/models';
 import { dateComparator, formatRestTime } from '../../../core/helpers';
 import { resultMap } from '../../../core/types';
 
-let interval: NodeJS.Timeout | undefined = undefined;
-
 const SubmissionsList: React.FC = observer(() => {
   const {
     profile,
     publicStore: { currentContest },
     teamStore: { submissions, fetchSubmissions },
   } = rootStore;
-
-  useEffect(() => {
-    if (profile?.team && currentContest?.id) {
-      fetchSubmissions(currentContest.id, profile.team.id);
-      interval && clearInterval(interval);
-      interval = setInterval(() => fetchSubmissions(currentContest.id, profile.team.id), 10000);
-    }
-    return () => {
-      interval && clearInterval(interval);
-    };
-  }, [profile?.team, currentContest?.id, fetchSubmissions]);
 
   const columns: ListPageTableColumn<Submission>[] = [
     {
@@ -82,8 +69,8 @@ const SubmissionsList: React.FC = observer(() => {
         const judging = submission.judgings
           .slice()
           .sort(dateComparator<Judging>('startTime', true))
-          .find((j) => j.valid && j.endTime);
-        if (!judging) return '#fff9c2';
+          .shift();
+        if (!judging || !judging.result || !judging.verified) return '#fff9c2';
         return judging.result == 'AC' ? '#B3FFC2' : '#FFC2C2';
       }}
     />

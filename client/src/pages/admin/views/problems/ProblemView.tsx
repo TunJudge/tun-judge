@@ -4,7 +4,7 @@ import ResizeDetector from 'react-resize-detector';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../../../core/stores/RootStore';
 import Spinner from '../../../shared/Spinner';
-import { Grid, Header, Segment, Table } from 'semantic-ui-react';
+import { Button, Grid, Header, Menu, Segment, Table } from 'semantic-ui-react';
 import TestcasesList from './testcases/TestcasesList';
 import { Problem } from '../../../../core/models';
 
@@ -12,7 +12,7 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
   const [rowHeight, setRowHeight] = useState<number>(window.innerHeight - 84);
   const [problemInfoHeight, setProblemInfoHeight] = useState<number>(0);
   const {
-    problemsStore: { item, fetchById, cleanItem },
+    problemsStore: { item, fetchById, cleanItem, rejudge },
   } = rootStore;
 
   useEffect(() => {
@@ -33,8 +33,15 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
           <ResizeDetector handleHeight onResize={(_, height) => setProblemInfoHeight(height)}>
             {() => (
               <Segment.Group>
-                <Segment>
-                  <Header>Problem &apos;{item.name}&apos;</Header>
+                <Segment as={Menu} style={{ padding: 0 }} borderless>
+                  <Menu.Item>
+                    <Header>Problem &apos;{item.name}&apos;</Header>
+                  </Menu.Item>
+                  <Menu.Item position="right">
+                    <Button color="blue" floated="right" icon onClick={() => rejudge(item.id!)}>
+                      Rejudge
+                    </Button>
+                  </Menu.Item>
                 </Segment>
                 <Segment>
                   <Table striped celled>

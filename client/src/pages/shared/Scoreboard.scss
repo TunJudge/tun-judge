@@ -1,6 +1,10 @@
 .scoreboard {
-  text-align: center;
-  margin: 1rem 3rem 3rem;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+
+  &.fluid {
+    width: 95%!important;
+  }
 
   .scoreboard-header {
     font-size: 2rem !important;

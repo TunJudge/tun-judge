@@ -20,7 +20,7 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
   const {
     languagesStore: { data: languages },
     publicStore: { currentContest },
-    teamStore: { sendSubmission, fetchSubmissions },
+    teamStore: { sendSubmission },
     profile,
   } = rootStore;
 
@@ -90,7 +90,6 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
           color="green"
           onClick={async () => {
             await sendSubmission(currentContest!.id, profile!.team.id, submission);
-            await fetchSubmissions(currentContest!.id, profile!.team.id);
             dismiss();
           }}
           disabled={Object.values(errors).some((e) => e)}

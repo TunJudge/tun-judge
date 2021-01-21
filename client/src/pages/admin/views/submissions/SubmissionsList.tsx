@@ -9,24 +9,18 @@ import { useHistory } from 'react-router-dom';
 import { resultMap } from '../../../../core/types';
 import { Filters } from '../../../../core/stores/SubmissionsStore';
 
-let interval: NodeJS.Timeout | undefined = undefined;
-
 const SubmissionsList: React.FC = observer(() => {
   const history = useHistory();
   const {
     profile,
+    updatesCount: { judgeRuns },
     submissionsStore: { data, total, page, setPage, filters, setFilters, fetchAll, claim, unClaim },
     publicStore: { currentContest },
   } = rootStore;
 
   useEffect(() => {
     fetchAll();
-    interval && clearInterval(interval);
-    interval = setInterval(() => fetchAll(), 2000);
-    return () => {
-      interval && clearInterval(interval);
-    };
-  }, [page, filters, fetchAll]);
+  }, [page, filters, judgeRuns, fetchAll]);
 
   const columns: ListPageTableColumn<Submission>[] = [
     {
@@ -45,25 +39,40 @@ const SubmissionsList: React.FC = observer(() => {
     {
       header: 'Team',
       field: 'team',
+      disabled: (submission) => !submission.valid,
       render: (submission) => submission.team.name,
     },
     {
       header: 'Problem',
       field: 'problem',
-      render: (submission) => submission.problem.name,
+      disabled: (submission) => !submission.valid,
+      render: ({ problem }) => (
+        <a href={`/problems/${problem.id}`} target="_blank" rel="noreferrer">
+          {problem.name}
+        </a>
+      ),
     },
     {
       header: 'Language',
       field: 'language',
+      disabled: (submission) => !submission.valid,
       render: (submission) => submission.language.name,
     },
     {
       header: 'Result',
       field: 'language',
       render: (submission) => {
-        const judging = submission.judgings.find((j) => j.valid && j.endTime);
+        const judging = submission.judgings
+          .slice()
+          .sort(dateComparator<Judging>('startTime', true))
+          .shift();
         return (
-          <b style={{ color: judging ? (judging.result === 'AC' ? 'green' : 'red') : 'grey' }}>
+          <b
+            style={{
+              color:
+                judging && judging.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey',
+            }}
+          >
             {judging?.result ? resultMap[judging.result] : 'Pending'}
           </b>
         );
@@ -72,6 +81,7 @@ const SubmissionsList: React.FC = observer(() => {
     {
       header: 'Verified by',
       field: 'judgings',
+      disabled: (submission) => !submission.valid,
       render: (submission) => {
         const judging = submission.judgings
           .slice()
@@ -253,6 +263,11 @@ const SubmissionsFilters: React.FC<{
             value={filters.notJudged ? 'notJudged' : filters.notVerified ? 'notVerified' : ''}
             placeholder="All"
             options={[
+              {
+                key: 'all',
+                text: 'All',
+                value: undefined,
+              },
               {
                 key: 'notJudged',
                 text: 'Not Judged',

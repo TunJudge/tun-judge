@@ -27,7 +27,16 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
   const [runViewData, setRunViewData] = useState<JudgingRun>();
   const {
     profile,
-    submissionsStore: { item, cleanItem, fetchById, claim, unClaim, markVerified },
+    submissionsStore: {
+      item,
+      cleanItem,
+      fetchById,
+      ignore,
+      unIgnore,
+      claim,
+      unClaim,
+      markVerified,
+    },
     publicStore: { currentContest },
   } = rootStore;
 
@@ -51,43 +60,48 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
           <Header>Submission {item.id}</Header>
         </Menu.Item>
         <Menu.Item position="right">
-          {/*<Button*/}
-          {/*  basic*/}
-          {/*  color="red"*/}
-          {/*  className="mr-2"*/}
-          {/*  onClick={() => fetchById(parseInt(match!.params.id!))}*/}
-          {/*>*/}
-          {/*  Ignore*/}
-          {/*</Button>*/}
-          {!judging?.verified && (
+          {judging && judging.result && (
             <Button
               basic
-              color="blue"
+              color="red"
               className="mr-2"
               onClick={async () => {
-                if (isSubmissionClaimedByMe(judging, profile)) {
-                  await unClaim(item?.id);
-                } else {
-                  await claim(item?.id);
-                }
+                await (item.valid ? ignore : unIgnore)(item.id);
                 await fetchById(item?.id);
               }}
             >
-              {isSubmissionClaimedByMe(judging, profile) ? 'UnClaim' : 'Claim'}
+              {item.valid ? 'Ignore' : 'UnIgnore'}
             </Button>
           )}
-          {!judging?.verified && (
-            <Button
-              basic
-              color="green"
-              className="mr-2"
-              onClick={async () => {
-                await markVerified(item?.id);
-                history.push('/submissions');
-              }}
-            >
-              Mark Verified
-            </Button>
+          {judging && judging.result && !judging.verified && (
+            <>
+              <Button
+                basic
+                color="blue"
+                className="mr-2"
+                onClick={async () => {
+                  if (isSubmissionClaimedByMe(judging, profile)) {
+                    await unClaim(item?.id);
+                  } else {
+                    await claim(item?.id);
+                  }
+                  await fetchById(item?.id);
+                }}
+              >
+                {isSubmissionClaimedByMe(judging, profile) ? 'UnClaim' : 'Claim'}
+              </Button>
+              <Button
+                basic
+                color="green"
+                className="mr-2"
+                onClick={async () => {
+                  await markVerified(item?.id);
+                  history.push('/submissions');
+                }}
+              >
+                Mark Verified
+              </Button>
+            </>
           )}
           <Button color="blue" icon onClick={() => fetchById(item?.id)}>
             <Icon name="refresh" />
@@ -115,16 +129,25 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
             <Table.Cell>{item.problem.name}</Table.Cell>
             <Table.Cell>{item.language.name}</Table.Cell>
             <Table.Cell>
-              <b style={{ color: judging ? (judging.result === 'AC' ? 'green' : 'red') : 'grey' }}>
+              <b
+                style={{
+                  color:
+                    judging && judging.result
+                      ? judging.result === 'AC'
+                        ? 'green'
+                        : 'red'
+                      : 'grey',
+                }}
+              >
                 {resultMap[judging?.result ?? 'PD']}
               </b>
             </Table.Cell>
             <Table.Cell>
               {judging
-                ? `${
+                ? `${Math.floor(
                     judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runTime), 0) *
-                    1000
-                  } ms`
+                      1000,
+                  )} ms`
                 : '-'}
             </Table.Cell>
             <Table.Cell>
@@ -177,7 +200,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
                 {resultMap[run.result ?? 'PD']}
               </b>
             </Menu.Item>
-            <Menu.Item>Time: {run.runTime * 1000}ms</Menu.Item>
+            <Menu.Item>Time: {Math.floor(run.runTime * 1000)}ms</Menu.Item>
             <Menu.Item>Memory: {formatBytes(run.runMemory * 1024)}</Menu.Item>
             <Menu.Item style={{ paddingTop: '.6rem', paddingBottom: '.6rem' }} position="right">
               <Button.Group size="tiny">

@@ -29,10 +29,6 @@ export class HttpClient {
     return this.request<T>(path, 'PUT', { data: body, ...options });
   }
 
-  patch<T>(path: string, options?: AxiosRequestConfig): Promise<T> {
-    return this.request<T>(path, 'PATCH', options);
-  }
-
   async request<T>(
     path: string,
     method: Method = 'GET',

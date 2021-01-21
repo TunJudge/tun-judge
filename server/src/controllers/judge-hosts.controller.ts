@@ -14,8 +14,9 @@ import { AuthenticatedGuard } from '../core/guards';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JudgeHost, Judging, JudgingRun, Submission, User } from '../entities';
 import { ExtendedRepository } from '../core/extended-repository';
-import { ScoreboardService } from '../scoreboard.service';
+import { ScoreboardService } from '../services';
 import { Roles } from '../core/roles.decorator';
+import { AppGateway } from '../app.gateway';
 
 @Controller('judge-hosts')
 @UseGuards(AuthenticatedGuard)
@@ -32,6 +33,7 @@ export class JudgeHostsController {
     @InjectRepository(Submission)
     private readonly submissionsRepository: ExtendedRepository<Submission>,
     private readonly scoreboardService: ScoreboardService,
+    private readonly socketService: AppGateway,
   ) {}
 
   @Get()
@@ -107,6 +109,7 @@ export class JudgeHostsController {
       oldJudging.submission.team,
       oldJudging.submission.problem,
     );
+    this.socketService.pingForUpdates('judgeRuns');
   }
 
   @Post(':hostname/add-judging-run/:id')
@@ -125,6 +128,7 @@ export class JudgeHostsController {
       testcase: { id: judgingRun.testcase.id },
     });
     await this.judgingRunsRepository.save({ ...oldJudgeRun, ...judgingRun });
+    this.socketService.pingForUpdates('judgeRuns');
   }
 
   @Get(':hostname/next-judging')

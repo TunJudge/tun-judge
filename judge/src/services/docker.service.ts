@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import * as Docker from 'dockerode';
 import { Container, ContainerCreateOptions } from 'dockerode';
 import { JudgeLogger } from './judge.logger';
-import sh, { dockerWorkDir, workDir } from '../runner/submission-helper';
+import sh, { workDir } from '../runner/submission-helper';
 
 export type ExecResult = {
   exitCode: number;
@@ -41,11 +41,11 @@ export class DockerService {
 
   createContainer(options: ContainerCreateOptions): Promise<Container> {
     options.OpenStdin ??= true;
-    options.WorkingDir ??= sh.submissionDir(true);
+    options.WorkingDir ??= sh.submissionDir();
     options.HostConfig = {
       Mounts: [
         {
-          Target: dockerWorkDir,
+          Target: workDir,
           Source: workDir,
           Type: 'bind',
         },

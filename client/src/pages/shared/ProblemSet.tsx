@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Card, Container, Icon, Image } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../core/stores/RootStore';
@@ -14,15 +14,8 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
   const {
     profile,
     isUserJury,
-    teamStore: { submissions },
-    publicStore: { problems, fetchProblems, fetchScoreCaches, currentContest, scoreCaches },
+    publicStore: { problems, currentContest, scoreCaches },
   } = rootStore;
-
-  useEffect(() => {
-    if (currentContest) {
-      Promise.all([fetchProblems(currentContest.id), fetchScoreCaches(currentContest.id)]);
-    }
-  }, [currentContest, submissions, fetchProblems, fetchScoreCaches]);
 
   const columns: ListPageTableColumn<ContestProblem>[] = [
     {
@@ -35,7 +28,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
         const sc = getScoreCache(problem);
         const shift = scoreCaches
           .slice()
-          .filter((sc) => (isUserJury ? sc.restrictedCorrect : sc.correct))
+          .filter((sc) => (isUserJury ? sc.restrictedFirstToSolve : sc.firstToSolve))
           .sort(dateComparator<ScoreCache>(isUserJury ? 'restrictedSolveTime' : 'solveTime'))
           .shift();
         const veryFirstToSolve =

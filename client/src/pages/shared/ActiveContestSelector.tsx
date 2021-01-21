@@ -4,8 +4,6 @@ import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { formatRestTime, getContestTimeProgress } from '../../core/helpers';
 
-let interval: NodeJS.Timeout | undefined = undefined;
-
 const progressBarStyle: CSSProperties = {
   position: 'absolute',
   marginLeft: '-1.14286em',
@@ -15,25 +13,13 @@ const progressBarStyle: CSSProperties = {
 const ActiveContestSelector: React.FC = observer(() => {
   const [contestTimeProgress, setContestTimeProgress] = useState<number>(0);
   const [restTime, setRestTime] = useState<number>(0);
-  const { fetchContests, setCurrentContest, contests, currentContest } = rootStore.publicStore;
-
-  useEffect(() => {
-    fetchContests();
-  }, [fetchContests]);
+  const { setCurrentContest, contests, currentContest } = rootStore.publicStore;
 
   useEffect(() => {
     if (currentContest) {
       setRestTime((new Date(currentContest.endTime).getTime() - Date.now()) / 1000);
       setContestTimeProgress(getContestTimeProgress(currentContest));
-      interval && clearInterval(interval);
-      interval = setInterval(() => {
-        setRestTime((new Date(currentContest.endTime).getTime() - Date.now()) / 1000);
-        setContestTimeProgress(getContestTimeProgress(currentContest));
-      }, 1000);
     }
-    return () => {
-      interval && clearInterval(interval);
-    };
   }, [currentContest]);
 
   return (

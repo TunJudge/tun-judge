@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import * as session from 'express-session';
-import * as passport from 'passport';
 import * as bodyParser from 'body-parser';
-import store from './core/session-store';
+import * as passport from 'passport';
 import { AppModule } from './app.module';
 import config from './core/config';
+import { EventsAdapter } from './core/events.adapter';
+import session from './core/session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,16 +17,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-  app.use(
-    session({
-      store: store,
-      secret: config.sessionSecret,
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
+  app.use(session);
+  app.useWebSocketAdapter(new EventsAdapter(app));
   app.use(passport.initialize());
   app.use(passport.session());
   await app.listen(3000, '0.0.0.0');
 }
+
 bootstrap();

@@ -8,11 +8,14 @@ export class TestcasesStore {
   problemId: number | undefined;
 
   constructor(private readonly rootStore: RootStore) {
-    autorun(() => {
-      this.problemId = rootStore.problemsStore.item.id;
-      this.problemId && this.fetchAll();
-      !this.problemId && (this.data = []);
-    });
+    autorun(
+      () => {
+        this.problemId = rootStore.problemsStore.item.id;
+        this.problemId && this.fetchAll();
+        !this.problemId && (this.data = []);
+      },
+      { delay: 10 },
+    );
   }
 
   @action

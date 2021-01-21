@@ -1,4 +1,10 @@
-import { Controller, Get, Param, Session } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Session,
+} from '@nestjs/common';
 import { ExtendedRepository } from '../core/extended-repository';
 import { Contest, ContestProblem, ScoreCache, User } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,23 +24,30 @@ export class PublicController {
   ) {}
 
   @Get('contests')
-  getContests(): Promise<Contest[]> {
-    return this.contestsRepository
-      .find({
-        relations: ['problems', 'problems.problem', 'teams'],
-        order: { activateTime: 'ASC' },
-        where: {
-          public: true,
-          enabled: true,
-          activateTime: LessThanOrEqual(new Date()),
-        },
-      })
-      .then((data) =>
-        data.map((c) => ({
-          ...c,
-          problems: c.problems.filter((p) => p.problem !== null),
-        })),
-      );
+  async getContests(@Session() session): Promise<Contest[]> {
+    const contests = await this.contestsRepository.find({
+      relations: ['teams', 'problems', 'problems.problem'],
+      order: { activateTime: 'ASC' },
+      where: {
+        enabled: true,
+        activateTime: LessThanOrEqual(new Date()),
+      },
+    });
+    switch (session.passport?.user.role.name) {
+      case 'team':
+        const user = await this.usersRepository.findOneOrThrow(
+          { where: { id: session.passport?.user.id }, relations: ['team'] },
+          new NotFoundException(),
+        );
+        return contests.filter((contest) =>
+          contest.teams.some((team) => team.id === user.team.id),
+        );
+      case 'jury':
+      case 'admin':
+        return contests;
+      default:
+        return contests.filter((contest) => contest.public);
+    }
   }
 
   @Get('contest/:id/problems')

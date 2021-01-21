@@ -5,13 +5,14 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
-import { Problem } from '../entities';
+import { Problem, Submission } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Roles } from '../core/roles.decorator';
 
@@ -21,6 +22,8 @@ export class ProblemsController {
   constructor(
     @InjectRepository(Problem)
     private readonly problemsRepository: ExtendedRepository<Problem>,
+    @InjectRepository(Submission)
+    private readonly submissionsRepository: ExtendedRepository<Submission>,
   ) {}
 
   @Get()
@@ -45,6 +48,15 @@ export class ProblemsController {
       id,
       { relations: ['testcases', 'file', 'file.content'] },
       new NotFoundException(),
+    );
+  }
+
+  @Patch(':id/rejudge')
+  @Roles('admin', 'jury')
+  async rejudge(@Param('id') id: number): Promise<void> {
+    await this.submissionsRepository.update(
+      { problem: { id } },
+      { judgeHost: null },
     );
   }
 

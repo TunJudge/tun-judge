@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Grid, Header, Icon, Segment } from 'semantic-ui-react';
+import { Button, Container, Grid, Header, Icon, Segment } from 'semantic-ui-react';
 import { rootStore } from '../../core/stores/RootStore';
 import { observer } from 'mobx-react';
 import { formatRestTime } from '../../core/helpers';
 
 import './Scoreboard.scss';
-
-let interval: NodeJS.Timeout | undefined = undefined;
 
 type TeamProblemScore = {
   problemName: string;
@@ -30,18 +28,9 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
   const {
     profile,
     isUserJury,
-    publicStore: { currentContest, scoreCaches, fetchScoreCaches },
+    publicStore: { currentContest, scoreCaches },
     contestsStore: { refreshScoreboardCache },
   } = rootStore;
-
-  useEffect(() => {
-    currentContest?.id && fetchScoreCaches(currentContest.id);
-    interval && clearInterval(interval);
-    interval = setInterval(() => currentContest?.id && fetchScoreCaches(currentContest.id), 1000);
-    return () => {
-      interval && clearInterval(interval);
-    };
-  }, [currentContest, fetchScoreCaches]);
 
   useEffect(() => {
     if (scoreCaches) {
@@ -115,7 +104,11 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
   return !currentContest ? (
     <>No Active Contest</>
   ) : (
-    <div className="scoreboard">
+    <Container
+      className="scoreboard"
+      textAlign="center"
+      fluid={currentContest?.problems.length > 10}
+    >
       {!compact && (
         <Header className="scoreboard-header">
           Scoreboard of {currentContest?.name}
@@ -132,15 +125,9 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
           )}
         </Header>
       )}
-      <Grid
-        columns="equal"
-        className={`scoreboard-grid-${Math.ceil(currentContest.problems.length / 3) * 3}`}
-      >
+      <Grid columns="equal">
         <Grid.Row className="scoreboard-header-row">
-          <Grid.Column
-            style={{ maxWidth: currentContest.problems.length > 8 ? '33%' : '40%' }}
-            className="scoreboard-sub-column"
-          >
+          <Grid.Column className="scoreboard-sub-column" width="6">
             <Grid columns="equal" className="scoreboard-sub-grid">
               <Grid.Row>
                 <Grid.Column width="2">
@@ -179,10 +166,7 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
           return (
             (!compact || teamId === profile?.team.id) && (
               <Grid.Row key={`team-${teamId}`}>
-                <Grid.Column
-                  style={{ maxWidth: currentContest.problems.length > 8 ? '33%' : '40%' }}
-                  className="scoreboard-sub-column"
-                >
+                <Grid.Column className="scoreboard-sub-column" width="6">
                   <Grid columns="equal" className="scoreboard-sub-grid">
                     <Grid.Row>
                       <Grid.Column width="2">
@@ -241,16 +225,16 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
           );
         })}
       </Grid>
-    </div>
+    </Container>
   );
 });
 
 export default Scoreboard;
 
 function getScoreboardCellColor(problemScore: TeamProblemScore): string {
-  if (problemScore.pending) return '#fff368';
   if (problemScore.firstToSolve) return '#1daa1d';
   if (problemScore.correct) return '#60e760';
+  if (problemScore.pending) return '#fff368';
   if (problemScore.numberOfAttempts) return '#e87272';
   return 'white';
 }

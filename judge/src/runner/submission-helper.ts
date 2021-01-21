@@ -1,11 +1,11 @@
 import { copyFileSync, mkdirSync } from 'fs';
+import { tmpdir } from 'os';
 import { join } from 'path';
 
 import { File, Submission, Testcase } from '../models';
 
-export const workDir = join(__dirname, '..', '..', 'workDir');
+export const workDir = join(tmpdir(), 'tun-judge', 'workDir');
 mkdirSync(workDir, { recursive: true });
-export const dockerWorkDir = join('/', 'workDir');
 export const assetsDir = join(__dirname, '..', '..', 'assets');
 export const testLibPath = join(assetsDir, 'testlib.h');
 export const guardCppPath = join(assetsDir, 'guard.cpp');
@@ -45,15 +45,14 @@ export class SubmissionHelper {
       'bash',
       '-c',
       [
-        this.assetsFilePath('guard', true),
+        this.assetsFilePath('guard'),
         this.submission.problem.timeLimit * 1000,
         this.submission.problem.memoryLimit,
         `'${this.executableFilePath(
           runScript.id,
           runScript.file,
-          true,
-        )} ${this.binPath(true)}'`,
-        this.testcaseFilePath(testcase.id, testcase.input, true),
+        )} ${this.binPath()}'`,
+        this.testcaseFilePath(testcase.id, testcase.input),
         'test.out',
         'test.err',
       ].join(' '),
@@ -61,25 +60,25 @@ export class SubmissionHelper {
   };
 
   compileCmd = (): string[] => [
-    this.languageFilePath(true),
-    this.filePath(true),
-    this.binPath(true),
+    this.languageFilePath(),
+    this.filePath(),
+    this.binPath(),
     String(this.submission.problem.memoryLimit),
   ];
 
-  extraFilesPath = (filename: string, docker = false): string =>
-    join(this.submissionDir(docker), filename);
+  extraFilesPath = (filename: string): string =>
+    join(this.submissionDir(), filename);
 
   checkerRunCmd = (testcase: Testcase): string[] => {
     const {
       problem: { checkScript },
     } = this.submission;
     return [
-      this.executableBinPath(checkScript.id, checkScript.file, true),
-      this.testcaseFilePath(testcase.id, testcase.input, true),
-      this.extraFilesPath('test.out', true),
-      this.testcaseFilePath(testcase.id, testcase.output, true),
-      this.extraFilesPath('checker.out', true),
+      this.executableBinPath(checkScript.id, checkScript.file),
+      this.testcaseFilePath(testcase.id, testcase.input),
+      this.extraFilesPath('test.out'),
+      this.testcaseFilePath(testcase.id, testcase.output),
+      this.extraFilesPath('checker.out'),
     ];
   };
 
@@ -88,117 +87,94 @@ export class SubmissionHelper {
       problem: { checkScript },
     } = this.submission;
     return [
-      this.executableFilePath(checkScript.id, checkScript.buildScript, true),
-      this.executableFilePath(checkScript.id, checkScript.file, true),
-      this.executableBinPath(checkScript.id, checkScript.file, true),
+      this.executableFilePath(checkScript.id, checkScript.buildScript),
+      this.executableFilePath(checkScript.id, checkScript.file),
+      this.executableBinPath(checkScript.id, checkScript.file),
     ];
   };
 
-  submissionDir = (docker = false): string => {
-    const dir = join(
-      docker ? dockerWorkDir : workDir,
-      'submissions',
-      String(this.submission.id),
-    );
-    !docker && mkdirSync(dir, { recursive: true });
+  submissionDir = (): string => {
+    const dir = join(workDir, 'submissions', String(this.submission.id));
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  runTestcaseDir = (rank: number, docker = false): string => {
-    const dir = join(this.submissionDir(docker), String(rank));
-    !docker && mkdirSync(dir, { recursive: true });
+  runTestcaseDir = (rank: number): string => {
+    const dir = join(this.submissionDir(), String(rank));
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  filePath = (docker = false): string =>
-    join(this.submissionDir(docker), this.submission.file.name);
+  filePath = (): string =>
+    join(this.submissionDir(), this.submission.file.name.replace(/ /g, '_'));
 
-  binPath = (docker = false): string =>
-    this.filePath(docker).replace(/\.[^.]*$/g, '');
+  binPath = (): string => this.filePath().replace(/\.[^.]*$/g, '');
 
-  problemDir = (docker = false): string => {
-    const dir = join(
-      docker ? dockerWorkDir : workDir,
-      'problems',
-      String(this.submission.problem.id),
-    );
-    !docker && mkdirSync(dir, { recursive: true });
+  problemDir = (): string => {
+    const dir = join(workDir, 'problems', String(this.submission.problem.id));
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  languageDir = (docker = false): string => {
-    const dir = join(
-      docker ? dockerWorkDir : workDir,
-      'languages',
-      String(this.submission.language.id),
-    );
-    !docker && mkdirSync(dir, { recursive: true });
+  languageDir = (): string => {
+    const dir = join(workDir, 'languages', String(this.submission.language.id));
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  languageFileDir = (docker = false): string => {
+  languageFileDir = (): string => {
     const dir = join(
-      this.languageDir(docker),
+      this.languageDir(),
       this.submission.language.buildScript.md5Sum,
     );
-    !docker && mkdirSync(dir, { recursive: true });
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  languageFilePath = (docker = false): string =>
-    join(
-      this.languageFileDir(docker),
-      this.submission.language.buildScript.name,
-    );
+  languageFilePath = (): string =>
+    join(this.languageFileDir(), this.submission.language.buildScript.name);
 
-  testcaseDir = (id: number, docker = false): string => {
-    const dir = join(this.problemDir(docker), 'testcases', String(id));
-    !docker && mkdirSync(dir, { recursive: true });
+  testcaseDir = (id: number): string => {
+    const dir = join(this.problemDir(), 'testcases', String(id));
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  testcaseFileDir = (id: number, file: File, docker = false): string => {
-    const dir = join(this.testcaseDir(id, docker), file.md5Sum);
-    !docker && mkdirSync(dir, { recursive: true });
+  testcaseFileDir = (id: number, file: File): string => {
+    const dir = join(this.testcaseDir(id), file.md5Sum);
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  testcaseFilePath = (id: number, file: File, docker = false): string =>
-    join(this.testcaseFileDir(id, file, docker), file.name);
+  testcaseFilePath = (id: number, file: File): string =>
+    join(this.testcaseFileDir(id, file), file.name);
 
-  executableDir = (id: number, docker = false): string => {
-    const dir = join(
-      docker ? dockerWorkDir : workDir,
-      'executables',
-      String(id),
-    );
-    !docker && mkdirSync(dir, { recursive: true });
+  executableDir = (id: number): string => {
+    const dir = join(workDir, 'executables', String(id));
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  executableFileDir = (id: number, file: File, docker = false): string => {
-    const dir = join(this.executableDir(id, docker), file.md5Sum);
-    !docker && mkdirSync(dir, { recursive: true });
+  executableFileDir = (id: number, file: File): string => {
+    const dir = join(this.executableDir(id), file.md5Sum);
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  executableFilePath = (id: number, file: File, docker = false): string =>
-    join(this.executableFileDir(id, file, docker), file.name);
+  executableFilePath = (id: number, file: File): string =>
+    join(this.executableFileDir(id, file), file.name);
 
-  executableBinPath = (id: number, file: File, docker = false): string =>
-    join(this.executableFileDir(id, file, docker), file.name).replace(
-      /\.[^.]*$/g,
-      '',
-    );
+  executableBinPath = (id: number, file: File): string =>
+    join(this.executableFileDir(id, file), file.name).replace(/\.[^.]*$/g, '');
 
-  assetsDir = (docker = false): string => {
-    const dir = join(docker ? dockerWorkDir : workDir, 'assets');
-    !docker && mkdirSync(dir, { recursive: true });
+  assetsDir = (): string => {
+    const dir = join(workDir, 'assets');
+    mkdirSync(dir, { recursive: true });
     return dir;
   };
 
-  assetsFilePath = (fileName: string, docker = false): string =>
-    join(this.assetsDir(docker), fileName);
+  assetsFilePath = (fileName: string): string =>
+    join(this.assetsDir(), fileName);
 }
 
 const submissionHelper = new SubmissionHelper();

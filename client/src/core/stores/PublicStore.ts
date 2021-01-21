@@ -1,5 +1,5 @@
 import { RootStore } from './RootStore';
-import { action, observable } from 'mobx';
+import { action, autorun, observable } from 'mobx';
 import { Contest, ContestProblem, ScoreCache } from '../models';
 import http from '../utils/http-client';
 
@@ -9,14 +9,39 @@ export class PublicStore {
   @observable scoreCaches: ScoreCache[] = [];
   @observable currentContest: Contest | undefined;
 
-  constructor(private readonly rootStore: RootStore) {}
+  constructor(private readonly rootStore: RootStore) {
+    autorun(
+      async () => {
+        if (this.currentContest && rootStore.updatesCount.scoreboard) {
+          await this.fetchScoreCaches(this.currentContest.id);
+        }
+      },
+      { delay: 10 },
+    );
+    autorun(
+      async () => {
+        if (rootStore.updatesCount.contests) {
+          await this.fetchContests();
+        }
+      },
+      { delay: 10 },
+    );
+    autorun(
+      async () => {
+        if (this.currentContest) {
+          await this.fetchProblems(this.currentContest.id);
+        }
+      },
+      { delay: 10 },
+    );
+  }
 
   @action
   fetchContests = async (): Promise<void> => {
     this.contests = await http.get<Contest[]>('api/public/contests');
     if (!this.contests.length) localStorage.removeItem('currentContestId');
-    const currentContestId = localStorage.getItem('currentContestId') ?? '-1';
-    this.currentContest = this.contests.find((c) => c.id === parseInt(currentContestId));
+    const currentContestId = parseInt(localStorage.getItem('currentContestId') ?? '-1');
+    this.currentContest = this.contests.find((c) => c.id === currentContestId);
     if (!this.currentContest) this.setCurrentContest(this.contests[0]?.id);
   };
 

@@ -37,6 +37,11 @@ export class ProblemsStore {
   };
 
   @action
+  rejudge = async (id: number): Promise<void> => {
+    await http.patch(`api/problems/${id}/rejudge`);
+  };
+
+  @action
   remove = async (id: number): Promise<void> => {
     await http.delete(`api/problems/${id}`);
     await this.fetchAll();

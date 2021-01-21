@@ -42,7 +42,7 @@ export class Compiler extends AbstractRunnerStep {
     await dockerService.execCmdInDocker(
       submissionCompilerContainer,
       'g++ --std=c++11 -pthread -o guard guard.cpp'.split(' '),
-      sh.assetsDir(true),
+      sh.assetsDir(),
     );
     // Report the result of the submission file compilation
     await updateJudging(judging, submissionCompileResult);
@@ -69,11 +69,7 @@ export class Compiler extends AbstractRunnerStep {
       const checkerContainer = await dockerService.createContainer({
         Image: submission.problem.checkScript.dockerImage,
         name: sh.compileCheckerContainerName(),
-        WorkingDir: sh.executableFileDir(
-          checkScript.id,
-          checkScript.file,
-          true,
-        ),
+        WorkingDir: sh.executableFileDir(checkScript.id, checkScript.file),
       });
       // Start the checker compiler container
       await checkerContainer.start();
@@ -126,7 +122,7 @@ async function updateJudging(
       judgeHost: { hostname },
     },
   } = judging;
-  const payload = Buffer.from(submissionCompileResult.stdout).toString(
+  const payload = Buffer.from(submissionCompileResult.stdout.trim()).toString(
     'base64',
   );
   judging.compileOutput = {

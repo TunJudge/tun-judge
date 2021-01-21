@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entities';
 import { ExtendedRepository } from '../extended-repository';
-import store from '../session-store';
+import { store } from '../session';
 
 @Injectable()
 export class LoginGuard extends AuthGuard('local') {

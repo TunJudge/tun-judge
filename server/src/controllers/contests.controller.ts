@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Put,
+  Session,
   UseGuards,
 } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
@@ -21,8 +22,9 @@ import {
 } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThan } from 'typeorm';
-import { ScoreboardService } from '../scoreboard.service';
+import { ScoreboardService } from '../services';
 import { Roles } from '../core/roles.decorator';
+import { AppGateway } from '../app.gateway';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -37,6 +39,7 @@ export class ContestsController {
     @InjectRepository(Submission)
     private readonly submissionsRepository: ExtendedRepository<Submission>,
     private readonly scoreboardService: ScoreboardService,
+    private readonly socketService: AppGateway,
   ) {}
 
   @Get()
@@ -66,7 +69,7 @@ export class ContestsController {
   async update(
     @Param('id') id: number,
     @Body() contest: Contest,
-  ): Promise<Contest> {
+  ): Promise<void> {
     const oldContest = await this.contestsRepository.findOneOrThrow(
       id,
       new NotFoundException(),
@@ -74,7 +77,8 @@ export class ContestsController {
     await this.contestProblemsRepository.delete({
       contest: { id },
     });
-    return this.contestsRepository.save({ ...oldContest, ...contest });
+    await this.contestsRepository.save({ ...oldContest, ...contest });
+    this.socketService.pingForUpdates('contests');
   }
 
   @Patch(':id/refresh-scoreboard-cache')
@@ -102,15 +106,23 @@ export class ContestsController {
   ): Promise<Submission[]> {
     return (
       await this.submissionsRepository.find({
-        order: { submitTime: 'DESC' },
-        where: { contest: { id: contestId }, team: { id: teamId } },
+        where: {
+          contest: { id: contestId },
+          team: { id: teamId },
+          valid: true,
+        },
         relations: ['language', 'contest', 'problem', 'judgings'],
+        order: { submitTime: 'DESC' },
       })
     ).map((submission) => {
       if (submission.contest.verificationRequired) {
-        submission.judgings = submission.judgings.filter(
-          (j) => j.verified && !judgingInFreezeTime(submission.contest, j),
-        );
+        const judging = submission.judgings
+          .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
+          .shift();
+        submission.judgings =
+          judging?.verified && !judgingInFreezeTime(submission.contest, judging)
+            ? [judging]
+            : [];
       }
       return submission;
     });
@@ -120,7 +132,12 @@ export class ContestsController {
   @Roles('admin', 'team')
   async submit(
     @Param('id') contestId: number,
-    @Param('teamId') teamId: number,
+    @Session()
+    {
+      passport: {
+        user: { id: userId },
+      },
+    },
     @Body() submission: Submission,
   ): Promise<void> {
     submission.submitTime = new Date();
@@ -133,7 +150,7 @@ export class ContestsController {
       new NotFoundException('Contest not found!'),
     );
     const team = await this.teamsRepository.findOneOrThrow(
-      teamId,
+      { user: { id: userId } },
       new NotFoundException('Team not found!'),
     );
     submission.contest = contest;
@@ -144,6 +161,7 @@ export class ContestsController {
       team,
       submission.problem,
     );
+    this.socketService.pingForUpdates('submissions');
   }
 }
 

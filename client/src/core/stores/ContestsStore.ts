@@ -28,7 +28,6 @@ export class ContestsStore {
   @action
   refreshScoreboardCache = async (id: number): Promise<void> => {
     await http.patch(`api/contests/${id}/refresh-scoreboard-cache`);
-    await this.fetchAll();
   };
 
   @action

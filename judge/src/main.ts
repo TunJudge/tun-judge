@@ -8,6 +8,7 @@ import { JudgeLogger } from './services/judge.logger';
 import http from './http/http.client';
 
 async function bootstrap() {
+  const logger = new JudgeLogger();
   try {
     await http.post(`api/auth/login`, {
       username: config.username,
@@ -17,15 +18,13 @@ async function bootstrap() {
       hostname: config.hostname,
       username: config.username,
     });
-    new JudgeLogger().log('Successfully connected to TunJudge!');
+    logger.log('Successfully connected to TunJudge!');
   } catch (error) {
     const { statusCode, message } = error.response.data;
     new Logger().error(`${statusCode}: ${message}`);
     process.exit(-1);
   }
-  const app = await NestFactory.create(AppModule, {
-    logger: new JudgeLogger(),
-  });
+  const app = await NestFactory.create(AppModule, { logger });
   await app.listen(3001);
 }
 bootstrap();

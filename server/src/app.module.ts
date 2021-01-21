@@ -5,11 +5,15 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ScheduleModule } from '@nestjs/schedule';
 import { APP_GUARD } from '@nestjs/core';
 import { join } from 'path';
-import { AppService } from './app.service';
+import {
+  AppService,
+  JudgingsService,
+  ScoreboardService,
+  SubmissionsService,
+} from './services';
 import { entities } from './entities';
 import { AuthModule } from './auth/auth.module';
 import { CustomRepositoryProviders } from './core/extended-repository';
-import { ScoreboardService } from './scoreboard.service';
 import {
   AppController,
   ContestsController,
@@ -27,6 +31,30 @@ import {
 } from './controllers';
 import config from './core/config';
 import { RolesGuard } from './core/guards';
+import { AppGateway } from './app.gateway';
+
+const CONTROLLERS = [
+  AppController,
+  RolesController,
+  UsersController,
+  TeamsController,
+  PublicController,
+  ContestsController,
+  ProblemsController,
+  TestcasesController,
+  LanguagesController,
+  JudgeHostsController,
+  ExecutablesController,
+  SubmissionsController,
+  TeamCategoriesController,
+];
+
+const SERVICES = [
+  AppService,
+  JudgingsService,
+  ScoreboardService,
+  SubmissionsService,
+];
 
 @Module({
   imports: [
@@ -49,26 +77,12 @@ import { RolesGuard } from './core/guards';
     }),
     AuthModule,
   ],
-  controllers: [
-    AppController,
-    RolesController,
-    UsersController,
-    TeamsController,
-    PublicController,
-    ContestsController,
-    ProblemsController,
-    TestcasesController,
-    LanguagesController,
-    JudgeHostsController,
-    ExecutablesController,
-    SubmissionsController,
-    TeamCategoriesController,
-  ],
+  controllers: [...CONTROLLERS],
   providers: [
-    { provide: APP_GUARD, useClass: RolesGuard },
-    AppService,
-    ScoreboardService,
+    AppGateway,
+    ...SERVICES,
     ...CustomRepositoryProviders,
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
 export class AppModule {}

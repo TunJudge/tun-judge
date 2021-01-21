@@ -7,6 +7,7 @@ export type ListPageTableColumn<T> = {
   header: string;
   field: keyof T;
   className?: string;
+  disabled?: (obj: T) => boolean;
   width?: SemanticWIDTHS;
   textAlign?: 'center' | 'left' | 'right';
   style?: CSSProperties;
@@ -181,6 +182,7 @@ function ListPage<T extends { id: number | string }>({
                     key={`${item.id}-${index}`}
                     className={column.className}
                     textAlign={column.textAlign ?? 'left'}
+                    disabled={column.disabled && column.disabled(item)}
                     width={column.width}
                     style={column.style}
                     onClick={() => column.onClick && column.onClick(item)}

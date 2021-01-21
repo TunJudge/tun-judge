@@ -117,10 +117,10 @@ function getResult(
   if (!guardOutput.exitCode) {
     return 'AC';
   }
-  if (guardOutput.usedTime > timeLimit * 1000) {
+  if (guardOutput.usedTime >= timeLimit * 1000) {
     return 'TLE';
   }
-  if (guardOutput.usedMemory > memoryLimit) {
+  if (guardOutput.usedMemory >= memoryLimit) {
     return 'MLE';
   }
   return 'RE';
@@ -165,9 +165,9 @@ async function sendJudgingRun(
     checkerOutput: undefined,
   };
 
-  const runOutput = (
-    await fs.readFile(sh.extraFilesPath('test.out'))
-  ).toString();
+  const runOutput = (await fs.readFile(sh.extraFilesPath('test.out')))
+    .toString()
+    .trim();
   const payload = Buffer.from(runOutput).toString('base64');
   judgingRun.runOutput = {
     id: undefined,
@@ -179,9 +179,9 @@ async function sendJudgingRun(
   };
 
   if (guardOutput.exitCode) {
-    const errorOutput = (
-      await fs.readFile(sh.extraFilesPath('test.err'))
-    ).toString();
+    const errorOutput = (await fs.readFile(sh.extraFilesPath('test.err')))
+      .toString()
+      .trim();
     const payload = Buffer.from(errorOutput).toString('base64');
     judgingRun.errorOutput = {
       id: undefined,
@@ -194,9 +194,9 @@ async function sendJudgingRun(
   }
 
   if (existsSync(sh.extraFilesPath('checker.out'))) {
-    const checkerOutput = (
-      await fs.readFile(sh.extraFilesPath('checker.out'))
-    ).toString();
+    const checkerOutput = (await fs.readFile(sh.extraFilesPath('checker.out')))
+      .toString()
+      .trim();
     const payload = Buffer.from(checkerOutput).toString('base64');
     judgingRun.checkerOutput = {
       id: undefined,

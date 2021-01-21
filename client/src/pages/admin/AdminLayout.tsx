@@ -14,6 +14,7 @@ import ExecutablesList from './views/executables/ExecutablesList';
 import TeamCategoriesList from './views/team-category/TeamCategoriesList';
 import SubmissionsList from './views/submissions/SubmissionsList';
 import SubmissionsView from './views/submissions/SubmissionView';
+import Dashboard from './views/Dashboard';
 
 const AdminLayout: React.FC = () => {
   const [sidebarVisible, toggleSidebar] = useState<boolean>(true);
@@ -30,11 +31,7 @@ const AdminLayout: React.FC = () => {
       >
         <AdminNavbar toggleSidebar={() => toggleSidebar(!sidebarVisible)} />
         <Switch>
-          <Route
-            exact
-            path="/"
-            component={() => <div style={{ textAlign: 'center' }}>Admin</div>}
-          />
+          <Route exact path="/" component={Dashboard} />
           <Route exact path="/contests" component={ContestsList} />
           <Route exact path="/problems" component={ProblemsList} />
           <Route path="/problems/:id" component={ProblemView} />
