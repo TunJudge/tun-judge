@@ -14,30 +14,31 @@ properties properties: [
     ]
 ]
 
+final nodeDockerImage = "node:12.18.4-alpine"
+
 node("main") {
     stage("Checkout") {
         checkout scm
     }
 
     stage("Yarn Install") {
-        sh "npm install -g yarn"
-        sh "yarn install"
+        runInDocker(nodeDockerImage, "yarn install")
     }
 
     parallel(
         "Prettier Server": {
             stage("Prettier Server") {
-                sh "yarn prettier:server"
+                runInDocker(nodeDockerImage, "yarn prettier:server")
             }
         },
         "Prettier Client": {
             stage("Prettier Client") {
-                sh "yarn prettier:client"
+                runInDocker(nodeDockerImage, "yarn prettier:client")
             }
         },
         "Prettier Judge": {
             stage("Prettier Judge") {
-                sh "yarn prettier:judge"
+                runInDocker(nodeDockerImage, "yarn prettier:judge")
             }
         }
     )
@@ -74,4 +75,8 @@ node("main") {
             )
         }
     }
+}
+
+def runInDocker(imageTag, command) {
+    sh "docker run -it --rm -v $PWD:/app -w /app ${imageTag} ${command}"
 }
