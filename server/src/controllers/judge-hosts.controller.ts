@@ -109,7 +109,7 @@ export class JudgeHostsController {
       oldJudging.submission.team,
       oldJudging.submission.problem,
     );
-    this.socketService.pingForUpdates('judgeRuns', 'submissions');
+    this.socketService.pingForUpdates('judgings', 'submissions');
   }
 
   @Post(':hostname/add-judging-run/:id')
@@ -196,6 +196,7 @@ export class JudgeHostsController {
       submission.judgeHost = judgeHost;
       await this.submissionsRepository.save(submission);
       judging.submission = submission;
+      this.socketService.pingForUpdates('judgings');
       return judging;
     }
   }

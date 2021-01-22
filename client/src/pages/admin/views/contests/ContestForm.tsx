@@ -130,8 +130,8 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
           <Form.Group widths="equal">
             <CheckBoxField<Contest>
               entity={contest}
-              field="processBalloons"
-              label="Process balloons"
+              field="enabled"
+              label="Enabled"
               defaultValue={true}
               errors={errors}
               setErrors={setErrors}
@@ -146,9 +146,9 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
             />
             <CheckBoxField<Contest>
               entity={contest}
-              field="enabled"
-              label="Enabled"
-              defaultValue={true}
+              field="openToAllTeams"
+              label="Open to all teams"
+              defaultValue={false}
               errors={errors}
               setErrors={setErrors}
             />
@@ -157,6 +157,14 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               field="verificationRequired"
               label="Verification required"
               defaultValue={false}
+              errors={errors}
+              setErrors={setErrors}
+            />
+            <CheckBoxField<Contest>
+              entity={contest}
+              field="processBalloons"
+              label="Process balloons"
+              defaultValue={true}
               errors={errors}
               setErrors={setErrors}
             />

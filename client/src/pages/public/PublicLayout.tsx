@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PublicNavbar from './PublicNavbar';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import ProblemSet from '../shared/ProblemSet';
@@ -12,7 +12,7 @@ const PublicLayout: React.FC = observer(() => {
   const [leftToContest, setLeftToContest] = useState<number>(0);
   const { currentContest } = rootStore.publicStore;
 
-  useEffect(() => updateLeftTimeToContest(currentContest, setLeftToContest), [currentContest]);
+  updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
     <div>

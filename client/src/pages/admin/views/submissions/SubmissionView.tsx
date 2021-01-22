@@ -27,6 +27,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
   const [runViewData, setRunViewData] = useState<JudgingRun>();
   const {
     profile,
+    updatesCount: { judgings },
     submissionsStore: {
       item,
       cleanItem,
@@ -43,14 +44,17 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
 
   useEffect(() => {
     fetchById(parseInt(match!.params.id!)).catch(() => location.assign('/submissions'));
-    return () => cleanItem();
-  }, [fetchById, cleanItem, match]);
+  }, [fetchById, cleanItem, judgings, match]);
 
   useEffect(() => {
     if (item) {
       setJudging(item.judgings.slice().sort(dateComparator<Judging>('startTime', true)).shift());
     }
   }, [item]);
+
+  useEffect(() => {
+    return cleanItem;
+  }, [cleanItem]);
 
   return !item ? (
     <Spinner />

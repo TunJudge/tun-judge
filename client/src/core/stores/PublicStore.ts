@@ -39,7 +39,7 @@ export class PublicStore {
   @action
   fetchContests = async (): Promise<void> => {
     this.contests = await http.get<Contest[]>('api/public/contests');
-    if (!this.contests.length) localStorage.removeItem('currentContestId');
+    if (!this.contests.length) return localStorage.removeItem('currentContestId');
     const currentContestId = parseInt(localStorage.getItem('currentContestId') ?? '-1');
     this.currentContest = this.contests.find((c) => c.id === currentContestId);
     if (!this.currentContest) this.setCurrentContest(this.contests[0]?.id);

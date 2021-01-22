@@ -19,7 +19,7 @@ const hostname = process && process.env.NODE_ENV === 'development' ? 'http://loc
 const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
 
-const updateEvents = ['contests', 'scoreboard', 'submissions', 'judgeRuns'] as const;
+const updateEvents = ['contests', 'scoreboard', 'submissions', 'judgings', 'judgeRuns'] as const;
 type UpdateEvents = typeof updateEvents[number];
 
 export class RootStore {
@@ -27,12 +27,14 @@ export class RootStore {
   @observable profile: User | undefined;
   private _updatesCount: Record<UpdateEvents, number> = {
     contests: 1,
+    judgings: 1,
     judgeRuns: 1,
     scoreboard: 1,
     submissions: 1,
   };
   @observable updatesCount: Record<UpdateEvents, number> = {
     contests: 1,
+    judgings: 1,
     judgeRuns: 1,
     scoreboard: 1,
     submissions: 1,

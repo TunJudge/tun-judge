@@ -1,4 +1,5 @@
 import { Contest, Judging, User } from './models';
+import { useEffect } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isEmpty(s: any): boolean {
@@ -102,26 +103,29 @@ let interval: NodeJS.Timeout | undefined = undefined;
 export function updateLeftTimeToContest(
   contest?: Contest,
   setLeftToContest?: (value: number) => void,
-): any {
-  if (contest) {
-    const startTime = new Date(contest.startTime).getTime();
-    const now = Date.now();
-    if (now < startTime) {
-      interval && clearInterval(interval);
-      setLeftToContest!((startTime - now) / 1000);
-      interval = setInterval(() => {
-        const startTime = new Date(contest.startTime).getTime();
-        const now = Date.now();
-        if (now < startTime) setLeftToContest!((startTime - now) / 1000);
-        else window.location.reload();
-      }, 1000);
-    } else if (interval) {
-      window.location.reload();
+): void {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (contest) {
+      const startTime = new Date(contest.startTime).getTime();
+      const now = Date.now();
+      if (now < startTime) {
+        interval && clearInterval(interval);
+        setLeftToContest!((startTime - now) / 1000);
+        interval = setInterval(() => {
+          const startTime = new Date(contest.startTime).getTime();
+          const now = Date.now();
+          if (now < startTime) setLeftToContest!((startTime - now) / 1000);
+          else window.location.reload();
+        }, 1000);
+      } else if (interval) {
+        window.location.reload();
+      }
     }
-  }
-  return () => {
-    interval && clearInterval(interval);
-  };
+    return () => {
+      interval && clearInterval(interval);
+    };
+  }, [contest, setLeftToContest]);
 }
 
 export function getRandomHexColor(): string {

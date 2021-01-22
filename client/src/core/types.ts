@@ -22,6 +22,7 @@ export const languageMap: Record<string, CodeEditorLanguages> = {
   C: 'c_cpp',
   'C++': 'c_cpp',
   Java: 'java',
+  Kotlin: 'kotlin',
   Scala: 'scala',
   JavaScript: 'javascript',
   Python: 'python',

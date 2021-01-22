@@ -20,7 +20,7 @@ const TeamLayout: React.FC = observer(() => {
     fetchAll();
   }, [fetchAll]);
 
-  useEffect(() => updateLeftTimeToContest(currentContest, setLeftToContest), [currentContest]);
+  updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
     <div>

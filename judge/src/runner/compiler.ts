@@ -9,6 +9,7 @@ import sh, { testLibPath } from './submission-helper';
 import dockerService, { ExecResult } from '../services/docker.service';
 import { JudgeLogger } from '../services/judge.logger';
 import http from '../http/http.client';
+import { startSpinner, stopSpinner } from '../utils';
 
 /**
  * The Compiler assure the compilation of the submission and checker code source files.
@@ -20,10 +21,11 @@ export class Compiler extends AbstractRunnerStep {
       problem: { checkScript },
     } = submission;
     logger.log(
-      `Compiling submission file ${submission.file.name}...`,
+      `Compiling submission file ${submission.file.name}\t`,
       undefined,
       false,
     );
+    const spinner = startSpinner();
     // Create docker container to compile the submission file
     const submissionCompilerContainer = await dockerService.createContainer({
       Image: submission.language.dockerImage,
@@ -47,13 +49,14 @@ export class Compiler extends AbstractRunnerStep {
     // Report the result of the submission file compilation
     await updateJudging(judging, submissionCompileResult);
     await dockerService.pruneContainer(submissionCompilerContainer);
+    stopSpinner(spinner);
     clearLine(process.stdout, 0);
     cursorTo(process.stdout, 0);
     if (!submissionCompileResult.exitCode) {
-      logger.log(`Compiling submission file ${submission.file.name}...\tOK!`);
+      logger.log(`Compiling submission file ${submission.file.name}\tOK!`);
     } else {
       logger.error(
-        `Compiling submission file ${submission.file.name}...\tNOT OK!`,
+        `Compiling submission file ${submission.file.name}\tNOT OK!`,
       );
       return;
     }
@@ -61,10 +64,11 @@ export class Compiler extends AbstractRunnerStep {
     // Check if we already built the check script or not to prevent the double work
     if (!existsSync(sh.executableBinPath(checkScript.id, checkScript.file))) {
       logger.log(
-        `Compiling executable file ${checkScript.file.name}...`,
+        `Compiling executable file ${checkScript.file.name}\t`,
         undefined,
         false,
       );
+      const spinner = startSpinner();
       // Create docker container to compile the checker file
       const checkerContainer = await dockerService.createContainer({
         Image: submission.problem.checkScript.dockerImage,
@@ -93,15 +97,14 @@ export class Compiler extends AbstractRunnerStep {
       );
       await dockerService.pruneContainer(checkerContainer);
 
+      stopSpinner(spinner);
       clearLine(process.stdout, 0);
       cursorTo(process.stdout, 0);
       if (!checkerCompileResult.exitCode) {
-        logger.log(
-          `Compiling executable file ${checkScript.file.name}...\tOK!`,
-        );
+        logger.log(`Compiling executable file ${checkScript.file.name}\tOK!`);
       } else {
         logger.error(
-          `Compiling executable file ${submission.file.name}...\tNOT OK!`,
+          `Compiling executable file ${submission.file.name}\tNOT OK!`,
         );
         return;
       }

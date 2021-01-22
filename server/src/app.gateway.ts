@@ -1,4 +1,5 @@
 import {
+  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -8,7 +9,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Team } from './entities';
 import { ExtendedRepository } from './core/extended-repository';
 
-type UpdateEvents = 'contests' | 'scoreboard' | 'submissions' | 'judgeRuns';
+type UpdateEvents =
+  | 'contests'
+  | 'scoreboard'
+  | 'submissions'
+  | 'judgings'
+  | 'judgeRuns';
 
 @WebSocketGateway({ namespace: 'ws' })
 export class AppGateway {
@@ -33,5 +39,12 @@ export class AppGateway {
     ) {
       client.join('juries');
     }
+  }
+
+  @SubscribeMessage('judgeHostLogs')
+  judgeHostLogs(
+    @MessageBody() { hostname, log }: { hostname: string; log: string },
+  ) {
+    this.server.in('juries').emit(`judgeHost-${hostname}-logs`, log);
   }
 }

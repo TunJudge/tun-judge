@@ -5,6 +5,7 @@ import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-sh';
 import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/mode-java';
+import 'ace-builds/src-noconflict/mode-kotlin';
 import 'ace-builds/src-noconflict/mode-scala';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
@@ -16,6 +17,7 @@ export type CodeEditorLanguages =
   | 'text'
   | 'c_cpp'
   | 'java'
+  | 'kotlin'
   | 'scala'
   | 'javascript'
   | 'python';

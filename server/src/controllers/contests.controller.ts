@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -143,9 +144,12 @@ export class ContestsController {
     submission.submitTime = new Date();
     const contest = await this.contestsRepository.findOneOrThrow(
       {
-        id: contestId,
-        startTime: LessThanOrEqual(submission.submitTime),
-        endTime: MoreThan(submission.submitTime),
+        where: {
+          id: contestId,
+          startTime: LessThanOrEqual(submission.submitTime),
+          endTime: MoreThan(submission.submitTime),
+        },
+        relations: ['teams'],
       },
       new NotFoundException('Contest not found!'),
     );
@@ -153,6 +157,14 @@ export class ContestsController {
       { user: { id: userId } },
       new NotFoundException('Team not found!'),
     );
+    if (
+      !contest.openToAllTeams &&
+      !contest.teams.find((t) => t.id === team.id)
+    ) {
+      throw new ForbiddenException(
+        'Your team is not allowed to submit in this contest',
+      );
+    }
     submission.contest = contest;
     submission.team = team;
     await this.submissionsRepository.save(submission);
@@ -161,6 +173,6 @@ export class ContestsController {
       team,
       submission.problem,
     );
-    this.socketService.pingForUpdates('submissions');
+    this.socketService.pingForUpdates('submissions', 'judgeRuns');
   }
 }

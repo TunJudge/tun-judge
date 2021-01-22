@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { JudgeHost } from '../../../../core/models';
@@ -6,10 +6,12 @@ import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import moment from 'moment';
 import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
 import { Button } from 'semantic-ui-react';
+import JudgeHostLogsViewer from './JudgeHostLogsViewer';
 
 let interval: NodeJS.Timeout | undefined = undefined;
 
 const JudgeHostsList: React.FC = observer(() => {
+  const [hostname, setHostname] = useState<string>();
   const {
     isUserAdmin,
     judgeHostsStore: { data, fetchAll, toggle, remove },
@@ -57,28 +59,40 @@ const JudgeHostsList: React.FC = observer(() => {
           'No'
         ),
     },
+    {
+      header: 'Live Logs',
+      field: 'id',
+      render: (judgeHost) => (
+        <Button color="blue" onClick={() => setHostname(judgeHost.hostname)}>
+          Logs
+        </Button>
+      ),
+    },
   ];
 
   return (
-    <ListPage<JudgeHost>
-      header="Judge Hosts"
-      data={data}
-      columns={columns}
-      onDelete={remove}
-      onRefresh={fetchAll}
-      withoutActions={!isUserAdmin}
-      rowBackgroundColor={(judgeHost) => {
-        if (!judgeHost.active) return '';
-        const diff = Date.now() - new Date(judgeHost.pollTime).getTime();
-        if (diff < 30000) {
-          return '#B3FFC2';
-        }
-        if (diff < 60000) {
-          return '#FFEAC2';
-        }
-        return '#FFC2C2';
-      }}
-    />
+    <>
+      <ListPage<JudgeHost>
+        header="Judge Hosts"
+        data={data}
+        columns={columns}
+        onDelete={remove}
+        onRefresh={fetchAll}
+        withoutActions={!isUserAdmin}
+        rowBackgroundColor={(judgeHost) => {
+          if (!judgeHost.active) return '';
+          const diff = Date.now() - new Date(judgeHost.pollTime).getTime();
+          if (diff < 30000) {
+            return '#B3FFC2';
+          }
+          if (diff < 60000) {
+            return '#FFEAC2';
+          }
+          return '#FFC2C2';
+        }}
+      />
+      <JudgeHostLogsViewer hostname={hostname} dismiss={() => setHostname(undefined)} />
+    </>
   );
 });
 

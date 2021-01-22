@@ -70,6 +70,13 @@ export class Contest {
     default: true,
   })
   public: boolean;
+
+  @Column({
+    comment: 'Whether the contest is open to any logged in team',
+    default: false,
+  })
+  openToAllTeams: boolean;
+
   @Column({
     comment:
       'Whether the submissions needs verification before showing the result to the team',

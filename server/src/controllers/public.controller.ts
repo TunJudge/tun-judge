@@ -40,8 +40,10 @@ export class PublicController {
           new NotFoundException(),
         );
         return contests
-          .filter((contest) =>
-            contest.teams.some((team) => team.id === user.team.id),
+          .filter(
+            (contest) =>
+              contest.openToAllTeams ||
+              contest.teams.some((team) => team.id === user.team.id),
           )
           .map(this.cleanProblems);
       case 'jury':

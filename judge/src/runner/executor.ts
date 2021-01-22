@@ -10,6 +10,7 @@ import dockerService from '../services/docker.service';
 import { JudgeLogger } from '../services/judge.logger';
 import http from '../http/http.client';
 import { JudgingRun } from '../models/judging-run.model';
+import { startSpinner, stopSpinner } from '../utils';
 
 type GuardOutput = {
   usedTime: number;
@@ -44,7 +45,8 @@ export class Executor extends AbstractRunnerStep {
     await checkerContainer.start();
     // Loop over the testcase for running and checking
     for (const testcase of testcases.sort((a, b) => a.rank - b.rank)) {
-      logger.log(`Running test ${testcase.rank}...`, undefined, false);
+      logger.log(`Running test ${testcase.rank}\t`, undefined, false);
+      const spinner = startSpinner();
       // Executing the run command inside the runner container
       await dockerService.execCmdInDocker(runnerContainer, sh.runCmd(testcase));
       // Read the guard result that contains the used time/memory and the exit code
@@ -61,10 +63,11 @@ export class Executor extends AbstractRunnerStep {
       if (guardOutput.exitCode) {
         await sendJudgingRun(judging, testcase, guardOutput, result);
         await updateJudging(judging, result);
+        stopSpinner(spinner);
         clearLine(process.stdout, 0);
         cursorTo(process.stdout, 0);
         await dockerService.pruneContainer(runnerContainer, checkerContainer);
-        logger.error(`Running test ${testcase.rank}...\tNOT OK!`);
+        logger.error(`Running test ${testcase.rank}\tNOT OK!`);
         return;
       }
       // Executing the checking command inside the checker container
@@ -72,6 +75,7 @@ export class Executor extends AbstractRunnerStep {
         checkerContainer,
         sh.checkerRunCmd(testcase),
       );
+      stopSpinner(spinner);
       clearLine(process.stdout, 0);
       cursorTo(process.stdout, 0);
       // In case of the exitCode of the checking script is different then zero we stop running and report the result
@@ -79,12 +83,12 @@ export class Executor extends AbstractRunnerStep {
         await sendJudgingRun(judging, testcase, guardOutput, 'WA');
         await updateJudging(judging, 'WA');
         await dockerService.pruneContainer(runnerContainer, checkerContainer);
-        logger.error(`Running test ${testcase.rank}...\tNOT OK!`);
+        logger.error(`Running test ${testcase.rank}\tNOT OK!`);
         return;
       } else {
         // In case of submission is correct of this testcase we report the result and continue running
         await sendJudgingRun(judging, testcase, guardOutput, result);
-        logger.log(`Running test ${testcase.rank}...\tOK!`);
+        logger.log(`Running test ${testcase.rank}\tOK!`);
         // We move the test output and the guard output in the testcase folder for backup
         for (const file of [
           'test.out',

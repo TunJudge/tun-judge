@@ -84,7 +84,7 @@ export class SubmissionsController {
     },
   ): Promise<void> {
     await this.judgingsService.setVerified(id, userId);
-    this.socketService.pingForUpdates('submissions');
+    this.socketService.pingForUpdates('judgings', 'submissions');
   }
 
   @Patch(':id/claim')
@@ -99,6 +99,7 @@ export class SubmissionsController {
     },
   ): Promise<void> {
     await this.judgingsService.setJuryMember(id, userId);
+    await this.socketService.pingForUpdates('judgings');
   }
 
   @Patch(':id/un-claim')
@@ -113,26 +114,28 @@ export class SubmissionsController {
     },
   ): Promise<void> {
     await this.judgingsService.setJuryMember(id, userId, null);
+    await this.socketService.pingForUpdates('judgings');
   }
 
   @Patch(':id/rejudge')
   @Roles('admin', 'jury')
   async rejudgeSubmission(@Param('id') id: number): Promise<void> {
     await this.submissionsService.rejudge(id);
+    await this.socketService.pingForUpdates('judgings', 'submissions');
   }
 
   @Patch(':id/ignore')
   @Roles('admin', 'jury')
   async ignoreSubmission(@Param('id') id: number): Promise<void> {
     await this.submissionsService.setValid(id, false);
-    this.socketService.pingForUpdates('submissions');
+    this.socketService.pingForUpdates('judgings', 'submissions');
   }
 
   @Patch(':id/un-ignore')
   @Roles('admin', 'jury')
   async unIgnoreSubmission(@Param('id') id: number): Promise<void> {
     await this.submissionsService.setValid(id, true);
-    this.socketService.pingForUpdates('submissions');
+    this.socketService.pingForUpdates('judgings', 'submissions');
   }
 
   @Get(':id/run/:runId/content')

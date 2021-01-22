@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { clc } from '@nestjs/common/utils/cli-colors.util';
+import socketService from './socket.service';
 
 export class JudgeLogger extends Logger {
   log(message: any, context?: string, returnToLine = true): any {
@@ -69,5 +70,6 @@ export class JudgeLogger extends Logger {
 
     process[writeStreamType ?? 'stdout'].write(computedMessage);
     returnToLine && process[writeStreamType ?? 'stdout'].write('\n');
+    socketService.connected && socketService.emitLogLine(computedMessage);
   }
 }

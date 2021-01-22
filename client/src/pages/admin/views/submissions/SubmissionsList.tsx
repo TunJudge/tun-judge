@@ -13,14 +13,14 @@ const SubmissionsList: React.FC = observer(() => {
   const history = useHistory();
   const {
     profile,
-    updatesCount: { judgeRuns },
+    updatesCount: { judgings, judgeRuns },
     submissionsStore: { data, total, page, setPage, filters, setFilters, fetchAll, claim, unClaim },
     publicStore: { currentContest },
   } = rootStore;
 
   useEffect(() => {
     fetchAll();
-  }, [page, filters, judgeRuns, fetchAll]);
+  }, [page, filters, judgings, judgeRuns, fetchAll]);
 
   const columns: ListPageTableColumn<Submission>[] = [
     {
