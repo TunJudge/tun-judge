@@ -9,6 +9,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "prettier": "prettier --check src",
     "start": "nest start",
     "start:dev": "nodemon src/main.ts",
     "start:prod": "node dist/main",

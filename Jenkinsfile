@@ -19,6 +19,28 @@ node("main") {
         checkout scm
     }
 
+    stage("Yarn Install") {
+        sh "yarn install"
+    }
+
+    parallel(
+        "Prettier Server": {
+            stage("Prettier Server") {
+                sh "yarn prettier:server"
+            }
+        },
+        "Prettier Client": {
+            stage("Prettier Client") {
+                sh "yarn prettier:client"
+            }
+        },
+        "Prettier Judge": {
+            stage("Prettier Judge") {
+                sh "yarn prettier:judge"
+            }
+        }
+    )
+
     def serverImage
     def judgeImage
 

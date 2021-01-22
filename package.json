@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "yisd client server judge"
+    "postinstall": "yisd client server judge",
+    "prettier:judge": "cd judge && yarn prettier",
+    "prettier:client": "cd client && yarn prettier",
+    "prettier:server": "cd server && yarn prettier"
   },
   "keywords": [],
   "author": "",
