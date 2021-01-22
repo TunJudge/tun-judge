@@ -115,6 +115,12 @@ export class SubmissionsController {
     await this.judgingsService.setJuryMember(id, userId, null);
   }
 
+  @Patch(':id/rejudge')
+  @Roles('admin', 'jury')
+  async rejudgeSubmission(@Param('id') id: number): Promise<void> {
+    await this.submissionsService.rejudge(id);
+  }
+
   @Patch(':id/ignore')
   @Roles('admin', 'jury')
   async ignoreSubmission(@Param('id') id: number): Promise<void> {

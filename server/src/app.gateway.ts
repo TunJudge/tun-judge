@@ -20,8 +20,8 @@ export class AppGateway {
     private readonly teamsRepository: ExtendedRepository<Team>,
   ) {}
 
-  pingForUpdates(event: UpdateEvents) {
-    this.server.emit(event, true);
+  pingForUpdates(...events: UpdateEvents[]) {
+    events.forEach((event) => this.server.emit(event, true));
   }
 
   @SubscribeMessage('subscribe')

@@ -33,6 +33,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
       fetchById,
       ignore,
       unIgnore,
+      rejudge,
       claim,
       unClaim,
       markVerified,
@@ -63,7 +64,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
           {judging && judging.result && (
             <Button
               basic
-              color="red"
+              color="linkedin"
               className="mr-2"
               onClick={async () => {
                 await (item.valid ? ignore : unIgnore)(item.id);
@@ -71,6 +72,19 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
               }}
             >
               {item.valid ? 'Ignore' : 'UnIgnore'}
+            </Button>
+          )}
+          {judging && judging.result && judging.verified && (
+            <Button
+              basic
+              color="red"
+              className="mr-2"
+              onClick={async () => {
+                await rejudge(item.id);
+                await fetchById(item?.id);
+              }}
+            >
+              Rejudge
             </Button>
           )}
           {judging && judging.result && !judging.verified && (
@@ -123,58 +137,65 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          <Table.Row>
-            <Table.Cell>{item.id}</Table.Cell>
-            <Table.Cell>{item.team.name}</Table.Cell>
-            <Table.Cell>{item.problem.name}</Table.Cell>
-            <Table.Cell>{item.language.name}</Table.Cell>
-            <Table.Cell>
-              <b
-                style={{
-                  color:
-                    judging && judging.result
-                      ? judging.result === 'AC'
-                        ? 'green'
-                        : 'red'
-                      : 'grey',
-                }}
-              >
-                {resultMap[judging?.result ?? 'PD']}
-              </b>
-            </Table.Cell>
-            <Table.Cell>
-              {judging
-                ? `${Math.floor(
-                    judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runTime), 0) *
-                      1000,
-                  )} ms`
-                : '-'}
-            </Table.Cell>
-            <Table.Cell>
-              {judging
-                ? formatBytes(
-                    judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runMemory), 0) *
-                      1024,
-                  )
-                : '-'}
-            </Table.Cell>
-            <Table.Cell>
-              {formatRestTime(
-                (new Date(item.submitTime).getTime() -
-                  new Date(currentContest?.startTime ?? 0).getTime()) /
-                  1000,
-              )}
-            </Table.Cell>
-            <Table.Cell>
-              {judging
-                ? formatRestTime(
-                    (new Date(judging.startTime).getTime() -
+          {item.judgings
+            .slice()
+            .sort(dateComparator<Judging>('startTime', true))
+            .map((judging, index) => (
+              <Table.Row key={`judging-${judging.id}`} disabled={index > 0}>
+                <Table.Cell>{item.id}</Table.Cell>
+                <Table.Cell>{item.team.name}</Table.Cell>
+                <Table.Cell>{item.problem.name}</Table.Cell>
+                <Table.Cell>{item.language.name}</Table.Cell>
+                <Table.Cell>
+                  <b
+                    style={{
+                      color:
+                        judging && judging.result
+                          ? judging.result === 'AC'
+                            ? 'green'
+                            : 'red'
+                          : 'grey',
+                    }}
+                  >
+                    {resultMap[judging?.result ?? 'PD']}
+                  </b>
+                </Table.Cell>
+                <Table.Cell>
+                  {judging
+                    ? `${Math.floor(
+                        judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runTime), 0) *
+                          1000,
+                      )} ms`
+                    : '-'}
+                </Table.Cell>
+                <Table.Cell>
+                  {judging
+                    ? formatBytes(
+                        judging.runs.reduce<number>(
+                          (pMax, run) => Math.max(pMax, run.runMemory),
+                          0,
+                        ) * 1024,
+                      )
+                    : '-'}
+                </Table.Cell>
+                <Table.Cell>
+                  {formatRestTime(
+                    (new Date(item.submitTime).getTime() -
                       new Date(currentContest?.startTime ?? 0).getTime()) /
                       1000,
-                  )
-                : '-'}
-            </Table.Cell>
-          </Table.Row>
+                  )}
+                </Table.Cell>
+                <Table.Cell>
+                  {judging
+                    ? formatRestTime(
+                        (new Date(judging.startTime).getTime() -
+                          new Date(currentContest?.startTime ?? 0).getTime()) /
+                          1000,
+                      )
+                    : '-'}
+                </Table.Cell>
+              </Table.Row>
+            ))}
         </Table.Body>
       </Table>
       <Segment.Group>

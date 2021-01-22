@@ -13,18 +13,13 @@ import {
 } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
 import { ExtendedRepository } from '../core/extended-repository';
-import {
-  Contest,
-  ContestProblem,
-  Judging,
-  Submission,
-  Team,
-} from '../entities';
+import { Contest, ContestProblem, Submission, Team } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThan } from 'typeorm';
 import { ScoreboardService } from '../services';
 import { Roles } from '../core/roles.decorator';
 import { AppGateway } from '../app.gateway';
+import { submissionInFreezeTime } from '../core/utils';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -77,8 +72,12 @@ export class ContestsController {
     await this.contestProblemsRepository.delete({
       contest: { id },
     });
-    await this.contestsRepository.save({ ...oldContest, ...contest });
-    this.socketService.pingForUpdates('contests');
+    contest = await this.contestsRepository.save({
+      ...oldContest,
+      ...contest,
+    });
+    await this.scoreboardService.refreshScoreForContest(contest);
+    this.socketService.pingForUpdates('contests', 'submissions');
   }
 
   @Patch(':id/refresh-scoreboard-cache')
@@ -115,14 +114,15 @@ export class ContestsController {
         order: { submitTime: 'DESC' },
       })
     ).map((submission) => {
-      if (submission.contest.verificationRequired) {
+      const inFreezeTime = submissionInFreezeTime(submission.contest)(
+        submission,
+      );
+      if (submission.contest.verificationRequired || inFreezeTime) {
         const judging = submission.judgings
           .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
           .shift();
         submission.judgings =
-          judging?.verified && !judgingInFreezeTime(submission.contest, judging)
-            ? [judging]
-            : [];
+          judging?.verified && !inFreezeTime ? [judging] : [];
       }
       return submission;
     });
@@ -163,20 +163,4 @@ export class ContestsController {
     );
     this.socketService.pingForUpdates('submissions');
   }
-}
-
-function judgingInFreezeTime(
-  { freezeTime, unfreezeTime, endTime }: Contest,
-  judging: Judging,
-): boolean {
-  freezeTime ??= endTime;
-  unfreezeTime ??= endTime;
-  const now = Date.now();
-  return (
-    freezeTime !== unfreezeTime &&
-    judging.startTime.getTime() >= freezeTime.getTime() &&
-    judging.startTime.getTime() < unfreezeTime.getTime() &&
-    now >= freezeTime.getTime() &&
-    now < unfreezeTime.getTime()
-  );
 }

@@ -1,5 +1,5 @@
 import { RootStore } from './RootStore';
-import { action, autorun, observable } from 'mobx';
+import { action, autorun, computed, observable } from 'mobx';
 import { Contest, ContestProblem, ScoreCache } from '../models';
 import http from '../utils/http-client';
 
@@ -61,4 +61,64 @@ export class PublicStore {
     if (this.currentContest)
       localStorage.setItem('currentContestId', this.currentContest.id.toString());
   };
+
+  @computed
+  get totalSubmissions(): number {
+    return this.scoreCaches.reduce<number>(
+      (acc, scoreCache) => acc + scoreCache.restrictedSubmissions + scoreCache.restrictedPending,
+      0,
+    );
+  }
+
+  @computed
+  get totalPendingSubmissions(): number {
+    return this.scoreCaches
+      .filter((scoreCache) => scoreCache.restrictedPending)
+      .reduce<number>((acc, scoreCache) => acc + scoreCache.restrictedPending, 0);
+  }
+
+  @computed
+  get totalWrongSubmissions(): number {
+    return this.totalSubmissions - this.totalPendingSubmissions - this.totalCorrectSubmissions;
+  }
+
+  @computed
+  get totalCorrectSubmissions(): number {
+    return this.scoreCaches.filter((scoreCache) => scoreCache.restrictedCorrect).length;
+  }
+
+  @computed
+  get isCurrentContestActive(): boolean {
+    return (
+      !!this.currentContest && Date.now() >= new Date(this.currentContest.activateTime).getTime()
+    );
+  }
+
+  @computed
+  get isCurrentContestStarted(): boolean {
+    return !!this.currentContest && Date.now() >= new Date(this.currentContest.startTime).getTime();
+  }
+
+  @computed
+  get isCurrentContestFrozen(): boolean {
+    return (
+      !!this.currentContest &&
+      Date.now() >=
+        new Date(this.currentContest.freezeTime ?? this.currentContest.endTime).getTime()
+    );
+  }
+
+  @computed
+  get isCurrentContestOver(): boolean {
+    return !!this.currentContest && Date.now() >= new Date(this.currentContest.endTime).getTime();
+  }
+
+  @computed
+  get isCurrentContestUnfrozen(): boolean {
+    return (
+      !!this.currentContest &&
+      Date.now() >=
+        new Date(this.currentContest.unfreezeTime ?? this.currentContest.endTime).getTime()
+    );
+  }
 }

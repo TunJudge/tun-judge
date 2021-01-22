@@ -135,4 +135,8 @@ export class SubmissionsService {
     await this.submissionsRepository.update({ id }, { valid });
     await this.scoreboardService.refreshScoreCache(contest, team, problem);
   }
+
+  async rejudge(id: number): Promise<void> {
+    await this.submissionsRepository.update({ id }, { judgeHost: null });
+  }
 }

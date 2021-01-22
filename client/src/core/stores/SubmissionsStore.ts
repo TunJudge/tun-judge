@@ -55,6 +55,10 @@ export class SubmissionsStore {
     await http.patch(`api/submissions/${id}/un-claim`);
   };
 
+  rejudge = async (id: number): Promise<void> => {
+    await http.patch(`api/submissions/${id}/rejudge`);
+  };
+
   ignore = async (id: number): Promise<void> => {
     await http.patch(`api/submissions/${id}/ignore`);
   };

@@ -109,7 +109,7 @@ export class JudgeHostsController {
       oldJudging.submission.team,
       oldJudging.submission.problem,
     );
-    this.socketService.pingForUpdates('judgeRuns');
+    this.socketService.pingForUpdates('judgeRuns', 'submissions');
   }
 
   @Post(':hostname/add-judging-run/:id')

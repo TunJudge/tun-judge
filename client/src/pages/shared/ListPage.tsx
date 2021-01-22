@@ -168,7 +168,7 @@ function ListPage<T extends { id: number | string }>({
         <Table.Body>
           {sortState.data.length === 0 ? (
             <Table.Row textAlign="center">
-              <Table.Cell colSpan="10">{emptyMessage ?? 'No data'}</Table.Cell>
+              <Table.Cell colSpan="20">{emptyMessage ?? 'No data'}</Table.Cell>
             </Table.Row>
           ) : (
             sortState.data.map((item) => (

@@ -8,7 +8,7 @@ import { MD5 } from 'crypto-js';
 import { DropdownItemProps } from 'semantic-ui-react/dist/commonjs/modules/Dropdown/DropdownItem';
 
 export type FormErrors<T> = Partial<Record<keyof T, boolean>>;
-export const MOMENT_DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+export const MOMENT_DEFAULT_FORMAT = 'DD-MM-YYYY HH:mm:ss';
 
 type ExtendedFieldProps<T> = {
   entity: Partial<T>;
@@ -30,6 +30,7 @@ type DateTimeFieldProps<T> = ExtendedFieldProps<T> & {
   minDate?: Date;
   maxDate?: Date;
   disabled?: boolean;
+  clearable?: boolean;
 };
 
 export function DateTimeField<T>({
@@ -38,6 +39,7 @@ export function DateTimeField<T>({
   label,
   placeHolder,
   required,
+  clearable,
   minDate,
   maxDate,
   disabled,
@@ -49,16 +51,19 @@ export function DateTimeField<T>({
     <DateTimeInput
       closable
       required={required}
+      clearable={clearable}
       name={field}
       label={label}
       placeholder={placeHolder ?? label}
       dateFormat={MOMENT_DEFAULT_FORMAT}
       value={entity[field] ? moment(entity[field]).format(MOMENT_DEFAULT_FORMAT) : ''}
-      minDate={minDate}
-      maxDate={maxDate}
+      minDate={minDate && new Date(minDate)}
+      maxDate={maxDate && new Date(maxDate)}
       disabled={disabled}
       onChange={(_, { value }) => {
-        entity[field] = moment(value, MOMENT_DEFAULT_FORMAT).toDate() as any;
+        entity[field] = isEmpty(value)
+          ? null
+          : (moment(value, MOMENT_DEFAULT_FORMAT).toDate() as any);
         setErrors && setErrors({ ...errors, [field]: false });
         onChange && onChange();
       }}

@@ -70,7 +70,12 @@ const SubmissionsList: React.FC = observer(() => {
           .slice()
           .sort(dateComparator<Judging>('startTime', true))
           .shift();
-        if (!judging || !judging.result || !judging.verified) return '#fff9c2';
+        if (
+          !judging ||
+          !judging.result ||
+          (currentContest!.verificationRequired && !judging.verified)
+        )
+          return '#fff9c2';
         return judging.result == 'AC' ? '#B3FFC2' : '#FFC2C2';
       }}
     />

@@ -7,7 +7,7 @@ import { rootStore } from '../../core/stores/RootStore';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
 import SubmitForm from './views/SubmitForm';
 import { Submission } from '../../core/models';
-import { contestNotOver } from '../../core/helpers';
+import { contestStartedAndNotOver } from '../../core/helpers';
 
 const tabs: Tabs = [
   {
@@ -59,7 +59,7 @@ const TeamNavbar: React.FC = observer(() => {
           </Menu.Item>
         ))}
         <Menu.Menu position="right">
-          {contestNotOver(currentContest) && (
+          {contestStartedAndNotOver(currentContest) && (
             <Menu.Item
               className="cursor-pointer"
               style={{ backgroundColor: '#21ba45' }}

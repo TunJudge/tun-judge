@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Card, Container, Icon, Image } from 'semantic-ui-react';
+import { Button, Card, Container, Header, Icon, Image, Segment } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { rootStore } from '../../core/stores/RootStore';
 import { ContestProblem, Problem, ScoreCache, Submission } from '../../core/models';
 import SubmitForm from '../team/views/SubmitForm';
 import PDFModalViewer from './PDFModalViewer';
-import { contestNotOver, dateComparator, formatBytes } from '../../core/helpers';
+import { contestStartedAndNotOver, dateComparator, formatBytes } from '../../core/helpers';
 import ListPage, { ListPageTableColumn } from './ListPage';
 
 const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => {
@@ -47,7 +47,9 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
         );
       },
     },
-    {
+  ];
+  if (contestStartedAndNotOver(currentContest)) {
+    columns.push({
       header: '',
       field: 'shortName',
       width: '1',
@@ -55,8 +57,8 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
       className: 'cursor-pointer',
       onClick: ({ problem }) => setSubmission({ problem } as Submission),
       render: () => <Icon color="green" name="upload" />,
-    },
-  ];
+    });
+  }
 
   const getScoreCache = (problem: Problem): ScoreCache | undefined =>
     scoreCaches.find((sc) => sc.team.id === profile?.team?.id && sc.problem.id === problem.id);
@@ -80,6 +82,12 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           columns={columns}
           rowBackgroundColor={getProblemColor}
         />
+      ) : !currentContest ? (
+        <Container textAlign="center" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+          <Segment>
+            <Header size="huge">{'No Active Contest'}</Header>
+          </Segment>
+        </Container>
       ) : (
         <Container>
           <h1 style={{ marginTop: '1rem', marginBottom: '3rem', textAlign: 'center' }}>
@@ -108,7 +116,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
                 </Card.Content>
                 <Card.Content extra>
                   <Button.Group fluid widths="8">
-                    {profile?.team && contestNotOver(currentContest) && (
+                    {profile?.team && contestStartedAndNotOver(currentContest) && (
                       <Button
                         basic
                         color="green"

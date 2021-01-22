@@ -3,6 +3,9 @@ import { rootStore } from '../../core/stores/RootStore';
 import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { formatRestTime, getContestTimeProgress } from '../../core/helpers';
+import { Contest } from '../../core/models';
+
+let interval: NodeJS.Timeout | undefined = undefined;
 
 const progressBarStyle: CSSProperties = {
   position: 'absolute',
@@ -13,13 +16,27 @@ const progressBarStyle: CSSProperties = {
 const ActiveContestSelector: React.FC = observer(() => {
   const [contestTimeProgress, setContestTimeProgress] = useState<number>(0);
   const [restTime, setRestTime] = useState<number>(0);
+  const [contestStarted, setContestStarted] = useState<boolean>(false);
   const { setCurrentContest, contests, currentContest } = rootStore.publicStore;
+
+  const updateRestTime = (contest: Contest): void => {
+    const startTime = new Date(contest.startTime).getTime();
+    const endTime = new Date(contest.endTime).getTime();
+    const now = Date.now();
+    setContestStarted(now >= startTime);
+    setRestTime((now < startTime ? startTime - now : endTime - now) / 1000);
+    setContestTimeProgress(getContestTimeProgress(contest));
+  };
 
   useEffect(() => {
     if (currentContest) {
-      setRestTime((new Date(currentContest.endTime).getTime() - Date.now()) / 1000);
-      setContestTimeProgress(getContestTimeProgress(currentContest));
+      updateRestTime(currentContest);
+      interval && clearInterval(interval);
+      interval = setInterval(() => updateRestTime(currentContest), 1000);
     }
+    return () => {
+      interval && clearInterval(interval);
+    };
   }, [currentContest]);
 
   return (
@@ -44,7 +61,10 @@ const ActiveContestSelector: React.FC = observer(() => {
             }}
           />
           <Icon name="clock" />
-          <div style={{ zIndex: 1 }}>{formatRestTime(restTime)}</div>
+          <div style={{ zIndex: 1 }}>
+            {!contestStarted && '- '}
+            {formatRestTime(restTime)}
+          </div>
         </Menu.Item>
       )}
     </>

@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Contest,
-  Judging,
-  Problem,
-  ScoreCache,
-  Submission,
-  Team,
-} from '../entities';
+import { Contest, Problem, ScoreCache, Submission, Team } from '../entities';
 import { ExtendedRepository } from '../core/extended-repository';
 import { LessThanOrEqual } from 'typeorm';
 import { AppGateway } from '../app.gateway';
+import {
+  submissionHasResult,
+  submissionInFreezeTime,
+  submissionIsPending,
+} from '../core/utils';
 
 @Injectable()
 export class ScoreboardService {
@@ -129,54 +127,5 @@ export class ScoreboardService {
       }
     }
     this.socketService.pingForUpdates('scoreboard');
-  };
-}
-
-function getFirstJudging(submission: Submission): Judging | undefined {
-  const judgings = submission.judgings.sort(
-    (a, b) => b.startTime.getTime() - a.startTime.getTime(),
-  );
-  return judgings.length ? judgings[0] : undefined;
-}
-
-function submissionHasResult(
-  { verificationRequired }: Contest,
-  result: 'AC' | 'CE',
-  inverse = false,
-): (submission: Submission) => boolean {
-  return (submission) => {
-    const judging = getFirstJudging(submission);
-    const answer =
-      judging?.result === result &&
-      !(verificationRequired && !judging.verified);
-    return inverse ? !answer : answer;
-  };
-}
-
-function submissionIsPending({
-  verificationRequired,
-}: Contest): (submission: Submission) => boolean {
-  return (submission) => {
-    const judging = getFirstJudging(submission);
-    return !judging?.result || (verificationRequired && !judging.verified);
-  };
-}
-
-function submissionInFreezeTime({
-  freezeTime,
-  unfreezeTime,
-  endTime,
-}: Contest): (submission: Submission) => boolean {
-  return (submission) => {
-    freezeTime ??= endTime;
-    unfreezeTime ??= endTime;
-    const now = Date.now();
-    return (
-      freezeTime !== unfreezeTime &&
-      submission.submitTime.getTime() >= freezeTime.getTime() &&
-      submission.submitTime.getTime() < unfreezeTime.getTime() &&
-      now >= freezeTime.getTime() &&
-      now < unfreezeTime.getTime()
-    );
   };
 }

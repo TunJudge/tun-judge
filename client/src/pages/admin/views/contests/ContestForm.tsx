@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Icon, Label, Modal, Table } from 'semantic-ui-react';
 import { Contest, ContestProblem } from '../../../../core/models';
-import { isEmpty } from '../../../../core/helpers';
+import { getRandomHexColor, isEmpty } from '../../../../core/helpers';
 import {
   CheckBoxField,
   DateTimeField,
@@ -99,6 +99,7 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               entity={contest}
               field="freezeTime"
               label="Freeze Time"
+              clearable
               disabled={!contest.startTime}
               minDate={contest.startTime}
               maxDate={contest.endTime}
@@ -109,6 +110,7 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               entity={contest}
               field="unfreezeTime"
               label="Unfreeze Time"
+              clearable
               disabled={!contest.freezeTime}
               minDate={contest.freezeTime}
               errors={errors}
@@ -118,6 +120,7 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
               entity={contest}
               field="finalizeTime"
               label="Finalize Time"
+              clearable
               disabled={!contest.endTime}
               minDate={contest.endTime}
               errors={errors}
@@ -264,7 +267,12 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
                   textAlign="center"
                   className="cursor-pointer"
                   style={{ background: '#F9FAFB' }}
-                  onClick={() => (contest.problems = [...contest.problems, {} as ContestProblem])}
+                  onClick={() =>
+                    (contest.problems = [
+                      ...contest.problems,
+                      { color: getRandomHexColor() } as ContestProblem,
+                    ])
+                  }
                 >
                   <Icon name="plus" />
                 </Table.Cell>

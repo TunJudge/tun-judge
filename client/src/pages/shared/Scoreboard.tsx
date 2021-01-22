@@ -102,7 +102,11 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
   }, [scoreCaches, isUserJury]);
 
   return !currentContest ? (
-    <>No Active Contest</>
+    <Container textAlign="center" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+      <Segment>
+        <Header size="huge">{'No Active Contest'}</Header>
+      </Segment>
+    </Container>
   ) : (
     <Container
       className="scoreboard"

@@ -39,24 +39,42 @@ export class PublicController {
           { where: { id: session.passport?.user.id }, relations: ['team'] },
           new NotFoundException(),
         );
-        return contests.filter((contest) =>
-          contest.teams.some((team) => team.id === user.team.id),
-        );
+        return contests
+          .filter((contest) =>
+            contest.teams.some((team) => team.id === user.team.id),
+          )
+          .map(this.cleanProblems);
       case 'jury':
       case 'admin':
         return contests;
       default:
-        return contests.filter((contest) => contest.public);
+        return contests
+          .filter((contest) => contest.public)
+          .map(this.cleanProblems);
     }
   }
 
+  cleanProblems(contest: Contest): Contest {
+    if (Date.now() < contest.startTime.getTime()) contest.problems = [];
+    return contest;
+  }
+
   @Get('contest/:id/problems')
-  getProblems(@Param('id') contestId: number): Promise<ContestProblem[]> {
-    return this.contestProblemsRepository.find({
-      order: { shortName: 'ASC' },
-      where: { contest: { id: contestId } },
-      relations: ['problem', 'problem.file', 'problem.file.content'],
+  async getProblems(@Param('id') contestId: number): Promise<ContestProblem[]> {
+    const contest = await this.contestsRepository.findOne({
+      where: {
+        id: contestId,
+        enabled: true,
+        startTime: LessThanOrEqual(new Date()),
+      },
     });
+    return !contest
+      ? []
+      : this.contestProblemsRepository.find({
+          order: { shortName: 'ASC' },
+          where: { contest: { id: contestId } },
+          relations: ['problem', 'problem.file', 'problem.file.content'],
+        });
   }
 
   @Get('contest/:id/score-caches')
