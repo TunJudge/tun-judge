@@ -78,5 +78,5 @@ node("main") {
 }
 
 def runInDocker(imageTag, command) {
-    sh "docker run -it --rm -v $PWD:/app -w /app ${imageTag} ${command}"
+    sh "docker run --rm -v ${env.WORKSPACE}:/app -w /app ${imageTag} ${command}"
 }
