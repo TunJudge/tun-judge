@@ -1,19 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { ScheduleModule } from '@nestjs/schedule';
 import { APP_GUARD } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import {
-  AppService,
-  JudgingsService,
-  ScoreboardService,
-  SubmissionsService,
-} from './services';
-import { entities } from './entities';
+import { AppGateway } from './app.gateway';
 import { AuthModule } from './auth/auth.module';
-import { CustomRepositoryProviders } from './core/extended-repository';
 import {
   AppController,
   ContestsController,
@@ -30,8 +23,15 @@ import {
   UsersController,
 } from './controllers';
 import config from './core/config';
+import { CustomRepositoryProviders } from './core/extended-repository';
 import { RolesGuard } from './core/guards';
-import { AppGateway } from './app.gateway';
+import { entities } from './entities';
+import {
+  AppService,
+  JudgingsService,
+  ScoreboardService,
+  SubmissionsService,
+} from './services';
 
 const CONTROLLERS = [
   AppController,

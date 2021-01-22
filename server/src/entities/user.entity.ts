@@ -1,3 +1,4 @@
+import { compareSync } from 'bcrypt';
 import {
   Column,
   Entity,
@@ -5,9 +6,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { compareSync } from 'bcrypt';
-import { Team } from './team.entity';
 import { Role } from './role.entity';
+import { Team } from './team.entity';
 
 @Entity()
 export class User {

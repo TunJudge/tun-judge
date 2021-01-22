@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import AdminSideBar from './AdminSidebar';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import Scoreboard from '../shared/Scoreboard';
 import AdminNavbar from './AdminNavbar';
-import UsersList from './views/users/UsersList';
-import TeamsList from './views/teams/TeamsList';
-import ProblemView from './views/problems/ProblemView';
+import AdminSideBar from './AdminSidebar';
 import ContestsList from './views/contests/ContestsList';
-import ProblemsList from './views/problems/ProblemsList';
-import LanguagesList from './views/languages/LanguagesList';
-import JudgeHostsList from './views/judge-hosts/JudgeHostsList';
+import Dashboard from './views/Dashboard';
 import ExecutablesList from './views/executables/ExecutablesList';
-import TeamCategoriesList from './views/team-category/TeamCategoriesList';
+import JudgeHostsList from './views/judge-hosts/JudgeHostsList';
+import LanguagesList from './views/languages/LanguagesList';
+import ProblemsList from './views/problems/ProblemsList';
+import ProblemView from './views/problems/ProblemView';
 import SubmissionsList from './views/submissions/SubmissionsList';
 import SubmissionsView from './views/submissions/SubmissionView';
-import Dashboard from './views/Dashboard';
+import TeamCategoriesList from './views/team-category/TeamCategoriesList';
+import TeamsList from './views/teams/TeamsList';
+import UsersList from './views/users/UsersList';
 
 const AdminLayout: React.FC = () => {
   const [sidebarVisible, toggleSidebar] = useState<boolean>(true);

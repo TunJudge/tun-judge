@@ -1,9 +1,9 @@
-import React from 'react';
 import { observer } from 'mobx-react';
-import { Container, Header, Icon, Segment, Statistic, Step } from 'semantic-ui-react';
-import { rootStore } from '../../../core/stores/RootStore';
-import { Contest } from '../../../core/models';
 import moment from 'moment';
+import React from 'react';
+import { Container, Header, Icon, Segment, Statistic, Step } from 'semantic-ui-react';
+import { Contest } from '../../../core/models';
+import { rootStore } from '../../../core/stores/RootStore';
 import { MOMENT_DEFAULT_FORMAT } from '../../shared/extended-form';
 
 const Dashboard: React.FC = observer(() => {

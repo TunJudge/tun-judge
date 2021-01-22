@@ -1,9 +1,9 @@
-import submissionHelper from './submission-helper';
-import { RunnerStep } from './runner-step';
-import { Initializer } from './initializer';
+import { Judging } from '../models';
 import { Compiler } from './compiler';
 import { Executor } from './executor';
-import { Judging } from '../models';
+import { Initializer } from './initializer';
+import { RunnerStep } from './runner-step';
+import submissionHelper from './submission-helper';
 
 /**
  * The Runner is the chain of all the steps to run the submission.

@@ -1,6 +1,6 @@
-import { User } from './user.model';
-import { TeamCategory } from './team-category.model';
 import { Contest } from './contest.model';
+import { TeamCategory } from './team-category.model';
+import { User } from './user.model';
 
 export interface Team {
   id: number;

@@ -1,12 +1,12 @@
+import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Button, Card, Container, Header, Icon, Image, Segment } from 'semantic-ui-react';
-import { observer } from 'mobx-react';
-import { rootStore } from '../../core/stores/RootStore';
-import { ContestProblem, Problem, ScoreCache, Submission } from '../../core/models';
-import SubmitForm from '../team/views/SubmitForm';
-import PDFModalViewer from './PDFModalViewer';
 import { contestStartedAndNotOver, dateComparator, formatBytes } from '../../core/helpers';
+import { ContestProblem, Problem, ScoreCache, Submission } from '../../core/models';
+import { rootStore } from '../../core/stores/RootStore';
+import SubmitForm from '../team/views/SubmitForm';
 import ListPage, { ListPageTableColumn } from './ListPage';
+import PDFModalViewer from './PDFModalViewer';
 
 const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => {
   const [submission, setSubmission] = useState<Submission | undefined>(undefined);

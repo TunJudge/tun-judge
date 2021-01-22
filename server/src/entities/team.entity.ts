@@ -8,9 +8,9 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
-import { TeamCategory } from './team-category.entity';
 import { Contest } from './contest.entity';
+import { TeamCategory } from './team-category.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Team {

@@ -1,7 +1,7 @@
-import { RootStore } from './RootStore';
 import { action, observable } from 'mobx';
 import { JudgeHost } from '../models';
 import http from '../utils/http-client';
+import { RootStore } from './RootStore';
 
 export class JudgeHostsStore {
   @observable data: JudgeHost[] = [];

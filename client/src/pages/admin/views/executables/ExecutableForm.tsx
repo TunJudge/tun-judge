@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { Executable } from '../../../../core/models';
 import { isEmpty } from '../../../../core/helpers';
+import { Executable } from '../../../../core/models';
 import {
   CheckBoxField,
   DropdownField,

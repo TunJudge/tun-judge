@@ -1,6 +1,6 @@
-import React, { CSSProperties, ReactElement, useEffect, useState } from 'react';
-import { Button, Header, Icon, Menu, Segment, Table, SemanticWIDTHS } from 'semantic-ui-react';
 import cn from 'classnames';
+import React, { CSSProperties, ReactElement, useEffect, useState } from 'react';
+import { Button, Header, Icon, Menu, Segment, SemanticWIDTHS, Table } from 'semantic-ui-react';
 import { generalComparator } from '../../core/helpers';
 
 export type ListPageTableColumn<T> = {

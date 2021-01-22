@@ -1,16 +1,15 @@
-import { chmodSync, existsSync, promises as fs } from 'fs';
-import { clearLine, cursorTo } from 'readline';
-import { join } from 'path';
 import { MD5 } from 'crypto-js';
-
-import { AbstractRunnerStep } from './runner-step';
+import { chmodSync, existsSync, promises as fs } from 'fs';
+import { join } from 'path';
+import { clearLine, cursorTo } from 'readline';
+import http from '../http/http.client';
 import { Judging, Testcase } from '../models';
-import sh from './submission-helper';
+import { JudgingRun } from '../models/judging-run.model';
 import dockerService from '../services/docker.service';
 import { JudgeLogger } from '../services/judge.logger';
-import http from '../http/http.client';
-import { JudgingRun } from '../models/judging-run.model';
 import { startSpinner, stopSpinner } from '../utils';
+import { AbstractRunnerStep } from './runner-step';
+import sh from './submission-helper';
 
 type GuardOutput = {
   usedTime: number;

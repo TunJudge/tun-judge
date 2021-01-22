@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Container, Icon, Menu } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
+import { Container, Icon, Menu } from 'semantic-ui-react';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
 
 type Tabs = '' | 'problems';

@@ -10,10 +10,6 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint/eslint-plugin'],
-  parserOptions: {
-    project: 'tsconfig.json',
-    sourceType: 'module',
-  },
   ignorePatterns: ['/node_modules/**', '/build/**'],
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',

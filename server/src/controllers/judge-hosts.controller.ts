@@ -10,13 +10,13 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthenticatedGuard } from '../core/guards';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JudgeHost, Judging, JudgingRun, Submission, User } from '../entities';
-import { ExtendedRepository } from '../core/extended-repository';
-import { ScoreboardService } from '../services';
-import { Roles } from '../core/roles.decorator';
 import { AppGateway } from '../app.gateway';
+import { ExtendedRepository } from '../core/extended-repository';
+import { AuthenticatedGuard } from '../core/guards';
+import { Roles } from '../core/roles.decorator';
+import { JudgeHost, Judging, JudgingRun, Submission, User } from '../entities';
+import { ScoreboardService } from '../services';
 
 @Controller('judge-hosts')
 @UseGuards(AuthenticatedGuard)

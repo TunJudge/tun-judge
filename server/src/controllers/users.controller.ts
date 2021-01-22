@@ -11,12 +11,12 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { AuthenticatedGuard } from '../core/guards';
-import { ExtendedRepository } from '../core/extended-repository';
-import { User } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { genSalt, hash } from 'bcrypt';
+import { ExtendedRepository } from '../core/extended-repository';
+import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
+import { User } from '../entities';
 
 @Controller('users')
 @UseGuards(AuthenticatedGuard)

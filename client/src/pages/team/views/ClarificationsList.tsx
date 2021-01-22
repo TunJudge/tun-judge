@@ -1,5 +1,5 @@
-import React from 'react';
 import { observer } from 'mobx-react';
+import React from 'react';
 import ListPage from '../../shared/ListPage';
 
 const ClarificationsList: React.FC = observer(() => {

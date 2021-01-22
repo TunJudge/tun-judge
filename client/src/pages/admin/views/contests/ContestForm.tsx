@@ -1,7 +1,9 @@
+import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Icon, Label, Modal, Table } from 'semantic-ui-react';
-import { Contest, ContestProblem } from '../../../../core/models';
 import { getRandomHexColor, isEmpty } from '../../../../core/helpers';
+import { Contest, ContestProblem } from '../../../../core/models';
+import { rootStore } from '../../../../core/stores/RootStore';
 import {
   CheckBoxField,
   DateTimeField,
@@ -9,8 +11,6 @@ import {
   NumberField,
   TextField,
 } from '../../../shared/extended-form';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { observer } from 'mobx-react';
 
 type ContestFormProps = {
   item: Contest;

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role, User } from '../entities';
-import { ExtendedRepository } from '../core/extended-repository';
 import { genSalt, hash } from 'bcrypt';
 import { AppGateway } from '../app.gateway';
+import { ExtendedRepository } from '../core/extended-repository';
+import { Role, User } from '../entities';
 
 const roles: Partial<Role>[] = [
   {

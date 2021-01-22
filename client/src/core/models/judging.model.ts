@@ -1,9 +1,9 @@
-import { File } from './file.model';
-import { Submission } from './submission.model';
-import { JudgeHost } from './judge-host.model';
 import { Contest } from './contest.model';
-import { User } from './user.model';
+import { File } from './file.model';
+import { JudgeHost } from './judge-host.model';
 import { JudgingRun } from './judging-run.model';
+import { Submission } from './submission.model';
+import { User } from './user.model';
 
 export interface Judging {
   id: number;

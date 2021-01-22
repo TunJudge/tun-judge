@@ -1,15 +1,15 @@
+import { observer } from 'mobx-react';
 import React from 'react';
 import { BrowserRouter, Redirect, Route, RouteProps, Switch } from 'react-router-dom';
 import { SemanticToastContainer } from 'react-semantic-toasts';
-import Login from './pages/shared/Login';
-import TeamLayout from './pages/team/TeamLayout';
+import { Role } from './core/models';
+import { rootStore } from './core/stores/RootStore';
 import AdminLayout from './pages/admin/AdminLayout';
 import PublicLayout from './pages/public/PublicLayout';
-import { rootStore } from './core/stores/RootStore';
-import { observer } from 'mobx-react';
-import { Role } from './core/models';
-import Spinner from './pages/shared/Spinner';
+import Login from './pages/shared/Login';
 import Logout from './pages/shared/Logout';
+import Spinner from './pages/shared/Spinner';
+import TeamLayout from './pages/team/TeamLayout';
 
 function getLayout(role: Role): React.FC {
   if (role.name === 'admin') return AdminLayout;

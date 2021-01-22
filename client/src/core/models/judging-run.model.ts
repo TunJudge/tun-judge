@@ -1,6 +1,6 @@
+import { File } from './file.model';
 import { Judging } from './judging.model';
 import { Testcase } from './testcase.model';
-import { File } from './file.model';
 
 export interface JudgingRun {
   id: number;

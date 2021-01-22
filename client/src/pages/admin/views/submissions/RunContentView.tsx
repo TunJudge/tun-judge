@@ -1,6 +1,6 @@
+import { observer } from 'mobx-react';
 import React from 'react';
 import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
-import { observer } from 'mobx-react';
 import { JudgingRun } from '../../../../core/models/judging-run.model';
 import { rootStore } from '../../../../core/stores/RootStore';
 

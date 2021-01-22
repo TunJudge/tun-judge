@@ -8,11 +8,11 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Contest } from './contest.entity';
-import { Submission } from './submission.entity';
-import { JudgeHost } from './judge-host.entity';
-import { User } from './user.entity';
 import { File } from './file.entity';
+import { JudgeHost } from './judge-host.entity';
 import { JudgingRun } from './judging-run.entity';
+import { Submission } from './submission.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Judging {

@@ -9,12 +9,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Contest } from './contest.entity';
-import { Team } from './team.entity';
-import { Problem } from './problem.entity';
-import { Language } from './language.entity';
-import { JudgeHost } from './judge-host.entity';
 import { File } from './file.entity';
+import { JudgeHost } from './judge-host.entity';
 import { Judging } from './judging.entity';
+import { Language } from './language.entity';
+import { Problem } from './problem.entity';
+import { Team } from './team.entity';
 
 @Entity()
 @Index(['contest', 'team'])

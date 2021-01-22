@@ -12,15 +12,15 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { AuthenticatedGuard } from '../core/guards';
-import { ExtendedRepository } from '../core/extended-repository';
-import { Contest, ContestProblem, Submission, Team } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThan } from 'typeorm';
-import { ScoreboardService } from '../services';
-import { Roles } from '../core/roles.decorator';
 import { AppGateway } from '../app.gateway';
+import { ExtendedRepository } from '../core/extended-repository';
+import { AuthenticatedGuard } from '../core/guards';
+import { Roles } from '../core/roles.decorator';
 import { submissionInFreezeTime } from '../core/utils';
+import { Contest, ContestProblem, Submission, Team } from '../entities';
+import { ScoreboardService } from '../services';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)

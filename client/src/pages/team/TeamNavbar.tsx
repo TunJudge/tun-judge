@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
-import { useHistory } from 'react-router-dom';
-import { Tabs } from '../../core/types';
 import { observer } from 'mobx-react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
+import { contestStartedAndNotOver } from '../../core/helpers';
+import { Submission } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
+import { Tabs } from '../../core/types';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
 import SubmitForm from './views/SubmitForm';
-import { Submission } from '../../core/models';
-import { contestStartedAndNotOver } from '../../core/helpers';
 
 const tabs: Tabs = [
   {

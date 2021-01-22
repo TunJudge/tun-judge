@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { User } from '../../../../core/models';
 import { isEmpty } from '../../../../core/helpers';
-import { CheckBoxField, DropdownField, FormErrors, TextField } from '../../../shared/extended-form';
+import { User } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import { CheckBoxField, DropdownField, FormErrors, TextField } from '../../../shared/extended-form';
 
 type UserFormProps = {
   item: User;

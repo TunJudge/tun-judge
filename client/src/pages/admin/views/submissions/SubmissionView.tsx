@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { rootStore } from '../../../../core/stores/RootStore';
+import React, { useEffect, useState } from 'react';
 import { RouteChildrenProps, useHistory } from 'react-router-dom';
-import Spinner from '../../../shared/Spinner';
 import { Button, Header, Icon, Menu, Segment, Table } from 'semantic-ui-react';
-import { Judging, Testcase } from '../../../../core/models';
-import { languageMap, resultMap } from '../../../../core/types';
 import {
   dateComparator,
   formatBytes,
   formatRestTime,
   isSubmissionClaimedByMe,
 } from '../../../../core/helpers';
-import CodeEditor from '../../../shared/CodeEditor';
-import TestcaseContentView from '../problems/testcases/TestcaseContentView';
+import { Judging, Testcase } from '../../../../core/models';
 import { JudgingRun } from '../../../../core/models/judging-run.model';
+import { rootStore } from '../../../../core/stores/RootStore';
+import { languageMap, resultMap } from '../../../../core/types';
+import CodeEditor from '../../../shared/CodeEditor';
+import Spinner from '../../../shared/Spinner';
+import TestcaseContentView from '../problems/testcases/TestcaseContentView';
 import RunContentView from './RunContentView';
 
 const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {

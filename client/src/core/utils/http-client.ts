@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, Method } from 'axios';
-import { rootStore } from '../stores/RootStore';
 import { toast } from 'react-semantic-toasts';
+import { rootStore } from '../stores/RootStore';
 
 const hostname = process && process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
 

@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { Judging, Submission, Testcase } from '../../../../core/models';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
-import { dateComparator, formatRestTime, isEmpty } from '../../../../core/helpers';
-import { Button, Form, Icon, Menu, Segment, Table } from 'semantic-ui-react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { resultMap } from '../../../../core/types';
+import { Button, Form, Icon, Menu, Segment, Table } from 'semantic-ui-react';
+import { dateComparator, formatRestTime, isEmpty } from '../../../../core/helpers';
+import { Judging, Submission, Testcase } from '../../../../core/models';
+import { rootStore } from '../../../../core/stores/RootStore';
 import { Filters } from '../../../../core/stores/SubmissionsStore';
+import { resultMap } from '../../../../core/types';
+import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 
 const SubmissionsList: React.FC = observer(() => {
   const history = useHistory();

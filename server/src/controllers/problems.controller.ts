@@ -10,11 +10,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthenticatedGuard } from '../core/guards';
-import { ExtendedRepository } from '../core/extended-repository';
-import { Problem, Submission } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ExtendedRepository } from '../core/extended-repository';
+import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
+import { Problem, Submission } from '../entities';
 
 @Controller('problems')
 @UseGuards(AuthenticatedGuard)

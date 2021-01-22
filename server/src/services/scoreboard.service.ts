@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Contest, Problem, ScoreCache, Submission, Team } from '../entities';
-import { ExtendedRepository } from '../core/extended-repository';
 import { LessThanOrEqual } from 'typeorm';
 import { AppGateway } from '../app.gateway';
+import { ExtendedRepository } from '../core/extended-repository';
 import {
   submissionHasResult,
   submissionInFreezeTime,
   submissionIsPending,
 } from '../core/utils';
+import { Contest, Problem, ScoreCache, Submission, Team } from '../entities';
 
 @Injectable()
 export class ScoreboardService {

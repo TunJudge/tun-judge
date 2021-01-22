@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { RouteChildrenProps } from 'react-router-dom';
-import ResizeDetector from 'react-resize-detector';
 import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
+import ResizeDetector from 'react-resize-detector';
+import { RouteChildrenProps } from 'react-router-dom';
+import { Button, Grid, Header, Menu, Segment, Table } from 'semantic-ui-react';
+import { Problem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import Spinner from '../../../shared/Spinner';
-import { Button, Grid, Header, Menu, Segment, Table } from 'semantic-ui-react';
 import TestcasesList from './testcases/TestcasesList';
-import { Problem } from '../../../../core/models';
 
 const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {
   const [rowHeight, setRowHeight] = useState<number>(window.innerHeight - 84);

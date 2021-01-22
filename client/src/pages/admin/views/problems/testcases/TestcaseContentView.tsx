@@ -1,8 +1,8 @@
-import React from 'react';
-import { Testcase } from '../../../../../core/models';
-import { Button, Modal } from 'semantic-ui-react';
-import { rootStore } from '../../../../../core/stores/RootStore';
 import { observer } from 'mobx-react';
+import React from 'react';
+import { Button, Modal } from 'semantic-ui-react';
+import { Testcase } from '../../../../../core/models';
+import { rootStore } from '../../../../../core/stores/RootStore';
 
 const TestcaseContentView: React.FC<{
   testcase: Testcase;

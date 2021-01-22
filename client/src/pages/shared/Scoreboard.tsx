@@ -1,9 +1,8 @@
+import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Button, Container, Grid, Header, Icon, Segment } from 'semantic-ui-react';
-import { rootStore } from '../../core/stores/RootStore';
-import { observer } from 'mobx-react';
 import { formatRestTime } from '../../core/helpers';
-
+import { rootStore } from '../../core/stores/RootStore';
 import './Scoreboard.scss';
 
 type TeamProblemScore = {

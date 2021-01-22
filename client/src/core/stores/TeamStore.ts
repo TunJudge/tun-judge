@@ -1,7 +1,7 @@
-import { RootStore } from './RootStore';
 import { action, autorun, observable } from 'mobx';
 import { Submission } from '../models';
 import http from '../utils/http-client';
+import { RootStore } from './RootStore';
 
 export class TeamStore {
   @observable submissions: Submission[] = [];

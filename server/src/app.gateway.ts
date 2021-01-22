@@ -1,3 +1,4 @@
+import { InjectRepository } from '@nestjs/typeorm';
 import {
   MessageBody,
   SubscribeMessage,
@@ -5,9 +6,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Team } from './entities';
 import { ExtendedRepository } from './core/extended-repository';
+import { Team } from './entities';
 
 type UpdateEvents =
   | 'contests'

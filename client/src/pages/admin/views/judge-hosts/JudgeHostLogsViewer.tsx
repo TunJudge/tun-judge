@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import Ansi from 'ansi-to-react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, Segment } from 'semantic-ui-react';
 import { rootStore } from '../../../../core/stores/RootStore';
 

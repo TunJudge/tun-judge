@@ -5,10 +5,10 @@ import {
   Param,
   Session,
 } from '@nestjs/common';
-import { ExtendedRepository } from '../core/extended-repository';
-import { Contest, ContestProblem, ScoreCache, User } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual } from 'typeorm';
+import { ExtendedRepository } from '../core/extended-repository';
+import { Contest, ContestProblem, ScoreCache, User } from '../entities';
 
 @Controller('public')
 export class PublicController {

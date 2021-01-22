@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Icon, Menu, Sidebar } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
+import { Icon, Menu, Sidebar } from 'semantic-ui-react';
 import { Tabs } from '../../core/types';
 
 const tabs: Tabs = [

@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { ContestProblem } from './contest-problem.entity';
 import { Executable } from './executable.entity';
-import { Testcase } from './testcase.entity';
 import { File } from './file.entity';
+import { Testcase } from './testcase.entity';
 
 @Entity()
 export class Problem {

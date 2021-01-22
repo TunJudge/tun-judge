@@ -8,8 +8,8 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { Problem } from './problem.entity';
 import { File } from './file.entity';
+import { Problem } from './problem.entity';
 
 @Entity()
 @Unique(['problem', 'rank'])

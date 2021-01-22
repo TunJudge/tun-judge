@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import TeamForm from './TeamForm';
+import React, { useEffect } from 'react';
 import { Team } from '../../../../core/models';
+import { rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import TeamForm from './TeamForm';
 
 const TeamsList: React.FC = observer(() => {
   const {

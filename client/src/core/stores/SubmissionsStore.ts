@@ -1,8 +1,8 @@
-import { RootStore } from './RootStore';
 import { action, observable } from 'mobx';
+import { isEmpty } from '../helpers';
 import { FileContent, Submission } from '../models';
 import http from '../utils/http-client';
-import { isEmpty } from '../helpers';
+import { RootStore } from './RootStore';
 
 export type Filters = {
   problems: number[];

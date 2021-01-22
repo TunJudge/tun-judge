@@ -1,11 +1,9 @@
-import config from './config';
-
-import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
-
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { JudgeLogger } from './services/judge.logger';
+import config from './config';
 import http from './http/http.client';
+import { JudgeLogger } from './services/judge.logger';
 
 async function bootstrap() {
   const logger = new JudgeLogger();

@@ -1,7 +1,7 @@
-import { RootStore } from './RootStore';
 import { action, observable } from 'mobx';
 import { Problem } from '../models';
 import http from '../utils/http-client';
+import { RootStore } from './RootStore';
 
 export class ProblemsStore {
   @observable data: Problem[] = [];

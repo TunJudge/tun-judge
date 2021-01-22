@@ -9,8 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthenticatedGuard } from '../core/guards';
+import { AppGateway } from '../app.gateway';
 import { ExtendedRepository } from '../core/extended-repository';
+import { AuthenticatedGuard } from '../core/guards';
+import { Roles } from '../core/roles.decorator';
 import {
   File,
   FileContent,
@@ -18,13 +20,11 @@ import {
   JudgingRun,
   Submission,
 } from '../entities';
-import { Roles } from '../core/roles.decorator';
 import {
   JudgingsService,
   ScoreboardService,
   SubmissionsService,
 } from '../services';
-import { AppGateway } from '../app.gateway';
 
 @Controller('submissions')
 @UseGuards(AuthenticatedGuard)

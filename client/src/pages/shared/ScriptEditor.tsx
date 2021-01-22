@@ -1,9 +1,9 @@
+import { MD5 } from 'crypto-js';
+import { observer } from 'mobx-react';
 import React from 'react';
 import { Button, Modal } from 'semantic-ui-react';
-import { observer } from 'mobx-react';
 import { File } from '../../core/models';
 import CodeEditor from './CodeEditor';
-import { MD5 } from 'crypto-js';
 
 const ScriptEditor: React.FC<{
   file: File;

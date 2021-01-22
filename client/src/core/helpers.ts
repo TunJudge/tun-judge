@@ -1,5 +1,5 @@
-import { Contest, Judging, User } from './models';
 import { useEffect } from 'react';
+import { Contest, Judging, User } from './models';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isEmpty(s: any): boolean {

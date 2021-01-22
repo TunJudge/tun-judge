@@ -1,7 +1,7 @@
-import { RootStore } from './RootStore';
 import { action, autorun, computed, observable } from 'mobx';
 import { Contest, ContestProblem, ScoreCache } from '../models';
 import http from '../utils/http-client';
+import { RootStore } from './RootStore';
 
 export class PublicStore {
   @observable problems: ContestProblem[] = [];

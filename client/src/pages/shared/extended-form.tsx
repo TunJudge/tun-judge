@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
-import moment from 'moment';
-import { Form, Icon, Label, SemanticWIDTHS } from 'semantic-ui-react';
-import { isEmpty } from '../../core/helpers';
-import { DateTimeInput } from 'semantic-ui-calendar-react';
-import { File } from '../../core/models';
 import { MD5 } from 'crypto-js';
+import moment from 'moment';
+import React, { useRef, useState } from 'react';
+import { DateTimeInput } from 'semantic-ui-calendar-react';
+import { Form, Icon, Label, SemanticWIDTHS } from 'semantic-ui-react';
 import { DropdownItemProps } from 'semantic-ui-react/dist/commonjs/modules/Dropdown/DropdownItem';
+import { isEmpty } from '../../core/helpers';
+import { File } from '../../core/models';
 
 export type FormErrors<T> = Partial<Record<keyof T, boolean>>;
 export const MOMENT_DEFAULT_FORMAT = 'DD-MM-YYYY HH:mm:ss';

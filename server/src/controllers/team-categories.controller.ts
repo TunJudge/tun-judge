@@ -10,12 +10,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthenticatedGuard } from '../core/guards';
-import { ExtendedRepository } from '../core/extended-repository';
-import { TeamCategory } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan } from 'typeorm';
+import { ExtendedRepository } from '../core/extended-repository';
+import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
+import { TeamCategory } from '../entities';
 
 @Controller('team-categories')
 @UseGuards(AuthenticatedGuard)

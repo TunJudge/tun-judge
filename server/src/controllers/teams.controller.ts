@@ -9,11 +9,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthenticatedGuard } from '../core/guards';
-import { ExtendedRepository } from '../core/extended-repository';
-import { Team } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ExtendedRepository } from '../core/extended-repository';
+import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
+import { Team } from '../entities';
 
 @Controller('teams')
 @UseGuards(AuthenticatedGuard)

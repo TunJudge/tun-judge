@@ -1,6 +1,6 @@
 import { Contest } from './contest.model';
-import { Team } from './team.model';
 import { Problem } from './problem.model';
+import { Team } from './team.model';
 
 export interface ScoreCache {
   contest: Contest;

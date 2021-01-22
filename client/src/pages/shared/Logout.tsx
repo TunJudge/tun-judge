@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { rootStore } from '../../core/stores/RootStore';
-import Spinner from './Spinner';
 import { useHistory } from 'react-router-dom';
+import { rootStore } from '../../core/stores/RootStore';
 import http from '../../core/utils/http-client';
+import Spinner from './Spinner';
 
 const Logout: React.FC = () => {
   const history = useHistory();

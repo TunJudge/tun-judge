@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import ExecutableForm from './ExecutableForm';
+import React, { useEffect, useState } from 'react';
 import { Executable, ExecutableType } from '../../../../core/models';
-import ScriptEditor from '../../../shared/ScriptEditor';
+import { rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import ScriptEditor from '../../../shared/ScriptEditor';
+import ExecutableForm from './ExecutableForm';
 
 const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', CHECKER: 'Checker' };
 

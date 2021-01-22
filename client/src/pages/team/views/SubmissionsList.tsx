@@ -1,10 +1,10 @@
-import React from 'react';
 import { observer } from 'mobx-react';
-import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
-import { rootStore } from '../../../core/stores/RootStore';
-import { Judging, Submission } from '../../../core/models';
+import React from 'react';
 import { dateComparator, formatRestTime } from '../../../core/helpers';
+import { Judging, Submission } from '../../../core/models';
+import { rootStore } from '../../../core/stores/RootStore';
 import { resultMap } from '../../../core/types';
+import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
 
 const SubmissionsList: React.FC = observer(() => {
   const {

@@ -1,8 +1,8 @@
 import { Logger } from '@nestjs/common';
 import * as Docker from 'dockerode';
 import { Container, ContainerCreateOptions } from 'dockerode';
-import { JudgeLogger } from './judge.logger';
 import sh, { workDir } from '../runner/submission-helper';
+import { JudgeLogger } from './judge.logger';
 
 export type ExecResult = {
   exitCode: number;

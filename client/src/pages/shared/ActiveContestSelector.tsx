@@ -1,9 +1,9 @@
-import React, { CSSProperties, useEffect, useState } from 'react';
-import { rootStore } from '../../core/stores/RootStore';
-import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { formatRestTime, getContestTimeProgress } from '../../core/helpers';
 import { Contest } from '../../core/models';
+import { rootStore } from '../../core/stores/RootStore';
 
 let interval: NodeJS.Timeout | undefined = undefined;
 

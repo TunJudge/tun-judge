@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities';
 import { ExtendedRepository } from '../core/extended-repository';
+import { User } from '../entities';
 
 @Injectable()
 export class AuthService {

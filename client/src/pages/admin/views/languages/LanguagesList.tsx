@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import LanguageForm from './LanguageForm';
+import React, { useEffect, useState } from 'react';
 import { Language } from '../../../../core/models';
-import ScriptEditor from '../../../shared/ScriptEditor';
+import { rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import ScriptEditor from '../../../shared/ScriptEditor';
+import LanguageForm from './LanguageForm';
 
 const LanguagesList: React.FC = observer(() => {
   const [scriptData, setScriptData] = useState<Language | undefined>();

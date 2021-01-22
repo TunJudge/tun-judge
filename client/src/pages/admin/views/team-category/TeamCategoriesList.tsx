@@ -1,10 +1,10 @@
+import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { Icon } from 'semantic-ui-react';
-import { observer } from 'mobx-react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import TeamCategoryForm from './TeamCategoryForm';
 import { TeamCategory } from '../../../../core/models';
+import { rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import TeamCategoryForm from './TeamCategoryForm';
 
 const TeamCategoriesList: React.FC = observer(() => {
   const {

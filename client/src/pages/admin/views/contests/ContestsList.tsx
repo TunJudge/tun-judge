@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { observer } from 'mobx-react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import ContestForm from './ContestForm';
-import { Contest } from '../../../../core/models';
-import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
-import moment from 'moment';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import { observable } from 'mobx';
+import { observer } from 'mobx-react';
+import moment from 'moment';
+import React, { useEffect } from 'react';
+import { Contest } from '../../../../core/models';
+import { rootStore } from '../../../../core/stores/RootStore';
+import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
+import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import ContestForm from './ContestForm';
 
 const ContestsList: React.FC = observer(() => {
   const {

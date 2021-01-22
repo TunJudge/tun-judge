@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ContestProblem } from './contest-problem.entity';
-import { Team } from './team.entity';
 import { Submission } from './submission.entity';
+import { Team } from './team.entity';
 
 @Entity()
 @Index(['id', 'enabled'])

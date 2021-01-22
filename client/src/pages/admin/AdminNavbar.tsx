@@ -1,8 +1,8 @@
-import React from 'react';
-import { Dropdown, Icon, Menu } from 'semantic-ui-react';
-import { useHistory } from 'react-router-dom';
-import { rootStore } from '../../core/stores/RootStore';
 import { observer } from 'mobx-react';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { Dropdown, Icon, Menu } from 'semantic-ui-react';
+import { rootStore } from '../../core/stores/RootStore';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
 
 type AdminNavbarProps = { toggleSidebar: () => void };

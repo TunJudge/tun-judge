@@ -1,6 +1,5 @@
 import { existsSync, writeFileSync } from 'fs';
-
-import { AbstractRunnerStep } from './runner-step';
+import http from '../http/http.client';
 import {
   Executable,
   FileContent,
@@ -9,10 +8,10 @@ import {
   Problem,
   Submission,
 } from '../models';
-import http from '../http/http.client';
 import dockerService from '../services/docker.service';
-import sh from './submission-helper';
 import { JudgeLogger } from '../services/judge.logger';
+import { AbstractRunnerStep } from './runner-step';
+import sh from './submission-helper';
 
 /**
  * The Initializer assure the fetching and the creation of all files needed

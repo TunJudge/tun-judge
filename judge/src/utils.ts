@@ -1,5 +1,5 @@
-import { moveCursor } from 'readline';
 import { dots } from 'cli-spinners';
+import { moveCursor } from 'readline';
 
 let index = 0;
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { Problem } from '../../../../core/models';
 import { isEmpty } from '../../../../core/helpers';
+import { Problem } from '../../../../core/models';
+import { rootStore } from '../../../../core/stores/RootStore';
 import {
   DropdownField,
   FileField,
@@ -9,7 +10,6 @@ import {
   NumberField,
   TextField,
 } from '../../../shared/extended-form';
-import { rootStore } from '../../../../core/stores/RootStore';
 
 type ProblemFormProps = {
   item: Problem;

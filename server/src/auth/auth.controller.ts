@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { AuthenticatedGuard, LoginGuard } from '../core/guards';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities';
+import { Request, Response } from 'express';
 import { ExtendedRepository } from '../core/extended-repository';
+import { AuthenticatedGuard, LoginGuard } from '../core/guards';
+import { User } from '../entities';
 
 @Controller('auth')
 export class AuthController {

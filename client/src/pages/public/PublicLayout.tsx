@@ -1,12 +1,12 @@
+import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import PublicNavbar from './PublicNavbar';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import ProblemSet from '../shared/ProblemSet';
-import HomeView from './views/HomeView';
+import { updateLeftTimeToContest } from '../../core/helpers';
 import { rootStore } from '../../core/stores/RootStore';
 import ContestCountdown from '../shared/ContestCountdown';
-import { observer } from 'mobx-react';
-import { updateLeftTimeToContest } from '../../core/helpers';
+import ProblemSet from '../shared/ProblemSet';
+import PublicNavbar from './PublicNavbar';
+import HomeView from './views/HomeView';
 
 const PublicLayout: React.FC = observer(() => {
   const [leftToContest, setLeftToContest] = useState<number>(0);

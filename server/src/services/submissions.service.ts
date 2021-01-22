@@ -1,7 +1,7 @@
-import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Submission } from '../entities';
+import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { Submission } from '../entities';
 import { ScoreboardService } from './scoreboard.service';
 
 @Injectable()

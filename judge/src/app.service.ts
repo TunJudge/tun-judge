@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-
+import config from './config';
 import http from './http/http.client';
 import { Judging } from './models';
 import { Runner } from './runner';
 import { JudgeLogger } from './services/judge.logger';
-import config from './config';
 
 @Injectable()
 export class AppService {

@@ -1,7 +1,7 @@
-import { RootStore } from './RootStore';
 import { action, observable } from 'mobx';
 import { TeamCategory } from '../models';
 import http from '../utils/http-client';
+import { RootStore } from './RootStore';
 
 export class TeamCategoriesStore {
   @observable data: TeamCategory[] = [];

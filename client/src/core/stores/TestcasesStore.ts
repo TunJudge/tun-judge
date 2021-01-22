@@ -1,7 +1,7 @@
-import { RootStore } from './RootStore';
 import { action, autorun, observable } from 'mobx';
 import { FileContent, Testcase } from '../models';
 import http from '../utils/http-client';
+import { RootStore } from './RootStore';
 
 export class TestcasesStore {
   @observable data: Testcase[] = [];

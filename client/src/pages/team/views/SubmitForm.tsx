@@ -1,10 +1,10 @@
+import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import { observer } from 'mobx-react';
-import { Submission } from '../../../core/models';
-import { DropdownField, FileField, FormErrors } from '../../shared/extended-form';
 import { isEmpty } from '../../../core/helpers';
+import { Submission } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
+import { DropdownField, FileField, FormErrors } from '../../shared/extended-form';
 
 type SubmissionFormProps = {
   item: Submission;

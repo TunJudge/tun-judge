@@ -1,15 +1,14 @@
+import { MD5 } from 'crypto-js';
 import { existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 import { clearLine, cursorTo } from 'readline';
-import { MD5 } from 'crypto-js';
-
-import { AbstractRunnerStep } from './runner-step';
+import http from '../http/http.client';
 import { Judging } from '../models';
-import sh, { testLibPath } from './submission-helper';
 import dockerService, { ExecResult } from '../services/docker.service';
 import { JudgeLogger } from '../services/judge.logger';
-import http from '../http/http.client';
 import { startSpinner, stopSpinner } from '../utils';
+import { AbstractRunnerStep } from './runner-step';
+import sh, { testLibPath } from './submission-helper';
 
 /**
  * The Compiler assure the compilation of the submission and checker code source files.

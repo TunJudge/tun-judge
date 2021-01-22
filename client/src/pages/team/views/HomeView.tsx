@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container, Grid } from 'semantic-ui-react';
-import SubmissionsList from './SubmissionsList';
-import Scoreboard from '../../shared/Scoreboard';
 import ProblemSet from '../../shared/ProblemSet';
+import Scoreboard from '../../shared/Scoreboard';
+import SubmissionsList from './SubmissionsList';
 
 const HomeView: React.FC = () => {
   return (

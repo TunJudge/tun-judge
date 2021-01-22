@@ -1,6 +1,6 @@
-import { Testcase } from './testcase.model';
-import { File } from './file.model';
 import { Executable } from './executable.model';
+import { File } from './file.model';
+import { Testcase } from './testcase.model';
 
 export interface Problem {
   id: number;
