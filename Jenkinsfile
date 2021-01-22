@@ -20,6 +20,7 @@ node("main") {
     }
 
     stage("Yarn Install") {
+        sh "npm install -g yarn"
         sh "yarn install"
     }
 
