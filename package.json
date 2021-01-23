@@ -5,14 +5,13 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "yisd client server judge",
-    "prettier:judge": "cd judge && yarn prettier",
-    "prettier:client": "cd client && yarn prettier",
-    "prettier:server": "cd server && yarn prettier"
+    "prettier": "run-in-all -y prettier judge client server"
   },
   "keywords": [],
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
+    "run-in-all": "^1.0.1",
     "yisd": "^1.2.0"
   }
 }

@@ -25,23 +25,9 @@ node("main") {
         runInDocker(nodeDockerImage, "yarn install")
     }
 
-    parallel(
-        "Prettier Server": {
-            stage("Prettier Server") {
-                runInDocker(nodeDockerImage, "yarn prettier:server")
-            }
-        },
-        "Prettier Client": {
-            stage("Prettier Client") {
-                runInDocker(nodeDockerImage, "yarn prettier:client")
-            }
-        },
-        "Prettier Judge": {
-            stage("Prettier Judge") {
-                runInDocker(nodeDockerImage, "yarn prettier:judge")
-            }
-        }
-    )
+    stage("Prettier") {
+        runInDocker(nodeDockerImage, "yarn prettier")
+    }
 
     def serverImage
     def judgeImage
