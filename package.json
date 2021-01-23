@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "yisd client server judge",
+    "postinstall": "run-in-all -y install judge client server",
     "prettier": "run-in-all -y prettier judge client server"
   },
   "keywords": [],
