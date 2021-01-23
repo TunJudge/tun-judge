@@ -1,3 +1,7 @@
+// organize-imports-ignore
+import React from 'react';
+import AceEditor from 'react-ace';
+
 import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-javascript';
@@ -8,8 +12,6 @@ import 'ace-builds/src-noconflict/mode-sh';
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/theme-tomorrow_night';
-import React from 'react';
-import AceEditor from 'react-ace';
 
 export type CodeEditorLanguages =
   | 'sh'
