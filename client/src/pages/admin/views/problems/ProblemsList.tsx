@@ -61,6 +61,7 @@ const ProblemsList: React.FC = observer(() => {
       withoutActions={!isUserAdmin}
       unzip={isUserAdmin ? unzip : undefined}
       zipUrl={({ id }) => `${hostname}/api/problems/${id}/zip`}
+      zipAllUrl={`${hostname}/api/problems/zip/all`}
       onDelete={remove}
       onRefresh={() => Promise.all([fetchAll(), fetchAllExecutables()])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}

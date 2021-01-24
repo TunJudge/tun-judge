@@ -28,6 +28,7 @@ import { RolesGuard } from './core/guards';
 import { entities } from './entities';
 import {
   AppService,
+  ContestsService,
   JudgingsService,
   ProblemsService,
   ScoreboardService,
@@ -62,6 +63,7 @@ const CONTROLLERS = [
 
 const SERVICES = [
   AppService,
+  ContestsService,
   JudgingsService,
   ProblemsService,
   ScoreboardService,

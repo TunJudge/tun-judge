@@ -64,6 +64,7 @@ const LanguagesList: React.FC = observer(() => {
         withoutActions={!isUserAdmin}
         unzip={isUserAdmin ? unzip : undefined}
         zipUrl={({ id }) => `${hostname}/api/languages/${id}/zip`}
+        zipAllUrl={`${hostname}/api/languages/zip/all`}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (

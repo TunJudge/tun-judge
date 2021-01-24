@@ -35,7 +35,8 @@ export class TeamsService {
     const dbCategory = await this.teamCategoriesRepository.findOne({
       name: category.name,
     });
-    team.category = dbCategory ?? (await this.usersRepository.save(category));
+    team.category =
+      dbCategory ?? (await this.teamCategoriesRepository.save(category));
     return this.teamsRepository.save(team);
   }
 }

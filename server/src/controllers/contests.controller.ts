@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Res,
   Session,
   UploadedFile,
@@ -26,7 +27,7 @@ import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
 import { submissionInFreezeTime } from '../core/utils';
 import { Contest, ContestProblem, Submission, Team } from '../entities';
-import { ProblemsService, ScoreboardService, TeamsService } from '../services';
+import { ContestsService, ScoreboardService } from '../services';
 import { ContestTransformer } from '../transformers';
 
 @Controller('contests')
@@ -42,8 +43,7 @@ export class ContestsController {
     @InjectRepository(Submission)
     private readonly submissionsRepository: ExtendedRepository<Submission>,
     private readonly scoreboardService: ScoreboardService,
-    private readonly problemsService: ProblemsService,
-    private readonly teamsService: TeamsService,
+    private readonly contestsService: ContestsService,
     private readonly socketService: AppGateway,
     private readonly contestTransformer: ContestTransformer,
   ) {}
@@ -218,30 +218,50 @@ export class ContestsController {
     zip.generateNodeStream().pipe(response);
   }
 
+  @Get('zip/all')
+  @Roles('admin')
+  async getZipAll(@Res() response: Response): Promise<void> {
+    const contests = await this.contestsRepository.find({
+      relations: [
+        'teams',
+        'teams.user',
+        'teams.category',
+        'problems',
+        'problems.problem',
+        'problems.problem.file',
+        'problems.problem.file.content',
+        'problems.problem.testcases',
+        'problems.problem.testcases.input',
+        'problems.problem.testcases.input.content',
+        'problems.problem.testcases.output',
+        'problems.problem.testcases.output.content',
+      ],
+    });
+    const zip = new JSZip();
+    await this.contestTransformer.manyToZip(contests, zip);
+    response.attachment('contests.zip');
+    zip.generateNodeStream().pipe(response);
+  }
+
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  async saveFromZip(@UploadedFile() file): Promise<void> {
-    let contest = await this.contestTransformer.fromZip(
-      await JSZip.loadAsync(file.buffer),
-    );
-    const problems = contest.problems;
-    const teams = contest.teams;
-    contest.problems = [];
-    contest.teams = [];
-    contest = await this.contestsRepository.save(contest);
-    for (const problem of problems ?? []) {
-      try {
-        problem.contest = contest;
-        problem.problem = await this.problemsService.deepSave(problem.problem);
-        await this.contestProblemsRepository.save(problem);
-      } catch (_) {}
-    }
-    for (const team of teams ?? []) {
-      try {
-        team.contests = [contest];
-        await this.teamsService.deepSave(team);
-      } catch (_) {}
+  async saveFromZip(
+    @UploadedFile() file,
+    @Query('multiple') multiple: string,
+  ): Promise<void> {
+    if (multiple === 'true') {
+      const contests = await this.contestTransformer.fromZipToMany(
+        await JSZip.loadAsync(file.buffer),
+      );
+      await Promise.all(
+        contests.map((contest) => this.contestsService.deepSave(contest)),
+      );
+    } else {
+      const contest = await this.contestTransformer.fromZip(
+        await JSZip.loadAsync(file.buffer),
+      );
+      await this.contestsService.deepSave(contest);
     }
   }
 }

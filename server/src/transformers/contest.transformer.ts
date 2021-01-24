@@ -16,42 +16,42 @@ export class ContestTransformer implements EntityTransformer<Contest> {
     private readonly contestProblemTransformer: ContestProblemTransformer,
   ) {}
 
+  async fromZipToMany(zip: JSZip, basePath = ''): Promise<Contest[]> {
+    return Promise.all(
+      Object.keys(zip.files)
+        .filter(
+          (file) =>
+            file.startsWith(basePath) &&
+            new RegExp(`${basePath}[^\/]+\/Contest\/$`, 'gm').test(file),
+        )
+        .map((folder) => folder.replace(/Contest\/$/g, ''))
+        .map((folder) => this.fromZip(zip.folder(basename(folder)), folder)),
+    );
+  }
+
   async fromZip(zip: JSZip, basePath = ''): Promise<Contest> {
     const subZip = zip.folder(this.entityName);
     const contest = load(
       await subZip.file(`${this.entityName}.yaml`).async('string'),
     ) as Contest;
     const problemsZip = subZip.folder('problems');
-    contest.problems = await Promise.all(
-      Object.keys(problemsZip.files)
-        .filter(
-          (file) =>
-            file.startsWith(basePath) &&
-            /Contest\/problems\/[^\/]+\/$/g.test(file),
-        )
-        .map((folder) =>
-          this.contestProblemTransformer.fromZip(
-            problemsZip.folder(basename(folder)),
-            folder,
-          ),
-        ),
+    contest.problems = await this.contestProblemTransformer.fromZipToMany(
+      problemsZip,
+      `${basePath}Contest/problems/`,
     );
     const teamsZip = subZip.folder('teams');
-    contest.teams = await Promise.all(
-      Object.keys(teamsZip.files)
-        .filter(
-          (file) =>
-            file.startsWith(basePath) &&
-            /Contest\/teams\/[^\/]+\/$/g.test(file),
-        )
-        .map((folder) =>
-          this.teamTransformer.fromZip(
-            teamsZip.folder(basename(folder)),
-            folder,
-          ),
-        ),
+    contest.teams = await this.teamTransformer.fromZipToMany(
+      teamsZip,
+      `${basePath}Contest/teams/`,
     );
     return contest;
+  }
+
+  async manyToZip(contests: Contest[], zip: JSZip): Promise<void> {
+    for (const contest of contests) {
+      if (!contest.shortName) continue;
+      await this.toZip(contest, zip.folder(contest.shortName));
+    }
   }
 
   async toZip(contest: Contest, zip: JSZip): Promise<void> {
@@ -74,15 +74,12 @@ export class ContestTransformer implements EntityTransformer<Contest> {
       verificationRequired: contest.verificationRequired,
     } as Partial<Contest>);
     const problemsZip = subZip.folder('problems');
-    for (const problem of contest.problems) {
-      const problemZip = problemsZip.folder(problem.shortName);
-      await this.contestProblemTransformer.toZip(problem, problemZip);
-    }
+    await this.contestProblemTransformer.manyToZip(
+      contest.problems,
+      problemsZip,
+    );
     const teamsZip = subZip.folder('teams');
-    for (const team of contest.teams) {
-      const teamZip = teamsZip.folder(team.name);
-      await this.teamTransformer.toZip(team, teamZip);
-    }
+    await this.teamTransformer.manyToZip(contest.teams, teamsZip);
     subZip.file(`${this.entityName}.yaml`, metadata);
   }
 }

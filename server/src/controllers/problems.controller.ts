@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Res,
   UploadedFile,
   UseGuards,
@@ -122,13 +123,45 @@ export class ProblemsController {
     zip.generateNodeStream().pipe(response);
   }
 
+  @Get('zip/all')
+  @Roles('admin')
+  async getZipAll(@Res() response: Response): Promise<void> {
+    const problems = await this.problemsRepository.find({
+      relations: [
+        'file',
+        'file.content',
+        'testcases',
+        'testcases.input',
+        'testcases.input.content',
+        'testcases.output',
+        'testcases.output.content',
+      ],
+    });
+    const zip = new JSZip();
+    await this.problemTransformer.manyToZip(problems, zip);
+    response.attachment('problems.zip');
+    zip.generateNodeStream().pipe(response);
+  }
+
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  async saveFromZip(@UploadedFile() file): Promise<void> {
-    const problem = await this.problemTransformer.fromZip(
-      await JSZip.loadAsync(file.buffer),
-    );
-    await this.problemsService.deepSave(problem);
+  async saveFromZip(
+    @UploadedFile() file,
+    @Query('multiple') multiple: string,
+  ): Promise<void> {
+    if (multiple === 'true') {
+      const problems = await this.problemTransformer.fromZipToMany(
+        await JSZip.loadAsync(file.buffer),
+      );
+      await Promise.all(
+        problems.map((problem) => this.problemsService.deepSave(problem)),
+      );
+    } else {
+      const problem = await this.problemTransformer.fromZip(
+        await JSZip.loadAsync(file.buffer),
+      );
+      await this.problemsService.deepSave(problem);
+    }
   }
 }

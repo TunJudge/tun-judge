@@ -1,13 +1,15 @@
 import { action, computed, observable } from 'mobx';
 import { Role, User } from '../models';
 import http from '../utils/http-client';
+import { BaseEntityStore } from './BaseEntityStore';
 import { RootStore } from './RootStore';
 
-export class UsersStore {
-  @observable data: User[] = [];
+export class UsersStore extends BaseEntityStore<User> {
   @observable roles: Role[] = [];
 
-  constructor(private readonly rootStore: RootStore) {}
+  constructor(private readonly rootStore: RootStore) {
+    super('users');
+  }
 
   @computed
   get adminUsers(): User[] {
@@ -30,30 +32,7 @@ export class UsersStore {
   }
 
   @action
-  fetchAll = async (): Promise<User[]> => {
-    return (this.data = await http.get<User[]>('api/users'));
-  };
-
-  @action
   fetchAllRoles = async (): Promise<Role[]> => {
     return (this.roles = await http.get<Role[]>('api/roles'));
-  };
-
-  @action
-  create = async (user: Partial<User>): Promise<void> => {
-    await http.post<User>('api/users', user);
-    await this.fetchAll();
-  };
-
-  @action
-  update = async (user: Partial<User>): Promise<void> => {
-    await http.put<User>(`api/users/${user.id}`, user);
-    await this.fetchAll();
-  };
-
-  @action
-  remove = async (id: number): Promise<void> => {
-    await http.delete(`api/users/${id}`);
-    await this.fetchAll();
   };
 }

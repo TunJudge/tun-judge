@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
   UploadedFile,
   UseGuards,
@@ -102,13 +103,39 @@ export class ExecutablesController {
     zip.generateNodeStream().pipe(response);
   }
 
+  @Get('zip/all')
+  @Roles('admin')
+  async getZipAll(@Res() response: Response): Promise<void> {
+    const executables = await this.executablesRepository.find({
+      relations: ['file', 'file.content', 'buildScript', 'buildScript.content'],
+    });
+    const zip = new JSZip();
+    await this.executableTransformer.manyToZip(executables, zip);
+    response.attachment('executables.zip');
+    zip.generateNodeStream().pipe(response);
+  }
+
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  async saveFromZip(@UploadedFile() file): Promise<void> {
-    const executable = await this.executableTransformer.fromZip(
-      await JSZip.loadAsync(file.buffer),
-    );
-    await this.executablesRepository.save(executable);
+  async saveFromZip(
+    @UploadedFile() file,
+    @Query('multiple') multiple: string,
+  ): Promise<void> {
+    if (multiple === 'true') {
+      const executables = await this.executableTransformer.fromZipToMany(
+        await JSZip.loadAsync(file.buffer),
+      );
+      await Promise.all(
+        executables.map((executable) =>
+          this.executablesRepository.save(executable),
+        ),
+      );
+    } else {
+      const executable = await this.executableTransformer.fromZip(
+        await JSZip.loadAsync(file.buffer),
+      );
+      await this.executablesRepository.save(executable);
+    }
   }
 }
