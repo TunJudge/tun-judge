@@ -208,10 +208,10 @@ resolve@^1.1.6:
     is-core-module "^2.1.0"
     path-parse "^1.0.6"
 
-run-in-all@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/run-in-all/-/run-in-all-1.0.1.tgz#e5f63a679b87b58fca3781aefdcc72de5fe782c1"
-  integrity sha512-0lwFKvazlNdSjw2RgIypp4up2j7jsRj9OGFg5uaCvctAcbypcNFFRx6UzcrHm3x4lNNwLm1Mo1xhPbdbxNSEDA==
+run-in-all@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/run-in-all/-/run-in-all-1.1.0.tgz#62aa3198bc1b3d988cf95d3f6a558c119376465e"
+  integrity sha512-caXD7SCMPepwOTO14sFHsUv0NLRMyUOv88W+mJwjnfYuokHhlZ3ApbSP96Y/v3kLuBGeBrRK0QhKlkXV91Ssyg==
   dependencies:
     chalk "^4.1.0"
     yargs "^16.2.0"
