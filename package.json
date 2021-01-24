@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "run-in-all -y install judge client server",
     "prettier": "run-in-all -y prettier judge client server",
-    "version:new": "yarn version --new-version",
+    "version:new": "yarn version --no-git-tag-version --new-version",
     "version:update": "run-in-all -y version:new . judge client server -a"
   },
   "keywords": [],

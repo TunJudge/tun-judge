@@ -58,7 +58,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prettier": "prettier --check src",
-    "version:new": "yarn version --new-version"
+    "version:new": "yarn version --no-git-tag-version --new-version"
   },
   "eslintConfig": {
     "extends": [
