@@ -30,4 +30,14 @@ export class LanguagesStore {
     await http.delete(`api/languages/${id}`);
     await this.fetchAll();
   };
+
+  @action
+  unzip = async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    await http.post(`api/languages/unzip`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    await this.fetchAll();
+  };
 }

@@ -9,10 +9,16 @@ import {
   Patch,
   Post,
   Put,
+  Res,
   Session,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'express';
+import * as JSZip from 'jszip';
 import { LessThanOrEqual, MoreThan } from 'typeorm';
 import { AppGateway } from '../app.gateway';
 import { ExtendedRepository } from '../core/extended-repository';
@@ -21,6 +27,7 @@ import { Roles } from '../core/roles.decorator';
 import { submissionInFreezeTime } from '../core/utils';
 import { Contest, ContestProblem, Submission, Team } from '../entities';
 import { ScoreboardService } from '../services';
+import { ContestTransformer } from '../transformers';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -36,6 +43,7 @@ export class ContestsController {
     private readonly submissionsRepository: ExtendedRepository<Submission>,
     private readonly scoreboardService: ScoreboardService,
     private readonly socketService: AppGateway,
+    private readonly contestTransformer: ContestTransformer,
   ) {}
 
   @Get()
@@ -174,5 +182,31 @@ export class ContestsController {
       submission.problem,
     );
     this.socketService.pingForUpdates('submissions', 'judgeRuns');
+  }
+
+  @Get(':id/zip')
+  @Roles('admin')
+  async getZip(
+    @Param('id') id: number,
+    @Res() response: Response,
+  ): Promise<void> {
+    const contest = await this.contestsRepository.findOneOrThrow(
+      { where: { id }, relations: ['problems', 'problems.problem'] },
+      new NotFoundException(),
+    );
+    const zip = new JSZip();
+    await this.contestTransformer.toZip(contest, zip);
+    response.attachment('contest.zip');
+    zip.generateNodeStream().pipe(response);
+  }
+
+  @Post('unzip')
+  @Roles('admin')
+  @UseInterceptors(FileInterceptor('file'))
+  async saveFromZip(@UploadedFile() file): Promise<void> {
+    const contest = await this.contestTransformer.fromZip(
+      await JSZip.loadAsync(file.buffer),
+    );
+    await this.contestsRepository.save(contest);
   }
 }

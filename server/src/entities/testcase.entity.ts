@@ -19,18 +19,18 @@ export class Testcase {
   @PrimaryGeneratedColumn({ comment: 'Test case ID' })
   id: number;
 
-  @OneToOne(() => File, { cascade: true, eager: true, nullable: false })
+  @OneToOne(() => File, { cascade: true, nullable: false })
   @JoinColumn()
   input: File;
 
-  @OneToOne(() => File, { cascade: true, eager: true, nullable: false })
+  @OneToOne(() => File, { cascade: true, nullable: false })
   @JoinColumn()
   output: File;
 
   @Column({ comment: 'Test case description', nullable: true })
   description: string;
 
-  @OneToOne(() => File, { cascade: true, eager: true })
+  @OneToOne(() => File, { cascade: true })
   @JoinColumn()
   image: File;
 

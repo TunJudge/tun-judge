@@ -32,6 +32,7 @@ export class TestcasesController {
   getByProblemId(@Param('id') id: number): Promise<Testcase[]> {
     return this.testcasesRepository.find({
       where: { problem: { id } },
+      relations: ['input', 'output', 'image'],
       order: { rank: 'ASC' },
     });
   }
@@ -93,7 +94,10 @@ export class TestcasesController {
     @Param('file') file: 'input' | 'output',
   ): Promise<FileContent> {
     return this.testcasesRepository
-      .findOneOrThrow(id, new NotFoundException())
+      .findOneOrThrow(
+        { where: { id }, relations: ['input', 'output'] },
+        new NotFoundException(),
+      )
       .then((testcase) =>
         this.filesRepository.findOneOrThrow(
           testcase[file].id,

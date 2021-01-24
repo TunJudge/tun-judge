@@ -7,14 +7,21 @@ import {
   Param,
   Post,
   Put,
+  Res,
   Session,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'express';
+import * as JSZip from 'jszip';
 import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
 import { Language } from '../entities';
+import { LanguageTransformer } from '../transformers';
 
 @Controller('languages')
 @UseGuards(AuthenticatedGuard)
@@ -22,6 +29,7 @@ export class LanguagesController {
   constructor(
     @InjectRepository(Language)
     private readonly languagesRepository: ExtendedRepository<Language>,
+    private readonly languageTransformer: LanguageTransformer,
   ) {}
 
   @Get()
@@ -68,5 +76,34 @@ export class LanguagesController {
   @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.languagesRepository.delete(id);
+  }
+
+  @Get(':id/zip')
+  @Roles('admin')
+  async getZip(
+    @Param('id') id: number,
+    @Res() response: Response,
+  ): Promise<void> {
+    const language = await this.languagesRepository.findOneOrThrow(
+      {
+        where: { id },
+        relations: ['buildScript', 'buildScript.content'],
+      },
+      new NotFoundException(),
+    );
+    const zip = new JSZip();
+    await this.languageTransformer.toZip(language, zip);
+    response.attachment('language.zip');
+    zip.generateNodeStream().pipe(response);
+  }
+
+  @Post('unzip')
+  @Roles('admin')
+  @UseInterceptors(FileInterceptor('file'))
+  async saveFromZip(@UploadedFile() file): Promise<void> {
+    const language = await this.languageTransformer.fromZip(
+      await JSZip.loadAsync(file.buffer),
+    );
+    await this.languagesRepository.save(language);
   }
 }

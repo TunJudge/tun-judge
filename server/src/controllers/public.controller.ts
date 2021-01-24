@@ -25,14 +25,16 @@ export class PublicController {
 
   @Get('contests')
   async getContests(@Session() session): Promise<Contest[]> {
-    const contests = await this.contestsRepository.find({
-      relations: ['teams', 'problems', 'problems.problem'],
-      order: { activateTime: 'ASC' },
-      where: {
-        enabled: true,
-        activateTime: LessThanOrEqual(new Date()),
-      },
-    });
+    const contests = (
+      await this.contestsRepository.find({
+        relations: ['teams', 'problems', 'problems.problem'],
+        order: { activateTime: 'ASC' },
+        where: {
+          enabled: true,
+          activateTime: LessThanOrEqual(new Date()),
+        },
+      })
+    ).map(this.cleanNullProblems);
     switch (session.passport?.user.role.name) {
       case 'team':
         const user = await this.usersRepository.findOneOrThrow(
@@ -58,6 +60,13 @@ export class PublicController {
 
   cleanProblems(contest: Contest): Contest {
     if (Date.now() < contest.startTime.getTime()) contest.problems = [];
+    return contest;
+  }
+
+  cleanNullProblems(contest: Contest): Contest {
+    contest.problems = contest.problems.filter(
+      (problem) => !!problem.shortName,
+    );
     return contest;
   }
 

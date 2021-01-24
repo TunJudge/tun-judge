@@ -7,14 +7,21 @@ import {
   Param,
   Post,
   Put,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'express';
+import * as JSZip from 'jszip';
 import { Not } from 'typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
 import { Executable } from '../entities';
+import { ExecutableTransformer } from '../transformers';
 
 @Controller('executables')
 @UseGuards(AuthenticatedGuard)
@@ -22,6 +29,7 @@ export class ExecutablesController {
   constructor(
     @InjectRepository(Executable)
     private readonly executablesRepository: ExtendedRepository<Executable>,
+    private readonly executableTransformer: ExecutableTransformer,
   ) {}
 
   @Get()
@@ -68,5 +76,39 @@ export class ExecutablesController {
   @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.executablesRepository.delete(id);
+  }
+
+  @Get(':id/zip')
+  @Roles('admin')
+  async getZip(
+    @Param('id') id: number,
+    @Res() response: Response,
+  ): Promise<void> {
+    const executable = await this.executablesRepository.findOneOrThrow(
+      {
+        where: { id },
+        relations: [
+          'file',
+          'file.content',
+          'buildScript',
+          'buildScript.content',
+        ],
+      },
+      new NotFoundException(),
+    );
+    const zip = new JSZip();
+    await this.executableTransformer.toZip(executable, zip);
+    response.attachment('executable.zip');
+    zip.generateNodeStream().pipe(response);
+  }
+
+  @Post('unzip')
+  @Roles('admin')
+  @UseInterceptors(FileInterceptor('file'))
+  async saveFromZip(@UploadedFile() file): Promise<void> {
+    const executable = await this.executableTransformer.fromZip(
+      await JSZip.loadAsync(file.buffer),
+    );
+    await this.executablesRepository.save(executable);
   }
 }

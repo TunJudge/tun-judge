@@ -35,4 +35,14 @@ export class ContestsStore {
     await http.delete(`api/contests/${id}`);
     await this.fetchAll();
   };
+
+  @action
+  unzip = async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    await http.post(`api/contests/unzip`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    await this.fetchAll();
+  };
 }

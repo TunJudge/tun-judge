@@ -32,6 +32,13 @@ import {
   ScoreboardService,
   SubmissionsService,
 } from './services';
+import {
+  ContestTransformer,
+  ExecutableTransformer,
+  LanguageTransformer,
+  ProblemTransformer,
+  TestcaseTransformer,
+} from './transformers';
 
 const CONTROLLERS = [
   AppController,
@@ -54,6 +61,14 @@ const SERVICES = [
   JudgingsService,
   ScoreboardService,
   SubmissionsService,
+];
+
+const TRANSFORMERS = [
+  ContestTransformer,
+  ExecutableTransformer,
+  LanguageTransformer,
+  ProblemTransformer,
+  TestcaseTransformer,
 ];
 
 @Module({
@@ -81,6 +96,7 @@ const SERVICES = [
   providers: [
     AppGateway,
     ...SERVICES,
+    ...TRANSFORMERS,
     ...CustomRepositoryProviders,
     { provide: APP_GUARD, useClass: RolesGuard },
   ],

@@ -25,6 +25,8 @@ type ListPageProps<T> = {
   notSortable?: boolean;
   formItemInitValue?: Partial<T>;
   ItemForm?: React.FC<{ item: T; dismiss: () => void; submit: (item: T) => void }>;
+  zipUrl?: (item: T) => string;
+  extraActions?: any;
   withoutActions?: boolean;
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
@@ -45,6 +47,8 @@ function ListPage<T extends { id: number | string }>({
   notSortable,
   formItemInitValue,
   ItemForm,
+  zipUrl,
+  extraActions,
   withoutActions,
   onDelete,
   canDelete,
@@ -127,6 +131,7 @@ function ListPage<T extends { id: number | string }>({
           <Header>{header}</Header>
         </Menu.Item>
         <Menu.Item position="right">
+          {extraActions}
           {onRefresh && (
             <Button color="blue" className={cn({ 'mr-2': !!ItemForm })} icon onClick={onRefresh}>
               <Icon name="refresh" />
@@ -192,11 +197,21 @@ function ListPage<T extends { id: number | string }>({
                 ))}
                 {!withoutActions && (
                   <Table.Cell textAlign="center">
+                    {zipUrl && (
+                      <a
+                        href={zipUrl(item)}
+                        download="contest.zip"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <Icon name="zip" style={{ marginRight: '0' }} />
+                      </a>
+                    )}
                     {ItemForm && (
                       <Icon
                         name="edit"
                         onClick={() => openForm(item)}
-                        style={{ cursor: 'pointer', marginRight: '0' }}
+                        style={{ cursor: 'pointer', marginLeft: zipUrl && '10%', marginRight: '0' }}
                       />
                     )}
                     {(!canDelete || canDelete(item)) && (
@@ -206,7 +221,7 @@ function ListPage<T extends { id: number | string }>({
                         onClick={() => onDelete && onDelete(item.id as number)}
                         style={{
                           cursor: 'pointer',
-                          marginLeft: ItemForm && '25%',
+                          marginLeft: ItemForm && '10%',
                           marginRight: '0',
                         }}
                       />

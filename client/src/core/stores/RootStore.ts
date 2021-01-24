@@ -15,7 +15,8 @@ import { TeamStore } from './TeamStore';
 import { TestcasesStore } from './TestcasesStore';
 import { UsersStore } from './UsersStore';
 
-const hostname = process && process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
+export const hostname =
+  process && process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
 const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
 

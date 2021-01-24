@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Icon } from 'semantic-ui-react';
 import { Executable, ExecutableType } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
+import { hostname, rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ScriptEditor from '../../../shared/ScriptEditor';
 import ExecutableForm from './ExecutableForm';
@@ -9,12 +10,13 @@ import ExecutableForm from './ExecutableForm';
 const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', CHECKER: 'Checker' };
 
 const ExecutablesList: React.FC = observer(() => {
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const [scriptData, setScriptData] = useState<
     { executable: Executable; field: 'file' | 'buildScript' } | undefined
   >();
   const {
     isUserAdmin,
-    executablesStore: { data, fetchAll, create, update, remove },
+    executablesStore: { data, fetchAll, create, update, remove, unzip },
   } = rootStore;
 
   useEffect(() => {
@@ -89,6 +91,29 @@ const ExecutablesList: React.FC = observer(() => {
         onDelete={remove}
         onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
+        extraActions={
+          <Button
+            className="mr-2"
+            color="blue"
+            icon
+            onClick={() => uploadInputRef.current?.click()}
+          >
+            <Icon name="upload" />
+            <input
+              type="file"
+              multiple
+              hidden
+              ref={(ref) => (uploadInputRef.current = ref)}
+              onChange={async (event) => {
+                const files = event.target.files;
+                if (files?.length) {
+                  await unzip(files[0]);
+                }
+              }}
+            />
+          </Button>
+        }
+        zipUrl={({ id }) => `${hostname}/api/executables/${id}/zip`}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (

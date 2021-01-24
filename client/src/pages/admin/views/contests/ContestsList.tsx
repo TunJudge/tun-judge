@@ -1,17 +1,19 @@
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Button, Icon } from 'semantic-ui-react';
 import { Contest } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
+import { hostname, rootStore } from '../../../../core/stores/RootStore';
 import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ContestForm from './ContestForm';
 
 const ContestsList: React.FC = observer(() => {
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const {
     isUserAdmin,
-    contestsStore: { data, fetchAll, create, update, remove },
+    contestsStore: { data, fetchAll, create, update, remove, unzip },
     problemsStore: { fetchAll: fetchAllProblems },
   } = rootStore;
 
@@ -46,11 +48,6 @@ const ContestsList: React.FC = observer(() => {
       render: (contest) => moment(contest.endTime).format(MOMENT_DEFAULT_FORMAT),
     },
     {
-      header: 'Balloons?',
-      field: 'processBalloons',
-      render: (contest) => (contest.processBalloons ? 'Yes' : 'No'),
-    },
-    {
       header: 'Enabled?',
       field: 'enabled',
       render: (contest) => (contest.enabled ? 'Yes' : 'No'),
@@ -59,11 +56,6 @@ const ContestsList: React.FC = observer(() => {
       header: 'Public?',
       field: 'public',
       render: (contest) => (contest.public ? 'Yes' : 'No'),
-    },
-    {
-      header: 'Verification Required?',
-      field: 'verificationRequired',
-      render: (contest) => (contest.verificationRequired ? 'Yes' : 'No'),
     },
     {
       header: 'Teams',
@@ -85,6 +77,24 @@ const ContestsList: React.FC = observer(() => {
       formItemInitValue={observable({ problems: [] })}
       ItemForm={isUserAdmin ? ContestForm : undefined}
       onDelete={remove}
+      extraActions={
+        <Button className="mr-2" color="blue" icon onClick={() => uploadInputRef.current?.click()}>
+          <Icon name="upload" />
+          <input
+            type="file"
+            multiple
+            hidden
+            ref={(ref) => (uploadInputRef.current = ref)}
+            onChange={async (event) => {
+              const files = event.target.files;
+              if (files?.length) {
+                await unzip(files[0]);
+              }
+            }}
+          />
+        </Button>
+      }
+      zipUrl={({ id }) => `${hostname}/api/contests/${id}/zip`}
       withoutActions={!isUserAdmin}
       onRefresh={() => Promise.all([fetchAll(), fetchAllProblems()])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}

@@ -3,7 +3,6 @@ import { Team } from './team.model';
 
 export interface Contest {
   id: number;
-  externalId: string;
   name: string;
   shortName: string;
   activateTime: Date;
