@@ -91,6 +91,7 @@ const ExecutablesList: React.FC = observer(() => {
         withoutActions={!isUserAdmin}
         unzip={isUserAdmin ? unzip : undefined}
         zipUrl={({ id }) => `${hostname}/api/executables/${id}/zip`}
+        zipAllUrl={`${hostname}/api/executables/zip/all`}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (

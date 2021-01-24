@@ -13,6 +13,19 @@ export class ProblemTransformer implements EntityTransformer<Problem> {
 
   constructor(private readonly testcaseTransformer: TestcaseTransformer) {}
 
+  async fromZipToMany(zip: JSZip, basePath = ''): Promise<Problem[]> {
+    return Promise.all(
+      Object.keys(zip.files)
+        .filter(
+          (file) =>
+            file.startsWith(basePath) &&
+            new RegExp(`${basePath}[^\/]+\/Problem\/$`, 'gm').test(file),
+        )
+        .map((folder) => folder.replace(/Problem\/$/g, ''))
+        .map((folder) => this.fromZip(zip.folder(basename(folder)), folder)),
+    );
+  }
+
   async fromZip(zip: JSZip, basePath = ''): Promise<Problem> {
     const subZip = zip.folder(this.entityName);
     const problem = load(
@@ -27,21 +40,18 @@ export class ProblemTransformer implements EntityTransformer<Problem> {
       content: { payload: pdfBase64 },
     } as File;
     const testcasesZip = subZip.folder('testcases');
-    problem.testcases = await Promise.all(
-      Object.keys(testcasesZip.files)
-        .filter(
-          (file) =>
-            file.startsWith(basePath) &&
-            /Problem\/testcases\/[^\/]+\/$/g.test(file),
-        )
-        .map((folder) =>
-          this.testcaseTransformer.fromZip(
-            testcasesZip.folder(basename(folder)),
-            folder,
-          ),
-        ),
+    problem.testcases = await this.testcaseTransformer.fromZipToMany(
+      testcasesZip,
+      `${basePath}Problem/testcases/`,
     );
     return problem;
+  }
+
+  async manyToZip(problems: Problem[], zip: JSZip): Promise<void> {
+    for (const problem of problems) {
+      if (!problem.name) continue;
+      await this.toZip(problem, zip.folder(problem.name));
+    }
   }
 
   async toZip(problem: Problem, zip: JSZip): Promise<void> {
@@ -55,10 +65,7 @@ export class ProblemTransformer implements EntityTransformer<Problem> {
     subZip.file('file.pdf', problem.file.content.payload, { base64: true });
     if (problem.testcases) {
       const testcasesZip = subZip.folder('testcases');
-      for (const testcase of problem.testcases) {
-        const testcaseZip = testcasesZip.folder(String(testcase.rank));
-        await this.testcaseTransformer.toZip(testcase, testcaseZip);
-      }
+      await this.testcaseTransformer.manyToZip(problem.testcases, testcasesZip);
     }
     subZip.file(`${this.entityName}.yaml`, metadata);
   }

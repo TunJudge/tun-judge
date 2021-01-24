@@ -77,6 +77,7 @@ const ContestsList: React.FC = observer(() => {
       onDelete={remove}
       unzip={isUserAdmin ? unzip : undefined}
       zipUrl={({ id }) => `${hostname}/api/contests/${id}/zip`}
+      zipAllUrl={`${hostname}/api/contests/zip/all`}
       withoutActions={!isUserAdmin}
       onRefresh={() => Promise.all([fetchAll(), fetchAllProblems()])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}

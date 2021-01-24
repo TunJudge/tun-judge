@@ -5,5 +5,9 @@ export interface EntityTransformer<T> {
 
   fromZip(zip: JSZip, basePath?: string): Promise<T>;
 
+  fromZipToMany(zip: JSZip, basePath?: string): Promise<T[]>;
+
   toZip(entity: T, zip: JSZip): Promise<void>;
+
+  manyToZip(entities: T[], zip: JSZip): Promise<void>;
 }

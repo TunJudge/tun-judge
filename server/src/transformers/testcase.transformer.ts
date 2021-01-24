@@ -2,12 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { MD5 } from 'crypto-js';
 import { dump, load } from 'js-yaml';
 import * as JSZip from 'jszip';
+import { basename } from 'path';
 import { File, Testcase } from '../entities';
 import { EntityTransformer } from './entity.transformer';
 
 @Injectable()
 export class TestcaseTransformer implements EntityTransformer<Testcase> {
   entityName = 'Testcase';
+
+  async fromZipToMany(zip: JSZip, basePath = ''): Promise<Testcase[]> {
+    return Promise.all(
+      Object.keys(zip.files)
+        .filter(
+          (file) =>
+            file.startsWith(basePath) &&
+            new RegExp(`${basePath}[^\/]+\/Testcase\/$`, 'gm').test(file),
+        )
+        .map((folder) => folder.replace(/Testcase\/$/g, ''))
+        .map((folder) => this.fromZip(zip.folder(basename(folder)), folder)),
+    );
+  }
 
   async fromZip(zip: JSZip, basePath = ''): Promise<Testcase> {
     const subZip = zip.folder(this.entityName);
@@ -33,6 +47,13 @@ export class TestcaseTransformer implements EntityTransformer<Testcase> {
       content: { payload: outputBase64 },
     } as File;
     return testcase;
+  }
+
+  async manyToZip(testcases: Testcase[], zip: JSZip): Promise<void> {
+    for (const testcase of testcases) {
+      if (testcase.rank === undefined) continue;
+      await this.toZip(testcase, zip.folder(String(testcase.rank)));
+    }
   }
 
   async toZip(testcase: Testcase, zip: JSZip): Promise<void> {

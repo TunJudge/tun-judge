@@ -1,7 +1,6 @@
-import cn from 'classnames';
 import React, { CSSProperties, ReactElement, useEffect, useRef, useState } from 'react';
 import {
-  Button,
+  Dropdown,
   Header,
   Icon,
   Menu,
@@ -35,8 +34,9 @@ type ListPageProps<T> = {
   formItemInitValue?: Partial<T>;
   ItemForm?: React.FC<{ item: T; dismiss: () => void; submit: (item: T) => void }>;
   zipUrl?: (item: T) => string;
+  zipAllUrl?: string;
   withoutActions?: boolean;
-  unzip?: (file: File) => void;
+  unzip?: (file: File, multiple: boolean) => void;
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
   onRefresh?: () => void;
@@ -57,6 +57,7 @@ function ListPage<T extends { id: number | string }>({
   formItemInitValue,
   ItemForm,
   zipUrl,
+  zipAllUrl,
   withoutActions,
   unzip,
   onDelete,
@@ -67,7 +68,8 @@ function ListPage<T extends { id: number | string }>({
   onFormDismiss,
   rowBackgroundColor,
 }: ListPageProps<T>): ReactElement {
-  const uploadInputRef = useRef<HTMLInputElement | null>(null);
+  const oneItemUploadInput = useRef<HTMLInputElement | null>(null);
+  const multipleItemUploadInput = useRef<HTMLInputElement | null>(null);
   const [formItem, setFormItem] = useState<Partial<T>>(formItemInitValue ?? {});
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [sortState, setSortState] = useState<{
@@ -140,30 +142,36 @@ function ListPage<T extends { id: number | string }>({
         <Menu.Item>
           <Header>{header}</Header>
         </Menu.Item>
-        <Menu.Item position="right">
+        <Menu.Menu position="right">
+          {zipAllUrl && (
+            <Popup
+              trigger={
+                <Menu.Item onClick={() => window.open(zipAllUrl, '_blank')}>
+                  <Icon name="download" />
+                </Menu.Item>
+              }
+              position="bottom center"
+            >
+              Download All
+            </Popup>
+          )}
           {unzip && (
             <Popup
               trigger={
-                <Button
-                  className="mr-2"
-                  color="blue"
-                  icon
-                  onClick={() => uploadInputRef.current?.click()}
-                >
-                  <Icon name="upload" />
-                  <input
-                    type="file"
-                    hidden
-                    ref={(ref) => (uploadInputRef.current = ref)}
-                    onChange={async (event) => {
-                      const files = event.target.files;
-                      if (files?.length) {
-                        await unzip(files[0]);
-                      }
-                      event.target.files = null;
-                    }}
-                  />
-                </Button>
+                <Dropdown item icon={<Icon name="upload" />} floating>
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      icon="file outline"
+                      text="One Item"
+                      onClick={() => oneItemUploadInput.current?.click()}
+                    />
+                    <Dropdown.Item
+                      icon="copy outline"
+                      text="Multiple Items"
+                      onClick={() => multipleItemUploadInput.current?.click()}
+                    />
+                  </Dropdown.Menu>
+                </Dropdown>
               }
               position="bottom center"
             >
@@ -173,14 +181,9 @@ function ListPage<T extends { id: number | string }>({
           {onRefresh && (
             <Popup
               trigger={
-                <Button
-                  color="blue"
-                  className={cn({ 'mr-2': !!ItemForm })}
-                  icon
-                  onClick={onRefresh}
-                >
+                <Menu.Item onClick={onRefresh}>
                   <Icon name="refresh" />
-                </Button>
+                </Menu.Item>
               }
               position="bottom center"
             >
@@ -190,16 +193,16 @@ function ListPage<T extends { id: number | string }>({
           {ItemForm && (
             <Popup
               trigger={
-                <Button color="blue" icon onClick={() => setFormOpen(true)}>
+                <Menu.Item color="green" onClick={() => setFormOpen(true)}>
                   <Icon name="plus" />
-                </Button>
+                </Menu.Item>
               }
               position="bottom center"
             >
               Add
             </Popup>
           )}
-        </Menu.Item>
+        </Menu.Menu>
       </Segment>
       {filters}
       <Table striped sortable={!notSortable} celled>
@@ -294,6 +297,28 @@ function ListPage<T extends { id: number | string }>({
       {formOpen && ItemForm && (
         <ItemForm item={formItem as T} dismiss={dismissForm} submit={submitForm} />
       )}
+      <input
+        type="file"
+        hidden
+        ref={(ref) => (oneItemUploadInput.current = ref)}
+        onChange={async (event) => {
+          const files = event.target.files;
+          if (files?.length) {
+            unzip && (await unzip(files[0], false));
+          }
+        }}
+      />
+      <input
+        type="file"
+        hidden
+        ref={(ref) => (multipleItemUploadInput.current = ref)}
+        onChange={async (event) => {
+          const files = event.target.files;
+          if (files?.length) {
+            unzip && (await unzip(files[0], true));
+          }
+        }}
+      />
     </>
   );
 }

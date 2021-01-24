@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { dump, load } from 'js-yaml';
 import * as JSZip from 'jszip';
+import { basename } from 'path';
 import { Team } from '../entities';
 import { EntityTransformer } from './entity.transformer';
 
@@ -8,11 +9,31 @@ import { EntityTransformer } from './entity.transformer';
 export class TeamTransformer implements EntityTransformer<Team> {
   entityName = 'Team';
 
-  async fromZip(zip: JSZip, baseUrl = ''): Promise<Team> {
+  async fromZipToMany(zip: JSZip, basePath = ''): Promise<Team[]> {
+    return Promise.all(
+      Object.keys(zip.files)
+        .filter(
+          (file) =>
+            file.startsWith(basePath) &&
+            new RegExp(`${basePath}[^\/]+\/Team\/$`, 'gm').test(file),
+        )
+        .map((folder) => folder.replace(/Team\/$/g, ''))
+        .map((folder) => this.fromZip(zip.folder(basename(folder)), folder)),
+    );
+  }
+
+  async fromZip(zip: JSZip, basePath = ''): Promise<Team> {
     const subZip = zip.folder(this.entityName);
     return load(
       await subZip.file(`${this.entityName}.yaml`).async('string'),
     ) as Team;
+  }
+
+  async manyToZip(teams: Team[], zip: JSZip): Promise<void> {
+    for (const team of teams) {
+      if (!team.name) continue;
+      await this.toZip(team, zip.folder(team.name));
+    }
   }
 
   async toZip(team: Team, zip: JSZip): Promise<void> {

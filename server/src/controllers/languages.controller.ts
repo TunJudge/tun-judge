@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
   Session,
   UploadedFile,
@@ -97,13 +98,37 @@ export class LanguagesController {
     zip.generateNodeStream().pipe(response);
   }
 
+  @Get('zip/all')
+  @Roles('admin')
+  async getZipAll(@Res() response: Response): Promise<void> {
+    const languages = await this.languagesRepository.find({
+      relations: ['buildScript', 'buildScript.content'],
+    });
+    const zip = new JSZip();
+    await this.languageTransformer.manyToZip(languages, zip);
+    response.attachment('languages.zip');
+    zip.generateNodeStream().pipe(response);
+  }
+
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  async saveFromZip(@UploadedFile() file): Promise<void> {
-    const language = await this.languageTransformer.fromZip(
-      await JSZip.loadAsync(file.buffer),
-    );
-    await this.languagesRepository.save(language);
+  async saveFromZip(
+    @UploadedFile() file,
+    @Query('multiple') multiple: string,
+  ): Promise<void> {
+    if (multiple === 'true') {
+      const languages = await this.languageTransformer.fromZipToMany(
+        await JSZip.loadAsync(file.buffer),
+      );
+      await Promise.all(
+        languages.map((language) => this.languagesRepository.save(language)),
+      );
+    } else {
+      const language = await this.languageTransformer.fromZip(
+        await JSZip.loadAsync(file.buffer),
+      );
+      await this.languagesRepository.save(language);
+    }
   }
 }
