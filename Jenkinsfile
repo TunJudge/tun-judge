@@ -32,8 +32,9 @@ node("main") {
     def version
 
     stage("Parse Version") {
+        final regex = '^.*"version": "([^"]+)".*$'
         version = sh(
-            script: """grep -E '^.*"version": "([^"]+)".*$' package.json | sed -E 's/${regex}/\\1/""",
+            script: "grep -E '${regex}' package.json | sed -E 's/${regex}/\\1/'",
             returnStdout: true
         ).trim()
     }
