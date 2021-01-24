@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Icon } from 'semantic-ui-react';
+import React, { useEffect, useState } from 'react';
 import { Language } from '../../../../core/models';
 import { hostname, rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
@@ -8,7 +7,6 @@ import ScriptEditor from '../../../shared/ScriptEditor';
 import LanguageForm from './LanguageForm';
 
 const LanguagesList: React.FC = observer(() => {
-  const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const [scriptData, setScriptData] = useState<Language | undefined>();
   const {
     isUserAdmin,
@@ -64,28 +62,7 @@ const LanguagesList: React.FC = observer(() => {
         onDelete={remove}
         onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
-        extraActions={
-          <Button
-            className="mr-2"
-            color="blue"
-            icon
-            onClick={() => uploadInputRef.current?.click()}
-          >
-            <Icon name="upload" />
-            <input
-              type="file"
-              multiple
-              hidden
-              ref={(ref) => (uploadInputRef.current = ref)}
-              onChange={async (event) => {
-                const files = event.target.files;
-                if (files?.length) {
-                  await unzip(files[0]);
-                }
-              }}
-            />
-          </Button>
-        }
+        unzip={isUserAdmin ? unzip : undefined}
         zipUrl={({ id }) => `${hostname}/api/languages/${id}/zip`}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />

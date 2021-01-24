@@ -63,7 +63,11 @@ const JudgeHostsList: React.FC = observer(() => {
       header: 'Live Logs',
       field: 'id',
       render: (judgeHost) => (
-        <Button color="blue" onClick={() => setHostname(judgeHost.hostname)}>
+        <Button
+          color="blue"
+          onClick={() => setHostname(judgeHost.hostname)}
+          disabled={!judgeHost.active}
+        >
           Logs
         </Button>
       ),

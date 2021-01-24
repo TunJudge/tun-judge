@@ -32,7 +32,7 @@ export class TestcasesController {
   getByProblemId(@Param('id') id: number): Promise<Testcase[]> {
     return this.testcasesRepository.find({
       where: { problem: { id } },
-      relations: ['input', 'output', 'image'],
+      relations: ['input', 'output'],
       order: { rank: 'ASC' },
     });
   }

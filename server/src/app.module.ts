@@ -29,14 +29,18 @@ import { entities } from './entities';
 import {
   AppService,
   JudgingsService,
+  ProblemsService,
   ScoreboardService,
   SubmissionsService,
+  TeamsService,
 } from './services';
 import {
+  ContestProblemTransformer,
   ContestTransformer,
   ExecutableTransformer,
   LanguageTransformer,
   ProblemTransformer,
+  TeamTransformer,
   TestcaseTransformer,
 } from './transformers';
 
@@ -59,15 +63,19 @@ const CONTROLLERS = [
 const SERVICES = [
   AppService,
   JudgingsService,
+  ProblemsService,
   ScoreboardService,
   SubmissionsService,
+  TeamsService,
 ];
 
 const TRANSFORMERS = [
+  ContestProblemTransformer,
   ContestTransformer,
   ExecutableTransformer,
   LanguageTransformer,
   ProblemTransformer,
+  TeamTransformer,
   TestcaseTransformer,
 ];
 

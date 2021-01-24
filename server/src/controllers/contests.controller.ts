@@ -26,7 +26,7 @@ import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
 import { submissionInFreezeTime } from '../core/utils';
 import { Contest, ContestProblem, Submission, Team } from '../entities';
-import { ScoreboardService } from '../services';
+import { ProblemsService, ScoreboardService, TeamsService } from '../services';
 import { ContestTransformer } from '../transformers';
 
 @Controller('contests')
@@ -42,6 +42,8 @@ export class ContestsController {
     @InjectRepository(Submission)
     private readonly submissionsRepository: ExtendedRepository<Submission>,
     private readonly scoreboardService: ScoreboardService,
+    private readonly problemsService: ProblemsService,
+    private readonly teamsService: TeamsService,
     private readonly socketService: AppGateway,
     private readonly contestTransformer: ContestTransformer,
   ) {}
@@ -191,7 +193,23 @@ export class ContestsController {
     @Res() response: Response,
   ): Promise<void> {
     const contest = await this.contestsRepository.findOneOrThrow(
-      { where: { id }, relations: ['problems', 'problems.problem'] },
+      {
+        where: { id },
+        relations: [
+          'teams',
+          'teams.user',
+          'teams.category',
+          'problems',
+          'problems.problem',
+          'problems.problem.file',
+          'problems.problem.file.content',
+          'problems.problem.testcases',
+          'problems.problem.testcases.input',
+          'problems.problem.testcases.input.content',
+          'problems.problem.testcases.output',
+          'problems.problem.testcases.output.content',
+        ],
+      },
       new NotFoundException(),
     );
     const zip = new JSZip();
@@ -204,9 +222,26 @@ export class ContestsController {
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
   async saveFromZip(@UploadedFile() file): Promise<void> {
-    const contest = await this.contestTransformer.fromZip(
+    let contest = await this.contestTransformer.fromZip(
       await JSZip.loadAsync(file.buffer),
     );
-    await this.contestsRepository.save(contest);
+    const problems = contest.problems;
+    const teams = contest.teams;
+    contest.problems = [];
+    contest.teams = [];
+    contest = await this.contestsRepository.save(contest);
+    for (const problem of problems ?? []) {
+      try {
+        problem.contest = contest;
+        problem.problem = await this.problemsService.deepSave(problem.problem);
+        await this.contestProblemsRepository.save(problem);
+      } catch (_) {}
+    }
+    for (const team of teams ?? []) {
+      try {
+        team.contests = [contest];
+        await this.teamsService.deepSave(team);
+      } catch (_) {}
+    }
   }
 }

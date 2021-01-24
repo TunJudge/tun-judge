@@ -17,7 +17,7 @@ export class Team {
   @PrimaryGeneratedColumn({ comment: 'Team ID' })
   id: number;
 
-  @Column({ comment: 'Team name' })
+  @Column({ comment: 'Team name', unique: true })
   name: string;
 
   @Column({

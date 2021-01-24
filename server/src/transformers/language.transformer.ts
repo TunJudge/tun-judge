@@ -15,14 +15,13 @@ export class LanguageTransformer implements EntityTransformer<Language> {
       await subZip.file(`${this.entityName}.yaml`).async('string'),
     ) as Language;
     const buildPayload = await subZip.file('build').async('string');
+    const buildBase64 = Buffer.from(buildPayload).toString('base64');
     language.buildScript = {
       name: 'build',
       size: buildPayload.length,
       type: 'plain/text',
-      md5Sum: MD5(buildPayload).toString(),
-      content: {
-        payload: Buffer.from(buildPayload).toString('base64'),
-      },
+      md5Sum: MD5(buildBase64).toString(),
+      content: { payload: buildBase64 },
     } as File;
     return language;
   }

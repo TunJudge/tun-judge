@@ -1,6 +1,15 @@
 import cn from 'classnames';
-import React, { CSSProperties, ReactElement, useEffect, useState } from 'react';
-import { Button, Header, Icon, Menu, Segment, SemanticWIDTHS, Table } from 'semantic-ui-react';
+import React, { CSSProperties, ReactElement, useEffect, useRef, useState } from 'react';
+import {
+  Button,
+  Header,
+  Icon,
+  Menu,
+  Popup,
+  Segment,
+  SemanticWIDTHS,
+  Table,
+} from 'semantic-ui-react';
 import { generalComparator } from '../../core/helpers';
 
 export type ListPageTableColumn<T> = {
@@ -26,8 +35,8 @@ type ListPageProps<T> = {
   formItemInitValue?: Partial<T>;
   ItemForm?: React.FC<{ item: T; dismiss: () => void; submit: (item: T) => void }>;
   zipUrl?: (item: T) => string;
-  extraActions?: any;
   withoutActions?: boolean;
+  unzip?: (file: File) => void;
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
   onRefresh?: () => void;
@@ -48,8 +57,8 @@ function ListPage<T extends { id: number | string }>({
   formItemInitValue,
   ItemForm,
   zipUrl,
-  extraActions,
   withoutActions,
+  unzip,
   onDelete,
   canDelete,
   onRefresh,
@@ -58,6 +67,7 @@ function ListPage<T extends { id: number | string }>({
   onFormDismiss,
   rowBackgroundColor,
 }: ListPageProps<T>): ReactElement {
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const [formItem, setFormItem] = useState<Partial<T>>(formItemInitValue ?? {});
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [sortState, setSortState] = useState<{
@@ -131,16 +141,63 @@ function ListPage<T extends { id: number | string }>({
           <Header>{header}</Header>
         </Menu.Item>
         <Menu.Item position="right">
-          {extraActions}
+          {unzip && (
+            <Popup
+              trigger={
+                <Button
+                  className="mr-2"
+                  color="blue"
+                  icon
+                  onClick={() => uploadInputRef.current?.click()}
+                >
+                  <Icon name="upload" />
+                  <input
+                    type="file"
+                    hidden
+                    ref={(ref) => (uploadInputRef.current = ref)}
+                    onChange={async (event) => {
+                      const files = event.target.files;
+                      if (files?.length) {
+                        await unzip(files[0]);
+                      }
+                      event.target.files = null;
+                    }}
+                  />
+                </Button>
+              }
+              position="bottom center"
+            >
+              Upload a ZIP
+            </Popup>
+          )}
           {onRefresh && (
-            <Button color="blue" className={cn({ 'mr-2': !!ItemForm })} icon onClick={onRefresh}>
-              <Icon name="refresh" />
-            </Button>
+            <Popup
+              trigger={
+                <Button
+                  color="blue"
+                  className={cn({ 'mr-2': !!ItemForm })}
+                  icon
+                  onClick={onRefresh}
+                >
+                  <Icon name="refresh" />
+                </Button>
+              }
+              position="bottom center"
+            >
+              Refresh
+            </Popup>
           )}
           {ItemForm && (
-            <Button color="blue" icon onClick={() => setFormOpen(true)}>
-              <Icon name="plus" />
-            </Button>
+            <Popup
+              trigger={
+                <Button color="blue" icon onClick={() => setFormOpen(true)}>
+                  <Icon name="plus" />
+                </Button>
+              }
+              position="bottom center"
+            >
+              Add
+            </Popup>
           )}
         </Menu.Item>
       </Segment>

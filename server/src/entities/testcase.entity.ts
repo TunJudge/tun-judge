@@ -30,10 +30,6 @@ export class Testcase {
   @Column({ comment: 'Test case description', nullable: true })
   description: string;
 
-  @OneToOne(() => File, { cascade: true })
-  @JoinColumn()
-  image: File;
-
   @Column({ comment: 'Test case rank for judging' })
   rank: number;
 

@@ -1,8 +1,7 @@
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
-import React, { useEffect, useRef } from 'react';
-import { Button, Icon } from 'semantic-ui-react';
+import React, { useEffect } from 'react';
 import { Contest } from '../../../../core/models';
 import { hostname, rootStore } from '../../../../core/stores/RootStore';
 import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
@@ -10,7 +9,6 @@ import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ContestForm from './ContestForm';
 
 const ContestsList: React.FC = observer(() => {
-  const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const {
     isUserAdmin,
     contestsStore: { data, fetchAll, create, update, remove, unzip },
@@ -77,23 +75,7 @@ const ContestsList: React.FC = observer(() => {
       formItemInitValue={observable({ problems: [] })}
       ItemForm={isUserAdmin ? ContestForm : undefined}
       onDelete={remove}
-      extraActions={
-        <Button className="mr-2" color="blue" icon onClick={() => uploadInputRef.current?.click()}>
-          <Icon name="upload" />
-          <input
-            type="file"
-            multiple
-            hidden
-            ref={(ref) => (uploadInputRef.current = ref)}
-            onChange={async (event) => {
-              const files = event.target.files;
-              if (files?.length) {
-                await unzip(files[0]);
-              }
-            }}
-          />
-        </Button>
-      }
+      unzip={isUserAdmin ? unzip : undefined}
       zipUrl={({ id }) => `${hostname}/api/contests/${id}/zip`}
       withoutActions={!isUserAdmin}
       onRefresh={() => Promise.all([fetchAll(), fetchAllProblems()])}

@@ -12,7 +12,7 @@ export class Language {
   @PrimaryGeneratedColumn({ comment: 'Language ID' })
   id: number;
 
-  @Column({ comment: 'Language name' })
+  @Column({ comment: 'Language name', unique: true })
   name: string;
 
   @Column({ comment: 'Language Docker Image' })

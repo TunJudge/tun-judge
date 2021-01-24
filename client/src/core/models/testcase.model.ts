@@ -6,7 +6,6 @@ export interface Testcase {
   input: File;
   output: File;
   description: string;
-  image: File;
   rank: number;
   sample: boolean;
   deleted: boolean;

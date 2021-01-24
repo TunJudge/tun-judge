@@ -20,7 +20,8 @@ import * as JSZip from 'jszip';
 import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
-import { Executable, Problem, Submission, Testcase } from '../entities';
+import { Problem, Submission } from '../entities';
+import { ProblemsService } from '../services';
 import { ProblemTransformer } from '../transformers';
 
 @Controller('problems')
@@ -31,10 +32,7 @@ export class ProblemsController {
     private readonly problemsRepository: ExtendedRepository<Problem>,
     @InjectRepository(Submission)
     private readonly submissionsRepository: ExtendedRepository<Submission>,
-    @InjectRepository(Executable)
-    private readonly executablesRepository: ExtendedRepository<Executable>,
-    @InjectRepository(Testcase)
-    private readonly testcasesRepository: ExtendedRepository<Testcase>,
+    private readonly problemsService: ProblemsService,
     private readonly problemTransformer: ProblemTransformer,
   ) {}
 
@@ -128,26 +126,9 @@ export class ProblemsController {
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
   async saveFromZip(@UploadedFile() file): Promise<void> {
-    let problem = await this.problemTransformer.fromZip(
+    const problem = await this.problemTransformer.fromZip(
       await JSZip.loadAsync(file.buffer),
     );
-    problem.runScript = await this.executablesRepository.findOneOrThrow(
-      {
-        default: true,
-        type: 'RUNNER',
-      },
-      new NotFoundException(),
-    );
-    problem.checkScript = await this.executablesRepository.findOneOrThrow(
-      {
-        default: true,
-        type: 'CHECKER',
-      },
-      new NotFoundException(),
-    );
-    const testcases = problem.testcases;
-    problem = await this.problemsRepository.save(problem);
-    testcases.forEach((testcase) => (testcase.problem = problem));
-    await this.testcasesRepository.save(testcases);
+    await this.problemsService.deepSave(problem);
   }
 }
