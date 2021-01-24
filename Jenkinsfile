@@ -29,18 +29,27 @@ node("main") {
         runInDocker(nodeDockerImage, "yarn prettier")
     }
 
+    def version
+
+    stage("Parse Version") {
+        version = sh(
+            script: """grep -E '^.*"version": "([^"]+)".*$' package.json | sed -E 's/${regex}/\\1/""",
+            returnStdout: true
+        ).trim()
+    }
+
     def serverImage
     def judgeImage
 
     parallel(
         "Build Server": {
             stage("Build Server") {
-                serverImage = docker.build("tunjudge/server:latest", "-f docker/Dockerfile.server .")
+                serverImage = docker.build("tunjudge/server:${version}", "-f docker/Dockerfile.server .")
             }
         },
         "Build Judge": {
             stage("Build Judge") {
-                judgeImage = docker.build("tunjudge/judge:latest", "-f docker/Dockerfile.judge .")
+                judgeImage = docker.build("tunjudge/judge:${version}", "-f docker/Dockerfile.judge .")
             }
         }
     )
@@ -50,12 +59,14 @@ node("main") {
             parallel(
                 "Publish Server": {
                     stage("Publish Server") {
-                        serverImage.push()
+                        serverImage.push(version)
+                        serverImage.push("latest")
                     }
                 },
                 "Publish Judge": {
                     stage("Publish Judge") {
-                        judgeImage.push()
+                        judgeImage.push(version)
+                        judgeImage.push("latest")
                     }
                 }
             )
