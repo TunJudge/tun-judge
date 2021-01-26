@@ -12,14 +12,14 @@ const JudgeHostLogsViewer: React.FC<JudgeHostLogsViewerProps> = ({ hostname, dis
   useEffect(() => {
     if (hostname) {
       const event = `judgeHost-${hostname}-logs`;
-      socket.removeEventListener(event);
+      socket.off(event);
       socket.on(event, (logLine: string) => {
         setLogs((logs) => [...logs, logLine]);
         const terminalSegment = document.getElementById('terminal-logs');
         terminalSegment && (terminalSegment.scrollTop = terminalSegment.scrollHeight);
       });
       return () => {
-        socket.removeEventListener(event);
+        socket.off(event);
       };
     }
   }, [hostname, socket]);

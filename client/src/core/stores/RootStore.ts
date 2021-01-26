@@ -1,5 +1,5 @@
 import { action, autorun, computed, observable } from 'mobx';
-import { connect, Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { User } from '../models';
 import http from '../utils/http-client';
 import { ContestsStore } from './ContestsStore';
@@ -41,7 +41,7 @@ export class RootStore {
     submissions: 1,
   };
 
-  socket: typeof Socket = connect(`${hostname}/ws`, { transports: ['websocket'] });
+  socket: Socket = io(`${hostname}/ws`, { transports: ['websocket'] });
 
   publicStore: PublicStore;
 

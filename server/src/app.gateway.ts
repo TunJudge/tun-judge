@@ -34,7 +34,7 @@ export class AppGateway {
   subscribe(client: Socket) {
     if (
       ['admin', 'jury'].includes(
-        client.request.session?.passport?.user.role.name,
+        (client.request as any).session?.passport?.user.role.name,
       )
     ) {
       client.join('juries');
