@@ -3,8 +3,8 @@ import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
 import { AppModule } from './app.module';
 import config from './core/config';
-import { EventsAdapter } from './core/events.adapter';
 import session from './core/session';
+import { SocketIoAdapter } from './core/socket-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,7 +18,7 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.use(session);
-  app.useWebSocketAdapter(new EventsAdapter(app));
+  app.useWebSocketAdapter(new SocketIoAdapter(app));
   app.use(passport.initialize());
   app.use(passport.session());
   await app.listen(3000, '0.0.0.0');

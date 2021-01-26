@@ -1,8 +1,8 @@
-import { connect, Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import config from '../config';
 
 export class SocketService {
-  private socket: typeof Socket = connect(`${config.url}/ws`, {
+  private socket: Socket = io(`${config.url}/ws`, {
     transports: ['websocket'],
   });
 
