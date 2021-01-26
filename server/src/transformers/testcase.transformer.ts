@@ -19,11 +19,11 @@ export class TestcaseTransformer implements EntityTransformer<Testcase> {
             new RegExp(`${basePath}[^\/]+\/Testcase\/$`, 'gm').test(file),
         )
         .map((folder) => folder.replace(/Testcase\/$/g, ''))
-        .map((folder) => this.fromZip(zip.folder(basename(folder)), folder)),
+        .map((folder) => this.fromZip(zip.folder(basename(folder)))),
     );
   }
 
-  async fromZip(zip: JSZip, basePath = ''): Promise<Testcase> {
+  async fromZip(zip: JSZip): Promise<Testcase> {
     const subZip = zip.folder(this.entityName);
     const testcase = load(
       await subZip.file(`${this.entityName}.yaml`).async('string'),

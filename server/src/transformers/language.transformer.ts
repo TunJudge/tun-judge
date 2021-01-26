@@ -19,11 +19,11 @@ export class LanguageTransformer implements EntityTransformer<Language> {
             new RegExp(`${basePath}[^\/]+\/Language\/$`, 'gm').test(file),
         )
         .map((folder) => folder.replace(/Language\/$/g, ''))
-        .map((folder) => this.fromZip(zip.folder(basename(folder)), folder)),
+        .map((folder) => this.fromZip(zip.folder(basename(folder)))),
     );
   }
 
-  async fromZip(zip: JSZip, basePath = ''): Promise<Language> {
+  async fromZip(zip: JSZip): Promise<Language> {
     const subZip = zip.folder(this.entityName);
     const language = load(
       await subZip.file(`${this.entityName}.yaml`).async('string'),

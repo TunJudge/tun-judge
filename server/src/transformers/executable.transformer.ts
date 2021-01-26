@@ -28,7 +28,6 @@ export class ExecutableTransformer implements EntityTransformer<Executable> {
     const executable = load(
       await subZip.file(`${this.entityName}.yaml`).async('string'),
     ) as Executable;
-    executable.default = false;
     const filePath = Object.keys(subZip.files).find(
       (file) =>
         file.startsWith(`${basePath}Executable/`) &&

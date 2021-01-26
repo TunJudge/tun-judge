@@ -18,11 +18,11 @@ export class TeamTransformer implements EntityTransformer<Team> {
             new RegExp(`${basePath}[^\/]+\/Team\/$`, 'gm').test(file),
         )
         .map((folder) => folder.replace(/Team\/$/g, ''))
-        .map((folder) => this.fromZip(zip.folder(basename(folder)), folder)),
+        .map((folder) => this.fromZip(zip.folder(basename(folder)))),
     );
   }
 
-  async fromZip(zip: JSZip, basePath = ''): Promise<Team> {
+  async fromZip(zip: JSZip): Promise<Team> {
     const subZip = zip.folder(this.entityName);
     return load(
       await subZip.file(`${this.entityName}.yaml`).async('string'),
