@@ -1,6 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { submissionInFreezeTime } from '../core/utils';
 import { Submission } from '../entities';
 import { ScoreboardService } from './scoreboard.service';
 
@@ -9,6 +15,7 @@ export class SubmissionsService {
   constructor(
     @InjectRepository(Submission)
     private readonly submissionsRepository: ExtendedRepository<Submission>,
+    @Inject(forwardRef(() => ScoreboardService))
     private readonly scoreboardService: ScoreboardService,
   ) {}
 
@@ -67,7 +74,7 @@ export class SubmissionsService {
     return query.getManyAndCount();
   }
 
-  getOneById(id: number): Promise<Submission> {
+  getById(id: number): Promise<Submission> {
     return this.submissionsRepository.findOneOrThrow(
       {
         where: { id },
@@ -84,6 +91,8 @@ export class SubmissionsService {
           'judgings.juryMember',
           'judgings.runs',
           'judgings.runs.testcase',
+          'judgings.runs.testcase.input',
+          'judgings.runs.testcase.output',
           'judgings.runs.runOutput',
           'judgings.runs.checkerOutput',
           'judgings.runs.checkerOutput.content',
@@ -91,8 +100,27 @@ export class SubmissionsService {
           'judgings.runs.errorOutput.content',
         ],
       },
-      new NotFoundException(),
+      new NotFoundException('Submission not found!'),
     );
+  }
+
+  save(submission: Submission): Promise<Submission> {
+    return this.submissionsRepository.save(submission);
+  }
+
+  async getByContestIdAndProblemId(
+    contestId: number,
+    problemId: number,
+  ): Promise<Submission[]> {
+    return this.submissionsRepository.find({
+      where: {
+        contest: { id: contestId },
+        problem: { id: problemId },
+        valid: true,
+      },
+      relations: ['team', 'judgings'],
+      order: { submitTime: 'ASC' },
+    });
   }
 
   async getByContestIdAndTeamId(
@@ -110,11 +138,15 @@ export class SubmissionsService {
         order: { submitTime: 'DESC' },
       })
     ).map((submission) => {
-      if (submission.contest.verificationRequired) {
+      const inFreezeTime = submissionInFreezeTime(submission.contest)(
+        submission,
+      );
+      if (submission.contest.verificationRequired || inFreezeTime) {
         const judging = submission.judgings
           .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
           .shift();
-        submission.judgings = judging?.verified ? [judging] : [];
+        submission.judgings =
+          judging?.verified && !inFreezeTime ? [judging] : [];
       }
       return submission;
     });
@@ -138,5 +170,51 @@ export class SubmissionsService {
 
   async rejudge(id: number): Promise<void> {
     await this.submissionsRepository.update({ id }, { judgeHost: null });
+  }
+
+  async rejudgeByProblemId(id: number): Promise<void> {
+    await this.submissionsRepository.update(
+      { problem: { id } },
+      { judgeHost: null },
+    );
+  }
+
+  getNextSubmission(): Promise<Submission> {
+    return this.submissionsRepository
+      .createQueryBuilder('s')
+      .leftJoinAndSelect('s.contest', 'contest')
+      .leftJoinAndSelect('s.file', 'file')
+      .leftJoinAndSelect('file.content', 'fileContent')
+      .leftJoinAndSelect('s.language', 'language')
+      .leftJoinAndSelect('language.buildScript', 'languageBuildScript')
+      .leftJoinAndSelect(
+        'languageBuildScript.content',
+        'languageBuildScriptContent',
+      )
+      .leftJoinAndSelect('s.problem', 'problem')
+      .leftJoinAndSelect('problem.testcases', 'testcases')
+      .leftJoinAndSelect('testcases.input', 'input')
+      .leftJoinAndSelect('testcases.output', 'output')
+      .leftJoinAndSelect('problem.runScript', 'runScript')
+      .leftJoinAndSelect('runScript.file', 'runScriptFile')
+      .leftJoinAndSelect('runScriptFile.content', 'runScriptFileContent')
+      .leftJoinAndSelect('runScript.buildScript', 'runScriptBuildScript')
+      .leftJoinAndSelect(
+        'runScriptBuildScript.content',
+        'runScriptBuildScriptContent',
+      )
+      .leftJoinAndSelect('problem.checkScript', 'checkScript')
+      .leftJoinAndSelect('checkScript.file', 'checkScriptFile')
+      .leftJoinAndSelect('checkScriptFile.content', 'checkScriptFileContent')
+      .leftJoinAndSelect('checkScript.buildScript', 'checkScriptBuildScript')
+      .leftJoinAndSelect(
+        'checkScriptBuildScript.content',
+        'checkScriptBuildScriptContent',
+      )
+      .where('s.judgeHost is null')
+      .andWhere('contest.enabled = true')
+      .andWhere('language.allowJudge = true')
+      .orderBy('s.submitTime', 'ASC')
+      .getOne();
   }
 }

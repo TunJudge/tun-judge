@@ -1,22 +1,12 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Session,
-  UseGuards,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ExtendedRepository } from '../core/extended-repository';
+import { Controller, Get, Session, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
 import { User } from '../entities';
+import { UsersService } from '../services';
 
 @Controller()
 @UseGuards(AuthenticatedGuard)
 export class AppController {
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: ExtendedRepository<User>,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get('current')
   async current(
@@ -27,11 +17,7 @@ export class AppController {
       },
     },
   ): Promise<User> {
-    const user = await this.usersRepository.findOneOrThrow(
-      id,
-      { relations: ['team'] },
-      new NotFoundException(),
-    );
+    const user = await this.usersService.getById(id, ['team']);
     delete user.password;
     return user;
   }

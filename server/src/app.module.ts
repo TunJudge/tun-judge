@@ -28,12 +28,21 @@ import { RolesGuard } from './core/guards';
 import { entities } from './entities';
 import {
   AppService,
+  ContestProblemsService,
   ContestsService,
+  ExecutablesService,
+  FilesService,
+  JudgeHostsService,
+  JudgingRunsService,
   JudgingsService,
+  LanguagesService,
   ProblemsService,
   ScoreboardService,
   SubmissionsService,
+  TeamCategoriesService,
   TeamsService,
+  TestcasesService,
+  UsersService,
 } from './services';
 import {
   ContestProblemTransformer,
@@ -63,12 +72,21 @@ const CONTROLLERS = [
 
 const SERVICES = [
   AppService,
+  ContestProblemsService,
   ContestsService,
+  ExecutablesService,
+  FilesService,
+  JudgeHostsService,
+  JudgingRunsService,
   JudgingsService,
+  LanguagesService,
   ProblemsService,
   ScoreboardService,
   SubmissionsService,
+  TeamCategoriesService,
   TeamsService,
+  TestcasesService,
+  UsersService,
 ];
 
 const TRANSFORMERS = [

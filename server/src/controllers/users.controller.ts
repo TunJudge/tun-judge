@@ -4,64 +4,43 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Post,
   Put,
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { genSalt, hash } from 'bcrypt';
-import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
 import { User } from '../entities';
+import { UsersService } from '../services';
 
 @Controller('users')
 @UseGuards(AuthenticatedGuard)
 export class UsersController {
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: ExtendedRepository<User>,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   @Roles('admin', 'jury')
   getAll(): Promise<User[]> {
-    return this.usersRepository
-      .find({
-        order: { id: 'ASC' },
-        relations: ['role', 'team'],
-      })
-      .then((users) => users.map((user) => user.clean()));
+    return this.usersService.getAll();
   }
 
   @Post()
   @Roles('admin')
   async create(@Body() user: User): Promise<User> {
-    user.password = await hash(
-      user.password || Math.random().toString(36).substring(2),
-      await genSalt(10),
-    );
-    return this.usersRepository.save(user);
+    return this.usersService.create(user);
   }
 
   @Put(':id')
   @Roles('admin')
-  async update(@Param('id') id: number, @Body() user: User): Promise<User> {
-    const oldUser = await this.usersRepository.findOneOrThrow(
-      id,
-      new NotFoundException(),
-    );
-    if (user.password)
-      user.password = await hash(user.password, await genSalt(10));
-    return this.usersRepository.save({ ...oldUser, ...user });
+  update(@Param('id') id: number, @Body() user: User): Promise<User> {
+    return this.usersService.update(id, user);
   }
 
   @Delete(':id')
   @Roles('admin')
-  async delete(
+  delete(
     @Param('id') id: string,
     @Session()
     {
@@ -70,9 +49,10 @@ export class UsersController {
       },
     },
   ): Promise<void> {
-    if (parseInt(id) === currentId) {
+    const _id = parseInt(id);
+    if (_id === currentId) {
       throw new BadRequestException();
     }
-    await this.usersRepository.delete(id);
+    return this.usersService.delete(_id);
   }
 }

@@ -3,35 +3,40 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { AppGateway } from '../app.gateway';
-import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
-import { JudgeHost, Judging, JudgingRun, Submission, User } from '../entities';
-import { ScoreboardService } from '../services';
+import {
+  Contest,
+  JudgeHost,
+  Judging,
+  JudgingRun,
+  Submission,
+} from '../entities';
+import {
+  JudgeHostsService,
+  JudgingRunsService,
+  JudgingsService,
+  ScoreboardService,
+  SubmissionsService,
+  UsersService,
+} from '../services';
 
 @Controller('judge-hosts')
 @UseGuards(AuthenticatedGuard)
 export class JudgeHostsController {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: ExtendedRepository<User>,
-    @InjectRepository(Judging)
-    private readonly judgingsRepository: ExtendedRepository<Judging>,
-    @InjectRepository(JudgingRun)
-    private readonly judgingRunsRepository: ExtendedRepository<JudgingRun>,
-    @InjectRepository(JudgeHost)
-    private readonly judgeHostsRepository: ExtendedRepository<JudgeHost>,
-    @InjectRepository(Submission)
-    private readonly submissionsRepository: ExtendedRepository<Submission>,
+    private readonly usersService: UsersService,
+    private readonly judgingsService: JudgingsService,
+    private readonly judgingRunsService: JudgingRunsService,
+    private readonly submissionsService: SubmissionsService,
+    private readonly judgeHostsService: JudgeHostsService,
     private readonly scoreboardService: ScoreboardService,
     private readonly socketService: AppGateway,
   ) {}
@@ -39,42 +44,29 @@ export class JudgeHostsController {
   @Get()
   @Roles('admin', 'jury')
   getAll(): Promise<JudgeHost[]> {
-    return this.judgeHostsRepository.find({
-      order: { id: 'ASC' },
-      relations: ['user'],
-    });
+    return this.judgeHostsService.getAll();
   }
 
   @Patch(':id/toggle/:active')
   @Roles('admin')
-  async toggle(
+  toggle(
     @Param('id') id: number,
     @Param('active') active: string,
   ): Promise<void> {
-    await this.judgeHostsRepository.findOneOrThrow(
-      { id: id },
-      new NotFoundException(),
-    );
-    await this.judgeHostsRepository.update(
-      { id },
-      { active: active === 'true' },
-    );
+    return this.judgeHostsService.toggle(id, active === 'true');
   }
 
   @Post('subscribe')
   @Roles('admin', 'judge-host')
   async subscribe(@Body() { hostname, username }: any): Promise<void> {
-    const user = await this.usersRepository.findOneOrThrow(
-      { username },
-      new NotFoundException(`User with username ${username} not found!`),
-    );
-    if (await this.judgeHostsRepository.count({ hostname })) {
-      await this.judgeHostsRepository.update(
+    const user = await this.usersService.getByUsername(username);
+    if (await this.judgeHostsService.count({ hostname })) {
+      await this.judgeHostsService.update(
         { hostname },
         { user, pollTime: new Date() },
       );
     } else {
-      await this.judgeHostsRepository.save({
+      await this.judgeHostsService.save({
         hostname: hostname,
         user: user,
         active: true,
@@ -90,20 +82,13 @@ export class JudgeHostsController {
     @Param('id') judgingId: number,
     @Body() judging: Judging,
   ): Promise<void> {
-    const oldJudging = await this.judgingsRepository.findOneOrThrow(
-      {
-        where: { id: judgingId },
-        relations: [
-          'contest',
-          'submission',
-          'submission.team',
-          'submission.problem',
-        ],
-      },
-
-      new NotFoundException(`No judging found for id ${judgingId}`),
-    );
-    await this.judgingsRepository.save({ ...oldJudging, ...judging });
+    const oldJudging = await this.judgingsService.getById(judgingId, [
+      'contest',
+      'submission',
+      'submission.team',
+      'submission.problem',
+    ]);
+    await this.judgingsService.save({ ...oldJudging, ...judging });
     await this.scoreboardService.refreshScoreCache(
       oldJudging.contest,
       oldJudging.submission.team,
@@ -119,15 +104,8 @@ export class JudgeHostsController {
     @Param('id') judgingId: number,
     @Body() judgingRun: JudgingRun,
   ): Promise<void> {
-    await this.judgingsRepository.findOneOrThrow(
-      { id: judgingId },
-      new NotFoundException(`No judging found for id ${judgingId}`),
-    );
-    const oldJudgeRun = await this.judgingRunsRepository.findOne({
-      judging: { id: judgingId },
-      testcase: { id: judgingRun.testcase.id },
-    });
-    await this.judgingRunsRepository.save({ ...oldJudgeRun, ...judgingRun });
+    await this.judgingsService.getById(judgingId);
+    await this.judgingRunsService.save(judgingRun);
     this.socketService.pingForUpdates('judgeRuns');
   }
 
@@ -136,65 +114,25 @@ export class JudgeHostsController {
   async getNextJudging(
     @Param('hostname') hostname: string,
   ): Promise<Judging | undefined> {
-    const judgeHost = await this.judgeHostsRepository.findOneOrThrow(
-      { hostname },
-      new NotFoundException(),
-    );
-    await this.judgeHostsRepository.update(
+    const judgeHost = await this.judgeHostsService.update(
       { hostname },
       { pollTime: new Date() },
     );
     if (!judgeHost.active) return undefined;
-    const submission = await this.submissionsRepository
-      .createQueryBuilder('s')
-      .leftJoinAndSelect('s.contest', 'contest')
-      .leftJoinAndSelect('s.file', 'file')
-      .leftJoinAndSelect('file.content', 'fileContent')
-      .leftJoinAndSelect('s.language', 'language')
-      .leftJoinAndSelect('language.buildScript', 'languageBuildScript')
-      .leftJoinAndSelect(
-        'languageBuildScript.content',
-        'languageBuildScriptContent',
-      )
-      .leftJoinAndSelect('s.problem', 'problem')
-      .leftJoinAndSelect('problem.testcases', 'testcases')
-      .leftJoinAndSelect('testcases.input', 'input')
-      .leftJoinAndSelect('testcases.output', 'output')
-      .leftJoinAndSelect('problem.runScript', 'runScript')
-      .leftJoinAndSelect('runScript.file', 'runScriptFile')
-      .leftJoinAndSelect('runScriptFile.content', 'runScriptFileContent')
-      .leftJoinAndSelect('runScript.buildScript', 'runScriptBuildScript')
-      .leftJoinAndSelect(
-        'runScriptBuildScript.content',
-        'runScriptBuildScriptContent',
-      )
-      .leftJoinAndSelect('problem.checkScript', 'checkScript')
-      .leftJoinAndSelect('checkScript.file', 'checkScriptFile')
-      .leftJoinAndSelect('checkScriptFile.content', 'checkScriptFileContent')
-      .leftJoinAndSelect('checkScript.buildScript', 'checkScriptBuildScript')
-      .leftJoinAndSelect(
-        'checkScriptBuildScript.content',
-        'checkScriptBuildScriptContent',
-      )
-      .where('s.judgeHost is null')
-      .andWhere('contest.enabled = true')
-      .andWhere('language.allowJudge = true')
-      .orderBy('s.submitTime', 'ASC')
-      .getOne();
+    const submission = await this.submissionsService.getNextSubmission();
     if (submission) {
-      let judging = await this.judgingsRepository.findOne({
-        endTime: null,
-        submission: { id: submission.id },
-      });
-      judging = await this.judgingsRepository.save({
+      let judging = await this.judgingsService.getUnfinishedBySubmissionId(
+        submission.id,
+      );
+      judging = await this.judgingsService.save({
         ...judging,
         startTime: new Date(),
-        contest: { id: submission.contest.id },
-        judgeHost: { id: judgeHost.id },
-        submission: { id: submission.id },
+        contest: { id: submission.contest.id } as Contest,
+        judgeHost: { id: judgeHost.id } as JudgeHost,
+        submission: { id: submission.id } as Submission,
       });
       submission.judgeHost = judgeHost;
-      await this.submissionsRepository.save(submission);
+      await this.submissionsService.save(submission);
       judging.submission = submission;
       this.socketService.pingForUpdates('judgings');
       return judging;
@@ -204,6 +142,6 @@ export class JudgeHostsController {
   @Delete(':id')
   @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
-    await this.judgeHostsRepository.delete(id);
+    await this.judgeHostsService.delete(id);
   }
 }

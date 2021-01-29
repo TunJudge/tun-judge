@@ -368,7 +368,7 @@ export function DropdownField<T>({
           ? ((entity[field] as any) ?? []).map((value: any) =>
               typeof value === 'object' ? value[optionsIdField ?? 'id'] : value,
             )
-          : typeof entity[field] === 'object'
+          : !!entity[field] && typeof entity[field] === 'object'
           ? (entity[field] as any)[optionsIdField ?? 'id']
           : entity[field]
       }

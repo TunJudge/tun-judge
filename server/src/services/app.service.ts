@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { genSalt, hash } from 'bcrypt';
-import { AppGateway } from '../app.gateway';
 import { ExtendedRepository } from '../core/extended-repository';
-import { Role, User } from '../entities';
+import { Role } from '../entities';
+import { UsersService } from './users.service';
 
 const roles: Partial<Role>[] = [
   {
@@ -27,23 +27,21 @@ const roles: Partial<Role>[] = [
 @Injectable()
 export class AppService {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: ExtendedRepository<User>,
+    private readonly usersService: UsersService,
     @InjectRepository(Role)
     private readonly rolesRepository: ExtendedRepository<Role>,
-    private readonly socketService: AppGateway,
   ) {
     this.initDatabase();
   }
 
   async initDatabase(): Promise<void> {
     await this.rolesRepository.save(roles);
-    if (!(await this.usersRepository.findOne({ username: 'admin' }))) {
-      await this.usersRepository.save({
+    if (!(await this.usersService.findByUsername('admin'))) {
+      await this.usersService.save({
         name: 'Super Admin',
         username: 'admin',
         password: await hash('admin', await genSalt(10)),
-        role: { name: 'admin' },
+        role: { name: 'admin' } as Role,
       });
     }
   }
