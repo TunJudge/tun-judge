@@ -75,14 +75,16 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
                   <Table.Row key={`${testcase.id}-in`}>
                     <Table.Cell rowSpan={2} textAlign="center">
                       {testcase.rank > 0 && (
-                        <Icon
-                          className="cursor-pointer"
-                          name="angle up"
-                          onClick={() => move(testcase.id, 'up')}
-                          style={{ marginRight: 0 }}
-                        />
+                        <>
+                          <Icon
+                            className="cursor-pointer"
+                            name="angle up"
+                            onClick={() => move(testcase.id, 'up')}
+                            style={{ marginRight: 0 }}
+                          />
+                          <br />
+                        </>
                       )}
-                      <br />
                       {testcase.rank}
                       <br />
                       {testcase.rank < data.length - 1 && (

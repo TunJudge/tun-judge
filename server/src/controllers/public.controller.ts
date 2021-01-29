@@ -1,45 +1,31 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Session,
-} from '@nestjs/common';
+import { Controller, Get, Param, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual } from 'typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
-import { Contest, ContestProblem, ScoreCache, User } from '../entities';
+import { Contest, ContestProblem, ScoreCache } from '../entities';
+import {
+  ContestProblemsService,
+  ContestsService,
+  UsersService,
+} from '../services';
 
 @Controller('public')
 export class PublicController {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: ExtendedRepository<User>,
-    @InjectRepository(Contest)
-    private readonly contestsRepository: ExtendedRepository<Contest>,
-    @InjectRepository(ContestProblem)
-    private readonly contestProblemsRepository: ExtendedRepository<ContestProblem>,
+    private readonly usersService: UsersService,
+    private readonly contestsService: ContestsService,
+    private readonly contestProblemsService: ContestProblemsService,
     @InjectRepository(ScoreCache)
     private readonly scoreCachesRepository: ExtendedRepository<ScoreCache>,
   ) {}
 
   @Get('contests')
   async getContests(@Session() session): Promise<Contest[]> {
-    const contests = (
-      await this.contestsRepository.find({
-        relations: ['teams', 'problems', 'problems.problem'],
-        order: { activateTime: 'ASC' },
-        where: {
-          enabled: true,
-          activateTime: LessThanOrEqual(new Date()),
-        },
-      })
-    ).map(this.cleanNullProblems);
+    const contests = await this.contestsService.getAllActive();
     switch (session.passport?.user.role.name) {
       case 'team':
-        const user = await this.usersRepository.findOneOrThrow(
-          { where: { id: session.passport?.user.id }, relations: ['team'] },
-          new NotFoundException(),
+        const user = await this.usersService.getById(
+          session.passport?.user.id,
+          ['team'],
         );
         return contests
           .filter(
@@ -63,29 +49,10 @@ export class PublicController {
     return contest;
   }
 
-  cleanNullProblems(contest: Contest): Contest {
-    contest.problems = contest.problems.filter(
-      (problem) => !!problem.shortName,
-    );
-    return contest;
-  }
-
   @Get('contest/:id/problems')
-  async getProblems(@Param('id') contestId: number): Promise<ContestProblem[]> {
-    const contest = await this.contestsRepository.findOne({
-      where: {
-        id: contestId,
-        enabled: true,
-        startTime: LessThanOrEqual(new Date()),
-      },
-    });
-    return !contest
-      ? []
-      : this.contestProblemsRepository.find({
-          order: { shortName: 'ASC' },
-          where: { contest: { id: contestId } },
-          relations: ['problem', 'problem.file', 'problem.file.content'],
-        });
+  async getProblems(@Param('id') id: number): Promise<ContestProblem[]> {
+    const contest = await this.contestsService.getPublicById(id);
+    return !contest ? [] : this.contestProblemsService.getByContestId(id);
   }
 
   @Get('contest/:id/score-caches')
@@ -93,9 +60,7 @@ export class PublicController {
     @Param('id') contestId: number,
     @Session() session,
   ): Promise<ScoreCache[]> {
-    const user = await this.usersRepository.findOne({
-      id: session?.passport?.user.id,
-    });
+    const user = await this.usersService.findById(session?.passport?.user.id);
     return (
       await this.scoreCachesRepository.find({
         where: { contest: { id: contestId } },

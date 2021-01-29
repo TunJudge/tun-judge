@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -15,66 +14,49 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
-import * as JSZip from 'jszip';
-import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
-import { Problem, Submission } from '../entities';
-import { ProblemsService } from '../services';
+import { unzipEntities, zipEntities } from '../core/utils';
+import { Problem } from '../entities';
+import { ProblemsService, SubmissionsService } from '../services';
 import { ProblemTransformer } from '../transformers';
 
 @Controller('problems')
 @UseGuards(AuthenticatedGuard)
 export class ProblemsController {
   constructor(
-    @InjectRepository(Problem)
-    private readonly problemsRepository: ExtendedRepository<Problem>,
-    @InjectRepository(Submission)
-    private readonly submissionsRepository: ExtendedRepository<Submission>,
     private readonly problemsService: ProblemsService,
+    private readonly submissionsService: SubmissionsService,
     private readonly problemTransformer: ProblemTransformer,
   ) {}
 
   @Get()
   @Roles('admin', 'jury')
   getAll(): Promise<Problem[]> {
-    return this.problemsRepository.find({
-      order: { id: 'ASC' },
-      relations: [
-        'file',
-        'file.content',
-        'testcases',
-        'runScript',
-        'checkScript',
-      ],
-    });
+    return this.problemsService.getAll();
   }
 
   @Get(':id')
   @Roles('admin', 'jury')
   getById(@Param('id') id: number): Promise<Problem> {
-    return this.problemsRepository.findOneOrThrow(
-      id,
-      { relations: ['testcases', 'file', 'file.content'] },
-      new NotFoundException(),
-    );
+    return this.problemsService.getById(id, [
+      'testcases',
+      'file',
+      'file.content',
+    ]);
   }
 
   @Patch(':id/rejudge')
   @Roles('admin', 'jury')
   async rejudge(@Param('id') id: number): Promise<void> {
-    await this.submissionsRepository.update(
-      { problem: { id } },
-      { judgeHost: null },
-    );
+    await this.submissionsService.rejudgeByProblemId(id);
   }
 
   @Post()
   @Roles('admin')
   create(@Body() problem: Problem): Promise<Problem> {
-    return this.problemsRepository.save(problem);
+    return this.problemsService.save(problem);
   }
 
   @Put(':id')
@@ -83,17 +65,13 @@ export class ProblemsController {
     @Param('id') id: number,
     @Body() problem: Problem,
   ): Promise<Problem> {
-    const oldProblem = await this.problemsRepository.findOneOrThrow(
-      id,
-      new NotFoundException(),
-    );
-    return this.problemsRepository.save({ ...oldProblem, ...problem });
+    return this.problemsService.update(id, problem);
   }
 
   @Delete(':id')
   @Roles('admin')
-  async delete(@Param('id') id: number): Promise<void> {
-    await this.problemsRepository.delete(id);
+  delete(@Param('id') id: number): Promise<void> {
+    return this.problemsService.delete(id);
   }
 
   @Get(':id/zip')
@@ -102,32 +80,11 @@ export class ProblemsController {
     @Param('id') id: number,
     @Res() response: Response,
   ): Promise<void> {
-    const problem = await this.problemsRepository.findOneOrThrow(
-      {
-        where: { id },
-        relations: [
-          'file',
-          'file.content',
-          'testcases',
-          'testcases.input',
-          'testcases.input.content',
-          'testcases.output',
-          'testcases.output.content',
-        ],
-      },
-      new NotFoundException(),
-    );
-    const zip = new JSZip();
-    await this.problemTransformer.toZip(problem, zip);
-    response.attachment('problem.zip');
-    zip.generateNodeStream().pipe(response);
-  }
-
-  @Get('zip/all')
-  @Roles('admin')
-  async getZipAll(@Res() response: Response): Promise<void> {
-    const problems = await this.problemsRepository.find({
-      relations: [
+    return zipEntities(
+      id,
+      'problem.zip',
+      this.problemTransformer,
+      await this.problemsService.getById(id, [
         'file',
         'file.content',
         'testcases',
@@ -135,33 +92,43 @@ export class ProblemsController {
         'testcases.input.content',
         'testcases.output',
         'testcases.output.content',
-      ],
-    });
-    const zip = new JSZip();
-    await this.problemTransformer.manyToZip(problems, zip);
-    response.attachment('problems.zip');
-    zip.generateNodeStream().pipe(response);
+      ]),
+      response,
+    );
+  }
+
+  @Get('zip/all')
+  @Roles('admin')
+  async getZipAll(@Res() response: Response): Promise<void> {
+    return zipEntities(
+      undefined,
+      'problems.zip',
+      this.problemTransformer,
+      await this.problemsService.getAllWithRelations([
+        'file',
+        'file.content',
+        'testcases',
+        'testcases.input',
+        'testcases.input.content',
+        'testcases.output',
+        'testcases.output.content',
+      ]),
+      response,
+    );
   }
 
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  async saveFromZip(
+  saveFromZip(
     @UploadedFile() file,
     @Query('multiple') multiple: string,
   ): Promise<void> {
-    if (multiple === 'true') {
-      const problems = await this.problemTransformer.fromZipToMany(
-        await JSZip.loadAsync(file.buffer),
-      );
-      await Promise.all(
-        problems.map((problem) => this.problemsService.deepSave(problem)),
-      );
-    } else {
-      const problem = await this.problemTransformer.fromZip(
-        await JSZip.loadAsync(file.buffer),
-      );
-      await this.problemsService.deepSave(problem);
-    }
+    return unzipEntities<Problem>(
+      file,
+      multiple,
+      this.problemTransformer,
+      (problem) => this.problemsService.deepSave(problem),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual } from 'typeorm';
 import { AppGateway } from '../app.gateway';
@@ -8,7 +9,8 @@ import {
   submissionInFreezeTime,
   submissionIsPending,
 } from '../core/utils';
-import { Contest, Problem, ScoreCache, Submission, Team } from '../entities';
+import { Contest, Problem, ScoreCache, Team } from '../entities';
+import { SubmissionsService } from './submissions.service';
 
 @Injectable()
 export class ScoreboardService {
@@ -19,11 +21,11 @@ export class ScoreboardService {
     private readonly contestsRepository: ExtendedRepository<Contest>,
     @InjectRepository(ScoreCache)
     private readonly scoreCachesRepository: ExtendedRepository<ScoreCache>,
-    @InjectRepository(Submission)
-    private readonly submissionsRepository: ExtendedRepository<Submission>,
+    private readonly submissionsService: SubmissionsService,
     private readonly socketService: AppGateway,
   ) {}
 
+  @Interval(15 * 60 * 1000)
   async refreshScores(): Promise<void> {
     if (this.refreshing) return;
     this.refreshing = true;
@@ -51,11 +53,10 @@ export class ScoreboardService {
     const isPending = submissionIsPending(contest);
     const hasNoCompileError = submissionHasResult(contest, 'CE', true);
     const inFreezeTime = submissionInFreezeTime(contest);
-    const allProblemSubmissions = await this.submissionsRepository.find({
-      where: { problem, contest, valid: true },
-      relations: ['team', 'judgings'],
-      order: { submitTime: 'ASC' },
-    });
+    const allProblemSubmissions = await this.submissionsService.getByContestIdAndProblemId(
+      contest.id,
+      problem.id,
+    );
 
     const submissions = allProblemSubmissions.filter(
       (submission) =>

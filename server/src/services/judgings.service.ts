@@ -12,6 +12,24 @@ export class JudgingsService {
     private readonly scoreboardService: ScoreboardService,
   ) {}
 
+  getById(id: number, relations: string[] = []): Promise<Judging> {
+    return this.judgingsRepository.findOneOrThrow(
+      { where: { id }, relations },
+      new NotFoundException('Judging not found!'),
+    );
+  }
+
+  getUnfinishedBySubmissionId(submissionId: number): Promise<Judging> {
+    return this.judgingsRepository.findOne({
+      endTime: null,
+      submission: { id: submissionId },
+    });
+  }
+
+  save(judging: Judging): Promise<Judging> {
+    return this.judgingsRepository.save(judging);
+  }
+
   async setVerified(id: number, userId: number): Promise<void> {
     const {
       id: judgingId,
@@ -44,10 +62,10 @@ export class JudgingsService {
   ): Promise<void> {
     const judging = await this.judgingsRepository.findOneOrThrow(
       {
-        where: { submission: { id }, juryMember: null },
+        where: { submission: { id } },
         order: { startTime: 'DESC' },
       },
-      new NotFoundException(),
+      new NotFoundException('Judging not found!'),
     );
     await this.judgingsRepository.update(judging.id, {
       juryMember: value,

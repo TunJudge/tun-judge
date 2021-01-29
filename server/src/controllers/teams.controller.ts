@@ -3,57 +3,42 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
 import { Team } from '../entities';
+import { TeamsService } from '../services';
 
 @Controller('teams')
 @UseGuards(AuthenticatedGuard)
 export class TeamsController {
-  constructor(
-    @InjectRepository(Team)
-    private readonly teamsRepository: ExtendedRepository<Team>,
-  ) {}
+  constructor(private readonly teamsService: TeamsService) {}
 
   @Get()
   @Roles('admin', 'jury')
   getAll(): Promise<Team[]> {
-    return this.teamsRepository.find({
-      order: { id: 'ASC' },
-      relations: ['user', 'category', 'contests'],
-    });
+    return this.teamsService.getAll();
   }
 
   @Post()
   @Roles('admin')
-  async create(@Body() team: Team): Promise<Team> {
-    return this.teamsRepository.save(team);
+  create(@Body() team: Team): Promise<Team> {
+    return this.teamsService.save(team);
   }
 
   @Put(':id')
   @Roles('admin')
-  async update(@Param('id') id: number, @Body() team: Team): Promise<Team> {
-    const oldTeam = await this.teamsRepository.findOneOrThrow(
-      id,
-      new NotFoundException(),
-    );
-    return this.teamsRepository.save({
-      ...oldTeam,
-      ...team,
-    });
+  update(@Param('id') id: number, @Body() team: Team): Promise<Team> {
+    return this.teamsService.update(id, team);
   }
 
   @Delete(':id')
   @Roles('admin')
-  async delete(@Param('id') id: number): Promise<void> {
-    await this.teamsRepository.delete(id);
+  delete(@Param('id') id: number): Promise<void> {
+    return this.teamsService.delete(id);
   }
 }

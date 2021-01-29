@@ -5,6 +5,7 @@ export type Tabs = {
   key: string;
   title: string;
   icon: SemanticICONS;
+  label?: any;
 }[];
 
 export const resultMap = {

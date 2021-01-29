@@ -1,26 +1,19 @@
 import {
   Controller,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Query,
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { AppGateway } from '../app.gateway';
-import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
+import { FileContent, Submission } from '../entities';
 import {
-  File,
-  FileContent,
-  Judging,
-  JudgingRun,
-  Submission,
-} from '../entities';
-import {
+  FilesService,
+  JudgingRunsService,
   JudgingsService,
   ScoreboardService,
   SubmissionsService,
@@ -30,14 +23,8 @@ import {
 @UseGuards(AuthenticatedGuard)
 export class SubmissionsController {
   constructor(
-    @InjectRepository(Submission)
-    private readonly submissionsRepository: ExtendedRepository<Submission>,
-    @InjectRepository(Judging)
-    private readonly judgingsRepository: ExtendedRepository<Judging>,
-    @InjectRepository(JudgingRun)
-    private readonly judgingRunsRepository: ExtendedRepository<JudgingRun>,
-    @InjectRepository(File)
-    private readonly filesRepository: ExtendedRepository<File>,
+    private readonly judgingRunsService: JudgingRunsService,
+    private readonly filesService: FilesService,
     private readonly judgingsService: JudgingsService,
     private readonly scoreboardService: ScoreboardService,
     private readonly submissionsService: SubmissionsService,
@@ -69,7 +56,7 @@ export class SubmissionsController {
   @Get(':id')
   @Roles('admin', 'jury')
   getById(@Param('id') id: number): Promise<Submission> {
-    return this.submissionsService.getOneById(id);
+    return this.submissionsService.getById(id);
   }
 
   @Patch(':id/mark-verified')
@@ -140,27 +127,13 @@ export class SubmissionsController {
 
   @Get(':id/run/:runId/content')
   @Roles('admin', 'judge-host')
-  async getRunContent(
+  getRunContent(
     @Param('id') id: number,
     @Param('runId') runId: number,
   ): Promise<FileContent> {
-    await this.submissionsRepository.findOneOrThrow(
-      id,
-      new NotFoundException(),
-    );
-    return this.judgingRunsRepository
-      .findOneOrThrow(
-        runId,
-        { relations: ['runOutput'] },
-        new NotFoundException(),
-      )
-      .then((run) =>
-        this.filesRepository.findOneOrThrow(
-          run.runOutput.id,
-          { relations: ['content'] },
-          new NotFoundException(),
-        ),
-      )
+    return this.judgingRunsService
+      .getById(runId, ['runOutput'])
+      .then((run) => this.filesService.getById(run.runOutput.id, ['content']))
       .then((file) => file.content);
   }
 }
