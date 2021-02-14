@@ -2,8 +2,6 @@ import axios, { AxiosRequestConfig, Method } from 'axios';
 import { toast } from 'react-semantic-toasts';
 import { rootStore } from '../stores/RootStore';
 
-const hostname = process && process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
-
 export class HttpClient {
   get<T>(path: string, options?: AxiosRequestConfig): Promise<T> {
     return request<T>(path, 'GET', options);
@@ -34,7 +32,7 @@ export async function request<T>(
   try {
     return (
       await axios.request<T>({
-        url: `${hostname}/${path}`,
+        url: `/${path}`,
         method: method,
         withCredentials: true,
         ...options,

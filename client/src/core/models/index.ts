@@ -1,3 +1,5 @@
+export * from './clarification-message.model';
+export * from './clarification.model';
 export * from './contest-problem.model';
 export * from './contest.model';
 export * from './executable.model';

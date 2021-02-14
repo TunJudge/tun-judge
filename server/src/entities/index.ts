@@ -1,3 +1,5 @@
+import { ClarificationMessage } from './clarification-message.entity';
+import { Clarification } from './clarification.entity';
 import { ContestProblem } from './contest-problem.entity';
 import { Contest } from './contest.entity';
 import { Executable } from './executable.entity';
@@ -33,9 +35,13 @@ export const entities = [
   Submission,
   FileContent,
   TeamCategory,
+  Clarification,
   ContestProblem,
+  ClarificationMessage,
 ];
 
+export * from './clarification-message.entity';
+export * from './clarification.entity';
 export * from './contest-problem.entity';
 export * from './contest.entity';
 export * from './executable.entity';

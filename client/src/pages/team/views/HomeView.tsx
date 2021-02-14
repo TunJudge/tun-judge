@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Grid } from 'semantic-ui-react';
 import ProblemSet from '../../shared/ProblemSet';
 import Scoreboard from '../../shared/Scoreboard';
+import ClarificationsList from './ClarificationsList';
 import SubmissionsList from './SubmissionsList';
 
 const HomeView: React.FC = () => {
@@ -13,6 +14,7 @@ const HomeView: React.FC = () => {
           <Grid.Row>
             <Grid.Column style={{ padding: '.5rem' }}>
               <ProblemSet listMode />
+              <ClarificationsList />
             </Grid.Column>
             <Grid.Column style={{ padding: '.5rem' }}>
               <SubmissionsList />

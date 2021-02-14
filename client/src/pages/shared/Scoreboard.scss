@@ -11,75 +11,15 @@
     margin-bottom: 3rem !important;
   }
 
-  .scoreboard-grid-3,
-  .scoreboard-grid-6 {
-    margin-left: 20%;
-    margin-right: 20%;
-  }
+  .scoreboard-body {
+    margin: auto;
 
-  .scoreboard-grid-9 {
-    margin-left: 18%;
-    margin-right: 18%;
-  }
-
-  .scoreboard-grid-12 {
-    margin-left: 10%;
-    margin-right: 10%;
-  }
-
-  .grid {
-    .row {
-      padding-top: 0.1rem !important;
-      padding-bottom: 0.1rem !important;
-
-      &.scoreboard-header-row {
-        font-style: italic;
-        font-weight: bold;
-        font-size: 1.1rem !important;
-
-        .segment {
-          padding-left: 0.2rem !important;
-          padding-right: 0.2rem !important;
-        }
-      }
-
-      .column {
-        padding-left: 0.2rem !important;
-        padding-right: 0.2rem !important;
-      }
-
-      .scoreboard-sub-column {
-        padding: 0 !important;
-      }
+    .scoreboard-team-name {
+      min-width: 15rem;
     }
-  }
 
-  .scoreboard-sub-grid {
-    margin: 0 !important;
-    height: 100% !important;
-
-    .row {
-      .column {
-        .segment {
-          height: 100% !important;
-          padding: 0.5rem;
-
-          .content-left {
-            margin: 0;
-            position: absolute;
-            top: 50%;
-            transform: translate(0%, -50%);
-          }
-
-          .content-center {
-            margin: 0;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-          }
-        }
-      }
+    .scoreboard-score-column {
+      width: 4rem;
     }
   }
 }

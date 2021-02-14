@@ -2,6 +2,7 @@ import { action, autorun, computed, observable } from 'mobx';
 import { io, Socket } from 'socket.io-client';
 import { User } from '../models';
 import http from '../utils/http-client';
+import { ClarificationsStore } from './ClarificationsStore';
 import { ContestsStore } from './ContestsStore';
 import { ExecutablesStore } from './ExecutablesStore';
 import { JudgeHostsStore } from './JudgeHostsStore';
@@ -15,8 +16,6 @@ import { TeamStore } from './TeamStore';
 import { TestcasesStore } from './TestcasesStore';
 import { UsersStore } from './UsersStore';
 
-export const hostname =
-  process && process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
 const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
 
@@ -41,7 +40,7 @@ export class RootStore {
     submissions: 1,
   };
 
-  socket: Socket = io(`${hostname}/ws`, { transports: ['websocket'] });
+  socket: Socket = io(`/ws`, { transports: ['websocket'] });
 
   publicStore: PublicStore;
 
@@ -57,6 +56,7 @@ export class RootStore {
   executablesStore: ExecutablesStore;
   submissionsStore: SubmissionsStore;
   teamCategoriesStore: TeamCategoriesStore;
+  clarificationsStore: ClarificationsStore;
 
   constructor() {
     this.publicStore = new PublicStore(this);
@@ -73,6 +73,7 @@ export class RootStore {
     this.executablesStore = new ExecutablesStore(this);
     this.submissionsStore = new SubmissionsStore(this);
     this.teamCategoriesStore = new TeamCategoriesStore(this);
+    this.clarificationsStore = new ClarificationsStore(this);
 
     this.initiateWebSocket();
 

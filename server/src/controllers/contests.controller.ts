@@ -21,8 +21,9 @@ import { AppGateway } from '../app.gateway';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
 import { unzipEntities, zipEntities } from '../core/utils';
-import { Contest, Submission } from '../entities';
+import { Clarification, Contest, Submission, User } from '../entities';
 import {
+  ClarificationsService,
   ContestsService,
   ScoreboardService,
   SubmissionsService,
@@ -40,6 +41,7 @@ export class ContestsController {
     private readonly scoreboardService: ScoreboardService,
     private readonly contestTransformer: ContestTransformer,
     private readonly submissionsService: SubmissionsService,
+    private readonly clarificationsService: ClarificationsService,
   ) {}
 
   @Get()
@@ -80,6 +82,73 @@ export class ContestsController {
       'problems.problem',
     ]);
     await this.scoreboardService.refreshScoreForContest(contest);
+  }
+
+  @Get(':id/clarifications')
+  @Roles('admin', 'jury')
+  async getClarifications(
+    @Param('id') contestId: number,
+  ): Promise<Clarification[]> {
+    return this.clarificationsService.getByContestId(contestId);
+  }
+
+  @Get(':id/team/:teamId/clarifications')
+  @Roles('admin', 'team')
+  async getClarificationsForTeam(
+    @Param('id') contestId: number,
+    @Param('teamId') teamId: number,
+  ): Promise<Clarification[]> {
+    return this.clarificationsService.getByContestIdAndTeamId(
+      contestId,
+      teamId,
+    );
+  }
+
+  @Post(':id/clarifications')
+  @Roles('admin', 'team', 'jury')
+  async teamSendClarifications(
+    @Param('id') contestId: number,
+    @Session()
+    {
+      passport: {
+        user: { id: userId, role },
+      },
+    },
+    @Body() clarification: Clarification,
+  ): Promise<Clarification> {
+    clarification.contest = { id: contestId } as Contest;
+    if (clarification.id) {
+      const dbClarification = await this.clarificationsService.getByIdAndContestId(
+        clarification.id,
+        contestId,
+      );
+      await Promise.all(
+        clarification.messages
+          .filter((message) => !message.id)
+          .map((message) => ({
+            ...message,
+            sentBy: { id: userId } as User,
+            sentTime: new Date(),
+            clarification: dbClarification,
+          }))
+          .map((message) => this.clarificationsService.saveMessage(message)),
+      );
+    } else {
+      if (role.name === 'team') {
+        clarification.team = await this.teamsService.getByUserId(userId);
+      }
+      clarification.messages
+        .filter((message) => !message.id)
+        .forEach((message) => {
+          message.sentBy = { id: userId } as User;
+          message.sentTime = new Date();
+        });
+      clarification = await this.clarificationsService.save(clarification);
+    }
+    return this.clarificationsService.getByIdAndContestId(
+      clarification.id,
+      contestId,
+    );
   }
 
   @Get(':id/team/:teamId/submissions')

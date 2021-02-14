@@ -39,7 +39,7 @@ export function generalComparator(a: any, b: any): number {
   return 0;
 }
 
-export function formatRestTime(time: number): string {
+export function formatRestTime(time: number, withSeconds = true): string {
   if (time <= 0) return 'contest over';
   const days = Math.floor(time / 86400);
   const hours = Math.floor((time % 86400) / 3600);
@@ -47,9 +47,9 @@ export function formatRestTime(time: number): string {
   const seconds = Math.floor(time % 60);
   let result = '';
   days && (result += `${days}d `);
-  (days || hours) && (result += `${hours < 10 ? '0' + hours : hours}:`);
-  result += `${minutes < 10 ? '0' + minutes : minutes}:`;
-  result += `${seconds < 10 ? '0' + seconds : seconds}`;
+  (days || hours) && (result += `${hours < 10 ? '0' + hours : hours}`);
+  result += `:${minutes < 10 ? '0' + minutes : minutes}`;
+  withSeconds && (result += `:${seconds < 10 ? '0' + seconds : seconds}`);
   return result;
 }
 

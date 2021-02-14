@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Problem } from '../../../../core/models';
-import { hostname, rootStore } from '../../../../core/stores/RootStore';
+import { rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ProblemForm from './ProblemForm';
 
@@ -60,8 +60,8 @@ const ProblemsList: React.FC = observer(() => {
       }}
       withoutActions={!isUserAdmin}
       unzip={isUserAdmin ? unzip : undefined}
-      zipUrl={({ id }) => `${hostname}/api/problems/${id}/zip`}
-      zipAllUrl={`${hostname}/api/problems/zip/all`}
+      zipUrl={({ id }) => `/api/problems/${id}/zip`}
+      zipAllUrl={`/api/problems/zip/all`}
       onDelete={remove}
       onRefresh={() => Promise.all([fetchAll(), fetchAllExecutables()])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
