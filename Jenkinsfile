@@ -29,16 +29,6 @@ node("main") {
         runInDocker(nodeDockerImage, "yarn prettier")
     }
 
-    def version
-
-    stage("Parse Version") {
-        final regex = '^.*"version": "([^"]+)".*$'
-        version = sh(
-            script: "grep -E '${regex}' package.json | sed -E 's/${regex}/\\1/'",
-            returnStdout: true
-        ).trim()
-    }
-
     def serverImage
     def judgeImage
 
@@ -56,6 +46,16 @@ node("main") {
     )
 
     if (env.BRANCH_NAME == 'main') {
+        def version
+
+        stage("Parse Version") {
+            final regex = '^.*"version": "([^"]+)".*$'
+            version = sh(
+                script: "grep -E '${regex}' package.json | sed -E 's/${regex}/\\1/'",
+                returnStdout: true
+            ).trim()
+        }
+
         docker.withRegistry('', 'docker') {
             parallel(
                 "Publish Server": {
