@@ -14,7 +14,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
   const {
     profile,
     isUserJury,
-    publicStore: { problems, currentContest, scoreCaches },
+    publicStore: { problems, currentContest, scoreCaches, fetchProblems },
   } = rootStore;
 
   const columns: ListPageTableColumn<ContestProblem>[] = [
@@ -80,6 +80,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           withoutActions
           data={problems.map((problem) => ({ ...problem, id: problem.shortName as string }))}
           columns={columns}
+          onRefresh={() => fetchProblems(currentContest!.id)}
           rowBackgroundColor={getProblemColor}
         />
       ) : !currentContest ? (

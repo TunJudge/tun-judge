@@ -73,6 +73,11 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
         ) : undefined,
     },
     {
+      key: 'clarifications',
+      title: 'Clarifications',
+      icon: 'chat',
+    },
+    {
       key: 'scoreboard',
       title: 'Scoreboard',
       icon: 'list ol',

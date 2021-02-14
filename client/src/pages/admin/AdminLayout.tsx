@@ -3,6 +3,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import Scoreboard from '../shared/Scoreboard';
 import AdminNavbar from './AdminNavbar';
 import AdminSideBar from './AdminSidebar';
+import ClarificationsList from './views/clarifications/ClarificationsList';
 import ContestsList from './views/contests/ContestsList';
 import Dashboard from './views/Dashboard';
 import ExecutablesList from './views/executables/ExecutablesList';
@@ -43,6 +44,7 @@ const AdminLayout: React.FC = () => {
           <Route exact path="/judge-hosts" component={JudgeHostsList} />
           <Route exact path="/submissions" component={SubmissionsList} />
           <Route path="/submissions/:id" component={SubmissionsView} />
+          <Route exact path="/clarifications" component={ClarificationsList} />
           <Route exact path="/scoreboard" component={Scoreboard} />
           <Route render={() => <Redirect to="/" />} />
         </Switch>

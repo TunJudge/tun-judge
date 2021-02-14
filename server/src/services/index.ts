@@ -1,4 +1,5 @@
 export * from './app.service';
+export * from './clarifications.service';
 export * from './contest-problems.service';
 export * from './contests.service';
 export * from './executables.service';

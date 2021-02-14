@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Executable, ExecutableType } from '../../../../core/models';
-import { hostname, rootStore } from '../../../../core/stores/RootStore';
+import { rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ScriptEditor from '../../../shared/ScriptEditor';
 import ExecutableForm from './ExecutableForm';
@@ -90,8 +90,8 @@ const ExecutablesList: React.FC = observer(() => {
         onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
         unzip={isUserAdmin ? unzip : undefined}
-        zipUrl={({ id }) => `${hostname}/api/executables/${id}/zip`}
-        zipAllUrl={`${hostname}/api/executables/zip/all`}
+        zipUrl={({ id }) => `/api/executables/${id}/zip`}
+        zipAllUrl={`/api/executables/zip/all`}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (

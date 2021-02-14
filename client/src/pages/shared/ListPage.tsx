@@ -40,7 +40,6 @@ type ListPageProps<T> = {
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
   onRefresh?: () => void;
-  onFormOpen?: (item: T) => void;
   onFormSubmit?: (item: T) => void;
   onFormDismiss?: () => void;
   rowBackgroundColor?: (item: T) => string;
@@ -63,7 +62,6 @@ function ListPage<T extends { id: number | string }>({
   onDelete,
   canDelete,
   onRefresh,
-  onFormOpen,
   onFormSubmit,
   onFormDismiss,
   rowBackgroundColor,
@@ -102,7 +100,6 @@ function ListPage<T extends { id: number | string }>({
   }, [data]);
 
   const openForm = (item: T) => {
-    onFormOpen && onFormOpen(item);
     setFormItem(item);
     setFormOpen(true);
   };

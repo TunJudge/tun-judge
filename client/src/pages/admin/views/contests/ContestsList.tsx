@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { Contest } from '../../../../core/models';
-import { hostname, rootStore } from '../../../../core/stores/RootStore';
+import { rootStore } from '../../../../core/stores/RootStore';
 import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ContestForm from './ContestForm';
@@ -76,8 +76,8 @@ const ContestsList: React.FC = observer(() => {
       ItemForm={isUserAdmin ? ContestForm : undefined}
       onDelete={remove}
       unzip={isUserAdmin ? unzip : undefined}
-      zipUrl={({ id }) => `${hostname}/api/contests/${id}/zip`}
-      zipAllUrl={`${hostname}/api/contests/zip/all`}
+      zipUrl={({ id }) => `/api/contests/${id}/zip`}
+      zipAllUrl={`/api/contests/zip/all`}
       withoutActions={!isUserAdmin}
       onRefresh={() => Promise.all([fetchAll(), fetchAllProblems()])}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}

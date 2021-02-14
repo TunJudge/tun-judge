@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Language } from '../../../../core/models';
-import { hostname, rootStore } from '../../../../core/stores/RootStore';
+import { rootStore } from '../../../../core/stores/RootStore';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ScriptEditor from '../../../shared/ScriptEditor';
 import LanguageForm from './LanguageForm';
@@ -63,8 +63,8 @@ const LanguagesList: React.FC = observer(() => {
         onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
         unzip={isUserAdmin ? unzip : undefined}
-        zipUrl={({ id }) => `${hostname}/api/languages/${id}/zip`}
-        zipAllUrl={`${hostname}/api/languages/zip/all`}
+        zipUrl={({ id }) => `/api/languages/${id}/zip`}
+        zipAllUrl={`/api/languages/zip/all`}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (

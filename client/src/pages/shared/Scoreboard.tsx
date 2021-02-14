@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { Button, Container, Grid, Header, Icon, Segment } from 'semantic-ui-react';
+import { Button, Container, Header, Icon, Segment, Table } from 'semantic-ui-react';
 import { formatRestTime } from '../../core/helpers';
 import { rootStore } from '../../core/stores/RootStore';
 import './Scoreboard.scss';
@@ -79,6 +79,7 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
             (new Date(isUserJury ? restrictedSolveTime : solveTime).getTime() -
               new Date(contest.startTime).getTime()) /
               1000,
+            false,
           ),
           numberOfAttempts: isUserJury ? restrictedSubmissions : submissions,
         });
@@ -107,11 +108,7 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
       </Segment>
     </Container>
   ) : (
-    <Container
-      className="scoreboard"
-      textAlign="center"
-      fluid={currentContest?.problems.length > 10}
-    >
+    <Container className="scoreboard" textAlign="center" fluid>
       {!compact && (
         <Header className="scoreboard-header">
           Scoreboard of {currentContest?.name}
@@ -128,106 +125,64 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
           )}
         </Header>
       )}
-      <Grid columns="equal">
-        <Grid.Row className="scoreboard-header-row">
-          <Grid.Column className="scoreboard-sub-column" width="6">
-            <Grid columns="equal" className="scoreboard-sub-grid">
-              <Grid.Row>
-                <Grid.Column width="2">
-                  <Segment>#</Segment>
-                </Grid.Column>
-                <Grid.Column>
-                  <Segment>Team</Segment>
-                </Grid.Column>
-                <Grid.Column width="2">
-                  <Segment>=</Segment>
-                </Grid.Column>
-                <Grid.Column width="3">
-                  <Segment>Score</Segment>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-          </Grid.Column>
-          <Grid.Column className="scoreboard-sub-column">
-            <Grid columns="equal" className="scoreboard-sub-grid">
-              <Grid.Row>
-                {currentContest.problems
-                  .slice()
-                  .sort((a, b) => a.shortName.localeCompare(b.shortName))
-                  .map((problem) => (
-                    <Grid.Column key={problem.shortName}>
-                      <Segment style={{ borderBottom: `2px solid ${problem.color}` }}>
-                        {problem.shortName}
-                      </Segment>
-                    </Grid.Column>
-                  ))}
-              </Grid.Row>
-            </Grid>
-          </Grid.Column>
-        </Grid.Row>
-        {standing.map(({ teamId, teamName, solvedProblems, totalScore, problemsScores }, index) => {
-          return (
-            (!compact || teamId === profile?.team.id) && (
-              <Grid.Row key={`team-${teamId}`}>
-                <Grid.Column className="scoreboard-sub-column" width="6">
-                  <Grid columns="equal" className="scoreboard-sub-grid">
-                    <Grid.Row>
-                      <Grid.Column width="2">
-                        <Segment>
-                          <p className="content-center">{index + 1}</p>
-                        </Segment>
-                      </Grid.Column>
-                      <Grid.Column textAlign="left">
-                        <Segment>
-                          <p className="content-left">
-                            <i>{teamName}</i>
-                          </p>
-                        </Segment>
-                      </Grid.Column>
-                      <Grid.Column width="2">
-                        <Segment>
-                          <p className="content-center">{solvedProblems}</p>
-                        </Segment>
-                      </Grid.Column>
-                      <Grid.Column width="3">
-                        <Segment>
-                          <p className="content-center">{totalScore}</p>
-                        </Segment>
-                      </Grid.Column>
-                    </Grid.Row>
-                  </Grid>
-                </Grid.Column>
-                <Grid.Column className="scoreboard-sub-column">
-                  <Grid columns="equal" className="scoreboard-sub-grid">
-                    <Grid.Row>
-                      {problemsScores.map((problemScore) => (
-                        <Grid.Column key={`score-${teamId}-${problemScore.problemName}`}>
-                          <Segment
-                            style={{ backgroundColor: getScoreboardCellColor(problemScore) }}
-                          >
-                            {problemScore.numberOfAttempts ? (
-                              <b>
-                                {problemScore.correct ? '+' : !problemScore.pending ? '-' : ''}
-                                {problemScore.correct
-                                  ? problemScore.numberOfAttempts - 1 || ''
-                                  : problemScore.numberOfAttempts}
-                              </b>
-                            ) : (
-                              <br />
-                            )}
-                            <br />
-                            <small>{problemScore.correct ? problemScore.solvedTime : ''}</small>
-                          </Segment>
-                        </Grid.Column>
-                      ))}
-                    </Grid.Row>
-                  </Grid>
-                </Grid.Column>
-              </Grid.Row>
-            )
-          );
-        })}
-      </Grid>
+      <Table className="scoreboard-body" textAlign="center" striped collapsing>
+        <Table.Header>
+          <Table.HeaderCell>#</Table.HeaderCell>
+          <Table.HeaderCell>Team</Table.HeaderCell>
+          <Table.HeaderCell>=</Table.HeaderCell>
+          <Table.HeaderCell>Score</Table.HeaderCell>
+          {currentContest.problems
+            .slice()
+            .sort((a, b) => a.shortName.localeCompare(b.shortName))
+            .map((problem) => (
+              <Table.HeaderCell key={problem.shortName}>{problem.shortName}</Table.HeaderCell>
+            ))}
+        </Table.Header>
+        <Table.Body>
+          {standing.map(
+            ({ teamId, teamName, solvedProblems, totalScore, problemsScores }, index) => {
+              return (
+                (!compact || teamId === profile?.team.id) && (
+                  <Table.Row key={`team-${teamId}`}>
+                    <Table.Cell>
+                      {index > 0 &&
+                      standing[index - 1].totalScore === totalScore &&
+                      standing[index - 1].solvedProblems === solvedProblems
+                        ? '-'
+                        : index + 1}
+                    </Table.Cell>
+                    <Table.Cell className="scoreboard-team-name" textAlign="left">
+                      {teamName}
+                    </Table.Cell>
+                    <Table.Cell>{solvedProblems}</Table.Cell>
+                    <Table.Cell>{totalScore}</Table.Cell>
+                    {problemsScores.map((problemScore) => (
+                      <Table.Cell
+                        className="scoreboard-score-column"
+                        key={`score-${teamId}-${problemScore.problemName}`}
+                        style={{ backgroundColor: getScoreboardCellColor(problemScore) }}
+                      >
+                        {problemScore.numberOfAttempts ? (
+                          <b>
+                            {problemScore.correct ? '+' : !problemScore.pending ? '-' : ''}
+                            {problemScore.correct
+                              ? problemScore.numberOfAttempts - 1 || ''
+                              : problemScore.numberOfAttempts}
+                          </b>
+                        ) : (
+                          <br />
+                        )}
+                        <br />
+                        <small>{problemScore.correct ? problemScore.solvedTime : ''}</small>
+                      </Table.Cell>
+                    ))}
+                  </Table.Row>
+                )
+              );
+            },
+          )}
+        </Table.Body>
+      </Table>
     </Container>
   );
 });
