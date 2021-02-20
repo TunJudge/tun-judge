@@ -22,6 +22,9 @@ node("main") {
     }
 
     stage("Yarn Install") {
+        sh "whoami"
+        sh "pwd"
+        sh "docker version"
         runInDocker(nodeDockerImage, "yarn install")
     }
 
@@ -76,5 +79,5 @@ node("main") {
 }
 
 def runInDocker(imageTag, command) {
-    bash "docker run --rm -v ${env.WORKSPACE}:/app -w /app ${imageTag} ${command}"
+    sh "docker run --rm -v ${env.WORKSPACE}:/app -w /app ${imageTag} ${command}"
 }
