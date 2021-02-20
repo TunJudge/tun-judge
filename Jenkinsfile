@@ -22,9 +22,6 @@ node("main") {
     }
 
     stage("Yarn Install") {
-        sh "whoami"
-        sh "pwd"
-        sh "docker version"
         runInDocker(nodeDockerImage, "yarn install")
     }
 
