@@ -72,8 +72,12 @@ node("main") {
                 }
             )
         }
+    }
 
-        jiraSendBuildInfo site: 'tun-judge.atlassian.net'
+    post {
+        always {
+            jiraSendBuildInfo site: 'example.atlassian.net'
+        }
     }
 }
 
