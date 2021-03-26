@@ -74,7 +74,7 @@ node("main") {
         }
     }
 
-    jiraSendBuildInfo site: 'example.atlassian.net'
+    jiraSendBuildInfo site: 'tun-judge.atlassian.net'
 }
 
 def runInDocker(imageTag, command) {
