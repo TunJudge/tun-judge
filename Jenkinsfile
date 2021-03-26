@@ -72,6 +72,8 @@ node("main") {
                 }
             )
         }
+
+        jiraSendBuildInfo site: 'tun-judge.atlassian.net'
     }
 }
 
