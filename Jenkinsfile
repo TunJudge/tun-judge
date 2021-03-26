@@ -74,11 +74,7 @@ node("main") {
         }
     }
 
-    post {
-        always {
-            jiraSendBuildInfo site: 'example.atlassian.net'
-        }
-    }
+    jiraSendBuildInfo site: 'example.atlassian.net'
 }
 
 def runInDocker(imageTag, command) {
