@@ -17,11 +17,12 @@ properties properties: [
 final nodeDockerImage = "node:12.18.4-alpine"
 
 node("main") {
+    def utils
+
     stage("Checkout") {
         checkout scm
+        utils = evaluate readFile("jenkins/utils.groovy")
     }
-
-    utils = evaluate readFile("jenkins/utils.groovy")
 
     stage("Yarn Install") {
         utils.runInDocker(nodeDockerImage, "yarn install")
