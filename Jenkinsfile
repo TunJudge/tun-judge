@@ -22,6 +22,7 @@ node("main") {
     stage("Checkout") {
         checkout scm
         utils = evaluate readFile("jenkins/utils.groovy")
+        println(utils)
     }
 
     stage("Yarn Install") {
