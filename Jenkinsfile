@@ -22,7 +22,9 @@ node("main") {
     stage("Checkout") {
         checkout scm
         sh "ls -al jenkins"
-        utils = evaluate readFile("jenkins/utils.groovy")
+        println(env.WORKSPACE)
+        println(readFile "jenkins/utils.groovy")
+        utils = evaluate readFile "jenkins/utils.groovy"
         println(utils)
     }
 
