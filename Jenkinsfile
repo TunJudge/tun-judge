@@ -25,7 +25,7 @@ node("main") {
     }
 
     stage("Yarn Install") {
-        utils.install()
+        utils.runInDocker(nodeDockerImage, "yarn install")
     }
 
     stage("Prettier") {
