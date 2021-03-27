@@ -21,62 +21,49 @@ node("main") {
         checkout scm
     }
 
+    utils = evaluate readFile("jenkins/utils.groovy")
+
     stage("Yarn Install") {
-        runInDocker(nodeDockerImage, "yarn install")
+        utils.runInDocker(nodeDockerImage, "yarn install")
     }
 
     stage("Prettier") {
-        runInDocker(nodeDockerImage, "yarn prettier")
+        utils.runInDocker(nodeDockerImage, "yarn prettier")
     }
 
     def serverImage
     def judgeImage
 
-    parallel(
-        "Build Server": {
-            stage("Build Server") {
-                serverImage = docker.build("tunjudge/server", "-f docker/Dockerfile.server .")
-            }
-        },
-        "Build Judge": {
-            stage("Build Judge") {
-                judgeImage = docker.build("tunjudge/judge", "-f docker/Dockerfile.judge .")
-            }
-        }
-    )
+    evaluate readFile("jenkins/build.groovy")
 
-    if (env.BRANCH_NAME == 'main') {
-        def version
-
-        stage("Parse Version") {
-            final regex = '^.*"version": "([^"]+)".*$'
-            version = sh(
-                script: "grep -E '${regex}' package.json | sed -E 's/${regex}/\\1/'",
-                returnStdout: true
-            ).trim()
-        }
-
-        docker.withRegistry('', 'docker') {
-            parallel(
-                "Publish Server": {
-                    stage("Publish Server") {
-                        serverImage.push(version)
-                        serverImage.push("latest")
-                    }
-                },
-                "Publish Judge": {
-                    stage("Publish Judge") {
-                        judgeImage.push(version)
-                        judgeImage.push("latest")
-                    }
-                }
-            )
-        }
-    }
+//     if (env.BRANCH_NAME == 'main') {
+//         def version
+//
+//         stage("Parse Version") {
+//             final regex = '^.*"version": "([^"]+)".*$'
+//             version = sh(
+//                 script: "grep -E '${regex}' package.json | sed -E 's/${regex}/\\1/'",
+//                 returnStdout: true
+//             ).trim()
+//         }
+//
+//         docker.withRegistry('', 'docker') {
+//             parallel(
+//                 "Publish Server": {
+//                     stage("Publish Server") {
+//                         serverImage.push(version)
+//                         serverImage.push("latest")
+//                     }
+//                 },
+//                 "Publish Judge": {
+//                     stage("Publish Judge") {
+//                         judgeImage.push(version)
+//                         judgeImage.push("latest")
+//                     }
+//                 }
+//             )
+//         }
+//     }
 
     jiraSendBuildInfo site: 'tun-judge.atlassian.net'
-}
-
-def runInDocker(imageTag, command) {
-    sh "docker run --rm -v ${env.WORKSPACE}:/app -w /app ${imageTag} ${command}"
 }
