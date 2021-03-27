@@ -21,11 +21,7 @@ node("main") {
 
     stage("Checkout") {
         checkout scm
-        sh "ls -al jenkins"
-        println(env.WORKSPACE)
-        println(readFile("jenkins/utils.groovy"))
-        utils = evaluate readFile("jenkins/utils.groovy")
-        println(utils)
+        utils = load "jenkins/utils.groovy"
     }
 
     stage("Yarn Install") {
@@ -39,7 +35,7 @@ node("main") {
     def serverImage
     def judgeImage
 
-    evaluate readFile("jenkins/build.groovy")
+    load "jenkins/build.groovy"
 
 //     if (env.BRANCH_NAME == 'main') {
 //         def version
