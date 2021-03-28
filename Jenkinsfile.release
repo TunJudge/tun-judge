@@ -64,6 +64,8 @@ node("main") {
             sh "git branch tmp-release"
             sh "git checkout ${env.BRANCH}"
             sh "git merge tmp-release"
+            sh "git log"
+            sh "git branch"
             sh "git push --force https://$username:$password@github.com/TunJudge/tun-judge"
         }
     }
