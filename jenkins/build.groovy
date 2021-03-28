@@ -1,3 +1,6 @@
+def serverImage
+def judgeImage
+
 parallel(
     "Build Server": {
         stage("Build Server") {
@@ -10,3 +13,5 @@ parallel(
         }
     }
 )
+
+return [serverImage, judgeImage]

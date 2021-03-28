@@ -36,12 +36,9 @@ node("main") {
         utils.runInDocker(nodeDockerImage, "yarn release")
     }
 
-    def serverImage
-    def judgeImage
+    def [serverImage, judgeImage] = load "jenkins/build.groovy"
 
-    load "jenkins/build.groovy"
-
-    def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH_NAME == 'main')
+    def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH == 'main')
     println(serverImage)
     println(judgeImage)
 
@@ -61,6 +58,6 @@ node("main") {
     }
 
     stage("Push changes") {
-        sh "git push origin ${env.BRANCH_NAME}"
+        sh "git push origin ${env.BRANCH}"
     }
 }
