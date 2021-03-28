@@ -58,6 +58,10 @@ node("main") {
     }
 
     stage("Push changes") {
-        sh "git push origin ${env.BRANCH.replace("origin/", "")}"
+        withCredentials([usernamePassword(credentialsId: 'github',
+                         usernameVariable: 'username',
+                         passwordVariable: 'password')]) {
+            sh "git push https://$username:$password@github.com/TunJudge/tun-judge"
+        }
     }
 }
