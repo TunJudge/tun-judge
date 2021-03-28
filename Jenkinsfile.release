@@ -61,6 +61,6 @@ node("main") {
     }
 
     stage("Push changes") {
-        sh "git push"
+        sh "git push origin ${env.BRANCH_NAME}"
     }
 }
