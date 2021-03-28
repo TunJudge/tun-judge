@@ -39,7 +39,7 @@ node("main") {
     def serverImage
     def judgeImage
 
-    load "jenkins/build.groovy"
+    // load "jenkins/build.groovy"
 
     stage("Release") {
         def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH_NAME == 'main')

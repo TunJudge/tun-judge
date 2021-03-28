@@ -1,5 +1,8 @@
 def runInDocker(imageTag, command) {
-    return sh("docker run --rm -v '${env.WORKSPACE}:/app' -w /app ${imageTag} ${command}")
+    return sh(
+        script: "docker run --rm -v '${env.WORKSPACE}:/app' -w /app ${imageTag} ${command}",
+        returnStdout: true
+    ).trim()
 }
 
 def getReleaseTags(imageTag, isLatest = false) {
