@@ -37,9 +37,9 @@ node("main") {
         utils.runInDocker(nodeDockerImage, "yarn release")
     }
 
-    def images = load "jenkins/build.groovy"
-    def serverImage = images[0]
-    def judgeImage = images[0]
+    // def images = load "jenkins/build.groovy"
+    // def serverImage = images[0]
+    // def judgeImage = images[0]
 
     def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH == 'main')
 
@@ -62,6 +62,7 @@ node("main") {
         withCredentials([usernamePassword(credentialsId: 'github',
                          usernameVariable: 'username',
                          passwordVariable: 'password')]) {
+            sh "git log"
             sh "git push --force https://$username:$password@github.com/TunJudge/tun-judge HEAD:${env.BRANCH}"
         }
     }
