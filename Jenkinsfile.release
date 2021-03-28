@@ -28,10 +28,20 @@ node("main") {
         utils.runInDocker(nodeDockerImage, "yarn install")
     }
 
+    stage("Update version") {
+        utils.runInDocker(nodeDockerImage, "yarn release")
+    }
+
     def serverImage
     def judgeImage
 
     load "jenkins/build.groovy"
+
+    stage("Release") {
+        def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH_NAME == 'main')
+
+        println(tags)
+    }
 
 //     if (env.BRANCH_NAME == 'main') {
 //         def version

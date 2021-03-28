@@ -7,6 +7,7 @@
     "postinstall": "run-in-all -y install judge client server",
     "prettier": "run-in-all -y prettier judge client server",
     "release": "standard-version -a ",
+    "version:current": "node scripts/current-version.js",
     "version:new": "yarn version --no-git-tag-version --new-version",
     "version:update": "run-in-all --yarn version:new . judge client server --args"
   },
@@ -22,7 +23,7 @@
   },
   "standard-version": {
     "scripts": {
-      "postbump": "yarn version:update `node scripts/current-version.js` && git add ."
+      "postbump": "yarn version:update `yarn version:current` && git add ."
     }
   }
 }
