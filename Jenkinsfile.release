@@ -22,7 +22,6 @@ node("main") {
     stage("Checkout") {
         checkout scm
 
-        sh "git checkout ${env.BRANCH}"
         sh "git config user.email 'nasreddine.bacali95@gmail.com'"
         sh "git config user.name 'Nasreddine Bac Ali'"
 
@@ -42,8 +41,6 @@ node("main") {
     def judgeImage = images[0]
 
     def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH == 'main')
-    println(serverImage)
-    println(judgeImage)
 
     docker.withRegistry('', 'docker') {
         parallel(
@@ -61,8 +58,6 @@ node("main") {
     }
 
     stage("Push changes") {
-        sshagent(["github"]) {
-            sh "git push"
-        }
+        sh "git push origin ${env.BRANCH.replace("origin/", "")}"
     }
 }
