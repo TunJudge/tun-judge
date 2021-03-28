@@ -6,13 +6,27 @@
   "scripts": {
     "postinstall": "run-in-all -y install judge client server",
     "prettier": "run-in-all -y prettier judge client server",
+    "release": "standard-version -a ",
+    "version:current": "node scripts/current-version.js",
     "version:new": "yarn version --no-git-tag-version --new-version",
-    "version:update": "run-in-all -y version:new . judge client server -a"
+    "version:update": "run-in-all --yarn version:new . judge client server --args"
   },
   "keywords": [],
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
-    "run-in-all": "1.1.0"
+    "@commitlint/cli": "^12.0.1",
+    "@commitlint/config-conventional": "^12.0.1",
+    "husky": "^5.2.0",
+    "run-in-all": "1.1.0",
+    "standard-version": "^9.1.1"
+  },
+  "standard-version": {
+    "skip": {
+      "tag": true
+    },
+    "scripts": {
+      "postbump": "(yarn --silent version:current | xargs yarn version:update) && git add ."
+    }
   }
 }
