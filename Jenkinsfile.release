@@ -36,7 +36,9 @@ node("main") {
         utils.runInDocker(nodeDockerImage, "yarn release")
     }
 
-    def [serverImage, judgeImage] = load "jenkins/build.groovy"
+    def images = load "jenkins/build.groovy"
+    def serverImage = images[0]
+    def judgeImage = images[0]
 
     def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH == 'main')
     println(serverImage)
