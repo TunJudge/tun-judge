@@ -1,0 +1,70 @@
+#!groovy
+
+properties properties: [
+    disableConcurrentBuilds(),
+    [
+        $class: 'BuildDiscarderProperty',
+        strategy: [
+            $class: 'LogRotator',
+            numToKeepStr: '10',
+            daysToKeepStr: '7',
+            artifactNumToKeepStr: '10',
+            artifactDaysToKeepStr: '7'
+        ]
+    ]
+]
+
+final nodeDockerImage = "timbru31/node-alpine-git:12"
+
+node("main") {
+    def utils
+
+    stage("Checkout") {
+        checkout scm
+
+        sh "git config user.email 'nasreddine.bacali95@gmail.com'"
+        sh "git config user.name 'Nasreddine Bac Ali'"
+
+        utils = load "jenkins/utils.groovy"
+    }
+
+    stage("Yarn Install") {
+        utils.runInDocker(nodeDockerImage, "yarn install")
+    }
+
+    stage("Update Version") {
+        utils.runInDocker(nodeDockerImage, "yarn release")
+    }
+
+    def images = load "jenkins/build.groovy"
+
+    def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH == 'main')
+
+    docker.withRegistry('', 'docker') {
+        parallel(
+            "Publish Server": {
+                stage("Publish Server") {
+                    tags.each { images.serverImage.push(it) }
+                }
+            },
+            "Publish Judge": {
+                stage("Publish Judge") {
+                    tags.each { images.judgeImage.push(it) }
+                }
+            }
+        )
+    }
+
+    stage("Push Changes") {
+        withCredentials([usernamePassword(credentialsId: 'github',
+                         usernameVariable: 'username',
+                         passwordVariable: 'password')]) {
+            def branchName = env.BRANCH.replace('origin/', '')
+            sh "git branch --force tmp-release"
+            sh "git checkout $branchName"
+            sh "git pull --force"
+            sh "git merge tmp-release"
+            sh "git push --force https://$username:$password@github.com/TunJudge/tun-judge $branchName"
+        }
+    }
+}
