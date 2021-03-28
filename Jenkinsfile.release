@@ -39,7 +39,7 @@ node("main") {
     def serverImage
     def judgeImage
 
-    // load "jenkins/build.groovy"
+    load "jenkins/build.groovy"
 
     def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH_NAME == 'main')
     println(serverImage)
@@ -49,12 +49,12 @@ node("main") {
         parallel(
             "Publish Server": {
                 stage("Publish Server") {
-                    tags.forEach { println(it) }
+                    tags.each { println(it) }
                 }
             },
             "Publish Judge": {
                 stage("Publish Judge") {
-                    tags.forEach { println(it) }
+                    tags.each { println(it) }
                 }
             }
         )
