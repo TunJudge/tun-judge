@@ -2,11 +2,11 @@ def runInDocker(imageTag, command, returnStdout = false) {
     return sh(
         script: "docker run --rm -v '${env.WORKSPACE}:/app' -w /app ${imageTag} ${command}",
         returnStdout: returnStdout
-    ).trim()
+    )
 }
 
 def getReleaseTags(imageTag, isLatest = false) {
-    def currentVersion = runInDocker(imageTag, "yarn --silent version:current", true)
+    def currentVersion = runInDocker(imageTag, "yarn --silent version:current", true).trim()
     println(currentVersion)
     def versionParts = currentVersion.split(".")
 
