@@ -33,6 +33,7 @@ node("main") {
     }
 
     stage("Update version") {
+        sh "git branch"
         utils.runInDocker(nodeDockerImage, "yarn release")
     }
 
