@@ -14,7 +14,7 @@ properties properties: [
     ]
 ]
 
-final nodeDockerImage = "node:12.18.4-alpine"
+final nodeDockerImage = "timbru31/node-alpine-git:12"
 
 node("main") {
     def utils
