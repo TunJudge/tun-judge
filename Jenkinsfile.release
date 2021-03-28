@@ -61,8 +61,10 @@ node("main") {
         withCredentials([usernamePassword(credentialsId: 'github',
                          usernameVariable: 'username',
                          passwordVariable: 'password')]) {
+            sh "git branch tmp-release"
             sh "git checkout ${env.BRANCH}"
-            sh "git push --force https://$username:$password@github.com/TunJudge/tun-judge HEAD:${env.BRANCH}"
+            sh "git merge tmp-release"
+            sh "git push --force https://$username:$password@github.com/TunJudge/tun-judge ${env.BRANCH}"
         }
     }
 }
