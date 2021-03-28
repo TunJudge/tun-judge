@@ -22,6 +22,7 @@ node("main") {
     stage("Checkout") {
         checkout scm
 
+        sh "git checkout ${env.BRANCH}"
         sh "git config user.email 'nasreddine.bacali95@gmail.com'"
         sh "git config user.name 'Nasreddine Bac Ali'"
 
@@ -60,6 +61,8 @@ node("main") {
     }
 
     stage("Push changes") {
-        sh "git push origin ${env.BRANCH}"
+        sshagent(["github"]) {
+            sh "git push"
+        }
     }
 }
