@@ -23,7 +23,7 @@
   },
   "standard-version": {
     "scripts": {
-      "postbump": "yarn version:update `yarn version:current` && git add ."
+      "postbump": "(yarn --silent version:current | xargs yarn version:update) && git add ."
     }
   }
 }

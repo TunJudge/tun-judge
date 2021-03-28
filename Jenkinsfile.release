@@ -21,6 +21,10 @@ node("main") {
 
     stage("Checkout") {
         checkout scm
+
+        sh "git config user.email 'nasreddine.bacali95@gmail.com'"
+        sh "git config user.name 'Nasreddine Bac Ali'"
+
         utils = load "jenkins/utils.groovy"
     }
 

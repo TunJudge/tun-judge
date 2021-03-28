@@ -3,7 +3,7 @@ def runInDocker(imageTag, command) {
 }
 
 def getReleaseTags(imageTag, isLatest = false) {
-    def currentVersion = runInDocker(imageTag, "yarn version:current")
+    def currentVersion = runInDocker(imageTag, "yarn --silent version:current")
     def versionParts = currentVersion.split(".")
 
     def tags = isLatest ? ["latest"] : []
