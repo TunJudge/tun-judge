@@ -49,6 +49,7 @@ const Login: React.FC = observer(() => {
             </Form.Button>
           </Segment>
         </Form>
+        <h4>TunJudge {process.env.REACT_APP_VERSION}</h4>
       </Grid.Column>
     </Grid>
   );
