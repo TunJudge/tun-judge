@@ -38,7 +38,7 @@ node("main") {
 
     def images = load "jenkins/build.groovy"
 
-    def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH == 'main')
+    def tags = utils.getReleaseTags(nodeDockerImage, env.BRANCH == 'origin/main')
 
     docker.withRegistry('', 'docker') {
         parallel(
