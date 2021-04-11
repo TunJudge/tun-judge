@@ -1,0 +1,27 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install NodeJs 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Yarn Install
+        run: yarn install
+
+      - name: Prettier
+        run: yarn prettier
+
+      - name: Build Server
+        run: docker build -t tunjudge/server -f docker/Dockerfile.server .
+
+      - name: Build Judge
+        run: docker build -t tunjudge/judge -f docker/Dockerfile.judge .
