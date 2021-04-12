@@ -20,8 +20,29 @@ jobs:
       - name: Prettier
         run: yarn prettier
 
+      - name: Update Version
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.email "nasreddine.bacali95@gmail.com"
+          git config user.name "Nasreddine Bac Ali"
+          yarn release
+
       - name: Build Server
         run: docker build -t tunjudge/server -f docker/Dockerfile.server .
 
       - name: Build Judge
         run: docker build -t tunjudge/judge -f docker/Dockerfile.judge .
+
+      - name: Login to Docker
+        if: github.ref == 'refs/heads/main'
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Images
+        if: github.ref == 'refs/heads/main'
+        run: |
+          yarn image:tag-and-push tunjudge/server
+          yarn image:tag-and-push tunjudge/judge
+
+      - name: Push Changes
+        if: github.ref == 'refs/heads/main'
+        run: git push

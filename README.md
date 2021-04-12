@@ -1,4 +1,4 @@
 # TunJudge
 
-[![Build Status](https://jenkins.nasreddinebacali.info/job/tun-judge/job/main/badge/icon)](https://jenkins.nasreddinebacali.info/job/tun-judge/job/main/)
+[![Build](https://github.com/TunJudge/tun-judge/actions/workflows/build.yaml/badge.svg)](https://github.com/TunJudge/tun-judge/actions/workflows/build.yaml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f28fac1a024342c6834ac7f46ef14beb)](https://www.codacy.com/gh/TunJudge/tun-judge/dashboard)
