@@ -7,6 +7,7 @@
     "postinstall": "run-in-all -y install judge client server",
     "prettier": "run-in-all -y prettier judge client server",
     "release": "standard-version -a ",
+    "image:tag-and-push": "node scripts/tag-and-push-image",
     "version:current": "node scripts/current-version.js",
     "version:new": "yarn version --no-git-tag-version --new-version",
     "version:update": "run-in-all --yarn version:new . judge client server --args"
