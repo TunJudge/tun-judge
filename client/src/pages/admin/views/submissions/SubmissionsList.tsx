@@ -20,7 +20,7 @@ const SubmissionsList: React.FC = observer(() => {
 
   useEffect(() => {
     fetchAll();
-  }, [page, filters, judgings, judgeRuns, fetchAll]);
+  }, [currentContest, page, filters, judgings, judgeRuns, fetchAll]);
 
   const columns: ListPageTableColumn<Submission>[] = [
     {
@@ -220,7 +220,7 @@ const SubmissionsFilters: React.FC<{
                 onChange?.({ ...filters, problems });
               } else {
                 delete filters.problems;
-                onChange?.(filters);
+                onChange?.({ ...filters });
               }
             }}
           />
@@ -245,7 +245,7 @@ const SubmissionsFilters: React.FC<{
                 onChange?.({ ...filters, teams });
               } else {
                 delete filters.teams;
-                onChange?.(filters);
+                onChange?.({ ...filters });
               }
             }}
           />
@@ -268,7 +268,7 @@ const SubmissionsFilters: React.FC<{
                 onChange?.({ ...filters, languages });
               } else {
                 delete filters.languages;
-                onChange?.(filters);
+                onChange?.({ ...filters });
               }
             }}
           />
@@ -307,7 +307,7 @@ const SubmissionsFilters: React.FC<{
                 delete filters.notJudged;
                 delete filters.notVerified;
               }
-              onChange?.(filters);
+              onChange?.({ ...filters });
             }}
           />
         </Form.Group>
