@@ -105,12 +105,12 @@ function ListPage<T extends { id: number | string }>({
   };
 
   const submitForm = (item: T) => {
-    onFormSubmit && onFormSubmit(item);
+    onFormSubmit?.(item);
     dismissForm();
   };
 
   const dismissForm = () => {
-    onFormDismiss && onFormDismiss();
+    onFormDismiss?.();
     onRefresh && onRefresh();
     setFormItem(formItemInitValue ?? {});
     setFormOpen(false);

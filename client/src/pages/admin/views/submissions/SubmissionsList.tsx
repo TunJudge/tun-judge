@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Form, Icon, Menu, Segment, Table } from 'semantic-ui-react';
-import { dateComparator, formatRestTime, isEmpty } from '../../../../core/helpers';
+import { dateComparator, formatRestTime } from '../../../../core/helpers';
 import { Judging, Submission, Testcase } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { Filters } from '../../../../core/stores/SubmissionsStore';
@@ -69,8 +69,7 @@ const SubmissionsList: React.FC = observer(() => {
         return (
           <b
             style={{
-              color:
-                judging && judging.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey',
+              color: judging?.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey',
             }}
           >
             {judging?.result ? resultMap[judging.result] : 'Pending'}
@@ -87,7 +86,7 @@ const SubmissionsList: React.FC = observer(() => {
           .slice()
           .sort(dateComparator<Judging>('startTime', true))
           .shift();
-        return judging && judging.result ? (
+        return judging?.result ? (
           judging.verified ? (
             `Yes by ${judging.juryMember.username}`
           ) : judging.juryMember ? (
@@ -215,9 +214,15 @@ const SubmissionsFilters: React.FC<{
                 value: problem.id,
               })) ?? []
             }
-            onChange={(_, { value }) =>
-              onChange && onChange({ ...filters, problems: value as number[] })
-            }
+            onChange={(_, { value }) => {
+              const problems = value as number[];
+              if (problems.length) {
+                onChange?.({ ...filters, problems });
+              } else {
+                delete filters.problems;
+                onChange?.(filters);
+              }
+            }}
           />
           <Form.Dropdown
             label="Filter by team"
@@ -234,9 +239,15 @@ const SubmissionsFilters: React.FC<{
                 value: team.id,
               })) ?? []
             }
-            onChange={(_, { value }) =>
-              onChange && onChange({ ...filters, teams: value as number[] })
-            }
+            onChange={(_, { value }) => {
+              const teams = value as number[];
+              if (teams.length) {
+                onChange?.({ ...filters, teams });
+              } else {
+                delete filters.teams;
+                onChange?.(filters);
+              }
+            }}
           />
           <Form.Dropdown
             label="Filter by language"
@@ -251,9 +262,15 @@ const SubmissionsFilters: React.FC<{
               text: language.name,
               value: language.id,
             }))}
-            onChange={(_, { value }) =>
-              onChange && onChange({ ...filters, languages: value as number[] })
-            }
+            onChange={(_, { value }) => {
+              const languages = value as number[];
+              if (languages.length) {
+                onChange?.({ ...filters, languages });
+              } else {
+                delete filters.languages;
+                onChange?.(filters);
+              }
+            }}
           />
           <Form.Dropdown
             label="Filter by status"
@@ -279,14 +296,19 @@ const SubmissionsFilters: React.FC<{
                 value: 'notVerified',
               },
             ]}
-            onChange={(_, { value }) =>
-              onChange &&
-              onChange({
-                ...filters,
-                notJudged: !isEmpty(value) && value === 'notJudged',
-                notVerified: !isEmpty(value) && value === 'notVerified',
-              })
-            }
+            onChange={(_, { value }) => {
+              if (value === 'notJudged') {
+                filters.notJudged = true;
+                delete filters.notVerified;
+              } else if (value === 'notVerified') {
+                filters.notVerified = true;
+                delete filters.notJudged;
+              } else {
+                delete filters.notJudged;
+                delete filters.notVerified;
+              }
+              onChange?.(filters);
+            }}
           />
         </Form.Group>
       </Form>

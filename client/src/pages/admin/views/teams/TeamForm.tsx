@@ -63,9 +63,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ item: team, dismiss, submit }) => {
               label="User"
               fluid
               selection
-              options={users.filter(
-                (user) => !user.team || (team.user && team.user.id === user.id),
-              )}
+              options={users.filter((user) => !user.team || team.user?.id === user.id)}
               optionsTextField="name"
               isObject
             />

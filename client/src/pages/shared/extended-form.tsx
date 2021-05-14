@@ -64,10 +64,10 @@ export function DateTimeField<T>({
         entity[field] = isEmpty(value)
           ? null
           : (moment(value, MOMENT_DEFAULT_FORMAT).toDate() as any);
-        setErrors && setErrors({ ...errors, [field]: false });
-        onChange && onChange();
+        setErrors?.({ ...errors, [field]: false });
+        onChange?.();
       }}
-      error={errors && errors[field]}
+      error={errors?.[field]}
     />
   );
 }
@@ -104,13 +104,13 @@ export function TextField<T>({
       onChange={({ target: { validity } }, { value }) => {
         entity[field] = value as any;
         if ((required && isEmpty(value.trim())) || !validity.valid) {
-          setErrors && setErrors({ ...errors, [field]: true });
+          setErrors?.({ ...errors, [field]: true });
         } else {
-          setErrors && setErrors({ ...errors, [field]: false });
+          setErrors?.({ ...errors, [field]: false });
         }
-        onChange && onChange();
+        onChange?.();
       }}
-      error={errors && errors[field]}
+      error={errors?.[field]}
     />
   );
 }
@@ -143,13 +143,13 @@ export function TextAreaField<T>({
       onChange={({ target: { validity } }, { value }) => {
         entity[field] = value as any;
         if ((required && isEmpty((value as string).trim())) || !validity.valid) {
-          setErrors && setErrors({ ...errors, [field]: true });
+          setErrors?.({ ...errors, [field]: true });
         } else {
-          setErrors && setErrors({ ...errors, [field]: false });
+          setErrors?.({ ...errors, [field]: false });
         }
-        onChange && onChange();
+        onChange?.();
       }}
-      error={errors && errors[field]}
+      error={errors?.[field]}
     />
   );
 }
@@ -186,13 +186,13 @@ export function NumberField<T>({
       onChange={(_, { value }) => {
         entity[field] = value as any;
         if (isEmpty(value.trim())) {
-          setErrors && setErrors({ ...errors, [field]: true });
+          setErrors?.({ ...errors, [field]: true });
         } else {
-          setErrors && setErrors({ ...errors, [field]: false });
+          setErrors?.({ ...errors, [field]: false });
         }
-        onChange && onChange();
+        onChange?.();
       }}
-      error={errors && errors[field]}
+      error={errors?.[field]}
     >
       <input />
       {unit && <Label basic>{unit}</Label>}
@@ -224,10 +224,10 @@ export function CheckBoxField<T>({
       defaultChecked={entity[field] ?? defaultValue}
       onChange={(_, { checked }) => {
         entity[field] = checked as any;
-        setErrors && setErrors({ ...errors, [field]: false });
-        onChange && onChange();
+        setErrors?.({ ...errors, [field]: false });
+        onChange?.();
       }}
-      error={errors && errors[field]}
+      error={errors?.[field]}
     />
   );
 }
@@ -263,7 +263,7 @@ export function FileField<T>({
         placeholder={placeHolder ?? label}
         onClick={() => fileInputRef.current?.click()}
         icon={<Icon name="upload" />}
-        error={errors && errors[field]}
+        error={errors?.[field]}
       />
       <input
         ref={(ref) => (fileInputRef.current = ref)}
@@ -291,8 +291,8 @@ export function FileField<T>({
                     payload: payload,
                   },
                 } as File) as any;
-                setErrors && setErrors({ ...errors, [field]: false });
-                onChange && onChange();
+                setErrors?.({ ...errors, [field]: false });
+                onChange?.();
               }
             };
           }
@@ -368,7 +368,7 @@ export function DropdownField<T>({
           ? ((entity[field] as any) ?? []).map((value: any) =>
               typeof value === 'object' ? value[optionsIdField ?? 'id'] : value,
             )
-          : !!entity[field] && typeof entity[field] === 'object'
+          : typeof entity?.[field] === 'object'
           ? (entity[field] as any)[optionsIdField ?? 'id']
           : entity[field]
       }
@@ -383,16 +383,16 @@ export function DropdownField<T>({
             : value) as any;
         }
         if (isEmpty(value)) {
-          setErrors && setErrors({ ...errors, [field]: true });
+          setErrors?.({ ...errors, [field]: true });
         } else {
-          setErrors && setErrors({ ...errors, [field]: false });
+          setErrors?.({ ...errors, [field]: false });
         }
-        onChange && onChange();
+        onChange?.();
       }}
       onAddItem={(_, { value }) =>
         setOptions([...optionsState, { key: value, text: value, value } as any])
       }
-      error={errors && errors[field]}
+      error={errors?.[field]}
     />
   );
 }

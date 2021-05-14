@@ -5,6 +5,7 @@ import http from '../utils/http-client';
 import { RootStore } from './RootStore';
 
 export type Filters = {
+  contest: number;
   problems: number[];
   teams: number[];
   languages: number[];
@@ -38,8 +39,9 @@ export class SubmissionsStore {
 
   @action
   fetchAll = async (): Promise<void> => {
+    this.filters.contest = this.rootStore.publicStore.currentContest?.id ?? -1;
     [this.data, this.total] = await http.get<[Submission[], number]>(
-      `api/submissions?page=${this.page}&${buildSearchQuery(this.filters as any)}`,
+      `api/submissions?page=${this.page}&${buildSearchQuery(this.filters)}`,
     );
   };
 

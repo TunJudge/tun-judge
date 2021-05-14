@@ -36,6 +36,7 @@ export class SubmissionsController {
   async getAll(
     @Query('page') page: number,
     @Query('size') size: number,
+    @Query('contest') contest: string,
     @Query('problems') problems: string,
     @Query('teams') teams: string,
     @Query('languages') languages: string,
@@ -45,6 +46,7 @@ export class SubmissionsController {
     return this.submissionsService.search(
       page,
       size,
+      contest,
       problems,
       teams,
       languages,

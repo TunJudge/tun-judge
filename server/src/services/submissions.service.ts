@@ -22,6 +22,7 @@ export class SubmissionsService {
   search(
     page: number,
     size: number,
+    contest: string,
     problems: string,
     teams: string,
     languages: string,
@@ -46,6 +47,11 @@ export class SubmissionsService {
       .orderBy('submission.submitTime', 'DESC')
       .take(size)
       .skip(size * page);
+    if (contest) {
+      query = query.andWhere('contest.id = :contestId', {
+        contestId: parseInt(contest),
+      });
+    }
     if (problems) {
       query = query.andWhere('problem.id IN (:...problemIds)', {
         problemIds: problems.split(',').map((i) => parseInt(i)),

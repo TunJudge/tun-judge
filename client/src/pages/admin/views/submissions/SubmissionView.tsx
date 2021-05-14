@@ -65,33 +65,33 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
           <Header>Submission {item.id}</Header>
         </Menu.Item>
         <Menu.Item position="right">
-          {judging && judging.result && (
+          {judging?.result && (
             <Button
               basic
               color="linkedin"
               className="mr-2"
               onClick={async () => {
-                await (item.valid ? ignore : unIgnore)(item.id);
-                await fetchById(item?.id);
+                await (item!.valid ? ignore : unIgnore)(item!.id);
+                await fetchById(item!.id);
               }}
             >
               {item.valid ? 'Ignore' : 'UnIgnore'}
             </Button>
           )}
-          {judging && judging.result && judging.verified && (
+          {judging?.result && judging.verified && (
             <Button
               basic
               color="red"
               className="mr-2"
               onClick={async () => {
-                await rejudge(item.id);
-                await fetchById(item?.id);
+                await rejudge(item!.id);
+                await fetchById(item!.id);
               }}
             >
               Rejudge
             </Button>
           )}
-          {judging && judging.result && !judging.verified && (
+          {judging?.result && !judging.verified && (
             <>
               <Button
                 basic
@@ -99,11 +99,11 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
                 className="mr-2"
                 onClick={async () => {
                   if (isSubmissionClaimedByMe(judging, profile)) {
-                    await unClaim(item?.id);
+                    await unClaim(item!.id);
                   } else {
-                    await claim(item?.id);
+                    await claim(item!.id);
                   }
-                  await fetchById(item?.id);
+                  await fetchById(item!.id);
                 }}
               >
                 {isSubmissionClaimedByMe(judging, profile) ? 'UnClaim' : 'Claim'}
@@ -113,7 +113,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
                 color="green"
                 className="mr-2"
                 onClick={async () => {
-                  await markVerified(item?.id);
+                  await markVerified(item!.id);
                   history.push('/submissions');
                 }}
               >
@@ -121,7 +121,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
               </Button>
             </>
           )}
-          <Button color="blue" icon onClick={() => fetchById(item?.id)}>
+          <Button color="blue" icon onClick={() => fetchById(item!.id)}>
             <Icon name="refresh" />
           </Button>
         </Menu.Item>
@@ -146,19 +146,14 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
             .sort(dateComparator<Judging>('startTime', true))
             .map((judging, index) => (
               <Table.Row key={`judging-${judging.id}`} disabled={index > 0}>
-                <Table.Cell>{item.id}</Table.Cell>
-                <Table.Cell>{item.team.name}</Table.Cell>
-                <Table.Cell>{item.problem.name}</Table.Cell>
-                <Table.Cell>{item.language.name}</Table.Cell>
+                <Table.Cell>{item!.id}</Table.Cell>
+                <Table.Cell>{item!.team.name}</Table.Cell>
+                <Table.Cell>{item!.problem.name}</Table.Cell>
+                <Table.Cell>{item!.language.name}</Table.Cell>
                 <Table.Cell>
                   <b
                     style={{
-                      color:
-                        judging && judging.result
-                          ? judging.result === 'AC'
-                            ? 'green'
-                            : 'red'
-                          : 'grey',
+                      color: judging?.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey',
                     }}
                   >
                     {resultMap[judging?.result ?? 'PD']}
@@ -184,7 +179,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
                 </Table.Cell>
                 <Table.Cell>
                   {formatRestTime(
-                    (new Date(item.submitTime).getTime() -
+                    (new Date(item!.submitTime).getTime() -
                       new Date(currentContest?.startTime ?? 0).getTime()) /
                       1000,
                   )}
@@ -253,7 +248,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
             </Menu.Item>
           </Segment>
           <Segment>
-            {['AC', 'WA'].includes(judging?.result) && (
+            {['AC', 'WA'].includes(judging!.result) && (
               <>
                 <b>Checker output</b>
                 <pre
@@ -275,7 +270,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
                 </pre>
               </>
             )}
-            {['RE', 'TLE', 'MLE'].includes(judging?.result) && (
+            {['RE', 'TLE', 'MLE'].includes(judging!.result) && (
               <>
                 <b>Error output</b>
                 <pre
