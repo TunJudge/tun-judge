@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.6 (2021-05-14)
+
+
+### Bug Fixes
+
+* fix handeling login errors for judge ([62f749a](https://github.com/TunJudge/tun-judge/commit/62f749a8498110c8895d8b5545ef4d0ecc348460))
+
 ### 0.0.5 (2021-05-14)
 
 
