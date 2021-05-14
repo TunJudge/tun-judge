@@ -18,8 +18,13 @@ async function bootstrap() {
     });
     logger.log('Successfully connected to TunJudge!');
   } catch (error) {
-    const { statusCode, message } = error.response.data;
-    new Logger().error(`${statusCode}: ${message}`);
+    const response = error?.response;
+    if (response) {
+      const { statusCode, message } = response.data;
+      new Logger().error(`${statusCode}: ${message}`);
+    } else {
+      new Logger().error(error.message);
+    }
     process.exit(-1);
   }
   const app = await NestFactory.create(AppModule, { logger });
