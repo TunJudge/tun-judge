@@ -53,10 +53,11 @@ export class ScoreboardService {
     const isPending = submissionIsPending(contest);
     const hasNoCompileError = submissionHasResult(contest, 'CE', true);
     const inFreezeTime = submissionInFreezeTime(contest);
-    const allProblemSubmissions = await this.submissionsService.getByContestIdAndProblemId(
-      contest.id,
-      problem.id,
-    );
+    const allProblemSubmissions =
+      await this.submissionsService.getByContestIdAndProblemId(
+        contest.id,
+        problem.id,
+      );
 
     const submissions = allProblemSubmissions.filter(
       (submission) =>

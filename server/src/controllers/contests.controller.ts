@@ -121,10 +121,11 @@ export class ContestsController {
   ): Promise<Clarification> {
     clarification.contest = { id: contestId } as Contest;
     if (clarification.id) {
-      const dbClarification = await this.clarificationsService.getByIdAndContestId(
-        clarification.id,
-        contestId,
-      );
+      const dbClarification =
+        await this.clarificationsService.getByIdAndContestId(
+          clarification.id,
+          contestId,
+        );
       await Promise.all(
         clarification.messages
           .filter((message) => !message.id)

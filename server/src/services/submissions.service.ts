@@ -159,17 +159,14 @@ export class SubmissionsService {
   }
 
   async setValid(id: number, valid: boolean): Promise<void> {
-    const {
-      team,
-      problem,
-      contest,
-    } = await this.submissionsRepository.findOneOrThrow(
-      {
-        where: { id },
-        relations: ['team', 'problem', 'contest'],
-      },
-      new NotFoundException(),
-    );
+    const { team, problem, contest } =
+      await this.submissionsRepository.findOneOrThrow(
+        {
+          where: { id },
+          relations: ['team', 'problem', 'contest'],
+        },
+        new NotFoundException(),
+      );
     await this.submissionsRepository.update({ id }, { valid });
     await this.scoreboardService.refreshScoreCache(contest, team, problem);
   }

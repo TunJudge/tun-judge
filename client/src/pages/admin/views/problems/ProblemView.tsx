@@ -30,7 +30,7 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
     <Grid columns="equal">
       <Grid.Row style={{ height: rowHeight }}>
         <Grid.Column style={{ paddingRight: '.5rem' }}>
-          <ResizeDetector handleHeight onResize={(_, height) => setProblemInfoHeight(height)}>
+          <ResizeDetector handleHeight onResize={(_, height) => setProblemInfoHeight(height ?? 0)}>
             {() => (
               <Segment.Group>
                 <Segment as={Menu} style={{ padding: 0 }} borderless>

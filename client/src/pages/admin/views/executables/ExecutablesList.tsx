@@ -9,9 +9,8 @@ import ExecutableForm from './ExecutableForm';
 const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', CHECKER: 'Checker' };
 
 const ExecutablesList: React.FC = observer(() => {
-  const [scriptData, setScriptData] = useState<
-    { executable: Executable; field: 'file' | 'buildScript' } | undefined
-  >();
+  const [scriptData, setScriptData] =
+    useState<{ executable: Executable; field: 'file' | 'buildScript' } | undefined>();
   const {
     isUserAdmin,
     executablesStore: { data, fetchAll, create, update, remove, unzip },

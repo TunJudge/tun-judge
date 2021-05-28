@@ -8,7 +8,8 @@ import { ProblemTransformer } from './problem.transformer';
 
 @Injectable()
 export class ContestProblemTransformer
-  implements EntityTransformer<ContestProblem> {
+  implements EntityTransformer<ContestProblem>
+{
   entityName = 'ContestProblem';
 
   constructor(private readonly problemTransformer: ProblemTransformer) {}

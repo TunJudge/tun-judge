@@ -9,7 +9,7 @@ import { ObjectID } from 'typeorm/driver/mongodb/typings';
 import { entities } from '../entities';
 
 export class ExtendedRepository<
-  Entity extends ObjectLiteral
+  Entity extends ObjectLiteral,
 > extends Repository<Entity> {
   constructor(private readonly repository: Repository<Entity>) {
     super();

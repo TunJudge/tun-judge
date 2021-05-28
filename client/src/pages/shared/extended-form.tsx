@@ -280,7 +280,7 @@ export function FileField<T>({
             fileReader.onloadend = (event) => {
               if (event.target?.readyState === FileReader.DONE) {
                 const payload = (event.target.result as string).split(';base64,').pop();
-                entity[field] = ({
+                entity[field] = {
                   ...(entity[field] as any),
                   name: file.name,
                   type: file.type,
@@ -290,7 +290,7 @@ export function FileField<T>({
                     ...(entity[field] as any)?.content,
                     payload: payload,
                   },
-                } as File) as any;
+                } as File as any;
                 setErrors?.({ ...errors, [field]: false });
                 onChange?.();
               }
@@ -374,13 +374,17 @@ export function DropdownField<T>({
       }
       onChange={(_, { value }) => {
         if (multiple) {
-          entity[field] = (isObject
-            ? [...(value as any)].map((v) => options?.find((o) => o[optionsIdField ?? 'id'] === v))
-            : [...(value as any)]) as any;
+          entity[field] = (
+            isObject
+              ? [...(value as any)].map((v) =>
+                  options?.find((o) => o[optionsIdField ?? 'id'] === v),
+                )
+              : [...(value as any)]
+          ) as any;
         } else {
-          entity[field] = (isObject
-            ? options?.find((o) => o[optionsIdField ?? 'id'] === value)
-            : value) as any;
+          entity[field] = (
+            isObject ? options?.find((o) => o[optionsIdField ?? 'id'] === value) : value
+          ) as any;
         }
         if (isEmpty(value)) {
           setErrors?.({ ...errors, [field]: true });

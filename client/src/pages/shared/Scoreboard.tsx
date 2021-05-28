@@ -127,16 +127,18 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
       )}
       <Table className="scoreboard-body" textAlign="center" striped collapsing>
         <Table.Header>
-          <Table.HeaderCell>#</Table.HeaderCell>
-          <Table.HeaderCell>Team</Table.HeaderCell>
-          <Table.HeaderCell>=</Table.HeaderCell>
-          <Table.HeaderCell>Score</Table.HeaderCell>
-          {currentContest.problems
-            .slice()
-            .sort((a, b) => a.shortName.localeCompare(b.shortName))
-            .map((problem) => (
-              <Table.HeaderCell key={problem.shortName}>{problem.shortName}</Table.HeaderCell>
-            ))}
+          <Table.Row>
+            <Table.HeaderCell>#</Table.HeaderCell>
+            <Table.HeaderCell>Team</Table.HeaderCell>
+            <Table.HeaderCell>=</Table.HeaderCell>
+            <Table.HeaderCell>Score</Table.HeaderCell>
+            {currentContest.problems
+              .slice()
+              .sort((a, b) => a.shortName.localeCompare(b.shortName))
+              .map((problem) => (
+                <Table.HeaderCell key={problem.shortName}>{problem.shortName}</Table.HeaderCell>
+              ))}
+          </Table.Row>
         </Table.Header>
         <Table.Body>
           {standing.map(

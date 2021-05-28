@@ -16,11 +16,11 @@
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
-    "@commitlint/cli": "^12.0.1",
-    "@commitlint/config-conventional": "^12.0.1",
-    "husky": "^5.2.0",
-    "run-in-all": "1.1.0",
-    "standard-version": "^9.1.1"
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
+    "husky": "^6.0.0",
+    "run-in-all": "1.2.0",
+    "standard-version": "^9.3.0"
   },
   "standard-version": {
     "skip": {
