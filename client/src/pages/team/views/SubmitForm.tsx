@@ -18,7 +18,7 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
     language: isEmpty(submission.language),
   });
   const {
-    languagesStore: { data: languages },
+    languagesStore: { allowedToSubmit: languages },
     publicStore: { currentContest },
     teamStore: { sendSubmission },
     profile,

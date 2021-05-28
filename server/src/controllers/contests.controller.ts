@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -25,6 +26,7 @@ import { Clarification, Contest, Submission, User } from '../entities';
 import {
   ClarificationsService,
   ContestsService,
+  LanguagesService,
   ScoreboardService,
   SubmissionsService,
   TeamsService,
@@ -38,6 +40,7 @@ export class ContestsController {
     private readonly socketService: AppGateway,
     private readonly teamsService: TeamsService,
     private readonly contestsService: ContestsService,
+    private readonly languagesService: LanguagesService,
     private readonly scoreboardService: ScoreboardService,
     private readonly contestTransformer: ContestTransformer,
     private readonly submissionsService: SubmissionsService,
@@ -179,11 +182,27 @@ export class ContestsController {
     );
     const team = await this.teamsService.getByUserId(userId);
     if (
-      !contest.openToAllTeams &&
-      !contest.teams.find((t) => t.id === team.id)
+      !contest?.openToAllTeams &&
+      !contest?.teams.find((t) => t.id === team.id)
     ) {
       throw new ForbiddenException(
         'Your team is not allowed to submit in this contest!',
+      );
+    }
+    const language = await this.languagesService.getById(
+      submission.language.id,
+    );
+    if (!language?.allowSubmit) {
+      throw new BadRequestException(
+        `It is not allowed to submit using the language '${language.name}'`,
+      );
+    }
+    const contestProblem = contest.problems.find(
+      (p) => submission.problem.id === p.problem.id,
+    );
+    if (!contestProblem?.allowSubmit) {
+      throw new BadRequestException(
+        `It is not allowed to submit to the problem '${contestProblem.shortName} - ${contestProblem.problem.name}'`,
       );
     }
     submission.contest = contest;

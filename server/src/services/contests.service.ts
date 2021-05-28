@@ -72,7 +72,7 @@ export class ContestsService {
           startTime: LessThanOrEqual(date),
           endTime: MoreThan(date),
         },
-        relations: ['teams'],
+        relations: ['teams', 'problems', 'problems.problem'],
       },
       new NotFoundException('Contest not found!'),
     );
