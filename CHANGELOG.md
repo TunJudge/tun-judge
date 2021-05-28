@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.7 (2021-05-28)
+
+
+### Bug Fixes
+
+* update docker image tags ([0cc99a3](https://github.com/TunJudge/tun-judge/commit/0cc99a398e8aa8c2874ac38b0e33d164e77e096f))
+
 ### 0.0.6 (2021-05-14)
 
 
