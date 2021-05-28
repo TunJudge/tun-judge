@@ -1,4 +1,4 @@
-FROM node:12-alpine as build-stage
+FROM node:14-alpine as build-stage
 
 WORKDIR /client
 COPY client .
@@ -11,7 +11,7 @@ RUN yarn
 RUN yarn build
 RUN yarn --prod
 
-FROM node:12-alpine as final-stage
+FROM node:14-alpine as final-stage
 
 WORKDIR /server
 COPY --from=build-stage /server/node_modules ./node_modules
