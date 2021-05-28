@@ -4,9 +4,9 @@ import { Button, Header, Icon, Menu, Popup, Segment, Table } from 'semantic-ui-r
 import { formatBytes } from '../../../../../core/helpers';
 import { Problem, Testcase } from '../../../../../core/models';
 import { rootStore } from '../../../../../core/stores/RootStore';
+import { TestcaseContentDialog } from '../../../../shared/dialogs';
 import { CheckBoxField } from '../../../../shared/extended-form';
 import TestcaseBulkUploader from './TestcaseBulkUploader';
-import TestcaseContentView from './TestcaseContentView';
 import TestcaseForm from './TestcaseForm';
 
 type TestcasesListProps = {
@@ -169,13 +169,11 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(
             await dismissForm();
           }}
         />
-        {contentViewData.testcase && (
-          <TestcaseContentView
-            testcase={contentViewData.testcase}
-            field={contentViewData.field}
-            dismiss={() => setContentViewData({ testcase: undefined, field: 'input' })}
-          />
-        )}{' '}
+        <TestcaseContentDialog
+          testcase={contentViewData.testcase}
+          field={contentViewData.field}
+          onClose={() => setContentViewData({ testcase: undefined, field: 'input' })}
+        />
       </Segment.Group>
     );
   },

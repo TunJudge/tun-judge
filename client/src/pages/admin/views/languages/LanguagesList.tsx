@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Language } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import { CodeEditorDialog } from '../../../shared/dialogs';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
-import ScriptEditor from '../../../shared/ScriptEditor';
 import LanguageForm from './LanguageForm';
 
 const LanguagesList: React.FC = observer(() => {
@@ -68,7 +68,7 @@ const LanguagesList: React.FC = observer(() => {
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (
-        <ScriptEditor
+        <CodeEditorDialog
           file={scriptData.buildScript}
           dismiss={async () => {
             await fetchAll();

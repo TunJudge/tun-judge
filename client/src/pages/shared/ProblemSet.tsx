@@ -5,8 +5,8 @@ import { contestStartedAndNotOver, dateComparator, formatBytes } from '../../cor
 import { ContestProblem, Problem, ScoreCache, Submission } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
 import SubmitForm from '../team/views/SubmitForm';
+import { PdfViewerDialog } from './dialogs';
 import ListPage, { ListPageTableColumn } from './ListPage';
-import PDFModalViewer from './PDFModalViewer';
 
 const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => {
   const [submission, setSubmission] = useState<Submission | undefined>(undefined);
@@ -140,8 +140,8 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           </Card.Group>
         </Container>
       )}
-      {submission && <SubmitForm item={submission} dismiss={() => setSubmission(undefined)} />}
-      {pdfData && <PDFModalViewer data={pdfData} dismiss={() => setPdfData(undefined)} />}
+      <SubmitForm submission={submission} dismiss={() => setSubmission(undefined)} />
+      <PdfViewerDialog data={pdfData} dismiss={() => setPdfData(undefined)} />
     </>
   );
 });

@@ -85,9 +85,10 @@ const TeamNavbar: React.FC = observer(() => {
           </Dropdown>
         </Menu.Menu>
       </Container>
-      {submitFormOpen && (
-        <SubmitForm item={{} as Submission} dismiss={() => setSubmitFormOpen(false)} />
-      )}
+      <SubmitForm
+        submission={submitFormOpen ? ({} as Submission) : undefined}
+        dismiss={() => setSubmitFormOpen(false)}
+      />
     </Menu>
   );
 });

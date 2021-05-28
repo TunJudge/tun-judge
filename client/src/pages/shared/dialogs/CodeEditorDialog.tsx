@@ -2,10 +2,10 @@ import { MD5 } from 'crypto-js';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { Button, Modal } from 'semantic-ui-react';
-import { File } from '../../core/models';
-import CodeEditor from './CodeEditor';
+import { File } from '../../../core/models';
+import CodeEditor from '../CodeEditor';
 
-const ScriptEditor: React.FC<{
+export const CodeEditorDialog: React.FC<{
   file: File;
   lang?: 'sh' | 'c_cpp';
   dismiss: () => void;
@@ -17,7 +17,6 @@ const ScriptEditor: React.FC<{
       <Modal.Content>
         <CodeEditor
           lang={lang ?? 'sh'}
-          dark
           value={atob(file?.content?.payload ?? '')}
           onChange={(value) => {
             const payload = btoa(value);
@@ -40,5 +39,3 @@ const ScriptEditor: React.FC<{
     </Modal>
   );
 });
-
-export default ScriptEditor;

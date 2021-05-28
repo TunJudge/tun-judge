@@ -12,8 +12,7 @@ import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/mode-scala';
 import 'ace-builds/src-noconflict/mode-sh';
 import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/theme-chrome';
-import 'ace-builds/src-noconflict/theme-tomorrow_night';
+import 'ace-builds/src-noconflict/theme-monokai';
 
 export type CodeEditorLanguages =
   | 'sh'
@@ -30,20 +29,12 @@ export type CodeEditorLanguages =
 type CodeEditorProps = {
   lang?: CodeEditorLanguages;
   value: string;
-  dark?: boolean;
   readOnly?: boolean;
   showGutter?: boolean;
   onChange?: (value: string) => void;
 };
 
-const CodeEditor: React.FC<CodeEditorProps> = ({
-  lang,
-  value,
-  dark,
-  readOnly,
-  showGutter,
-  onChange,
-}) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ lang, value, readOnly, showGutter, onChange }) => {
   return (
     <AceEditor
       style={{
@@ -51,12 +42,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         borderRadius: '.28571429rem',
       }}
       mode={lang ?? 'text'}
-      theme={dark ? 'tomorrow_night' : 'chrome'}
+      theme="monokai"
       value={value}
       width="100%"
       onChange={onChange}
       readOnly={readOnly}
       showGutter={showGutter}
+      showPrintMargin={false}
     />
   );
 };

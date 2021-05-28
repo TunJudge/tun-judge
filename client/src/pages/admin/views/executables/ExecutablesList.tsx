@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Executable, ExecutableType } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import { CodeEditorDialog } from '../../../shared/dialogs';
 import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
-import ScriptEditor from '../../../shared/ScriptEditor';
 import ExecutableForm from './ExecutableForm';
 
 const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', CHECKER: 'Checker' };
@@ -94,7 +94,7 @@ const ExecutablesList: React.FC = observer(() => {
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (
-        <ScriptEditor
+        <CodeEditorDialog
           file={scriptData.executable[scriptData.field]}
           lang={scriptData.executable[scriptData.field].name.endsWith('.cpp') ? 'c_cpp' : 'sh'}
           dismiss={async () => {

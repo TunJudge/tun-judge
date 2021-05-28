@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../core/helpers';
 import { Submission } from '../../../core/models';
@@ -7,15 +7,15 @@ import { rootStore } from '../../../core/stores/RootStore';
 import { DropdownField, FileField, FormErrors } from '../../shared/extended-form';
 
 type SubmissionFormProps = {
-  item: Submission;
+  submission?: Submission;
   dismiss: () => void;
 };
 
-const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, dismiss }) => {
+const SubmitForm: React.FC<SubmissionFormProps> = observer(({ submission, dismiss }) => {
   const [errors, setErrors] = useState<FormErrors<Submission>>({
-    file: isEmpty(submission.file),
-    problem: isEmpty(submission.problem),
-    language: isEmpty(submission.language),
+    file: isEmpty(submission?.file),
+    problem: isEmpty(submission?.problem),
+    language: isEmpty(submission?.language),
   });
   const {
     languagesStore: { allowedToSubmit: languages },
@@ -24,19 +24,27 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
     profile,
   } = rootStore;
 
+  useEffect(() => {
+    setErrors({
+      file: isEmpty(submission?.file),
+      problem: isEmpty(submission?.problem),
+      language: isEmpty(submission?.language),
+    });
+  }, [submission]);
+
   return (
-    <Modal open onClose={dismiss} size="tiny">
+    <Modal open={!!submission} onClose={dismiss} size="tiny">
       <Modal.Header>Submit</Modal.Header>
       <Modal.Content>
         <Form>
           <FileField<Submission>
-            entity={submission}
+            entity={submission ?? {}}
             field="file"
             label="Source file"
             errors={errors}
             setErrors={setErrors}
             onChange={() => {
-              if (!submission.file) return;
+              if (!submission?.file) return;
               const language = languages.find((l) =>
                 l.extensions.some((e) => submission.file.name.endsWith(e)),
               );
@@ -49,7 +57,7 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
             }}
           />
           <DropdownField<Submission>
-            entity={submission}
+            entity={submission ?? {}}
             field="problem"
             label="Problem"
             fluid
@@ -65,7 +73,7 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
             setErrors={setErrors}
           />
           <DropdownField<Submission>
-            entity={submission}
+            entity={submission ?? {}}
             field="language"
             label="Language"
             fluid
@@ -89,6 +97,7 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ item: submission, 
         <Button
           color="green"
           onClick={async () => {
+            if (!submission) return;
             await sendSubmission(currentContest!.id, profile!.team.id, submission);
             dismiss();
           }}

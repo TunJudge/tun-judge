@@ -1,23 +1,23 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
-import { JudgingRun } from '../../../../core/models/judging-run.model';
-import { rootStore } from '../../../../core/stores/RootStore';
+import { JudgingRun } from '../../../core/models/judging-run.model';
+import { rootStore } from '../../../core/stores/RootStore';
 
-const RunContentView: React.FC<{
-  run: JudgingRun;
+export const RunContentDialog: React.FC<{
+  run?: JudgingRun;
   dismiss: () => void;
 }> = observer(({ run, dismiss }) => {
-  if (run.id && !run.runOutput.content) {
+  if (run?.id && !run.runOutput.content) {
     rootStore.submissionsStore
       .fetchRunContent(run.id)
       .then((content) => (run.runOutput.content = content));
   }
   return (
-    <Modal open onClose={dismiss} size="mini">
+    <Modal open={!!run} onClose={dismiss} size="mini">
       <Modal.Header>Team output</Modal.Header>
       <Modal.Content>
-        {!run.runOutput.content ? (
+        {!run?.runOutput.content ? (
           <Dimmer active inverted>
             <Loader inline="centered" />
           </Dimmer>
@@ -44,5 +44,3 @@ const RunContentView: React.FC<{
     </Modal>
   );
 });
-
-export default RunContentView;
