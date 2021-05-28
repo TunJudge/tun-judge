@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.9 (2021-05-28)
+
+
+### Features
+
+* add diff viewer for team and judge outputs ([ada5080](https://github.com/TunJudge/tun-judge/commit/ada5080d7eced38cd76a7cec2f73cf04cdeeb4fb))
+
 ### 0.0.8 (2021-05-28)
 
 
