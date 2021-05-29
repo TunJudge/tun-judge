@@ -1,20 +1,32 @@
+import { Injectable } from '@nestjs/common';
 import { copyFileSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { File, Submission, Testcase } from '../models';
 
-export const workDir = join(tmpdir(), 'tun-judge', 'workDir');
-mkdirSync(workDir, { recursive: true });
-export const assetsDir = join(__dirname, '..', '..', 'assets');
-export const testLibPath = join(assetsDir, 'testlib.h');
-export const guardCppPath = join(assetsDir, 'guard.cpp');
-
 /**
  * SubmissionHelper helps creating generating the right folders and files paths
  * that are related to the submission and also assure creating the directories
  */
+@Injectable()
 export class SubmissionHelper {
   private submission: Submission;
+  private readonly guardCppPath: string;
+
+  readonly workDir: string;
+  readonly testLibPath: string;
+
+  constructor() {
+    this.workDir = join(tmpdir(), 'tun-judge', 'workDir');
+    mkdirSync(this.workDir, { recursive: true });
+
+    const originalAssetsDir = join(__dirname, '..', '..', 'assets');
+    this.testLibPath = join(originalAssetsDir, 'testlib.h');
+    this.guardCppPath = join(originalAssetsDir, 'guard.cpp');
+
+    // Copy the guard code source to the workDir/assets folder to be compiled later
+    copyFileSync(this.guardCppPath, this.assetsFilePath('guard.cpp'));
+  }
 
   setSubmission(submission: Submission): void {
     this.submission = submission;
@@ -93,7 +105,7 @@ export class SubmissionHelper {
   };
 
   submissionDir = (): string => {
-    const dir = join(workDir, 'submissions', String(this.submission.id));
+    const dir = join(this.workDir, 'submissions', String(this.submission.id));
     mkdirSync(dir, { recursive: true });
     return dir;
   };
@@ -110,13 +122,21 @@ export class SubmissionHelper {
   binPath = (): string => this.filePath().replace(/\.[^.]*$/g, '');
 
   problemDir = (): string => {
-    const dir = join(workDir, 'problems', String(this.submission.problem.id));
+    const dir = join(
+      this.workDir,
+      'problems',
+      String(this.submission.problem.id),
+    );
     mkdirSync(dir, { recursive: true });
     return dir;
   };
 
   languageDir = (): string => {
-    const dir = join(workDir, 'languages', String(this.submission.language.id));
+    const dir = join(
+      this.workDir,
+      'languages',
+      String(this.submission.language.id),
+    );
     mkdirSync(dir, { recursive: true });
     return dir;
   };
@@ -149,7 +169,7 @@ export class SubmissionHelper {
     join(this.testcaseFileDir(id, file), file.name);
 
   executableDir = (id: number): string => {
-    const dir = join(workDir, 'executables', String(id));
+    const dir = join(this.workDir, 'executables', String(id));
     mkdirSync(dir, { recursive: true });
     return dir;
   };
@@ -167,7 +187,7 @@ export class SubmissionHelper {
     join(this.executableFileDir(id, file), file.name).replace(/\.[^.]*$/g, '');
 
   assetsDir = (): string => {
-    const dir = join(workDir, 'assets');
+    const dir = join(this.workDir, 'assets');
     mkdirSync(dir, { recursive: true });
     return dir;
   };
@@ -175,10 +195,3 @@ export class SubmissionHelper {
   assetsFilePath = (fileName: string): string =>
     join(this.assetsDir(), fileName);
 }
-
-const submissionHelper = new SubmissionHelper();
-
-// Copy the guard code source to the workDir/assets folder to be compiled later
-copyFileSync(guardCppPath, submissionHelper.assetsFilePath('guard.cpp'));
-
-export default submissionHelper;

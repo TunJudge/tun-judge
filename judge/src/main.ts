@@ -1,9 +1,8 @@
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import config from './config';
 import http from './http/http.client';
-import { JudgeLogger } from './services/judge.logger';
+import { JudgeLogger } from './logger';
 
 async function bootstrap() {
   const logger = new JudgeLogger();
@@ -21,9 +20,9 @@ async function bootstrap() {
     const response = error?.response;
     if (response) {
       const { statusCode, message } = response.data;
-      new Logger().error(`${statusCode}: ${message}`);
+      logger.error(`${statusCode}: ${message}`);
     } else {
-      new Logger().error(error.message);
+      logger.error(error.message);
     }
     process.exit(-1);
   }

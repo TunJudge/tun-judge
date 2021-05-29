@@ -1,8 +1,9 @@
-import { Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as Docker from 'dockerode';
 import { Container, ContainerCreateOptions } from 'dockerode';
-import sh, { workDir } from '../runner/submission-helper';
-import { JudgeLogger } from './judge.logger';
+import { SubmissionHelper } from '../helpers';
+import { getOnLog, JudgeLogger } from '../logger';
+import { SocketService } from './socket.service';
 
 export type ExecResult = {
   exitCode: number;
@@ -10,11 +11,19 @@ export type ExecResult = {
   stderr: string;
 };
 
+@Injectable()
 export class DockerService {
-  private connection: Docker;
-  private logger: Logger = new JudgeLogger(DockerService.name);
+  private readonly logger: JudgeLogger;
+  private readonly connection: Docker;
 
-  constructor() {
+  constructor(
+    private readonly socketService: SocketService,
+    private readonly submissionHelper: SubmissionHelper,
+  ) {
+    this.logger = new JudgeLogger(
+      DockerService.name,
+      getOnLog(this.socketService),
+    );
     this.connection = new Docker({ socketPath: '/var/run/docker.sock' });
   }
 
@@ -41,12 +50,12 @@ export class DockerService {
 
   createContainer(options: ContainerCreateOptions): Promise<Container> {
     options.OpenStdin ??= true;
-    options.WorkingDir ??= sh.submissionDir();
+    options.WorkingDir ??= this.submissionHelper.submissionDir();
     options.HostConfig = {
       Mounts: [
         {
-          Target: workDir,
-          Source: workDir,
+          Target: this.submissionHelper.workDir,
+          Source: this.submissionHelper.workDir,
           Type: 'bind',
         },
       ],
@@ -92,7 +101,3 @@ export class DockerService {
     }
   }
 }
-
-const dockerService = new DockerService();
-
-export default dockerService;

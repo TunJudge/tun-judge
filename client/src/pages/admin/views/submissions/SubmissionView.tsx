@@ -18,8 +18,11 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
 
   useEffect(() => {
     fetchById(parseInt(match!.params.id!)).catch(() => location.assign('/submissions'));
+  }, [fetchById, judgings, match]);
+
+  useEffect(() => {
     return cleanItem;
-  }, [fetchById, cleanItem, judgings, match]);
+  }, [cleanItem]);
 
   return submission ? (
     <>
