@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.10 (2021-05-29)
+
+
+### Bug Fixes
+
+* refactor judge code part1 ([b93908c](https://github.com/TunJudge/tun-judge/commit/b93908ccbc81252f8be193db14dcd61a42a88430))
+
 ### 0.0.9 (2021-05-28)
 
 
