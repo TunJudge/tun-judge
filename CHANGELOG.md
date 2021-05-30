@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.14 (2021-05-30)
+
+
+### Bug Fixes
+
+* enable strict mode for judge ([abd601c](https://github.com/TunJudge/tun-judge/commit/abd601c8ebdd2de0d6e433aca6cc6450749ed0e0))
+
 ### 0.0.13 (2021-05-30)
 
 
