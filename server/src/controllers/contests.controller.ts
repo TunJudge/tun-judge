@@ -61,10 +61,7 @@ export class ContestsController {
 
   @Put(':id')
   @Roles('admin')
-  async update(
-    @Param('id') id: number,
-    @Body() contest: Contest,
-  ): Promise<void> {
+  async update(@Param('id') id: number, @Body() contest: Contest): Promise<void> {
     contest = await this.contestsService.update(id, contest);
     await this.scoreboardService.refreshScoreForContest(contest);
     this.socketService.pingForUpdates('contests', 'submissions');
@@ -89,9 +86,7 @@ export class ContestsController {
 
   @Get(':id/clarifications')
   @Roles('admin', 'jury')
-  async getClarifications(
-    @Param('id') contestId: number,
-  ): Promise<Clarification[]> {
+  async getClarifications(@Param('id') contestId: number): Promise<Clarification[]> {
     return this.clarificationsService.getByContestId(contestId);
   }
 
@@ -101,10 +96,7 @@ export class ContestsController {
     @Param('id') contestId: number,
     @Param('teamId') teamId: number,
   ): Promise<Clarification[]> {
-    return this.clarificationsService.getByContestIdAndTeamId(
-      contestId,
-      teamId,
-    );
+    return this.clarificationsService.getByContestIdAndTeamId(contestId, teamId);
   }
 
   @Post(':id/clarifications')
@@ -121,11 +113,10 @@ export class ContestsController {
   ): Promise<Clarification> {
     clarification.contest = { id: contestId } as Contest;
     if (clarification.id) {
-      const dbClarification =
-        await this.clarificationsService.getByIdAndContestId(
-          clarification.id,
-          contestId,
-        );
+      const dbClarification = await this.clarificationsService.getByIdAndContestId(
+        clarification.id,
+        contestId,
+      );
       await Promise.all(
         clarification.messages
           .filter((message) => !message.id)
@@ -149,10 +140,7 @@ export class ContestsController {
         });
       clarification = await this.clarificationsService.save(clarification);
     }
-    return this.clarificationsService.getByIdAndContestId(
-      clarification.id,
-      contestId,
-    );
+    return this.clarificationsService.getByIdAndContestId(clarification.id, contestId);
   }
 
   @Get(':id/team/:teamId/submissions')
@@ -182,25 +170,16 @@ export class ContestsController {
       submission.submitTime,
     );
     const team = await this.teamsService.getByUserId(userId);
-    if (
-      !contest?.openToAllTeams &&
-      !contest?.teams.find((t) => t.id === team.id)
-    ) {
-      throw new ForbiddenException(
-        'Your team is not allowed to submit in this contest!',
-      );
+    if (!contest?.openToAllTeams && !contest?.teams.find((t) => t.id === team.id)) {
+      throw new ForbiddenException('Your team is not allowed to submit in this contest!');
     }
-    const language = await this.languagesService.getById(
-      submission.language.id,
-    );
+    const language = await this.languagesService.getById(submission.language.id);
     if (!language?.allowSubmit) {
       throw new BadRequestException(
         `It is not allowed to submit using the language '${language.name}'`,
       );
     }
-    const contestProblem = contest.problems.find(
-      (p) => submission.problem.id === p.problem.id,
-    );
+    const contestProblem = contest.problems.find((p) => submission.problem.id === p.problem.id);
     if (!contestProblem?.allowSubmit) {
       throw new BadRequestException(
         `It is not allowed to submit to the problem '${contestProblem.shortName} - ${contestProblem.problem.name}'`,
@@ -209,20 +188,13 @@ export class ContestsController {
     submission.contest = contest;
     submission.team = team;
     await this.submissionsService.save(submission);
-    await this.scoreboardService.refreshScoreCache(
-      contest,
-      team,
-      submission.problem,
-    );
+    await this.scoreboardService.refreshScoreCache(contest, team, submission.problem);
     this.socketService.pingForUpdates('submissions', 'judgeRuns');
   }
 
   @Get(':id/zip')
   @Roles('admin')
-  async getZip(
-    @Param('id') id: number,
-    @Res() response: Response,
-  ): Promise<void> {
+  async getZip(@Param('id') id: number, @Res() response: Response): Promise<void> {
     return zipEntities(
       id,
       'contest.zip',
@@ -273,15 +245,9 @@ export class ContestsController {
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  saveFromZip(
-    @UploadedFile() file,
-    @Query('multiple') multiple: string,
-  ): Promise<void> {
-    return unzipEntities<Contest>(
-      file,
-      multiple,
-      this.contestTransformer,
-      (contest) => this.contestsService.deepSave(contest),
+  saveFromZip(@UploadedFile() file, @Query('multiple') multiple: string): Promise<void> {
+    return unzipEntities<Contest>(file, multiple, this.contestTransformer, (contest) =>
+      this.contestsService.deepSave(contest),
     );
   }
 }

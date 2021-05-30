@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ContestProblem } from './contest-problem.entity';
 import { Submission } from './submission.entity';
 import { Team } from './team.entity';
@@ -78,8 +71,7 @@ export class Contest {
   openToAllTeams: boolean;
 
   @Column({
-    comment:
-      'Whether the submissions needs verification before showing the result to the team',
+    comment: 'Whether the submissions needs verification before showing the result to the team',
     default: false,
   })
   verificationRequired: boolean;

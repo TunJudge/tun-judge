@@ -4,11 +4,14 @@ import { JudgeHost } from './judge-host.model';
 import { Submission } from './submission.model';
 import { User } from './user.model';
 
+export type JudgingResult = 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE' | 'CE' | 'SE';
+
 export interface Judging {
   id: number;
   startTime: Date;
   endTime: Date;
-  result: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE' | 'CE';
+  result: JudgingResult;
+  systemError: string;
   verified: boolean;
   verifyComment: string;
   valid: boolean;

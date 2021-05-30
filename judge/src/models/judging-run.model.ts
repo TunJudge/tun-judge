@@ -2,9 +2,11 @@ import { File } from './file.model';
 import { Judging } from './judging.model';
 import { Testcase } from './testcase.model';
 
+export type JudgingRunResult = 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE';
+
 export interface JudgingRun {
   id: number;
-  result: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE';
+  result: JudgingRunResult;
   endTime: Date;
   runTime: number;
   runMemory: number;

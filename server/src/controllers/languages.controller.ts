@@ -43,10 +43,7 @@ export class LanguagesController {
     },
   ): Promise<Language[]> {
     return this.languagesService.getAll(
-      ['admin', 'jury'].includes(name) && [
-        'buildScript',
-        'buildScript.content',
-      ],
+      ['admin', 'jury'].includes(name) && ['buildScript', 'buildScript.content'],
     );
   }
 
@@ -58,10 +55,7 @@ export class LanguagesController {
 
   @Put(':id')
   @Roles('admin')
-  async update(
-    @Param('id') id: number,
-    @Body() language: Language,
-  ): Promise<Language> {
+  async update(@Param('id') id: number, @Body() language: Language): Promise<Language> {
     return this.languagesService.update(id, language);
   }
 
@@ -73,18 +67,12 @@ export class LanguagesController {
 
   @Get(':id/zip')
   @Roles('admin')
-  async getZip(
-    @Param('id') id: number,
-    @Res() response: Response,
-  ): Promise<void> {
+  async getZip(@Param('id') id: number, @Res() response: Response): Promise<void> {
     return zipEntities(
       id,
       'language.zip',
       this.languageTransformer,
-      await this.languagesService.getById(id, [
-        'buildScript',
-        'buildScript.content',
-      ]),
+      await this.languagesService.getById(id, ['buildScript', 'buildScript.content']),
       response,
     );
   }
@@ -96,10 +84,7 @@ export class LanguagesController {
       undefined,
       'languages.zip',
       this.languageTransformer,
-      await this.languagesService.getAll([
-        'buildScript',
-        'buildScript.content',
-      ]),
+      await this.languagesService.getAll(['buildScript', 'buildScript.content']),
       response,
     );
   }
@@ -107,15 +92,9 @@ export class LanguagesController {
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  saveFromZip(
-    @UploadedFile() file,
-    @Query('multiple') multiple: string,
-  ): Promise<void> {
-    return unzipEntities<Language>(
-      file,
-      multiple,
-      this.languageTransformer,
-      (language) => this.languagesService.save(language),
+  saveFromZip(@UploadedFile() file, @Query('multiple') multiple: string): Promise<void> {
+    return unzipEntities<Language>(file, multiple, this.languageTransformer, (language) =>
+      this.languagesService.save(language),
     );
   }
 }

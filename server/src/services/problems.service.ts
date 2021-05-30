@@ -17,13 +17,7 @@ export class ProblemsService {
   getAll(): Promise<Problem[]> {
     return this.problemsRepository.find({
       order: { id: 'ASC' },
-      relations: [
-        'file',
-        'file.content',
-        'testcases',
-        'runScript',
-        'checkScript',
-      ],
+      relations: ['file', 'file.content', 'testcases', 'runScript', 'checkScript'],
     });
   }
 
@@ -55,18 +49,12 @@ export class ProblemsService {
   }
 
   async deepSave(problem: Problem): Promise<Problem> {
-    problem.runScript = await this.executablesService.getDefaultByType(
-      'RUNNER',
-    );
-    problem.checkScript = await this.executablesService.getDefaultByType(
-      'CHECKER',
-    );
+    problem.runScript = await this.executablesService.getDefaultByType('RUNNER');
+    problem.checkScript = await this.executablesService.getDefaultByType('CHECKER');
     const testcases = problem.testcases;
     problem = await this.problemsRepository.save(problem);
     await Promise.all(
-      testcases.map((testcase) =>
-        this.testcasesService.create(problem.id, testcase),
-      ),
+      testcases.map((testcase) => this.testcasesService.create(problem.id, testcase)),
     );
     return problem;
   }

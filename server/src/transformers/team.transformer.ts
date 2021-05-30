@@ -14,8 +14,7 @@ export class TeamTransformer implements EntityTransformer<Team> {
       Object.keys(zip.files)
         .filter(
           (file) =>
-            file.startsWith(basePath) &&
-            new RegExp(`${basePath}[^\/]+\/Team\/$`, 'gm').test(file),
+            file.startsWith(basePath) && new RegExp(`${basePath}[^\/]+\/Team\/$`, 'gm').test(file),
         )
         .map((folder) => folder.replace(/Team\/$/g, ''))
         .map((folder) => this.fromZip(zip.folder(basename(folder)))),
@@ -24,9 +23,7 @@ export class TeamTransformer implements EntityTransformer<Team> {
 
   async fromZip(zip: JSZip): Promise<Team> {
     const subZip = zip.folder(this.entityName);
-    return load(
-      await subZip.file(`${this.entityName}.yaml`).async('string'),
-    ) as Team;
+    return load(await subZip.file(`${this.entityName}.yaml`).async('string')) as Team;
   }
 
   async manyToZip(teams: Team[], zip: JSZip): Promise<void> {

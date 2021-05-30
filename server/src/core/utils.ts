@@ -1,25 +1,21 @@
 import { Response } from 'express';
 import * as JSZip from 'jszip';
-import { Contest, Judging, Submission } from '../entities';
+import { Contest, Judging, JudgingResult, Submission } from '../entities';
 import { EntityTransformer } from '../transformers/entity.transformer';
 
 export function getFirstJudging(submission: Submission): Judging | undefined {
-  const judgings = submission.judgings.sort(
-    (a, b) => b.startTime.getTime() - a.startTime.getTime(),
-  );
-  return judgings.length ? judgings[0] : undefined;
+  return submission.judgings.sort((a, b) => b.startTime.getTime() - a.startTime.getTime()).shift();
 }
 
 export function submissionHasResult(
   { verificationRequired }: Contest,
-  result: 'AC' | 'CE',
+  results: JudgingResult[],
   inverse = false,
 ): (submission: Submission) => boolean {
   return (submission) => {
     const judging = getFirstJudging(submission);
     const answer =
-      judging?.result === result &&
-      !(verificationRequired && !judging.verified);
+      results.includes(judging?.result) && !(verificationRequired && !judging.verified);
     return inverse ? !answer : answer;
   };
 }
@@ -64,14 +60,10 @@ export async function unzipEntities<T>(
   save: (entity: T) => Promise<any>,
 ): Promise<void> {
   if (multiple === 'true') {
-    const entities = await transformer.fromZipToMany(
-      await JSZip.loadAsync(file.buffer),
-    );
+    const entities = await transformer.fromZipToMany(await JSZip.loadAsync(file.buffer));
     await Promise.all(entities.map((contest) => save(contest)));
   } else {
-    const entity = await transformer.fromZip(
-      await JSZip.loadAsync(file.buffer),
-    );
+    const entity = await transformer.fromZip(await JSZip.loadAsync(file.buffer));
     await save(entity);
   }
 }

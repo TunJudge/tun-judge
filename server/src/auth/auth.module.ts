@@ -10,12 +10,7 @@ import { SessionSerializer } from './session.serializer';
 
 @Module({
   imports: [PassportModule, TypeOrmModule.forFeature([User])],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    SessionSerializer,
-    CustomRepositoryProvider(User),
-  ],
+  providers: [AuthService, LocalStrategy, SessionSerializer, CustomRepositoryProvider(User)],
   controllers: [AuthController],
 })
 export class AuthModule {}

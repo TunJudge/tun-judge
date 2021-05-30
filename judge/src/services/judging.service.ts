@@ -1,12 +1,11 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import config from '../config';
 import { SubmissionHelper } from '../helpers';
-import http from '../http/http.client';
 import { Compiler, Executor, Initializer } from '../judging-steps';
 import { getOnLog, JudgeLogger } from '../logger';
 import { Judging } from '../models';
 import { SocketService } from './socket.service';
+import { SystemService } from './system.service';
 
 @Injectable()
 export class JudgingService {
@@ -16,6 +15,7 @@ export class JudgingService {
   constructor(
     private readonly socketService: SocketService,
     private readonly submissionHelper: SubmissionHelper,
+    private readonly systemService: SystemService,
     @Inject(forwardRef(() => Initializer))
     private readonly initializer: Initializer,
     @Inject(forwardRef(() => Compiler))
@@ -23,10 +23,7 @@ export class JudgingService {
     @Inject(forwardRef(() => Executor))
     private readonly executor: Executor,
   ) {
-    this.logger = new JudgeLogger(
-      JudgingService.name,
-      getOnLog(this.socketService),
-    );
+    this.logger = new JudgeLogger(JudgingService.name, getOnLog(this.socketService));
   }
 
   @Interval(1000)
@@ -34,9 +31,7 @@ export class JudgingService {
     if (!this.lock) {
       this.lock = true;
       try {
-        const judging = await http.get<Judging>(
-          `api/judge-hosts/${config.hostname}/next-judging`,
-        );
+        const judging = await this.systemService.getNextJudging();
         if (judging) {
           this.logger.log(
             `Judging '${judging.id}' for problem '${judging.submission.problem.name}' and language '${judging.submission.language.name}' received!`,

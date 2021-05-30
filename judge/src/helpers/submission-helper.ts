@@ -32,22 +32,6 @@ export class SubmissionHelper {
     this.submission = submission;
   }
 
-  runContainerName = (): string =>
-    `tun-judge-run-submission-${this.submission.id}-${Date.now()}`;
-
-  compileContainerName = (): string =>
-    `tun-judge-build-submission-${this.submission.id}-${Date.now()}`;
-
-  runCheckerContainerName = (): string =>
-    `tun-judge-run-checker-${
-      this.submission.problem.checkScript.id
-    }-${Date.now()}`;
-
-  compileCheckerContainerName = (): string =>
-    `tun-judge-build-checker-${
-      this.submission.problem.checkScript.id
-    }-${Date.now()}`;
-
   runCmd = (testcase: Testcase): string[] => {
     const {
       problem: { runScript },
@@ -59,10 +43,7 @@ export class SubmissionHelper {
         this.assetsFilePath('guard'),
         this.submission.problem.timeLimit * 1000,
         this.submission.problem.memoryLimit,
-        `'${this.executableFilePath(
-          runScript.id,
-          runScript.file,
-        )} ${this.binPath()}'`,
+        `'${this.executableFilePath(runScript.id, runScript.file)} ${this.binPath()}'`,
         this.testcaseFilePath(testcase.id, testcase.input),
         'test.out',
         'test.err',
@@ -77,8 +58,7 @@ export class SubmissionHelper {
     String(this.submission.problem.memoryLimit),
   ];
 
-  extraFilesPath = (filename: string): string =>
-    join(this.submissionDir(), filename);
+  extraFilesPath = (filename: string): string => join(this.submissionDir(), filename);
 
   checkerRunCmd = (testcase: Testcase): string[] => {
     const {
@@ -116,36 +96,24 @@ export class SubmissionHelper {
     return dir;
   };
 
-  filePath = (): string =>
-    join(this.submissionDir(), this.submission.file.name.replace(/ /g, '_'));
+  filePath = (): string => join(this.submissionDir(), this.submission.file.name.replace(/ /g, '_'));
 
   binPath = (): string => this.filePath().replace(/\.[^.]*$/g, '');
 
   problemDir = (): string => {
-    const dir = join(
-      this.workDir,
-      'problems',
-      String(this.submission.problem.id),
-    );
+    const dir = join(this.workDir, 'problems', String(this.submission.problem.id));
     mkdirSync(dir, { recursive: true });
     return dir;
   };
 
   languageDir = (): string => {
-    const dir = join(
-      this.workDir,
-      'languages',
-      String(this.submission.language.id),
-    );
+    const dir = join(this.workDir, 'languages', String(this.submission.language.id));
     mkdirSync(dir, { recursive: true });
     return dir;
   };
 
   languageFileDir = (): string => {
-    const dir = join(
-      this.languageDir(),
-      this.submission.language.buildScript.md5Sum,
-    );
+    const dir = join(this.languageDir(), this.submission.language.buildScript.md5Sum);
     mkdirSync(dir, { recursive: true });
     return dir;
   };
@@ -192,6 +160,5 @@ export class SubmissionHelper {
     return dir;
   };
 
-  assetsFilePath = (fileName: string): string =>
-    join(this.assetsDir(), fileName);
+  assetsFilePath = (fileName: string): string => join(this.assetsDir(), fileName);
 }

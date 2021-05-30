@@ -25,9 +25,7 @@ export class TestcaseTransformer implements EntityTransformer<Testcase> {
 
   async fromZip(zip: JSZip): Promise<Testcase> {
     const subZip = zip.folder(this.entityName);
-    const testcase = load(
-      await subZip.file(`${this.entityName}.yaml`).async('string'),
-    ) as Testcase;
+    const testcase = load(await subZip.file(`${this.entityName}.yaml`).async('string')) as Testcase;
     const inputPayload = await subZip.file('test.in').async('string');
     const inputBase64 = Buffer.from(inputPayload).toString('base64');
     testcase.input = {

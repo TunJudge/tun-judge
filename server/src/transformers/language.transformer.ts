@@ -25,9 +25,7 @@ export class LanguageTransformer implements EntityTransformer<Language> {
 
   async fromZip(zip: JSZip): Promise<Language> {
     const subZip = zip.folder(this.entityName);
-    const language = load(
-      await subZip.file(`${this.entityName}.yaml`).async('string'),
-    ) as Language;
+    const language = load(await subZip.file(`${this.entityName}.yaml`).async('string')) as Language;
     const buildPayload = await subZip.file('build').async('string');
     const buildBase64 = Buffer.from(buildPayload).toString('base64');
     language.buildScript = {

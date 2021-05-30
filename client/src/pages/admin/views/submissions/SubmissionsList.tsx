@@ -72,7 +72,7 @@ const SubmissionsList: React.FC = observer(() => {
               color: judging?.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey',
             }}
           >
-            {judging?.result ? resultMap[judging.result] : 'Pending'}
+            {resultMap[judging?.result ?? 'PD']}
           </b>
         );
       },

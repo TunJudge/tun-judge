@@ -10,10 +10,7 @@ export class AuthService {
     private readonly usersRepository: ExtendedRepository<User>,
   ) {}
 
-  async validateUser(
-    username: string,
-    password: string,
-  ): Promise<Omit<User, 'password'> | null> {
+  async validateUser(username: string, password: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersRepository.findOneOrThrow(
       { username, enabled: true },
       new NotFoundException('User not found!'),

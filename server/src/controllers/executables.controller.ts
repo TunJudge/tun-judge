@@ -43,10 +43,7 @@ export class ExecutablesController {
 
   @Put(':id')
   @Roles('admin')
-  async update(
-    @Param('id') id: number,
-    @Body() executable: Executable,
-  ): Promise<Executable> {
+  async update(@Param('id') id: number, @Body() executable: Executable): Promise<Executable> {
     return this.executablesService.update(id, executable);
   }
 
@@ -58,10 +55,7 @@ export class ExecutablesController {
 
   @Get(':id/zip')
   @Roles('admin')
-  async getZip(
-    @Param('id') id: number,
-    @Res() response: Response,
-  ): Promise<void> {
+  async getZip(@Param('id') id: number, @Res() response: Response): Promise<void> {
     return zipEntities(
       id,
       'executable.zip',
@@ -96,15 +90,9 @@ export class ExecutablesController {
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  saveFromZip(
-    @UploadedFile() file,
-    @Query('multiple') multiple: string,
-  ): Promise<void> {
-    return unzipEntities<Executable>(
-      file,
-      multiple,
-      this.executableTransformer,
-      (executable) => this.executablesService.save(executable),
+  saveFromZip(@UploadedFile() file, @Query('multiple') multiple: string): Promise<void> {
+    return unzipEntities<Executable>(file, multiple, this.executableTransformer, (executable) =>
+      this.executablesService.save(executable),
     );
   }
 }

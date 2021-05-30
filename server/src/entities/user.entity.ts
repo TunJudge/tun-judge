@@ -1,11 +1,5 @@
 import { compareSync } from 'bcrypt';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from './role.entity';
 import { Team } from './team.entity';
 
@@ -60,8 +54,7 @@ export class User {
   })
   role: Role;
 
-  checkPassword = (password: string): boolean =>
-    compareSync(password, this.password);
+  checkPassword = (password: string): boolean => compareSync(password, this.password);
 
   clean = (): this => {
     delete this.password;

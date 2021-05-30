@@ -28,9 +28,7 @@ export class ProblemTransformer implements EntityTransformer<Problem> {
 
   async fromZip(zip: JSZip, basePath = ''): Promise<Problem> {
     const subZip = zip.folder(this.entityName);
-    const problem = load(
-      await subZip.file(`${this.entityName}.yaml`).async('string'),
-    ) as Problem;
+    const problem = load(await subZip.file(`${this.entityName}.yaml`).async('string')) as Problem;
     const pdfBase64 = await subZip.file('file.pdf').async('base64');
     problem.file = {
       name: 'file.pdf',

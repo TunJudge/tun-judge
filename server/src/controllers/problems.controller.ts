@@ -40,11 +40,7 @@ export class ProblemsController {
   @Get(':id')
   @Roles('admin', 'jury')
   getById(@Param('id') id: number): Promise<Problem> {
-    return this.problemsService.getById(id, [
-      'testcases',
-      'file',
-      'file.content',
-    ]);
+    return this.problemsService.getById(id, ['testcases', 'file', 'file.content']);
   }
 
   @Patch(':id/rejudge')
@@ -61,10 +57,7 @@ export class ProblemsController {
 
   @Put(':id')
   @Roles('admin')
-  async update(
-    @Param('id') id: number,
-    @Body() problem: Problem,
-  ): Promise<Problem> {
+  async update(@Param('id') id: number, @Body() problem: Problem): Promise<Problem> {
     return this.problemsService.update(id, problem);
   }
 
@@ -76,10 +69,7 @@ export class ProblemsController {
 
   @Get(':id/zip')
   @Roles('admin')
-  async getZip(
-    @Param('id') id: number,
-    @Res() response: Response,
-  ): Promise<void> {
+  async getZip(@Param('id') id: number, @Res() response: Response): Promise<void> {
     return zipEntities(
       id,
       'problem.zip',
@@ -120,15 +110,9 @@ export class ProblemsController {
   @Post('unzip')
   @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
-  saveFromZip(
-    @UploadedFile() file,
-    @Query('multiple') multiple: string,
-  ): Promise<void> {
-    return unzipEntities<Problem>(
-      file,
-      multiple,
-      this.problemTransformer,
-      (problem) => this.problemsService.deepSave(problem),
+  saveFromZip(@UploadedFile() file, @Query('multiple') multiple: string): Promise<void> {
+    return unzipEntities<Problem>(file, multiple, this.problemTransformer, (problem) =>
+      this.problemsService.deepSave(problem),
     );
   }
 }

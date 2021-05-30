@@ -16,10 +16,7 @@ export class ClarificationsService {
     return this.clarificationsRepository.find({ contest: { id: contestId } });
   }
 
-  getByContestIdAndTeamId(
-    contestId: number,
-    teamId: number,
-  ): Promise<Clarification[]> {
+  getByContestIdAndTeamId(contestId: number, teamId: number): Promise<Clarification[]> {
     return this.clarificationsRepository.find({
       where: { contest: { id: contestId }, team: { id: teamId } },
       relations: ['problem', 'messages', 'messages.sentBy'],

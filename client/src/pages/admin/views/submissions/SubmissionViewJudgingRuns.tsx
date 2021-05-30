@@ -96,47 +96,26 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
               </Menu.Item>
             </Segment>
             <Segment>
+              {judging!.result === 'SE' && (
+                <OutputSection
+                  title="System output"
+                  color={!judging.systemError ? 'grey' : 'black'}
+                  payload={judging.systemError}
+                />
+              )}
               {['AC', 'WA'].includes(judging!.result) && (
-                <>
-                  <b>Checker output</b>
-                  <pre
-                    style={{
-                      padding: '0.3rem',
-                      border: '0.5px grey solid',
-                      borderRadius: '.28571429rem',
-                      margin: 0,
-                      marginTop: 4,
-                      maxHeight: '300px',
-                      overflow: 'auto',
-                    }}
-                  >
-                    <code style={{ color: !run.checkerOutput ? 'grey' : 'black' }}>
-                      {run.checkerOutput
-                        ? atob(run.checkerOutput?.content.payload ?? '')
-                        : 'No Output'}
-                    </code>
-                  </pre>
-                </>
+                <OutputSection
+                  title="Checker output"
+                  color={!run.checkerOutput ? 'grey' : 'black'}
+                  payload={atob(run.checkerOutput?.content.payload ?? '')}
+                />
               )}
               {['RE', 'TLE', 'MLE'].includes(judging!.result) && (
-                <>
-                  <b>Error output</b>
-                  <pre
-                    style={{
-                      padding: '0.3rem',
-                      border: '0.5px grey solid',
-                      borderRadius: '.28571429rem',
-                      margin: 0,
-                      marginTop: 4,
-                      maxHeight: '300px',
-                      overflow: 'auto',
-                    }}
-                  >
-                    <code style={{ color: !run.errorOutput ? 'grey' : 'black' }}>
-                      {run.errorOutput ? atob(run.errorOutput?.content.payload ?? '') : 'No Output'}
-                    </code>
-                  </pre>
-                </>
+                <OutputSection
+                  title="Error output"
+                  color={!run.errorOutput ? 'grey' : 'black'}
+                  payload={atob(run.errorOutput?.content.payload ?? '')}
+                />
               )}
             </Segment>
           </Segment.Group>
@@ -154,3 +133,26 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
 );
 
 export default SubmissionsViewJudgingRuns;
+
+const OutputSection: React.FC<{
+  title: string;
+  color: 'grey' | 'black';
+  payload?: string;
+}> = ({ title, color, payload }) => (
+  <>
+    <b>{title}</b>
+    <pre
+      style={{
+        padding: '0.3rem',
+        border: '0.5px grey solid',
+        borderRadius: '.28571429rem',
+        margin: 0,
+        marginTop: 4,
+        maxHeight: '300px',
+        overflow: 'auto',
+      }}
+    >
+      <code style={{ color: color }}>{payload ?? 'No Output'}</code>
+    </pre>
+  </>
+);

@@ -31,19 +31,14 @@ export class ContestTransformer implements EntityTransformer<Contest> {
 
   async fromZip(zip: JSZip, basePath = ''): Promise<Contest> {
     const subZip = zip.folder(this.entityName);
-    const contest = load(
-      await subZip.file(`${this.entityName}.yaml`).async('string'),
-    ) as Contest;
+    const contest = load(await subZip.file(`${this.entityName}.yaml`).async('string')) as Contest;
     const problemsZip = subZip.folder('problems');
     contest.problems = await this.contestProblemTransformer.fromZipToMany(
       problemsZip,
       `${basePath}Contest/problems/`,
     );
     const teamsZip = subZip.folder('teams');
-    contest.teams = await this.teamTransformer.fromZipToMany(
-      teamsZip,
-      `${basePath}Contest/teams/`,
-    );
+    contest.teams = await this.teamTransformer.fromZipToMany(teamsZip, `${basePath}Contest/teams/`);
     return contest;
   }
 
@@ -74,10 +69,7 @@ export class ContestTransformer implements EntityTransformer<Contest> {
       verificationRequired: contest.verificationRequired,
     } as Partial<Contest>);
     const problemsZip = subZip.folder('problems');
-    await this.contestProblemTransformer.manyToZip(
-      contest.problems,
-      problemsZip,
-    );
+    await this.contestProblemTransformer.manyToZip(contest.problems, problemsZip);
     const teamsZip = subZip.folder('teams');
     await this.teamTransformer.manyToZip(contest.teams, teamsZip);
     subZip.file(`${this.entityName}.yaml`, metadata);

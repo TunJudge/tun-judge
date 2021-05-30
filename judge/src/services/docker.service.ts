@@ -20,10 +20,7 @@ export class DockerService {
     private readonly socketService: SocketService,
     private readonly submissionHelper: SubmissionHelper,
   ) {
-    this.logger = new JudgeLogger(
-      DockerService.name,
-      getOnLog(this.socketService),
-    );
+    this.logger = new JudgeLogger(DockerService.name, getOnLog(this.socketService));
     this.connection = new Docker({ socketPath: '/var/run/docker.sock' });
   }
 
@@ -39,8 +36,7 @@ export class DockerService {
           }
           this.connection.modem.followProgress(
             stream,
-            (error, result) =>
-              error ? reject(error) : resolve(result.pop().status),
+            (error, result) => (error ? reject(error) : resolve(result.pop().status)),
             ({ status }) => this.logger.debug(`${tag}: ${status}`),
           );
         });
@@ -64,11 +60,7 @@ export class DockerService {
     return this.connection.createContainer(options);
   }
 
-  execCmdInDocker(
-    container: Container,
-    cmd: string[],
-    workDir?: string,
-  ): Promise<ExecResult> {
+  execCmdInDocker(container: Container, cmd: string[], workDir?: string): Promise<ExecResult> {
     return new Promise<ExecResult>(async (resolve) => {
       const result: ExecResult = {
         exitCode: 0,

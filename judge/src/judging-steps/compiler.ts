@@ -2,13 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { MD5 } from 'crypto-js';
 import { existsSync, promises as fs } from 'fs';
 import { join } from 'path';
-import { clearLine, cursorTo } from 'readline';
-import { SubmissionHelper } from '../helpers';
-import http from '../http/http.client';
+import { Spinner, SubmissionHelper } from '../helpers';
 import { getOnLog, JudgeLogger } from '../logger';
-import { Judging } from '../models';
-import { DockerService, ExecResult, SocketService } from '../services';
-import { startSpinner, stopSpinner } from '../utils';
+import { Executable, Judging } from '../models';
+import { DockerService, ExecResult, SocketService, SystemService } from '../services';
 
 /**
  * The Compiler assure the compilation of the submission and checker code source files.
@@ -20,6 +17,7 @@ export class Compiler {
   constructor(
     private readonly dockerService: DockerService,
     private readonly socketService: SocketService,
+    private readonly systemService: SystemService,
     private readonly submissionHelper: SubmissionHelper,
   ) {
     this.logger = new JudgeLogger(Compiler.name, getOnLog(this.socketService));
@@ -30,147 +28,131 @@ export class Compiler {
     const {
       problem: { checkScript },
     } = submission;
-    this.logger.log(
-      `Compiling submission file ${submission.file.name}\t`,
-      undefined,
-      false,
-    );
-    const spinner = startSpinner();
-    // Create docker container to compile the submission file
-    const submissionCompilerContainer =
-      await this.dockerService.createContainer({
-        Image: submission.language.dockerImage,
-        name: this.submissionHelper.compileContainerName(),
-      });
-    // Start the submission compiler container
-    await submissionCompilerContainer.start();
-    // Make the language build script executable
-    await fs.chmod(this.submissionHelper.languageFilePath(), '0775');
-    // Executing the compile command inside the submission compile container
-    const submissionCompileResult = await this.dockerService.execCmdInDocker(
-      submissionCompilerContainer,
-      this.submissionHelper.compileCmd(),
-    );
-    // Compile the guard code inside the language container to assure the compatibility with the linux kernel
-    await this.dockerService.execCmdInDocker(
-      submissionCompilerContainer,
-      'g++ --std=c++11 -pthread -o guard guard.cpp'.split(' '),
-      this.submissionHelper.assetsDir(),
-    );
-    // Report the result of the submission file compilation
-    await this.updateJudging(judging, submissionCompileResult);
-    await this.dockerService.pruneContainer(submissionCompilerContainer);
-    stopSpinner(spinner);
-    clearLine(process.stdout, 0);
-    cursorTo(process.stdout, 0);
-    if (!submissionCompileResult.exitCode) {
-      this.logger.log(`Compiling submission file ${submission.file.name}\tOK!`);
-    } else {
-      this.logger.error(
-        `Compiling submission file ${submission.file.name}\tNOT OK!`,
-      );
-      return;
-    }
 
-    // Check if we already built the check script or not to prevent the double work
-    if (
-      !existsSync(
-        this.submissionHelper.executableBinPath(
-          checkScript.id,
-          checkScript.file,
-        ),
-      )
-    ) {
-      this.logger.log(
-        `Compiling executable file ${checkScript.file.name}\t`,
-        undefined,
-        false,
-      );
-      const spinner = startSpinner();
-      // Create docker container to compile the checker file
-      const checkerContainer = await this.dockerService.createContainer({
-        Image: submission.problem.checkScript.dockerImage,
-        name: this.submissionHelper.compileCheckerContainerName(),
-        WorkingDir: this.submissionHelper.executableFileDir(
-          checkScript.id,
-          checkScript.file,
-        ),
-      });
-      // Start the checker compiler container
-      await checkerContainer.start();
-      // Make the checker build script executable
-      await fs.chmod(
-        this.submissionHelper.executableFilePath(
-          checkScript.id,
-          checkScript.buildScript,
-        ),
-        '0775',
-      );
-      // Copy the testlib.h to the compiling directory to support the Codeforces checkers
-      await fs.copyFile(
-        this.submissionHelper.testLibPath,
-        join(
-          this.submissionHelper.executableFileDir(
-            checkScript.id,
-            checkScript.file,
-          ),
-          'testlib.h',
-        ),
-      );
-      // Executing the compile command inside the checker compile container
-      const checkerCompileResult = await this.dockerService.execCmdInDocker(
-        checkerContainer,
-        this.submissionHelper.checkerCompileCmd(),
-      );
-      await this.dockerService.pruneContainer(checkerContainer);
+    const compileSubmissionResult = await this.compileSubmissionFile(judging);
 
-      stopSpinner(spinner);
-      clearLine(process.stdout, 0);
-      cursorTo(process.stdout, 0);
-      if (!checkerCompileResult.exitCode) {
-        this.logger.log(
-          `Compiling executable file ${checkScript.file.name}\tOK!`,
-        );
-      } else {
-        this.logger.error(
-          `Compiling executable file ${submission.file.name}\tNOT OK!`,
-        );
-        return;
-      }
+    if (compileSubmissionResult.exitCode) {
+      this.logger.error(`Compiling submission file ${submission.file.name}\tNOT OK!`);
+      return this.systemService.setJudgingResult(judging, 'CE');
     }
+    this.logger.log(`Compiling submission file ${submission.file.name}\tOK!`);
+
+    const compileCheckerResult = await this.compileCheckerFile(submission.problem.checkScript);
+
+    if (compileCheckerResult.exitCode) {
+      this.logger.error(`Compiling executable file ${checkScript.file.name}\tNOT OK!`);
+      return this.systemService.setJudgingResult(judging, 'SE', compileCheckerResult.stdout);
+    }
+    this.logger.log(`Compiling executable file ${checkScript.file.name}\tOK!`);
+
     this.logger.log(`Submission with id ${submission.id} compiled!`);
   }
 
-  private async updateJudging(
-    judging: Judging,
-    submissionCompileResult: ExecResult,
-  ): Promise<void> {
+  private async compileSubmissionFile(judging: Judging) {
     const {
-      submission: {
-        judgeHost: { hostname },
-      },
+      submission: { id, file, language },
     } = judging;
-    const payload = Buffer.from(submissionCompileResult.stdout.trim()).toString(
-      'base64',
+
+    this.logger.log(`Compiling submission file ${file.name}\t`, undefined, false);
+    const spinner = new Spinner();
+
+    // Create docker container to compile the submission file
+    const submissionCompilerContainer = await this.dockerService.createContainer({
+      Image: language.dockerImage,
+      name: `tun-judge-build-submission-${id}-${Date.now()}`,
+    });
+
+    // Start the submission compiler container
+    await submissionCompilerContainer.start();
+
+    // Make the language build script executable
+    await fs.chmod(this.submissionHelper.languageFilePath(), '0775');
+
+    // Executing the compile command inside the submission compile container
+    const compileSubmissionResult = await this.dockerService.execCmdInDocker(
+      submissionCompilerContainer,
+      this.submissionHelper.compileCmd(),
     );
+
+    // Compile the guard code inside the language container to assure the compatibility with the linux kernel
+    await this.dockerService.execCmdInDocker(
+      submissionCompilerContainer,
+      ['g++', '--std=c++11', '-pthread', '-o', 'guard', 'guard.cpp'],
+      this.submissionHelper.assetsDir(),
+    );
+
+    // Report the result of the submission file compilation
+    await this.setJudgingCompileOutput(judging, compileSubmissionResult);
+
+    await this.dockerService.pruneContainer(submissionCompilerContainer);
+
+    spinner.stop();
+
+    return compileSubmissionResult;
+  }
+
+  private async compileCheckerFile(checkScript: Executable) {
+    // Check if we already built the check script or not to prevent the double work
+    const checkerBinPath = this.submissionHelper.executableBinPath(
+      checkScript.id,
+      checkScript.file,
+    );
+    if (existsSync(checkerBinPath)) return;
+
+    this.logger.log(`Compiling executable file ${checkScript.file.name}\t`, undefined, false);
+    const spinner = new Spinner();
+
+    // Create docker container to compile the checker file
+    const checkerContainer = await this.dockerService.createContainer({
+      Image: checkScript.dockerImage,
+      name: `tun-judge-build-checker-${checkScript.id}-${Date.now()}`,
+      WorkingDir: this.submissionHelper.executableFileDir(checkScript.id, checkScript.file),
+    });
+
+    // Start the checker compiler container
+    await checkerContainer.start();
+
+    // Make the checker build script executable
+    await fs.chmod(
+      this.submissionHelper.executableFilePath(checkScript.id, checkScript.buildScript),
+      '0775',
+    );
+
+    // Copy the testlib.h to the compiling directory to support the Codeforces checkers
+    await fs.copyFile(
+      this.submissionHelper.testLibPath,
+      join(this.submissionHelper.executableFileDir(checkScript.id, checkScript.file), 'testlib.h'),
+    );
+
+    // Executing the compile command inside the checker compile container
+    const compileCheckerResult = await this.dockerService.execCmdInDocker(
+      checkerContainer,
+      this.submissionHelper.checkerCompileCmd(),
+    );
+
+    await this.dockerService.pruneContainer(checkerContainer);
+
+    spinner.stop();
+
+    return compileCheckerResult;
+  }
+
+  private async setJudgingCompileOutput(
+    judging: Judging,
+    compileSubmissionResult: ExecResult,
+  ): Promise<void> {
+    const payload = Buffer.from(compileSubmissionResult.stdout.trim()).toString('base64');
     judging.compileOutput = {
       id: undefined,
       name: 'compile.out',
       type: 'text/plain',
-      size: submissionCompileResult.stdout.length,
+      size: compileSubmissionResult.stdout.length,
       md5Sum: MD5(payload).toString(),
       content: {
         id: undefined,
         payload: payload,
       },
     };
-    if (submissionCompileResult.exitCode) {
-      judging.endTime = new Date();
-      judging.result = 'CE';
-    }
-    await http.put(
-      `api/judge-hosts/${hostname}/update-judging/${judging.id}`,
-      judging,
-    );
+    await this.systemService.updateJudging(judging);
   }
 }

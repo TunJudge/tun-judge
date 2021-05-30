@@ -2,11 +2,7 @@ import { Controller, Get, Param, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
 import { Contest, ContestProblem, ScoreCache } from '../entities';
-import {
-  ContestProblemsService,
-  ContestsService,
-  UsersService,
-} from '../services';
+import { ContestProblemsService, ContestsService, UsersService } from '../services';
 
 @Controller('public')
 export class PublicController {
@@ -23,24 +19,18 @@ export class PublicController {
     const contests = await this.contestsService.getAllActive();
     switch (session.passport?.user.role.name) {
       case 'team':
-        const user = await this.usersService.getById(
-          session.passport?.user.id,
-          ['team'],
-        );
+        const user = await this.usersService.getById(session.passport?.user.id, ['team']);
         return contests
           .filter(
             (contest) =>
-              contest.openToAllTeams ||
-              contest.teams.some((team) => team.id === user.team.id),
+              contest.openToAllTeams || contest.teams.some((team) => team.id === user.team.id),
           )
           .map(this.cleanProblems);
       case 'jury':
       case 'admin':
         return contests;
       default:
-        return contests
-          .filter((contest) => contest.public)
-          .map(this.cleanProblems);
+        return contests.filter((contest) => contest.public).map(this.cleanProblems);
     }
   }
 
@@ -56,21 +46,12 @@ export class PublicController {
   }
 
   @Get('contest/:id/score-caches')
-  async getScoreCaches(
-    @Param('id') contestId: number,
-    @Session() session,
-  ): Promise<ScoreCache[]> {
+  async getScoreCaches(@Param('id') contestId: number, @Session() session): Promise<ScoreCache[]> {
     const user = await this.usersService.findById(session?.passport?.user.id);
     return (
       await this.scoreCachesRepository.find({
         where: { contest: { id: contestId } },
-        relations: [
-          'contest',
-          'contest.problems',
-          'contest.problems.problem',
-          'problem',
-          'team',
-        ],
+        relations: ['contest', 'contest.problems', 'contest.problems.problem', 'problem', 'team'],
       })
     ).map((scoreCache) => {
       if (!session.passport || !['admin', 'jury'].includes(user.role.name)) {

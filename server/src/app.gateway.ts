@@ -9,12 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { ExtendedRepository } from './core/extended-repository';
 import { Team } from './entities';
 
-type UpdateEvents =
-  | 'contests'
-  | 'scoreboard'
-  | 'submissions'
-  | 'judgings'
-  | 'judgeRuns';
+type UpdateEvents = 'contests' | 'scoreboard' | 'submissions' | 'judgings' | 'judgeRuns';
 
 @WebSocketGateway({ namespace: 'ws' })
 export class AppGateway {
@@ -32,19 +27,13 @@ export class AppGateway {
 
   @SubscribeMessage('subscribe')
   subscribe(client: Socket) {
-    if (
-      ['admin', 'jury'].includes(
-        (client.request as any).session?.passport?.user.role.name,
-      )
-    ) {
+    if (['admin', 'jury'].includes((client.request as any).session?.passport?.user.role.name)) {
       client.join('juries');
     }
   }
 
   @SubscribeMessage('judgeHostLogs')
-  judgeHostLogs(
-    @MessageBody() { hostname, log }: { hostname: string; log: string },
-  ) {
+  judgeHostLogs(@MessageBody() { hostname, log }: { hostname: string; log: string }) {
     this.server.in('juries').emit(`judgeHost-${hostname}-logs`, log);
   }
 }

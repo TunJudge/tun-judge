@@ -45,10 +45,7 @@ export class TeamCategoriesService {
   async move(id: number, direction: 'up' | 'down'): Promise<void> {
     const teamCategory = await this.getById(id);
     const otherTeamCategory = await this.teamCategoriesRepository.findOne({
-      sortOrder:
-        direction === 'up'
-          ? teamCategory.sortOrder - 1
-          : teamCategory.sortOrder + 1,
+      sortOrder: direction === 'up' ? teamCategory.sortOrder - 1 : teamCategory.sortOrder + 1,
     });
     if (otherTeamCategory) {
       const aux = otherTeamCategory.sortOrder;

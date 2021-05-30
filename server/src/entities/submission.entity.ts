@@ -32,8 +32,7 @@ export class Submission {
   submitTime: Date;
 
   @Column({
-    comment:
-      'If false, the submission should be ignored in all scoreboard calculation',
+    comment: 'If false, the submission should be ignored in all scoreboard calculation',
     default: true,
   })
   valid: boolean;

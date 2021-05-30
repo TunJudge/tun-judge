@@ -11,6 +11,8 @@ import { File } from './file.entity';
 import { Judging } from './judging.entity';
 import { Testcase } from './testcase.entity';
 
+export type JudgingRunResult = 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE';
+
 @Entity()
 @Unique(['judging', 'testcase'])
 export class JudgingRun {
@@ -18,7 +20,7 @@ export class JudgingRun {
   id: number;
 
   @Column({ comment: 'Judging Run result', nullable: true })
-  result: string;
+  result: JudgingRunResult;
 
   @Column({ comment: 'Judging Run end time' })
   endTime: Date;

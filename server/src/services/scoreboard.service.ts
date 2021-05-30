@@ -4,11 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual } from 'typeorm';
 import { AppGateway } from '../app.gateway';
 import { ExtendedRepository } from '../core/extended-repository';
-import {
-  submissionHasResult,
-  submissionInFreezeTime,
-  submissionIsPending,
-} from '../core/utils';
+import { submissionHasResult, submissionInFreezeTime, submissionIsPending } from '../core/utils';
 import { Contest, Problem, ScoreCache, Team } from '../entities';
 import { SubmissionsService } from './submissions.service';
 
@@ -49,23 +45,19 @@ export class ScoreboardService {
     problem: Problem,
     pingForUpdates = true,
   ): Promise<void> => {
-    const isCorrect = submissionHasResult(contest, 'AC');
+    const isCorrect = submissionHasResult(contest, ['AC']);
     const isPending = submissionIsPending(contest);
-    const hasNoCompileError = submissionHasResult(contest, 'CE', true);
+    const hasNoCompileError = submissionHasResult(contest, ['CE', 'SE']);
     const inFreezeTime = submissionInFreezeTime(contest);
-    const allProblemSubmissions =
-      await this.submissionsService.getByContestIdAndProblemId(
-        contest.id,
-        problem.id,
-      );
+    const allProblemSubmissions = await this.submissionsService.getByContestIdAndProblemId(
+      contest.id,
+      problem.id,
+    );
 
     const submissions = allProblemSubmissions.filter(
-      (submission) =>
-        submission.team.id === team.id && hasNoCompileError(submission),
+      (submission) => submission.team.id === team.id && hasNoCompileError(submission),
     );
-    const firstCorrectProblemSubmission = allProblemSubmissions
-      .filter(isCorrect)
-      .shift();
+    const firstCorrectProblemSubmission = allProblemSubmissions.filter(isCorrect).shift();
 
     const scoreCache: Partial<ScoreCache> = {
       team,
@@ -89,12 +81,10 @@ export class ScoreboardService {
       } else if (isCorrect(submission) && !scoreCache.correct) {
         scoreCache.correct = true;
         scoreCache.solveTime = submission.submitTime;
-        scoreCache.firstToSolve =
-          firstCorrectProblemSubmission?.team.id === team.id;
+        scoreCache.firstToSolve = firstCorrectProblemSubmission?.team.id === team.id;
       }
       if (
-        (!scoreCache.correct ||
-          scoreCache.solveTime === submission.submitTime) &&
+        (!scoreCache.correct || scoreCache.solveTime === submission.submitTime) &&
         !isPending(submission)
       ) {
         scoreCache.submissions++;
@@ -106,8 +96,7 @@ export class ScoreboardService {
       } else if (isCorrect(submission) && !scoreCache.restrictedCorrect) {
         scoreCache.restrictedCorrect = true;
         scoreCache.restrictedSolveTime = submission.submitTime;
-        scoreCache.restrictedFirstToSolve =
-          firstCorrectProblemSubmission?.team.id === team.id;
+        scoreCache.restrictedFirstToSolve = firstCorrectProblemSubmission?.team.id === team.id;
       }
       if (
         (!scoreCache.restrictedCorrect ||

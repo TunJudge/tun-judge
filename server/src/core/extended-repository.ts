@@ -1,16 +1,8 @@
-import {
-  Connection,
-  FindConditions,
-  FindOneOptions,
-  ObjectLiteral,
-  Repository,
-} from 'typeorm';
+import { Connection, FindConditions, FindOneOptions, ObjectLiteral, Repository } from 'typeorm';
 import { ObjectID } from 'typeorm/driver/mongodb/typings';
 import { entities } from '../entities';
 
-export class ExtendedRepository<
-  Entity extends ObjectLiteral,
-> extends Repository<Entity> {
+export class ExtendedRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
   constructor(private readonly repository: Repository<Entity>) {
     super();
     Object.assign(this, repository);
@@ -22,20 +14,11 @@ export class ExtendedRepository<
     exception?: Error,
   ): Promise<Entity>;
 
-  findOneOrThrow(
-    id?: string | number | Date | ObjectID,
-    exception?: Error,
-  ): Promise<Entity>;
+  findOneOrThrow(id?: string | number | Date | ObjectID, exception?: Error): Promise<Entity>;
 
-  findOneOrThrow(
-    conditions?: FindConditions<Entity>,
-    exception?: Error,
-  ): Promise<Entity>;
+  findOneOrThrow(conditions?: FindConditions<Entity>, exception?: Error): Promise<Entity>;
 
-  findOneOrThrow(
-    options?: FindOneOptions<Entity>,
-    exception?: Error,
-  ): Promise<Entity>;
+  findOneOrThrow(options?: FindOneOptions<Entity>, exception?: Error): Promise<Entity>;
 
   findOneOrThrow(
     conditions?: FindConditions<Entity>,

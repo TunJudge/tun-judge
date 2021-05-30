@@ -50,11 +50,8 @@ export class TeamsService {
       const dbUser = await this.usersService.getByUsername(user.username);
       team.user = dbUser ?? (await this.usersService.create(user));
     }
-    const dbCategory = await this.teamCategoriesService.getByName(
-      category.name,
-    );
-    team.category =
-      dbCategory ?? (await this.teamCategoriesService.create(category));
+    const dbCategory = await this.teamCategoriesService.getByName(category.name);
+    team.category = dbCategory ?? (await this.teamCategoriesService.create(category));
     return this.save(team);
   }
 

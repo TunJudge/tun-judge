@@ -28,28 +28,19 @@ export class TestcasesController {
 
   @Post('problem/:id')
   @Roles('admin')
-  async create(
-    @Param('id') id: number,
-    @Body() testcase: Testcase,
-  ): Promise<Testcase> {
+  async create(@Param('id') id: number, @Body() testcase: Testcase): Promise<Testcase> {
     return this.testcasesService.create(id, testcase);
   }
 
   @Put(':id')
   @Roles('admin')
-  update(
-    @Param('id') id: number,
-    @Body() testcase: Testcase,
-  ): Promise<Testcase> {
+  update(@Param('id') id: number, @Body() testcase: Testcase): Promise<Testcase> {
     return this.testcasesService.update(id, testcase);
   }
 
   @Patch(':id/:dir')
   @Roles('admin', 'jury')
-  move(
-    @Param('id') id: number,
-    @Param('dir') direction: 'up' | 'down',
-  ): Promise<void> {
+  move(@Param('id') id: number, @Param('dir') direction: 'up' | 'down'): Promise<void> {
     return this.testcasesService.move(id, direction);
   }
 
@@ -60,9 +51,7 @@ export class TestcasesController {
     @Param('file') file: 'input' | 'output',
   ): Promise<FileContent> {
     if (!['input', 'output'].includes(file)) {
-      throw new BadRequestException(
-        "file parameter should be either 'input' or 'output'",
-      );
+      throw new BadRequestException("file parameter should be either 'input' or 'output'");
     }
     return this.testcasesService.getContent(id, file);
   }

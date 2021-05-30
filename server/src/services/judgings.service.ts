@@ -38,12 +38,7 @@ export class JudgingsService {
     } = await this.judgingsRepository.findOneOrThrow(
       {
         where: { submission: { id } },
-        relations: [
-          'contest',
-          'submission',
-          'submission.team',
-          'submission.problem',
-        ],
+        relations: ['contest', 'submission', 'submission.team', 'submission.problem'],
         order: { startTime: 'DESC' },
       },
       new NotFoundException(),
@@ -55,11 +50,7 @@ export class JudgingsService {
     await this.scoreboardService.refreshScoreCache(contest, team, problem);
   }
 
-  async setJuryMember(
-    id: number,
-    userId: number,
-    value = { id: userId },
-  ): Promise<void> {
+  async setJuryMember(id: number, userId: number, value = { id: userId }): Promise<void> {
     const judging = await this.judgingsRepository.findOneOrThrow(
       {
         where: { submission: { id } },

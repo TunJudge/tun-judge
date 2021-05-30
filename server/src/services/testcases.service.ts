@@ -58,8 +58,7 @@ export class TestcasesService {
 
   async getContent(id: number, file: 'input' | 'output'): Promise<FileContent> {
     const testcase = await this.getById(id, [file]);
-    return (await this.filesService.getById(testcase[file].id, ['content']))
-      .content;
+    return (await this.filesService.getById(testcase[file].id, ['content'])).content;
   }
 
   async delete(@Param('id') id: number): Promise<void> {

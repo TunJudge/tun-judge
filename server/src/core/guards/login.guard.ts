@@ -28,8 +28,7 @@ export class LoginGuard extends AuthGuard('local') {
       { id: request.session.passport.user.id },
       {
         lastLogin: new Date(),
-        lastIpAddress:
-          request.headers['x-forwarded-for'] || request.socket.remoteAddress,
+        lastIpAddress: request.headers['x-forwarded-for'] || request.socket.remoteAddress,
         sessionId: request.sessionID,
       },
     );

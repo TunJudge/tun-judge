@@ -25,10 +25,7 @@ export class JudgeHostsService {
     return this.judgeHostsRepository.save(judgeHost);
   }
 
-  async update(
-    criteria: Partial<JudgeHost>,
-    executable: Partial<JudgeHost>,
-  ): Promise<JudgeHost> {
+  async update(criteria: Partial<JudgeHost>, executable: Partial<JudgeHost>): Promise<JudgeHost> {
     const oldJudgeHost = await this.judgeHostsRepository.findOneOrThrow(
       criteria,
       new NotFoundException('JudgeHost not found!'),

@@ -14,6 +14,8 @@ import { JudgingRun } from './judging-run.entity';
 import { Submission } from './submission.entity';
 import { User } from './user.entity';
 
+export type JudgingResult = 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE' | 'CE' | 'SE';
+
 @Entity()
 export class Judging {
   @PrimaryGeneratedColumn({ comment: 'Judging ID' })
@@ -26,7 +28,10 @@ export class Judging {
   endTime: Date;
 
   @Column({ comment: 'Judging result', nullable: true })
-  result: string;
+  result: JudgingResult;
+
+  @Column({ comment: 'System error message', nullable: true })
+  systemError: string;
 
   @Column({
     comment: 'Whether the judging was verified by a jury member',

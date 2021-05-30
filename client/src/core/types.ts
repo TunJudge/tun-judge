@@ -1,5 +1,6 @@
 import { SemanticICONS } from 'semantic-ui-react';
 import { CodeEditorLanguages } from '../pages/shared/CodeEditor';
+import { JudgingResult } from './models';
 
 export type Tabs = {
   key: string;
@@ -8,13 +9,14 @@ export type Tabs = {
   label?: any;
 }[];
 
-export const resultMap = {
+export const resultMap: Record<JudgingResult | 'PD', string> = {
   AC: 'Accepted',
   WA: 'Wrong Answer',
   TLE: 'Time Limit Exceeded',
   MLE: 'Memory Limit Exceeded',
   RE: 'Runtime Error',
   CE: 'Compile Error',
+  SE: 'System Error',
   PD: 'Pending',
 };
 

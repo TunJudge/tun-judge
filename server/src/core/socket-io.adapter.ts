@@ -1,9 +1,6 @@
 import { INestApplicationContext } from '@nestjs/common';
 import { isFunction, isNil } from '@nestjs/common/utils/shared.utils';
-import {
-  AbstractWsAdapter,
-  MessageMappingProperties,
-} from '@nestjs/websockets';
+import { AbstractWsAdapter, MessageMappingProperties } from '@nestjs/websockets';
 import { DISCONNECT_EVENT } from '@nestjs/websockets/constants';
 import { Request, Response } from 'express';
 import { fromEvent, Observable } from 'rxjs';
@@ -55,10 +52,7 @@ export class SocketIoAdapter extends AbstractWsAdapter {
     handlers: MessageMappingProperties[],
     transform: (data: any) => Observable<any>,
   ) {
-    const disconnect$ = fromEvent(client, DISCONNECT_EVENT).pipe(
-      share(),
-      first(),
-    );
+    const disconnect$ = fromEvent(client, DISCONNECT_EVENT).pipe(share(), first());
 
     handlers.forEach(({ message, callback }) => {
       const source$ = fromEvent(client, message).pipe(

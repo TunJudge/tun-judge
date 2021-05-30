@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Query,
-  Session,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, Patch, Query, Session, UseGuards } from '@nestjs/common';
 import { AppGateway } from '../app.gateway';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
@@ -129,10 +121,7 @@ export class SubmissionsController {
 
   @Get(':id/run/:runId/content')
   @Roles('admin', 'judge-host')
-  getRunContent(
-    @Param('id') id: number,
-    @Param('runId') runId: number,
-  ): Promise<FileContent> {
+  getRunContent(@Param('id') id: number, @Param('runId') runId: number): Promise<FileContent> {
     return this.judgingRunsService
       .getById(runId, ['runOutput'])
       .then((run) => this.filesService.getById(run.runOutput.id, ['content']))

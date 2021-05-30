@@ -1,24 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { AppGateway } from '../app.gateway';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
-import {
-  Contest,
-  JudgeHost,
-  Judging,
-  JudgingRun,
-  Submission,
-} from '../entities';
+import { Contest, JudgeHost, Judging, JudgingRun, Submission } from '../entities';
 import {
   JudgeHostsService,
   JudgingRunsService,
@@ -49,10 +33,7 @@ export class JudgeHostsController {
 
   @Patch(':id/toggle/:active')
   @Roles('admin')
-  toggle(
-    @Param('id') id: number,
-    @Param('active') active: string,
-  ): Promise<void> {
+  toggle(@Param('id') id: number, @Param('active') active: string): Promise<void> {
     return this.judgeHostsService.toggle(id, active === 'true');
   }
 
@@ -61,10 +42,7 @@ export class JudgeHostsController {
   async subscribe(@Body() { hostname, username }: any): Promise<void> {
     const user = await this.usersService.getByUsername(username);
     if (await this.judgeHostsService.count({ hostname })) {
-      await this.judgeHostsService.update(
-        { hostname },
-        { user, pollTime: new Date() },
-      );
+      await this.judgeHostsService.update({ hostname }, { user, pollTime: new Date() });
     } else {
       await this.judgeHostsService.save({
         hostname: hostname,
@@ -111,19 +89,12 @@ export class JudgeHostsController {
 
   @Get(':hostname/next-judging')
   @Roles('admin', 'judge-host')
-  async getNextJudging(
-    @Param('hostname') hostname: string,
-  ): Promise<Judging | undefined> {
-    const judgeHost = await this.judgeHostsService.update(
-      { hostname },
-      { pollTime: new Date() },
-    );
+  async getNextJudging(@Param('hostname') hostname: string): Promise<Judging | undefined> {
+    const judgeHost = await this.judgeHostsService.update({ hostname }, { pollTime: new Date() });
     if (!judgeHost.active) return undefined;
     const submission = await this.submissionsService.getNextSubmission();
     if (submission) {
-      let judging = await this.judgingsService.getUnfinishedBySubmissionId(
-        submission.id,
-      );
+      let judging = await this.judgingsService.getUnfinishedBySubmissionId(submission.id);
       judging = await this.judgingsService.save({
         ...judging,
         startTime: new Date(),
@@ -134,6 +105,7 @@ export class JudgeHostsController {
       submission.judgeHost = judgeHost;
       await this.submissionsService.save(submission);
       judging.submission = submission;
+      judging.judgeHost = judgeHost;
       this.socketService.pingForUpdates('judgings');
       return judging;
     }

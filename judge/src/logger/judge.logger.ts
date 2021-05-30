@@ -16,55 +16,24 @@ export class JudgeLogger extends Logger {
   }
 
   error(message: any, trace?: string, context?: string): any {
-    this.printMessage(
-      message,
-      clc.red,
-      'error',
-      context || this.context,
-      true,
-      'stderr',
-    );
+    this.printMessage(message, clc.red, 'error', context || this.context, true, 'stderr');
     trace && process.stderr.write(`${trace}\n`);
   }
 
   warn(message: any, context?: string, returnToLine = true): any {
-    this.printMessage(
-      message,
-      clc.yellow,
-      'warn',
-      context || this.context,
-      returnToLine,
-    );
+    this.printMessage(message, clc.yellow, 'warn', context || this.context, returnToLine);
   }
 
   log(message: any, context?: string, returnToLine = true): any {
-    this.printMessage(
-      message,
-      clc.green,
-      'log',
-      context || this.context,
-      returnToLine,
-    );
+    this.printMessage(message, clc.green, 'log', context || this.context, returnToLine);
   }
 
   debug(message: any, context?: string, returnToLine = true): any {
-    this.printMessage(
-      message,
-      clc.magentaBright,
-      'debug',
-      context || this.context,
-      returnToLine,
-    );
+    this.printMessage(message, clc.magentaBright, 'debug', context || this.context, returnToLine);
   }
 
   verbose(message: any, context?: string, returnToLine = true): any {
-    this.printMessage(
-      message,
-      clc.cyanBright,
-      'verbose',
-      context || this.context,
-      returnToLine,
-    );
+    this.printMessage(message, clc.cyanBright, 'verbose', context || this.context, returnToLine);
   }
 
   printMessage(
