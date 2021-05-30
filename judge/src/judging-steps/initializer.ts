@@ -74,7 +74,7 @@ export class Initializer {
   }
 
   private async writeExecutable(executable: Executable): Promise<void> {
-    for (const file of ['file', 'buildScript']) {
+    for (const file of ['file', 'buildScript'] as const) {
       if (!executable[file]) continue;
 
       const filePath = this.submissionHelper.executableFilePath(executable.id, executable[file]);

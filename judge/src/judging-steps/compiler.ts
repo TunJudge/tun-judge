@@ -4,7 +4,7 @@ import { existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 import { Spinner, SubmissionHelper } from '../helpers';
 import { getOnLog, JudgeLogger } from '../logger';
-import { Executable, Judging } from '../models';
+import { Executable, File, Judging } from '../models';
 import { DockerService, ExecResult, SocketService, SystemService } from '../services';
 
 /**
@@ -145,16 +145,12 @@ export class Compiler {
   ): Promise<void> {
     const payload = Buffer.from(compileSubmissionResult.stdout.trim()).toString('base64');
     judging.compileOutput = {
-      id: undefined,
       name: 'compile.out',
       type: 'text/plain',
       size: compileSubmissionResult.stdout.length,
       md5Sum: MD5(payload).toString(),
-      content: {
-        id: undefined,
-        payload: payload,
-      },
-    };
+      content: { payload: payload },
+    } as File;
     await this.systemService.updateJudging(judging);
   }
 }

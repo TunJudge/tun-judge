@@ -10,7 +10,7 @@ import { File, Submission, Testcase } from '../models';
  */
 @Injectable()
 export class SubmissionHelper {
-  private submission: Submission;
+  private submission: Submission = {} as Submission;
   private readonly guardCppPath: string;
 
   readonly workDir: string;

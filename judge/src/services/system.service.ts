@@ -27,7 +27,7 @@ export class SystemService {
     );
   }
 
-  addJudgingRun(judging: Judging, judgingRun: JudgingRun): Promise<void> {
+  addJudgingRun(judging: Judging, judgingRun: Partial<JudgingRun>): Promise<void> {
     return http.post(
       `api/judge-hosts/${judging.judgeHost.hostname}/add-judging-run/${judging.id}`,
       judgingRun,

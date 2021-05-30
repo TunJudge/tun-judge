@@ -24,20 +24,20 @@ export class DockerService {
     this.connection = new Docker({ socketPath: '/var/run/docker.sock' });
   }
 
-  async pullImage(tag: string): Promise<string> {
+  async pullImage(tag: string): Promise<void> {
     try {
       await this.connection.getImage(tag).inspect();
     } catch (e) {
-      return new Promise<string>((resolve, reject) => {
-        this.connection.pull(tag, null, (error, stream) => {
+      return new Promise<void>((resolve, reject) => {
+        this.connection.pull(tag, {}, (error, stream) => {
           if (error) {
             reject(error);
             return;
           }
           this.connection.modem.followProgress(
             stream,
-            (error, result) => (error ? reject(error) : resolve(result.pop().status)),
-            ({ status }) => this.logger.debug(`${tag}: ${status}`),
+            (error: Error) => (error ? reject(error) : resolve()),
+            ({ status }: { status: string }) => this.logger.debug(`${tag}: ${status}`),
           );
         });
       });
@@ -80,7 +80,7 @@ export class DockerService {
       duplex.on('end', async () =>
         resolve({
           ...result,
-          exitCode: (await exec.inspect()).ExitCode,
+          exitCode: (await exec.inspect()).ExitCode ?? 1,
         }),
       );
     });

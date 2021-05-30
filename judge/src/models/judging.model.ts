@@ -11,7 +11,7 @@ export interface Judging {
   startTime: Date;
   endTime: Date;
   result: JudgingResult;
-  systemError: string;
+  systemError?: string;
   verified: boolean;
   verifyComment: string;
   valid: boolean;

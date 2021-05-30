@@ -4,9 +4,9 @@ dotenv.config();
 
 type Config = {
   hostname: string;
-  url: string;
-  username: string;
-  password: string;
+  url?: string;
+  username?: string;
+  password?: string;
   logLevel: LogLevel;
 };
 

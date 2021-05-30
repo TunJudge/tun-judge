@@ -4,7 +4,7 @@ import { chmodSync, existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 import { getResult, GuardOutput, Spinner, SubmissionHelper } from '../helpers';
 import { getOnLog, JudgeLogger } from '../logger';
-import { Judging, JudgingRun, JudgingRunResult, Testcase } from '../models';
+import { File, Judging, JudgingRun, JudgingRunResult, Testcase } from '../models';
 import { DockerService, SocketService, SystemService } from '../services';
 
 /**
@@ -127,17 +127,13 @@ export class Executor {
     guardOutput: GuardOutput,
     result: JudgingRunResult,
   ): Promise<void> {
-    const judgingRun: JudgingRun = {
-      id: undefined,
+    const judgingRun: Partial<JudgingRun> = {
       result: result,
       runTime: guardOutput.usedTime / 1000,
       runMemory: guardOutput.usedMemory,
       testcase: testcase,
       judging: judging,
       endTime: new Date(),
-      runOutput: undefined,
-      errorOutput: undefined,
-      checkerOutput: undefined,
     };
 
     const runOutputPath = this.submissionHelper.extraFilesPath('test.out');
@@ -145,13 +141,12 @@ export class Executor {
     const payload = Buffer.from(runOutput).toString('base64');
 
     judgingRun.runOutput = {
-      id: undefined,
       name: `program.out`,
       type: 'text/plain',
       size: runOutput.length,
       md5Sum: MD5(payload).toString(),
-      content: { id: undefined, payload: payload },
-    };
+      content: { payload: payload },
+    } as File;
 
     if (guardOutput.exitCode) {
       const errorOutputPath = this.submissionHelper.extraFilesPath('test.err');
@@ -159,13 +154,12 @@ export class Executor {
       const payload = Buffer.from(errorOutput).toString('base64');
 
       judgingRun.errorOutput = {
-        id: undefined,
         name: `program.err`,
         type: 'text/plain',
         size: errorOutput.length,
         md5Sum: MD5(payload).toString(),
-        content: { id: undefined, payload: payload },
-      };
+        content: { payload: payload },
+      } as File;
     }
 
     const checkerOutputPath = this.submissionHelper.extraFilesPath('checker.out');
@@ -174,13 +168,12 @@ export class Executor {
       const payload = Buffer.from(checkerOutput).toString('base64');
 
       judgingRun.checkerOutput = {
-        id: undefined,
         name: 'checker.out',
         type: 'text/plain',
         size: checkerOutput.length,
         md5Sum: MD5(payload).toString(),
-        content: { id: undefined, payload: payload },
-      };
+        content: { payload: payload },
+      } as File;
     }
 
     return this.systemService.addJudgingRun(judging, judgingRun);
