@@ -2,7 +2,7 @@ import { dots } from 'cli-spinners';
 import { clearLine, cursorTo, moveCursor } from 'readline';
 
 export class Spinner {
-  private readonly interval: number;
+  private readonly interval: NodeJS.Timeout;
   private index: number;
 
   constructor() {
