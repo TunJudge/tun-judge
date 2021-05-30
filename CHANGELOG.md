@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.11 (2021-05-30)
+
+
+### Bug Fixes
+
+* fix Spinner ([1fbf8f5](https://github.com/TunJudge/tun-judge/commit/1fbf8f5883e8f5f0d3ce2ac9103fb9efde5bf132))
+
 ### 0.0.10 (2021-05-29)
 
 
