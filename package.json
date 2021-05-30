@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "run-in-all -y install judge client server",
     "prettier": "run-in-all -y prettier judge client server",
     "release": "standard-version -a ",
     "image:tag-and-push": "node scripts/tag-and-push-image",
