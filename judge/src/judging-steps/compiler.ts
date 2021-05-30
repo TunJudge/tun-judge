@@ -39,11 +39,13 @@ export class Compiler {
 
     const compileCheckerResult = await this.compileCheckerFile(submission.problem.checkScript);
 
-    if (compileCheckerResult.exitCode) {
-      this.logger.error(`Compiling executable file ${checkScript.file.name}\tNOT OK!`);
-      return this.systemService.setJudgingResult(judging, 'SE', compileCheckerResult.stdout);
+    if (compileCheckerResult) {
+      if (compileCheckerResult.exitCode) {
+        this.logger.error(`Compiling executable file ${checkScript.file.name}\tNOT OK!`);
+        return this.systemService.setJudgingResult(judging, 'SE', compileCheckerResult.stdout);
+      }
+      this.logger.log(`Compiling executable file ${checkScript.file.name}\tOK!`);
     }
-    this.logger.log(`Compiling executable file ${checkScript.file.name}\tOK!`);
 
     this.logger.log(`Submission with id ${submission.id} compiled!`);
   }
@@ -91,13 +93,13 @@ export class Compiler {
     return compileSubmissionResult;
   }
 
-  private async compileCheckerFile(checkScript: Executable) {
+  private async compileCheckerFile(checkScript: Executable): Promise<ExecResult | undefined> {
     // Check if we already built the check script or not to prevent the double work
     const checkerBinPath = this.submissionHelper.executableBinPath(
       checkScript.id,
       checkScript.file,
     );
-    if (existsSync(checkerBinPath)) return;
+    if (existsSync(checkerBinPath)) return undefined;
 
     this.logger.log(`Compiling executable file ${checkScript.file.name}\t`, undefined, false);
     const spinner = new Spinner();
