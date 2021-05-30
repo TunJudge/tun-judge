@@ -47,9 +47,14 @@ export class JudgingService {
   }
 
   async runJudging(judging: Judging): Promise<void> {
-    this.submissionHelper.setSubmission(judging.submission);
-    await this.initializer.run(judging);
-    await this.compiler.run(judging);
-    await this.executor.run(judging);
+    try {
+      this.submissionHelper.setSubmission(judging.submission);
+      await this.initializer.run(judging);
+      await this.compiler.run(judging);
+      await this.executor.run(judging);
+    } catch (e) {
+      await this.systemService.setJudgingResult(judging, 'SE', e.message);
+      this.logger.error(e.message, e.trace);
+    }
   }
 }

@@ -29,24 +29,18 @@ export class Initializer {
 
   async run(judging: Judging): Promise<void> {
     const { submission } = judging;
-
-    try {
-      // Write the submission file
-      await this.writeSubmissionFile(submission);
-      // Fetch and write the problem testcases files only if they don't exists
-      await this.writeProblemTestcases(submission.problem);
-      // Write the problem executables files
-      await this.writeProblemExecutables(submission.problem);
-      // Write the language build script file
-      await this.writeLanguageBuildScript(submission.language);
-      // Pull the docker image needed to run the submission
-      await this.dockerService.pullImage(submission.language.dockerImage);
-      // Pull the docker image needed to run the checker script
-      await this.dockerService.pullImage(submission.problem.checkScript.dockerImage);
-    } catch (e) {
-      await this.systemService.setJudgingResult(judging, 'SE', e.message);
-      this.logger.error(e.message, e.trace);
-    }
+    // Write the submission file
+    await this.writeSubmissionFile(submission);
+    // Fetch and write the problem testcases files only if they don't exists
+    await this.writeProblemTestcases(submission.problem);
+    // Write the problem executables files
+    await this.writeProblemExecutables(submission.problem);
+    // Write the language build script file
+    await this.writeLanguageBuildScript(submission.language);
+    // Pull the docker image needed to run the submission
+    await this.dockerService.pullImage(submission.language.dockerImage);
+    // Pull the docker image needed to run the checker script
+    await this.dockerService.pullImage(submission.problem.checkScript.dockerImage);
   }
 
   private async writeSubmissionFile(submission: Submission): Promise<void> {
