@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { Clarification } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
 import ChatBox from '../../shared/chat-box/ChatBox';
-import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
+import DataTable, { ListPageTableColumn } from '../../shared/data-table/DataTable';
 
 const ClarificationsList: React.FC = observer(() => {
   const {
@@ -35,7 +35,7 @@ const ClarificationsList: React.FC = observer(() => {
   ];
 
   return (
-    <ListPage<Clarification>
+    <DataTable<Clarification>
       header="Clarifications"
       data={data}
       columns={columns}

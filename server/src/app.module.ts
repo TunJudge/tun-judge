@@ -45,15 +45,6 @@ import {
   TestcasesService,
   UsersService,
 } from './services';
-import {
-  ContestProblemTransformer,
-  ContestTransformer,
-  ExecutableTransformer,
-  LanguageTransformer,
-  ProblemTransformer,
-  TeamTransformer,
-  TestcaseTransformer,
-} from './transformers';
 
 const CONTROLLERS = [
   AppController,
@@ -91,16 +82,6 @@ const SERVICES = [
   UsersService,
 ];
 
-const TRANSFORMERS = [
-  ContestProblemTransformer,
-  ContestTransformer,
-  ExecutableTransformer,
-  LanguageTransformer,
-  ProblemTransformer,
-  TeamTransformer,
-  TestcaseTransformer,
-];
-
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -126,7 +107,6 @@ const TRANSFORMERS = [
   providers: [
     AppGateway,
     ...SERVICES,
-    ...TRANSFORMERS,
     ...CustomRepositoryProviders,
     { provide: APP_GUARD, useClass: RolesGuard },
   ],

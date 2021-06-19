@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Button } from 'semantic-ui-react';
 import { JudgeHost } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import JudgeHostLogsViewer from './JudgeHostLogsViewer';
 
 let interval: NodeJS.Timeout | undefined = undefined;
@@ -76,7 +76,7 @@ const JudgeHostsList: React.FC = observer(() => {
 
   return (
     <>
-      <ListPage<JudgeHost>
+      <DataTable<JudgeHost>
         header="Judge Hosts"
         data={data}
         columns={columns}

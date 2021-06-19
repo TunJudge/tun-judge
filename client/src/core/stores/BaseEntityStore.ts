@@ -28,15 +28,4 @@ export class BaseEntityStore<T extends { id: number | string }> {
     await http.delete(`api/${this.route}/${id}`);
     await this.fetchAll();
   };
-
-  @action
-  unzip = async (file: File, multiple = false): Promise<void> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    await http.post(`api/${this.route}/unzip`, formData, {
-      params: { multiple },
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    await this.fetchAll();
-  };
 }

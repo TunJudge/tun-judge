@@ -4,6 +4,7 @@ import { Button, Form, Icon, Label, Modal, Table } from 'semantic-ui-react';
 import { getRandomHexColor, isEmpty } from '../../../../core/helpers';
 import { Contest, ContestProblem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import {
   CheckBoxField,
   DateTimeField,
@@ -12,13 +13,7 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-type ContestFormProps = {
-  item: Contest;
-  dismiss: () => void;
-  submit: (item: Contest) => void;
-};
-
-const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismiss, submit }) => {
+const ContestForm: DataTableItemForm<Contest> = observer(({ item: contest, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Contest>>({
     name: isEmpty(contest.name),
     shortName: isEmpty(contest.shortName),
@@ -29,7 +24,11 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
   const [problemsErrors, setProblemsErrors] = useState<FormErrors<ContestProblem>[]>(
     contest.problems.map((p) => ({ problem: isEmpty(p.problem), shortName: isEmpty(p.shortName) })),
   );
-  const { data } = rootStore.problemsStore;
+  const { data: problems, fetchAll } = rootStore.problemsStore;
+
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
 
   useEffect(() => {
     setProblemsErrors(
@@ -192,9 +191,9 @@ const ContestForm: React.FC<ContestFormProps> = observer(({ item: contest, dismi
                       required
                       placeholder="Select Problem"
                       defaultValue={problem.problem?.id}
-                      options={data.map((p) => ({ key: p.id, text: p.name, value: p.id }))}
+                      options={problems.map((p) => ({ key: p.id, text: p.name, value: p.id }))}
                       onChange={(_, { value }) => {
-                        problem.problem = data.find((p) => p.id === value)!;
+                        problem.problem = problems.find((p) => p.id === value)!;
                         contest.problems.forEach(
                           (cp, index) =>
                             (problemsErrors[index].problem =

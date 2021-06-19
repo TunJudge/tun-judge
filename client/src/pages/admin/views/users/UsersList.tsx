@@ -3,8 +3,8 @@ import moment from 'moment';
 import React, { useEffect } from 'react';
 import { User } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import UserForm from './UserForm';
 
 const rolesColors = {
@@ -24,7 +24,6 @@ const UsersList: React.FC = observer(() => {
       judgeHostUsers,
       teamUsers,
       fetchAll,
-      fetchAllRoles,
       create,
       update,
       remove,
@@ -32,8 +31,8 @@ const UsersList: React.FC = observer(() => {
   } = rootStore;
 
   useEffect(() => {
-    Promise.all([fetchAll(), isUserAdmin ? fetchAllRoles() : undefined]);
-  }, [isUserAdmin, fetchAll, fetchAllRoles]);
+    fetchAll();
+  }, [fetchAll]);
 
   const columns: ListPageTableColumn<User>[] = [
     {
@@ -75,7 +74,7 @@ const UsersList: React.FC = observer(() => {
   ];
 
   return (
-    <ListPage<User>
+    <DataTable<User>
       header="Users"
       data={[...adminUsers, ...juryUsers, ...judgeHostUsers, ...teamUsers]}
       columns={columns}
@@ -83,7 +82,7 @@ const UsersList: React.FC = observer(() => {
       onDelete={remove}
       withoutActions={!isUserAdmin}
       canDelete={(item) => !!profile && item.username !== profile.username}
-      onRefresh={() => Promise.all([fetchAll(), isUserAdmin ? fetchAllRoles() : undefined])}
+      onRefresh={fetchAll}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       rowBackgroundColor={(item) => (rolesColors as any)[item.role.name]}
     />

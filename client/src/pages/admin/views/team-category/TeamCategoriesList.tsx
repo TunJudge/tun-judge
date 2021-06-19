@@ -3,13 +3,13 @@ import React, { useEffect } from 'react';
 import { Icon } from 'semantic-ui-react';
 import { TeamCategory } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 import TeamCategoryForm from './TeamCategoryForm';
 
 const TeamCategoriesList: React.FC = observer(() => {
   const {
     isUserAdmin,
-    teamCategoriesStore: { data, fetchAll, create, update, move, remove },
+    teamCategoriesStore: { data: teamCategories, fetchAll, create, update, move, remove },
   } = rootStore;
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const TeamCategoriesList: React.FC = observer(() => {
       render: (category) => (
         <>
           {isUserAdmin &&
-            (category.sortOrder + 1 < data.length ? (
+            (category.sortOrder + 1 < teamCategories.length ? (
               <Icon
                 className="cursor-pointer"
                 name="angle down"
@@ -68,9 +68,9 @@ const TeamCategoriesList: React.FC = observer(() => {
   ];
 
   return (
-    <ListPage<TeamCategory>
+    <DataTable<TeamCategory>
       header="Team Categories"
-      data={data}
+      data={teamCategories}
       columns={columns}
       ItemForm={isUserAdmin ? TeamCategoryForm : undefined}
       onDelete={remove}

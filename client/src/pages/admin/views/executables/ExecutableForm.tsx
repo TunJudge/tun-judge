@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { Executable } from '../../../../core/models';
+import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import {
   CheckBoxField,
   DropdownField,
@@ -10,13 +11,7 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-type ExecutableFormProps = {
-  item: Executable;
-  dismiss: () => void;
-  submit: (item: Executable) => void;
-};
-
-const ExecutableForm: React.FC<ExecutableFormProps> = ({ item: executable, dismiss, submit }) => {
+const ExecutableForm: DataTableItemForm<Executable> = ({ item: executable, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Executable>>({
     name: isEmpty(executable.name),
     type: isEmpty(executable.type),

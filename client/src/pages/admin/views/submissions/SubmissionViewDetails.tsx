@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Table } from 'semantic-ui-react';
 import { dateComparator, formatBytes, formatRestTime } from '../../../../core/helpers';
 import { Judging, Submission } from '../../../../core/models';

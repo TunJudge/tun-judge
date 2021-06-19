@@ -9,19 +9,12 @@ import {
   Patch,
   Post,
   Put,
-  Query,
-  Res,
   Session,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
 import { AppGateway } from '../app.gateway';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
-import { unzipEntities, zipEntities } from '../core/utils';
 import { Clarification, Contest, Submission, User } from '../entities';
 import {
   ClarificationsService,
@@ -31,7 +24,6 @@ import {
   SubmissionsService,
   TeamsService,
 } from '../services';
-import { ContestTransformer } from '../transformers';
 
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
@@ -42,7 +34,6 @@ export class ContestsController {
     private readonly contestsService: ContestsService,
     private readonly languagesService: LanguagesService,
     private readonly scoreboardService: ScoreboardService,
-    private readonly contestTransformer: ContestTransformer,
     private readonly submissionsService: SubmissionsService,
     private readonly clarificationsService: ClarificationsService,
   ) {}
@@ -190,64 +181,5 @@ export class ContestsController {
     await this.submissionsService.save(submission);
     await this.scoreboardService.refreshScoreCache(contest, team, submission.problem);
     this.socketService.pingForUpdates('submissions', 'judgeRuns');
-  }
-
-  @Get(':id/zip')
-  @Roles('admin')
-  async getZip(@Param('id') id: number, @Res() response: Response): Promise<void> {
-    return zipEntities(
-      id,
-      'contest.zip',
-      this.contestTransformer,
-      await this.contestsService.getById(id, [
-        'teams',
-        'teams.user',
-        'teams.category',
-        'problems',
-        'problems.problem',
-        'problems.problem.file',
-        'problems.problem.file.content',
-        'problems.problem.testcases',
-        'problems.problem.testcases.input',
-        'problems.problem.testcases.input.content',
-        'problems.problem.testcases.output',
-        'problems.problem.testcases.output.content',
-      ]),
-      response,
-    );
-  }
-
-  @Get('zip/all')
-  @Roles('admin')
-  async getZipAll(@Res() response: Response): Promise<void> {
-    return zipEntities(
-      undefined,
-      'contests.zip',
-      this.contestTransformer,
-      await this.contestsService.getAllWithRelations([
-        'teams',
-        'teams.user',
-        'teams.category',
-        'problems',
-        'problems.problem',
-        'problems.problem.file',
-        'problems.problem.file.content',
-        'problems.problem.testcases',
-        'problems.problem.testcases.input',
-        'problems.problem.testcases.input.content',
-        'problems.problem.testcases.output',
-        'problems.problem.testcases.output.content',
-      ]),
-      response,
-    );
-  }
-
-  @Post('unzip')
-  @Roles('admin')
-  @UseInterceptors(FileInterceptor('file'))
-  saveFromZip(@UploadedFile() file, @Query('multiple') multiple: string): Promise<void> {
-    return unzipEntities<Contest>(file, multiple, this.contestTransformer, (contest) =>
-      this.contestsService.deepSave(contest),
-    );
   }
 }

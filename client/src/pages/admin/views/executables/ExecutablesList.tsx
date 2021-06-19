@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Executable, ExecutableType } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 import { CodeEditorDialog } from '../../../shared/dialogs';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ExecutableForm from './ExecutableForm';
 
 const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', CHECKER: 'Checker' };
@@ -13,7 +13,7 @@ const ExecutablesList: React.FC = observer(() => {
     useState<{ executable: Executable; field: 'file' | 'buildScript' } | undefined>();
   const {
     isUserAdmin,
-    executablesStore: { data, fetchAll, create, update, remove, unzip },
+    executablesStore: { data: executables, fetchAll, create, update, remove },
   } = rootStore;
 
   useEffect(() => {
@@ -80,17 +80,14 @@ const ExecutablesList: React.FC = observer(() => {
 
   return (
     <>
-      <ListPage<Executable>
+      <DataTable<Executable>
         header="Executables"
-        data={data}
+        data={executables}
         columns={columns}
         ItemForm={isUserAdmin ? ExecutableForm : undefined}
         onDelete={remove}
         onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
-        unzip={isUserAdmin ? unzip : undefined}
-        zipUrl={({ id }) => `/api/executables/${id}/zip`}
-        zipAllUrl={`/api/executables/zip/all`}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (

@@ -1,17 +1,13 @@
+import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { User } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { CheckBoxField, DropdownField, FormErrors, TextField } from '../../../shared/extended-form';
 
-type UserFormProps = {
-  item: User;
-  dismiss: () => void;
-  submit: (item: User) => void;
-};
-
-const UserForm: React.FC<UserFormProps> = ({ item: user, dismiss, submit }) => {
+const UserForm: DataTableItemForm<User> = observer(({ item: user, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<User>>({
     name: isEmpty(user.name),
     username: isEmpty(user.username),
@@ -90,6 +86,6 @@ const UserForm: React.FC<UserFormProps> = ({ item: user, dismiss, submit }) => {
       </Modal.Actions>
     </Modal>
   );
-};
+});
 
 export default UserForm;

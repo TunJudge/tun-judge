@@ -2,15 +2,10 @@ import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { TeamCategory } from '../../../../core/models';
+import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { CheckBoxField, FormErrors, TextField } from '../../../shared/extended-form';
 
-type TeamCategoryFormProps = {
-  item: TeamCategory;
-  dismiss: () => void;
-  submit: (item: TeamCategory) => void;
-};
-
-const TeamCategoryForm: React.FC<TeamCategoryFormProps> = ({
+const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
   item: teamCategory,
   dismiss,
   submit,

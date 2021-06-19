@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Contest, Judging, User } from './models';
+import { Contest, Judging, Testcase, User } from './models';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isEmpty(s: any): boolean {
@@ -130,4 +130,10 @@ export function updateLeftTimeToContest(
 
 export function getRandomHexColor(): string {
   return `#${Math.random().toString(16).substr(2, 6)}`;
+}
+
+export function isTestcaseSolved(testcase: Testcase, judging?: Judging): 'grey' | 'green' | 'red' {
+  if (!judging) return 'grey';
+  const judgeRun = judging.runs.find((r) => r.testcase.id === testcase.id);
+  return !judgeRun ? 'grey' : judgeRun.result === 'AC' ? 'green' : 'red';
 }

@@ -3,20 +3,19 @@ import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Problem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 import ProblemForm from './ProblemForm';
 
 const ProblemsList: React.FC = observer(() => {
   const history = useHistory();
   const {
     isUserAdmin,
-    problemsStore: { data, fetchAll, create, update, remove, unzip },
-    executablesStore: { data: executables, fetchAll: fetchAllExecutables },
+    problemsStore: { data: problems, fetchAll, create, update, remove },
   } = rootStore;
 
   useEffect(() => {
-    Promise.all([fetchAll(), fetchAllExecutables()]);
-  }, [fetchAll, fetchAllExecutables]);
+    fetchAll();
+  }, [fetchAll]);
 
   const columns: ListPageTableColumn<Problem>[] = [
     {
@@ -49,21 +48,14 @@ const ProblemsList: React.FC = observer(() => {
   ];
 
   return (
-    <ListPage<Problem>
+    <DataTable<Problem>
       header="Problems"
-      data={data}
+      data={problems}
       columns={columns}
       ItemForm={isUserAdmin ? ProblemForm : undefined}
-      formItemInitValue={{
-        runScript: executables.find((e) => e.type === 'RUNNER' && e.default),
-        checkScript: executables.find((e) => e.type === 'CHECKER' && e.default),
-      }}
       withoutActions={!isUserAdmin}
-      unzip={isUserAdmin ? unzip : undefined}
-      zipUrl={({ id }) => `/api/problems/${id}/zip`}
-      zipAllUrl={`/api/problems/zip/all`}
       onDelete={remove}
-      onRefresh={() => Promise.all([fetchAll(), fetchAllExecutables()])}
+      onRefresh={fetchAll}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
     />
   );

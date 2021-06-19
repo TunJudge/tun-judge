@@ -15,8 +15,8 @@ export type Filters = {
 
 export class SubmissionsStore {
   @observable data: Submission[] = [];
-  @observable total: number = 0;
-  @observable page: number = 0;
+  @observable totalItems: number = 0;
+  @observable currentPage: number = 0;
   @observable item: Submission | undefined;
   @observable filters: Partial<Filters> = {};
 
@@ -33,15 +33,15 @@ export class SubmissionsStore {
   };
 
   @action
-  setPage = (page: number): void => {
-    this.page = page;
+  setCurrentPage = (currentPage: number): void => {
+    this.currentPage = currentPage;
   };
 
   @action
   fetchAll = async (): Promise<void> => {
     this.filters.contest = this.rootStore.publicStore.currentContest?.id ?? -1;
-    [this.data, this.total] = await http.get<[Submission[], number]>(
-      `api/submissions?page=${this.page}&${buildSearchQuery(this.filters)}`,
+    [this.data, this.totalItems] = await http.get<[Submission[], number]>(
+      `api/submissions?page=${this.currentPage}&${buildSearchQuery(this.filters)}`,
     );
   };
 

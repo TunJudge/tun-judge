@@ -4,20 +4,19 @@ import moment from 'moment';
 import React, { useEffect } from 'react';
 import { Contest } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import ContestForm from './ContestForm';
 
 const ContestsList: React.FC = observer(() => {
   const {
     isUserAdmin,
-    contestsStore: { data, fetchAll, create, update, remove, unzip },
-    problemsStore: { fetchAll: fetchAllProblems },
+    contestsStore: { data: contests, fetchAll, create, update, remove },
   } = rootStore;
 
   useEffect(() => {
-    Promise.all([fetchAll(), fetchAllProblems()]);
-  }, [fetchAll, fetchAllProblems]);
+    fetchAll();
+  }, [fetchAll]);
 
   const columns: ListPageTableColumn<Contest>[] = [
     {
@@ -68,18 +67,15 @@ const ContestsList: React.FC = observer(() => {
   ];
 
   return (
-    <ListPage<Contest>
+    <DataTable<Contest>
       header="Contests"
-      data={data}
+      data={contests}
       columns={columns}
       formItemInitValue={observable({ problems: [] })}
       ItemForm={isUserAdmin ? ContestForm : undefined}
       onDelete={remove}
-      unzip={isUserAdmin ? unzip : undefined}
-      zipUrl={({ id }) => `/api/contests/${id}/zip`}
-      zipAllUrl={`/api/contests/zip/all`}
       withoutActions={!isUserAdmin}
-      onRefresh={() => Promise.all([fetchAll(), fetchAllProblems()])}
+      onRefresh={fetchAll}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
     />
   );

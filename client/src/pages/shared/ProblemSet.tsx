@@ -5,8 +5,8 @@ import { contestStartedAndNotOver, dateComparator, formatBytes } from '../../cor
 import { ContestProblem, Problem, ScoreCache, Submission } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
 import SubmitForm from '../team/views/SubmitForm';
+import DataTable, { ListPageTableColumn } from './data-table/DataTable';
 import { PdfViewerDialog } from './dialogs';
-import ListPage, { ListPageTableColumn } from './ListPage';
 
 const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => {
   const [submission, setSubmission] = useState<Submission | undefined>(undefined);
@@ -74,7 +74,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
   return (
     <>
       {listMode ? (
-        <ListPage<ContestProblem>
+        <DataTable<ContestProblem>
           header="Problems"
           notSortable
           withoutActions

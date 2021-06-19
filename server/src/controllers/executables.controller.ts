@@ -1,33 +1,13 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  Res,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
 import { Roles } from '../core/roles.decorator';
-import { unzipEntities, zipEntities } from '../core/utils';
 import { Executable } from '../entities';
 import { ExecutablesService } from '../services';
-import { ExecutableTransformer } from '../transformers';
 
 @Controller('executables')
 @UseGuards(AuthenticatedGuard)
 export class ExecutablesController {
-  constructor(
-    private readonly executablesService: ExecutablesService,
-    private readonly executableTransformer: ExecutableTransformer,
-  ) {}
+  constructor(private readonly executablesService: ExecutablesService) {}
 
   @Get()
   @Roles('admin', 'jury')
@@ -51,48 +31,5 @@ export class ExecutablesController {
   @Roles('admin')
   async delete(@Param('id') id: number): Promise<void> {
     await this.executablesService.delete(id);
-  }
-
-  @Get(':id/zip')
-  @Roles('admin')
-  async getZip(@Param('id') id: number, @Res() response: Response): Promise<void> {
-    return zipEntities(
-      id,
-      'executable.zip',
-      this.executableTransformer,
-      await this.executablesService.getById(id, [
-        'file',
-        'file.content',
-        'buildScript',
-        'buildScript.content',
-      ]),
-      response,
-    );
-  }
-
-  @Get('zip/all')
-  @Roles('admin')
-  async getZipAll(@Res() response: Response): Promise<void> {
-    return zipEntities(
-      undefined,
-      'executables.zip',
-      this.executableTransformer,
-      await this.executablesService.getAllWithRelations([
-        'file',
-        'file.content',
-        'buildScript',
-        'buildScript.content',
-      ]),
-      response,
-    );
-  }
-
-  @Post('unzip')
-  @Roles('admin')
-  @UseInterceptors(FileInterceptor('file'))
-  saveFromZip(@UploadedFile() file, @Query('multiple') multiple: string): Promise<void> {
-    return unzipEntities<Executable>(file, multiple, this.executableTransformer, (executable) =>
-      this.executablesService.save(executable),
-    );
   }
 }

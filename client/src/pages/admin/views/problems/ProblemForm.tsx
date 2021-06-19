@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { Problem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import {
   DropdownField,
   FileField,
@@ -11,13 +13,7 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-type ProblemFormProps = {
-  item: Problem;
-  dismiss: () => void;
-  submit: (item: Problem) => void;
-};
-
-const ProblemForm: React.FC<ProblemFormProps> = ({ item: problem, dismiss, submit }) => {
+const ProblemForm: DataTableItemForm<Problem> = observer(({ item: problem, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Problem>>({
     name: isEmpty(problem.name),
     timeLimit: isEmpty(problem.timeLimit),
@@ -25,7 +21,27 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ item: problem, dismiss, submi
     runScript: isEmpty(problem.runScript),
     checkScript: isEmpty(problem.checkScript),
   });
-  const { data: executables } = rootStore.executablesStore;
+  const { runners, checkers, fetchAll } = rootStore.executablesStore;
+
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
+
+  useEffect(() => {
+    if (!problem.runScript) {
+      const defaultRunner = runners.find((e) => e.default);
+      if (defaultRunner) problem.runScript = defaultRunner;
+      setErrors((errors) => ({ ...errors, runScript: false }));
+    }
+
+    if (!problem.checkScript) {
+      const defaultChecker = checkers.find((e) => e.default);
+      if (defaultChecker) {
+        problem.checkScript = defaultChecker;
+        setErrors((errors) => ({ ...errors, checkScript: false }));
+      }
+    }
+  }, [problem, runners, checkers]);
 
   return (
     <Modal open onClose={dismiss} closeOnEscape={false}>
@@ -90,7 +106,7 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ item: problem, dismiss, submi
               fluid
               required
               selection
-              options={executables.filter((e) => e.type === 'RUNNER')}
+              options={runners}
               optionsTextField="name"
               errors={errors}
               setErrors={setErrors}
@@ -102,7 +118,7 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ item: problem, dismiss, submi
               fluid
               required
               selection
-              options={executables.filter((e) => e.type === 'CHECKER')}
+              options={checkers}
               optionsTextField="name"
               errors={errors}
               setErrors={setErrors}
@@ -124,6 +140,6 @@ const ProblemForm: React.FC<ProblemFormProps> = ({ item: problem, dismiss, submi
       </Modal.Actions>
     </Modal>
   );
-};
+});
 
 export default ProblemForm;

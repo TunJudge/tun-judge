@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { Team } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import {
   CheckBoxField,
   DropdownField,
@@ -12,23 +14,21 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-type TeamFormProps = {
-  item: Team;
-  dismiss: () => void;
-  submit: (item: Team) => void;
-};
-
-const TeamForm: React.FC<TeamFormProps> = ({ item: team, dismiss, submit }) => {
+const TeamForm: DataTableItemForm<Team> = observer(({ item: team, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Team>>({
     name: isEmpty(team.name),
     category: isEmpty(team.category),
     contests: false,
   });
   const {
-    usersStore: { teamUsers: users },
-    contestsStore: { data: contests },
-    teamCategoriesStore: { data: categories },
+    usersStore: { teamUsers: users, fetchAll: fetchAllUsers },
+    contestsStore: { data: contests, fetchAll: fetchAllContests },
+    teamCategoriesStore: { data: categories, fetchAll: fetchAllCategories },
   } = rootStore;
+
+  useEffect(() => {
+    Promise.all([fetchAllUsers(), fetchAllContests(), fetchAllCategories()]);
+  }, [fetchAllUsers, fetchAllContests, fetchAllCategories]);
 
   return (
     <Modal open onClose={dismiss} closeOnEscape={false}>
@@ -118,6 +118,6 @@ const TeamForm: React.FC<TeamFormProps> = ({ item: team, dismiss, submit }) => {
       </Modal.Actions>
     </Modal>
   );
-};
+});
 
 export default TeamForm;

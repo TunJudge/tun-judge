@@ -1,6 +1,6 @@
 import { MD5 } from 'crypto-js';
 import moment from 'moment';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DateTimeInput } from 'semantic-ui-calendar-react';
 import { Form, Icon, Label, SemanticWIDTHS } from 'semantic-ui-react';
 import { DropdownItemProps } from 'semantic-ui-react/dist/commonjs/modules/Dropdown/DropdownItem';
@@ -334,23 +334,28 @@ export function DropdownField<T>({
   setErrors,
   onChange,
 }: DropdownFieldProps<T>): any {
-  const [optionsState, setOptions] = useState<DropdownItemProps[]>(
-    (options ?? (entity[field] as any) ?? []).map((value: any) => {
-      if (typeof value === 'object') {
-        return {
-          key: value[optionsIdField ?? 'id'],
-          text: value[optionsTextField ?? 'id'],
-          value: value[optionsIdField ?? 'id'],
-        };
-      } else {
-        return {
-          key: value,
-          text: value,
-          value: value,
-        };
-      }
-    }),
-  );
+  const [optionsState, setOptions] = useState<DropdownItemProps[]>([]);
+
+  useEffect(() => {
+    setOptions(
+      (options ?? (entity[field] as any) ?? []).map((value: any) => {
+        if (typeof value === 'object') {
+          return {
+            key: value[optionsIdField ?? 'id'],
+            text: value[optionsTextField ?? 'id'],
+            value: value[optionsIdField ?? 'id'],
+          };
+        } else {
+          return {
+            key: value,
+            text: value,
+            value: value,
+          };
+        }
+      }),
+    );
+  }, [entity, field, options, optionsIdField, optionsTextField]);
+
   return (
     <Form.Dropdown
       options={optionsState}

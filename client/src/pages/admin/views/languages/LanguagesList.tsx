@@ -2,15 +2,15 @@ import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Language } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 import { CodeEditorDialog } from '../../../shared/dialogs';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
 import LanguageForm from './LanguageForm';
 
 const LanguagesList: React.FC = observer(() => {
   const [scriptData, setScriptData] = useState<Language | undefined>();
   const {
     isUserAdmin,
-    languagesStore: { data, fetchAll, create, update, remove, unzip },
+    languagesStore: { data: languages, fetchAll, create, update, remove },
   } = rootStore;
 
   useEffect(() => {
@@ -54,17 +54,14 @@ const LanguagesList: React.FC = observer(() => {
 
   return (
     <>
-      <ListPage<Language>
+      <DataTable<Language>
         header="Languages"
-        data={data}
+        data={languages}
         columns={columns}
         ItemForm={isUserAdmin ? LanguageForm : undefined}
         onDelete={remove}
         onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
-        unzip={isUserAdmin ? unzip : undefined}
-        zipUrl={({ id }) => `/api/languages/${id}/zip`}
-        zipAllUrl={`/api/languages/zip/all`}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
       {scriptData && (

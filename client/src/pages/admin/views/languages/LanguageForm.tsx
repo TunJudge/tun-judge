@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { Language } from '../../../../core/models';
+import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import {
   CheckBoxField,
   DropdownField,
@@ -10,13 +11,7 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-type LanguageFormProps = {
-  item: Language;
-  dismiss: () => void;
-  submit: (item: Language) => void;
-};
-
-const LanguageForm: React.FC<LanguageFormProps> = ({ item: language, dismiss, submit }) => {
+const LanguageForm: DataTableItemForm<Language> = ({ item: language, dismiss, submit }) => {
   const [errors, setErrors] = useState<FormErrors<Language>>({
     name: isEmpty(language.name),
     dockerImage: isEmpty(language.dockerImage),

@@ -1,3 +1,4 @@
+import React from 'react';
 import { SemanticICONS } from 'semantic-ui-react';
 import { CodeEditorLanguages } from '../pages/shared/CodeEditor';
 import { JudgingResult } from './models';
@@ -6,7 +7,7 @@ export type Tabs = {
   key: string;
   title: string;
   icon: SemanticICONS;
-  label?: any;
+  label?: React.ReactNode;
 }[];
 
 export const resultMap: Record<JudgingResult | 'PD', string> = {

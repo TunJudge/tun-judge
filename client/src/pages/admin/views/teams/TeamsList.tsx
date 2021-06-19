@@ -2,21 +2,18 @@ import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { Team } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
-import ListPage, { ListPageTableColumn } from '../../../shared/ListPage';
+import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 import TeamForm from './TeamForm';
 
 const TeamsList: React.FC = observer(() => {
   const {
     isUserAdmin,
-    teamsStore: { data, fetchAll, create, update, remove },
-    usersStore: { fetchAll: fetchAllCategories },
-    contestsStore: { fetchAll: fetchAllContests },
-    teamCategoriesStore: { fetchAll: fetchAllUsers },
+    teamsStore: { data: teams, fetchAll, create, update, remove },
   } = rootStore;
 
   useEffect(() => {
-    Promise.all([fetchAll(), fetchAllUsers(), fetchAllContests(), fetchAllCategories()]);
-  }, [fetchAll, fetchAllUsers, fetchAllContests, fetchAllCategories]);
+    fetchAll();
+  }, [fetchAll]);
 
   const columns: ListPageTableColumn<Team>[] = [
     {
@@ -52,15 +49,13 @@ const TeamsList: React.FC = observer(() => {
   ];
 
   return (
-    <ListPage<Team>
+    <DataTable<Team>
       header="Teams"
-      data={data}
+      data={teams}
       columns={columns}
       ItemForm={isUserAdmin ? TeamForm : undefined}
       onDelete={remove}
-      onRefresh={() =>
-        Promise.all([fetchAll(), fetchAllUsers(), fetchAllContests(), fetchAllCategories()])
-      }
+      onRefresh={fetchAll}
       withoutActions={!isUserAdmin}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       rowBackgroundColor={(item) => (!item.user ? '#FFC2C2' : 'white')}

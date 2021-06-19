@@ -4,7 +4,7 @@ import { dateComparator, formatRestTime } from '../../../core/helpers';
 import { Judging, Submission } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
 import { resultMap } from '../../../core/types';
-import ListPage, { ListPageTableColumn } from '../../shared/ListPage';
+import DataTable, { ListPageTableColumn } from '../../shared/data-table/DataTable';
 
 const SubmissionsList: React.FC = observer(() => {
   const {
@@ -58,7 +58,7 @@ const SubmissionsList: React.FC = observer(() => {
   ];
 
   return (
-    <ListPage<Submission>
+    <DataTable<Submission>
       header="Submissions"
       emptyMessage="No Submissions"
       data={submissions}
