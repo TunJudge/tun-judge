@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.15 (2021-06-19)
+
+
+### Bug Fixes
+
+* fix scorecache calculation bug ([9e79ce3](https://github.com/TunJudge/tun-judge/commit/9e79ce3053dca8f5016437e6030c85ec8992e5b1))
+
 ### 0.0.14 (2021-05-30)
 
 
