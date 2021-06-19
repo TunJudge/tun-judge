@@ -4,7 +4,7 @@ import { Contest, Judging, JudgingResult, Submission } from '../entities';
 import { EntityTransformer } from '../transformers/entity.transformer';
 
 export function getFirstJudging(submission: Submission): Judging | undefined {
-  return submission.judgings.sort((a, b) => b.startTime.getTime() - a.startTime.getTime()).shift();
+  return submission.judgings.sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0];
 }
 
 export function submissionHasResult(

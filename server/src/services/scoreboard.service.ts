@@ -47,7 +47,7 @@ export class ScoreboardService {
   ): Promise<void> => {
     const isCorrect = submissionHasResult(contest, ['AC']);
     const isPending = submissionIsPending(contest);
-    const hasNoCompileError = submissionHasResult(contest, ['CE', 'SE']);
+    const hasCompileError = submissionHasResult(contest, ['CE', 'SE']);
     const inFreezeTime = submissionInFreezeTime(contest);
     const allProblemSubmissions = await this.submissionsService.getByContestIdAndProblemId(
       contest.id,
@@ -55,7 +55,7 @@ export class ScoreboardService {
     );
 
     const submissions = allProblemSubmissions.filter(
-      (submission) => submission.team.id === team.id && hasNoCompileError(submission),
+      (submission) => submission.team.id === team.id && !hasCompileError(submission),
     );
     const firstCorrectProblemSubmission = allProblemSubmissions.filter(isCorrect).shift();
 
