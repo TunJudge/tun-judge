@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.17 (2021-06-20)
+
+
+### Bug Fixes
+
+* fix submission view testcases view ([6b5e779](https://github.com/TunJudge/tun-judge/commit/6b5e779896192a2744b5f507b984005d4dd44d4e))
+
 ### 0.0.16 (2021-06-19)
 
 ### 0.0.15 (2021-06-19)
