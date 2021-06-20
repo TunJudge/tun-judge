@@ -1,0 +1,40 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.19.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-BROWSERSLIST-1090194:
+    - react-scripts > react-dev-utils > browserslist:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+  SNYK-JS-CSSWHAT-1298035:
+    - react-scripts > @svgr/webpack > @svgr/plugin-svgo > svgo > css-select > css-what:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+  SNYK-JS-EJS-1049328:
+    - react-scripts > workbox-webpack-plugin > workbox-build > @surma/rollup-plugin-off-main-thread > ejs:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+  SNYK-JS-GLOBPARENT-1016905:
+    - react-scripts > webpack > watchpack > watchpack-chokidar2 > chokidar > glob-parent:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+  SNYK-JS-LODASHTEMPLATE-1088054:
+    - react-scripts > workbox-webpack-plugin > workbox-build > lodash.template:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+  SNYK-JS-NORMALIZEURL-1296539:
+    - react-scripts > mini-css-extract-plugin > normalize-url:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+    - react-scripts > optimize-css-assets-webpack-plugin > cssnano > cssnano-preset-default > postcss-normalize-url > normalize-url:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+  SNYK-JS-POSTCSS-1090595:
+    - react-scripts > resolve-url-loader > postcss:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+  SNYK-JS-POSTCSS-1255640:
+    - react-scripts > resolve-url-loader > postcss:
+        reason: None given
+        expires: '2021-07-19T23:50:50.107Z'
+patch: {}

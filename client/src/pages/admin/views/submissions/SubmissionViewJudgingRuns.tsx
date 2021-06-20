@@ -96,25 +96,25 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
               </Menu.Item>
             </Segment>
             <Segment>
-              {judging!.result === 'SE' && (
+              {judging?.result === 'SE' && (
                 <OutputSection
                   title="System output"
                   color={!judging.systemError ? 'grey' : 'black'}
                   payload={judging.systemError}
                 />
               )}
-              {['AC', 'WA'].includes(judging!.result) && (
+              {['AC', 'WA'].includes(run.result) && (
                 <OutputSection
                   title="Checker output"
                   color={!run.checkerOutput ? 'grey' : 'black'}
-                  payload={atob(run.checkerOutput?.content.payload ?? '')}
+                  payload={atob(run.checkerOutput.content.payload)}
                 />
               )}
-              {['RE', 'TLE', 'MLE'].includes(judging!.result) && (
+              {['RE', 'TLE', 'MLE'].includes(run.result) && (
                 <OutputSection
                   title="Error output"
                   color={!run.errorOutput ? 'grey' : 'black'}
-                  payload={atob(run.errorOutput?.content.payload ?? '')}
+                  payload={atob(run.errorOutput.content.payload)}
                 />
               )}
             </Segment>
