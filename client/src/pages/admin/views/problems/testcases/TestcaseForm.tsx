@@ -1,74 +1,71 @@
-import React, { useState } from 'react';
-import { Button, Form, Modal } from 'semantic-ui-react';
+import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../../../core/helpers';
-import { Testcase } from '../../../../../core/models';
+import { File, Testcase } from '../../../../../core/models';
+import { DataTableItemForm } from '../../../../shared/data-table/DataTable';
+import { FormModal } from '../../../../shared/dialogs';
 import { FileField, FormErrors, TextField } from '../../../../shared/extended-form';
 
-type TestcaseFormProps = {
-  open: boolean;
-  testcase: Partial<Testcase>;
-  dismiss: () => void;
-  submit: () => void;
-};
+const TestcaseForm: DataTableItemForm<Testcase> = observer(
+  ({ item: testcase, isOpen, onClose, submit }) => {
+    const [errors, setErrors] = useState<FormErrors<Testcase>>({});
 
-const TestcaseForm: React.FC<TestcaseFormProps> = ({ open, testcase, dismiss, submit }) => {
-  const [errors, setErrors] = useState<FormErrors<Testcase>>({
-    input: isEmpty(testcase.id) && isEmpty(testcase.input),
-    output: isEmpty(testcase.id) && isEmpty(testcase.output),
-  });
+    useEffect(() => {
+      console.log(testcase);
+      setErrors({
+        input: isEmpty(testcase.id) && isEmpty(testcase.input),
+        output: isEmpty(testcase.id) && isEmpty(testcase.output),
+      });
+    }, [testcase]);
 
-  return (
-    <Modal open={open} onClose={dismiss} closeOnEscape={false} size="small">
-      <Modal.Header>{testcase.id ? 'Update' : 'Create'} Testcase</Modal.Header>
-      <Modal.Content>
-        <Form onSubmit={Object.values(errors).some((e) => e) ? undefined : submit}>
-          <Form.Group widths="equal">
-            <FileField<Testcase>
-              entity={testcase}
-              field="input"
-              label="Input File"
-              placeHolder="*.in"
-              accept=".in"
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <Form.Input
-              label="Input File MD5"
-              placeholder="Input File MD5"
-              value={testcase.input?.md5Sum ?? ''}
-              readOnly
-            />
-          </Form.Group>
-          <Form.Group widths="equal">
-            <FileField<Testcase>
-              entity={testcase}
-              field="output"
-              label="Output File"
-              placeHolder="*.ans"
-              accept=".ans"
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <Form.Input
-              label="Output File MD5"
-              placeholder="Output File MD5"
-              value={testcase.output?.md5Sum ?? ''}
-              readOnly
-            />
-          </Form.Group>
-          <TextField<Testcase> entity={testcase} field="description" label="Description" />
-        </Form>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button color="red" onClick={dismiss}>
-          Cancel
-        </Button>
-        <Button color="green" onClick={submit} disabled={Object.values(errors).some((e) => e)}>
-          Submit
-        </Button>
-      </Modal.Actions>
-    </Modal>
-  );
-};
+    return (
+      <FormModal
+        title={`${testcase.id ? 'Update' : 'Create'} Testcase`}
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={() => submit(testcase)}
+        submitDisabled={Object.values(errors).some((e) => e)}
+      >
+        <div className="grid sm:grid-cols-2 gap-2">
+          <FileField<Testcase>
+            entity={testcase}
+            field="input"
+            label="Input File"
+            placeHolder="*.in"
+            accept=".in"
+            required
+            errors={errors}
+            setErrors={setErrors}
+          />
+          <TextField<File>
+            entity={testcase.input ?? {}}
+            field="md5Sum"
+            label="Input File MD5"
+            readOnly
+          />
+        </div>
+        <div className="grid sm:grid-cols-2 gap-2">
+          <FileField<Testcase>
+            entity={testcase}
+            field="output"
+            label="Output File"
+            placeHolder="*.ans"
+            accept=".ans"
+            required
+            errors={errors}
+            setErrors={setErrors}
+          />
+          <TextField<File>
+            entity={testcase.output ?? {}}
+            field="md5Sum"
+            label="Output File MD5"
+            readOnly
+          />
+        </div>
+        <TextField<Testcase> entity={testcase} field="description" label="Description" />
+      </FormModal>
+    );
+  },
+);
 
 export default TestcaseForm;

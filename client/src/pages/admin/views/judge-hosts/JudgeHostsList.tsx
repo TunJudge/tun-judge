@@ -1,7 +1,7 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { Button } from 'semantic-ui-react';
 import { JudgeHost } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
@@ -45,14 +45,20 @@ const JudgeHostsList: React.FC = observer(() => {
     {
       header: 'Active',
       field: 'active',
+      textAlign: 'center',
       render: (judgeHost) =>
         isUserAdmin ? (
-          <Button
-            color={judgeHost.active ? 'red' : 'green'}
-            onClick={() => toggle(judgeHost.id, !judgeHost.active)}
-          >
-            {judgeHost.active ? 'Deactivate' : 'Activate'}
-          </Button>
+          <div className="flex justify-center select-none">
+            <div
+              className={classNames('text-white px-3 py-2 rounded cursor-pointer', {
+                'bg-red-600': judgeHost.active,
+                'bg-green-600': !judgeHost.active,
+              })}
+              onClick={() => toggle(judgeHost.id, !judgeHost.active)}
+            >
+              {judgeHost.active ? 'Deactivate' : 'Activate'}
+            </div>
+          </div>
         ) : judgeHost.active ? (
           'Yes'
         ) : (
@@ -62,14 +68,18 @@ const JudgeHostsList: React.FC = observer(() => {
     {
       header: 'Live Logs',
       field: 'id',
+      textAlign: 'center',
       render: (judgeHost) => (
-        <Button
-          color="blue"
-          onClick={() => setHostname(judgeHost.hostname)}
-          disabled={!judgeHost.active}
-        >
-          Logs
-        </Button>
+        <div className="flex justify-center select-none">
+          <div
+            className={classNames('bg-blue-600 text-white px-3 py-2 rounded cursor-pointer w-min', {
+              disabled: !judgeHost.active,
+            })}
+            onClick={() => setHostname(judgeHost.hostname)}
+          >
+            Logs
+          </div>
+        </div>
       ),
     },
   ];

@@ -1,5 +1,5 @@
+import { PlusIcon, RefreshIcon } from '@heroicons/react/solid';
 import React from 'react';
-import { Header, Icon, Menu, Popup, Segment } from 'semantic-ui-react';
 
 type Props = {
   header: string;
@@ -10,37 +10,21 @@ type Props = {
 
 const DataTableActionBar: React.FC<Props> = ({ header, canAdd, onAdd, onRefresh }) => {
   return (
-    <Segment as={Menu} style={{ padding: 0 }} borderless>
-      <Menu.Item>
-        <Header>{header}</Header>
-      </Menu.Item>
-      <Menu.Menu position="right">
+    <div className="flex items-center shadow rounded-md border w-full justify-between mb-4 p-2 bg-white">
+      <div className="text-xl mx-2">{header}</div>
+      <div className="flex items-center mr-2 space-x-2">
         {onRefresh && (
-          <Popup
-            trigger={
-              <Menu.Item onClick={onRefresh}>
-                <Icon name="refresh" />
-              </Menu.Item>
-            }
-            position="bottom center"
-          >
-            Refresh
-          </Popup>
+          <div className="hover:bg-gray-200 rounded-md p-2" onClick={onRefresh}>
+            <RefreshIcon className="w-6 h-6" />
+          </div>
         )}
         {canAdd && (
-          <Popup
-            trigger={
-              <Menu.Item color="green" onClick={onAdd}>
-                <Icon name="plus" />
-              </Menu.Item>
-            }
-            position="bottom center"
-          >
-            Add
-          </Popup>
+          <div className="hover:bg-gray-200 rounded-md p-2" onClick={onAdd}>
+            <PlusIcon className="w-6 h-6" />
+          </div>
         )}
-      </Menu.Menu>
-    </Segment>
+      </div>
+    </div>
   );
 };
 

@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig, Method } from 'axios';
-import { toast } from 'react-semantic-toasts';
 import { rootStore } from '../stores/RootStore';
 
 export class HttpClient {
@@ -42,13 +41,16 @@ export async function request<T>(
     error?.response?.status === 401 && rootStore && rootStore.logout();
     if (error?.response?.data) {
       const { message } = error?.response?.data;
-      toast({
-        title: 'Error',
-        description: message,
-        type: 'error',
-        time: 3000,
-        animation: 'bounce',
-      });
+      rootStore?.toastsStore.error(
+        message,
+        //   ,{
+        //   // title: 'Error',
+        //   description: message,
+        //   type: 'error',
+        //   time: 3000,
+        //   animation: 'bounce',
+        // }
+      );
     }
     throw error;
   }

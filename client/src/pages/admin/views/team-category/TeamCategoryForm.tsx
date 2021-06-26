@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { TeamCategory } from '../../../../core/models';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
+import { FormModal } from '../../../shared/dialogs';
 import { CheckBoxField, FormErrors, TextField } from '../../../shared/extended-form';
 
 const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
   item: teamCategory,
-  dismiss,
+  isOpen,
+  onClose,
   submit,
 }) => {
   const [errors, setErrors] = useState<FormErrors<TeamCategory>>({
@@ -15,52 +16,42 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
   });
 
   return (
-    <Modal open onClose={dismiss} closeOnEscape={false} size="tiny">
-      <Modal.Header>{teamCategory.id ? 'Update' : 'Create'} Team Category</Modal.Header>
-      <Modal.Content>
-        <Form>
-          <Form.Group>
-            <TextField<TeamCategory>
-              entity={teamCategory}
-              field="name"
-              label="Name"
-              required
-              width="12"
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <TextField<TeamCategory>
-              entity={teamCategory}
-              field="color"
-              label="Color"
-              placeHolder="#666666"
-              pattern="(#[0-9a-fA-F]{6})*"
-              width="4"
-              errors={errors}
-              setErrors={setErrors}
-            />
-          </Form.Group>
-          <CheckBoxField<TeamCategory>
-            entity={teamCategory}
-            field="visible"
-            label="Visible"
-            defaultValue={true}
-          />
-        </Form>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button color="red" onClick={dismiss}>
-          Cancel
-        </Button>
-        <Button
-          color="green"
-          onClick={() => submit(teamCategory)}
-          disabled={Object.values(errors).some((e) => e)}
-        >
-          Submit
-        </Button>
-      </Modal.Actions>
-    </Modal>
+    <FormModal
+      title={`${teamCategory.id ? 'Update' : 'Create'} Team Category`}
+      isOpen={isOpen}
+      onClose={onClose}
+      onSubmit={() => submit(teamCategory)}
+      submitDisabled={Object.values(errors).some((e) => e)}
+    >
+      <div className="grid sm:grid-cols-5 gap-2">
+        <TextField<TeamCategory>
+          entity={teamCategory}
+          field="name"
+          label="Name"
+          required
+          width="3"
+          errors={errors}
+          setErrors={setErrors}
+        />
+        <TextField<TeamCategory>
+          entity={teamCategory}
+          field="color"
+          label="Color"
+          width="2"
+          required
+          placeHolder="#666666"
+          pattern="(#[0-9a-fA-F]{6})*"
+          errors={errors}
+          setErrors={setErrors}
+        />
+      </div>
+      <CheckBoxField<TeamCategory>
+        entity={teamCategory}
+        field="visible"
+        label="Visible"
+        defaultValue={true}
+      />
+    </FormModal>
   );
 };
 export default TeamCategoryForm;

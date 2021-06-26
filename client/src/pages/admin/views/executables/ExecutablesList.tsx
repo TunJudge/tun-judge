@@ -9,8 +9,9 @@ import ExecutableForm from './ExecutableForm';
 const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', CHECKER: 'Checker' };
 
 const ExecutablesList: React.FC = observer(() => {
-  const [scriptData, setScriptData] =
-    useState<{ executable: Executable; field: 'file' | 'buildScript' } | undefined>();
+  const [scriptData, setScriptData] = useState<
+    { executable: Executable; field: 'file' | 'buildScript' } | undefined
+  >();
   const {
     isUserAdmin,
     executablesStore: { data: executables, fetchAll, create, update, remove },
@@ -35,7 +36,8 @@ const ExecutablesList: React.FC = observer(() => {
       header: 'Source File',
       field: 'file',
       render: (executable) => (
-        <a
+        <div
+          className="text-blue-700 cursor-pointer"
           onClick={() =>
             setScriptData({
               executable,
@@ -44,7 +46,7 @@ const ExecutablesList: React.FC = observer(() => {
           }
         >
           {executable.file.name}
-        </a>
+        </div>
       ),
     },
     {
@@ -52,7 +54,8 @@ const ExecutablesList: React.FC = observer(() => {
       field: 'buildScript',
       render: (executable) =>
         executable.buildScript ? (
-          <a
+          <div
+            className="text-blue-700 cursor-pointer"
             onClick={() =>
               setScriptData({
                 executable,
@@ -61,7 +64,7 @@ const ExecutablesList: React.FC = observer(() => {
             }
           >
             {executable.buildScript.name}
-          </a>
+          </div>
         ) : (
           '-'
         ),
@@ -90,24 +93,19 @@ const ExecutablesList: React.FC = observer(() => {
         withoutActions={!isUserAdmin}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
-      {scriptData && (
-        <CodeEditorDialog
-          file={scriptData.executable[scriptData.field]}
-          lang={scriptData.executable[scriptData.field].name.endsWith('.cpp') ? 'c_cpp' : 'sh'}
-          dismiss={async () => {
-            await fetchAll();
-            setScriptData(undefined);
-          }}
-          submit={
-            isUserAdmin
-              ? async () => {
-                  await update(scriptData.executable);
-                  setScriptData(undefined);
-                }
-              : undefined
-          }
-        />
-      )}
+      <CodeEditorDialog
+        file={scriptData?.executable[scriptData.field]}
+        readOnly={!isUserAdmin}
+        lang={scriptData?.executable[scriptData.field].name.endsWith('.cpp') ? 'c_cpp' : 'sh'}
+        dismiss={async () => {
+          await fetchAll();
+          setScriptData(undefined);
+        }}
+        submit={async () => {
+          await update(scriptData!.executable);
+          setScriptData(undefined);
+        }}
+      />
     </>
   );
 });

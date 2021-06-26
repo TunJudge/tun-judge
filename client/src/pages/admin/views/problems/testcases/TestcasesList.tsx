@@ -1,6 +1,15 @@
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  HashtagIcon,
+  PencilAltIcon,
+  PlusIcon,
+  TrashIcon,
+} from '@heroicons/react/outline';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Button, Header, Icon, Menu, Popup, Segment, Table } from 'semantic-ui-react';
+import { Popup } from 'semantic-ui-react';
 import { formatBytes } from '../../../../../core/helpers';
 import { Problem, Testcase } from '../../../../../core/models';
 import { rootStore } from '../../../../../core/stores/RootStore';
@@ -11,172 +20,183 @@ import TestcaseForm from './TestcaseForm';
 
 type TestcasesListProps = {
   problem: Problem;
-  rowHeight: number;
-  problemInfoHeight: number;
 };
 
-const TestcasesList: React.FC<TestcasesListProps> = observer(
-  ({ problem, rowHeight, problemInfoHeight }) => {
-    const [formOpen, setFormOpen] = useState<boolean>(false);
-    const [formTestcase, setFormTestcase] = useState<Partial<Testcase>>({
-      problem: problem,
-    });
-    const [contentViewData, setContentViewData] = useState<{
-      testcase: Testcase | undefined;
-      field: 'input' | 'output';
-    }>({ testcase: undefined, field: 'input' });
-    const {
-      isUserAdmin,
-      testcasesStore: { data, fetchAll, create, update, remove, move },
-    } = rootStore;
+const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
+  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [formTestcase, setFormTestcase] = useState<Partial<Testcase>>({
+    problem: problem,
+  });
+  const [contentViewData, setContentViewData] = useState<{
+    testcase: Testcase | undefined;
+    field: 'input' | 'output';
+  }>({ testcase: undefined, field: 'input' });
+  const {
+    isUserAdmin,
+    testcasesStore: { data, fetchAll, create, update, remove, move },
+    toastsStore,
+  } = rootStore;
 
-    const dismissForm = async () => {
-      setFormTestcase({ problem: problem });
-      setFormOpen(false);
-      await fetchAll();
-    };
+  const dismissForm = async () => {
+    setFormTestcase({ problem: problem });
+    setFormOpen(false);
+    await fetchAll();
+  };
 
-    return (
-      <Segment.Group>
-        <Segment as={Menu} style={{ padding: 0 }} borderless>
-          <Menu.Item>
-            <Header>Testcases</Header>
-          </Menu.Item>
-          {isUserAdmin && (
-            <Menu.Item position="right">
-              <TestcaseBulkUploader problem={problem} />
+  return (
+    <div className="flex flex-col h-full bg-white divide-y border shadow rounded-md overflow-hidden">
+      <div className="flex p-3 items-center justify-between">
+        <div className="text-lg font-medium">Testcases</div>
+        {isUserAdmin && (
+          <div className="flex items-center text-white gap-2">
+            <TestcaseBulkUploader problem={problem} />
 
-              <Button color="blue" icon onClick={() => setFormOpen(true)}>
-                <Icon name="plus" />
-              </Button>
-            </Menu.Item>
-          )}
-        </Segment>
-        <Segment style={{ height: rowHeight - problemInfoHeight - 66, overflowY: 'auto' }}>
-          <Table celled structured>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell textAlign="center" width="1">
-                  #
-                </Table.HeaderCell>
-                <Table.HeaderCell>Content</Table.HeaderCell>
-                <Table.HeaderCell width="1">Sample</Table.HeaderCell>
-                <Table.HeaderCell>Description</Table.HeaderCell>
-                {isUserAdmin && <Table.HeaderCell width="1" />}
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
+            <PlusIcon
+              className="w-10 h-10 p-1 bg-blue-500 hover:bg-blue-400 rounded-md cursor-pointer"
+              onClick={() => setFormOpen(true)}
+            />
+          </div>
+        )}
+      </div>
+      <div className="flex p-4 overflow-hidden">
+        <div className="flex w-full border rounded-md overflow-hidden">
+          <table className="flex flex-col min-w-full divide-y">
+            <thead>
+              <tr className="grid grid-cols-12 w-full divide-x">
+                <th className="p-2">#</th>
+                <th className="p-2 col-span-4">Content</th>
+                <th className="p-2 col-span-2">Sample</th>
+                <th
+                  className={classNames('p-2', {
+                    'col-span-4': isUserAdmin,
+                    'col-span-5': !isUserAdmin,
+                  })}
+                >
+                  Description
+                </th>
+                {isUserAdmin && <th />}
+              </tr>
+            </thead>
+            <tbody className="w-full overflow-scroll divide-y">
               {data.length === 0 ? (
-                <Table.Row textAlign="center">
-                  <Table.Cell colSpan="10">No data</Table.Cell>
-                </Table.Row>
+                <tr className="flex w-full">
+                  <td className="w-full p-3 flex items-center justify-center">No data</td>
+                </tr>
               ) : (
-                data.map((testcase) => [
-                  <Table.Row key={`${testcase.id}-in`}>
-                    <Table.Cell rowSpan={2} textAlign="center">
+                data.map((testcase) => (
+                  <tr key={`${testcase.id}-in`} className="grid grid-cols-12 divide-x">
+                    <td className="flex flex-col items-center justify-center">
                       {testcase.rank > 0 && (
-                        <>
-                          <Icon
-                            className="cursor-pointer"
-                            name="angle up"
-                            onClick={() => move(testcase.id, 'up')}
-                            style={{ marginRight: 0 }}
-                          />
-                          <br />
-                        </>
-                      )}
-                      {testcase.rank}
-                      <br />
-                      {testcase.rank < data.length - 1 && (
-                        <Icon
-                          className="cursor-pointer"
-                          name="angle down"
-                          onClick={() => move(testcase.id, 'down')}
-                          style={{ marginRight: 0 }}
+                        <ChevronUpIcon
+                          className="w-4 h-4 cursor-pointer"
+                          onClick={() => move(testcase.id, 'up')}
                         />
                       )}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <a onClick={() => setContentViewData({ testcase, field: 'input' })}>
-                        {`test.${testcase.rank}.in`}
-                      </a>{' '}
-                      {formatBytes(testcase.input.size)}
-                      <Popup
-                        content={testcase.input.md5Sum}
-                        position="top center"
-                        trigger={<Icon name="hashtag" />}
-                      />
-                    </Table.Cell>
-                    <Table.Cell rowSpan={2} textAlign="center">
+                      {testcase.rank}
+                      {testcase.rank < data.length - 1 && (
+                        <ChevronDownIcon
+                          className="w-4 h-4 cursor-pointer"
+                          onClick={() => move(testcase.id, 'down')}
+                        />
+                      )}
+                    </td>
+                    <td className="col-span-4 divide-y">
+                      <div className="flex items-center p-2 gap-x-1">
+                        <div
+                          className="text-blue-500 cursor-pointer"
+                          onClick={() => setContentViewData({ testcase, field: 'input' })}
+                        >
+                          {`test.${testcase.rank}.in`}
+                        </div>{' '}
+                        {formatBytes(testcase.input.size)}
+                        <Popup
+                          content={testcase.input.md5Sum}
+                          position="top center"
+                          trigger={<HashtagIcon className="h-4 w-4" />}
+                        />
+                      </div>
+                      <div className="flex items-center p-2 gap-x-1">
+                        <div
+                          className="text-blue-500 cursor-pointer"
+                          onClick={() => setContentViewData({ testcase, field: 'output' })}
+                        >
+                          {`test.${testcase.rank}.out`}
+                        </div>
+                        {formatBytes(testcase.output.size)}
+                        <Popup
+                          content={testcase.output.md5Sum}
+                          position="top center"
+                          trigger={<HashtagIcon className="h-4 w-4" />}
+                        />
+                      </div>
+                    </td>
+                    <td className="col-span-2 flex items-center justify-center">
                       <CheckBoxField<Testcase>
                         entity={testcase}
                         field="sample"
-                        label=""
                         onChange={() => update(testcase)}
                       />
-                    </Table.Cell>
-                    <Table.Cell rowSpan={2}>{testcase.description ?? '-'}</Table.Cell>
+                    </td>
+                    <td
+                      className={classNames('flex items-center p-3', {
+                        'col-span-4': isUserAdmin,
+                        'col-span-5': !isUserAdmin,
+                      })}
+                    >
+                      {testcase.description ?? '-'}
+                    </td>
                     {isUserAdmin && (
-                      <Table.Cell rowSpan={2} textAlign="center">
-                        <Icon
-                          className="cursor-pointer"
-                          name="edit"
-                          onClick={() => {
-                            setFormTestcase(testcase);
-                            setFormOpen(true);
-                          }}
-                          style={{ marginRight: 0 }}
-                        />
-                        <br />
-                        <Icon
-                          className="cursor-pointer"
-                          name="trash"
-                          color="red"
-                          onClick={() => remove(testcase.id)}
-                          style={{ marginRight: 0, marginTop: '.5rem' }}
-                        />
-                      </Table.Cell>
+                      <td>
+                        <div className="flex flex-col items-center justify-center gap-1 h-full select-none">
+                          <PencilAltIcon
+                            className="p-1 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200"
+                            onClick={() => {
+                              setFormTestcase(testcase);
+                              setFormOpen(true);
+                            }}
+                          />
+                          <TrashIcon
+                            className="p-1 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 text-red-700"
+                            onClick={() => remove(testcase.id)}
+                          />
+                        </div>
+                      </td>
                     )}
-                  </Table.Row>,
-                  <Table.Row key={`${testcase.id}-ans`}>
-                    <Table.Cell>
-                      <a onClick={() => setContentViewData({ testcase, field: 'output' })}>
-                        {`test.${testcase.rank}.out`}
-                      </a>{' '}
-                      {formatBytes(testcase.output.size)}
-                      <Popup
-                        content={testcase.output.md5Sum}
-                        position="top center"
-                        trigger={<Icon name="hashtag" />}
-                      />
-                    </Table.Cell>
-                  </Table.Row>,
-                ])
+                  </tr>
+                ))
               )}
-            </Table.Body>
-          </Table>
-        </Segment>
-        <TestcaseForm
-          open={formOpen}
-          testcase={formTestcase}
-          dismiss={dismissForm}
-          submit={async () => {
-            if (formTestcase.id) {
-              await update(formTestcase);
-            } else {
-              await create(formTestcase);
-            }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <TestcaseForm
+        isOpen={formOpen}
+        item={formTestcase as Testcase}
+        onClose={dismissForm}
+        submit={async (testcase) => {
+          if (testcase.id) {
+            await update(testcase);
             await dismissForm();
-          }}
-        />
-        <TestcaseContentDialog
-          testcase={contentViewData.testcase}
-          field={contentViewData.field}
-          onClose={() => setContentViewData({ testcase: undefined, field: 'input' })}
-        />
-      </Segment.Group>
-    );
-  },
-);
+          } else if (
+            data.some(
+              ({ input, output }) =>
+                input.md5Sum === testcase.input.md5Sum && output.md5Sum === testcase.output.md5Sum,
+            )
+          ) {
+            toastsStore.error('This is a duplicate testcase, select different files');
+          } else {
+            await create(testcase);
+            await dismissForm();
+          }
+        }}
+      />
+      <TestcaseContentDialog
+        testcase={contentViewData.testcase}
+        field={contentViewData.field}
+        onClose={() => setContentViewData({ testcase: undefined, field: 'input' })}
+      />
+    </div>
+  );
+});
 
 export default TestcasesList;

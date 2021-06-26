@@ -60,15 +60,12 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ submission, dismis
             entity={submission ?? {}}
             field="problem"
             label="Problem"
-            fluid
             required
-            selection
             options={(currentContest?.problems ?? [])
               .map((p) => ({ ...p.problem, name: `${p.shortName} - ${p.problem.name}` }))
               .slice()
               .sort((a, b) => a.name.localeCompare(b.name))}
             optionsTextField="name"
-            isObject
             errors={errors}
             setErrors={setErrors}
           />
@@ -76,15 +73,12 @@ const SubmitForm: React.FC<SubmissionFormProps> = observer(({ submission, dismis
             entity={submission ?? {}}
             field="language"
             label="Language"
-            fluid
             required
-            selection
             options={languages.map((languages) => ({
               ...languages,
               name: `${languages.name} (${languages.extensions.join(', ')})`,
             }))}
             optionsTextField="name"
-            isObject
             errors={errors}
             setErrors={setErrors}
           />

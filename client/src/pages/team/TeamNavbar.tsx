@@ -1,3 +1,4 @@
+import { HomeIcon } from '@heroicons/react/solid';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -13,17 +14,17 @@ const tabs: Tabs = [
   {
     key: '',
     title: 'Home',
-    icon: 'home',
+    icon: HomeIcon,
   },
   {
     key: 'problems',
     title: 'Problem Set',
-    icon: 'file alternate',
+    icon: HomeIcon,
   },
   {
     key: 'scoreboard',
     title: 'Scoreboard',
-    icon: 'list ol',
+    icon: HomeIcon,
   },
 ];
 
@@ -54,7 +55,7 @@ const TeamNavbar: React.FC = observer(() => {
             active={currentTab === tab.key}
             onClick={() => onLinkClick(tab.key)}
           >
-            <Icon name={tab.icon} />
+            <Icon />
             {tab.title}
           </Menu.Item>
         ))}

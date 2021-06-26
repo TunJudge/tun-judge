@@ -1,7 +1,7 @@
+import { CloudUploadIcon } from '@heroicons/react/outline';
 import { MD5 } from 'crypto-js';
 import { observer } from 'mobx-react';
 import React, { useRef } from 'react';
-import { Button, Icon } from 'semantic-ui-react';
 import { fileToBase64 } from '../../../../../core/helpers';
 import { File as DbFile, FileContent, Problem } from '../../../../../core/models';
 import { rootStore } from '../../../../../core/stores/RootStore';
@@ -17,8 +17,8 @@ const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ pr
   } = rootStore;
 
   return (
-    <Button color="green" icon className="mr-2" onClick={() => fileInputRef.current?.click()}>
-      <Icon name="cloud upload" />
+    <div onClick={() => fileInputRef.current?.click()}>
+      <CloudUploadIcon className="w-10 h-10 p-2 bg-green-500 hover:bg-green-400 rounded-md cursor-pointer" />
       <input
         ref={(ref) => (fileInputRef.current = ref)}
         type="file"
@@ -79,7 +79,7 @@ const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ pr
           }
         }}
       />
-    </Button>
+    </div>
   );
 });
 

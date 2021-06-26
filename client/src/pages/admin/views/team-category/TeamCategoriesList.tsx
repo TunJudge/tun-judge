@@ -1,6 +1,7 @@
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
-import { Icon } from 'semantic-ui-react';
 import { TeamCategory } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
@@ -26,28 +27,23 @@ const TeamCategoriesList: React.FC = observer(() => {
       header: 'Sort Order',
       field: 'sortOrder',
       render: (category) => (
-        <>
-          {isUserAdmin &&
-            (category.sortOrder + 1 < teamCategories.length ? (
-              <Icon
-                className="cursor-pointer"
-                name="angle down"
-                onClick={() => move(category.id, 'down')}
-                style={{ marginRight: 0 }}
-              />
-            ) : (
-              <Icon name="angle down" style={{ opacity: 0, marginRight: 0 }} />
-            ))}
-          {category.sortOrder}
-          {isUserAdmin && category.sortOrder > 0 && (
-            <Icon
-              className="cursor-pointer"
-              name="angle up"
-              onClick={() => move(category.id, 'up')}
-              style={{ marginRight: 0 }}
+        <div className="flex items-center">
+          {isUserAdmin && (
+            <ChevronDownIcon
+              className={classNames('cursor-pointer h-4 w-4', {
+                'opacity-0': category.sortOrder + 1 >= teamCategories.length,
+              })}
+              onClick={() => move(category.id, 'down')}
             />
           )}
-        </>
+          {category.sortOrder}
+          {isUserAdmin && category.sortOrder > 0 && (
+            <ChevronUpIcon
+              className="cursor-pointer h-4 w-4"
+              onClick={() => move(category.id, 'up')}
+            />
+          )}
+        </div>
       ),
     },
     {

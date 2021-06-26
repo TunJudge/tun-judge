@@ -62,10 +62,11 @@ export class TestcasesService {
   }
 
   async delete(@Param('id') id: number): Promise<void> {
-    const testcase = await this.getById(id);
+    const testcase = await this.getById(id, ['problem']);
     await this.testcasesRepository.delete(id);
     const testcases = await this.testcasesRepository.find({
       where: {
+        problem: { id: testcase.problem.id },
         rank: MoreThan(testcase.rank),
       },
     });

@@ -9,11 +9,11 @@ import ChatBoxMessageList from './ChatBoxMessageList';
 
 type ChatBoxProps = {
   item: Clarification;
-  dismiss: () => void;
+  onClose: () => void;
   submit: (item: Clarification) => void;
 };
 
-const ChatBox: React.FC<ChatBoxProps> = observer(({ item: clarification, dismiss }) => {
+const ChatBox: React.FC<ChatBoxProps> = observer(({ item: clarification, onClose }) => {
   const {
     clarificationsStore: { item, setItem },
   } = rootStore;
@@ -23,7 +23,7 @@ const ChatBox: React.FC<ChatBoxProps> = observer(({ item: clarification, dismiss
   }, [setItem, clarification]);
 
   return (
-    <Modal open onClose={dismiss}>
+    <Modal open onClose={onClose}>
       <Segment.Group>
         <ChatBoxHeader clarification={item} />
         <ChatBoxMessageList clarification={item} />

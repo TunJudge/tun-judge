@@ -1,14 +1,13 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { BrowserRouter, Redirect, Route, RouteProps, Switch } from 'react-router-dom';
-import { SemanticToastContainer } from 'react-semantic-toasts';
 import { Role } from './core/models';
 import { rootStore } from './core/stores/RootStore';
 import AdminLayout from './pages/admin/AdminLayout';
 import PublicLayout from './pages/public/PublicLayout';
-import Login from './pages/shared/Login';
 import Logout from './pages/shared/Logout';
 import Spinner from './pages/shared/Spinner';
+import ToastContainer from './pages/shared/ToastContainer';
 import TeamLayout from './pages/team/TeamLayout';
 
 function getLayout(role: Role): React.FC {
@@ -29,11 +28,10 @@ export const App: React.FC = observer(() => {
   return (
     <BrowserRouter>
       <Switch>
-        <AuthRoute path="/login" component={Login} />
         <Route path="/logout" component={Logout} />
         <Layout />
       </Switch>
-      <SemanticToastContainer position="bottom-right" />
+      <ToastContainer />
     </BrowserRouter>
   );
 });

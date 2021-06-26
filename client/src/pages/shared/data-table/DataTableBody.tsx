@@ -1,5 +1,6 @@
+import { PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
+import classNames from 'classnames';
 import React, { CSSProperties, ReactElement, useEffect, useState } from 'react';
-import { Icon, SemanticWIDTHS, Table } from 'semantic-ui-react';
 import { generalComparator } from '../../../core/helpers';
 
 export type ListPageTableColumn<T> = {
@@ -7,7 +8,6 @@ export type ListPageTableColumn<T> = {
   field: keyof T;
   className?: string;
   disabled?: (obj: T) => boolean;
-  width?: SemanticWIDTHS;
   textAlign?: 'center' | 'left' | 'right';
   style?: CSSProperties;
   render: (obj: T) => React.ReactNode;
@@ -33,7 +33,6 @@ function DataTableBody<T extends { id: number | string }>({
   columns,
   emptyMessage,
   pagination,
-  notSortable,
   withoutActions,
   onEdit,
   canEdit,
@@ -88,85 +87,88 @@ function DataTableBody<T extends { id: number | string }>({
   };
 
   return (
-    <Table striped sortable={!notSortable} celled>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell
-            width="1"
-            textAlign="center"
-            sorted={sortState.column === 'id' ? sortState.direction! : undefined}
-            onClick={() => handleSort('id')}
-          >
-            #
-          </Table.HeaderCell>
-          {columns.map((column, index) => (
-            <Table.HeaderCell
-              key={index}
-              sorted={sortState.column === column.field ? sortState.direction! : undefined}
-              textAlign={column.textAlign ?? 'left'}
-              width={column.width}
-              onClick={() => handleSort(column.field)}
+    <div className="shadow border overflow-hidden border-gray-200 rounded-md">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr className="divide-x">
+            <th
+              className="px-6 py-3 text-center font-medium text-gray-700 uppercase tracking-wider"
+              onClick={() => handleSort('id')}
             >
-              {column.header}
-            </Table.HeaderCell>
-          ))}
-          {!withoutActions && <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>}
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {sortState.data.length === 0 ? (
-          <Table.Row textAlign="center">
-            <Table.Cell colSpan="20">{emptyMessage ?? 'No data'}</Table.Cell>
-          </Table.Row>
-        ) : (
-          sortState.data.map((item) => (
-            <Table.Row
-              key={item.id}
-              style={{ backgroundColor: rowBackgroundColor && rowBackgroundColor(item) }}
-            >
-              <Table.Cell textAlign="center">{item.id}</Table.Cell>
-              {columns.map((column, index) => (
-                <Table.Cell
-                  key={`${item.id}-${index}`}
-                  className={column.className}
-                  textAlign={column.textAlign ?? 'left'}
-                  disabled={column.disabled && column.disabled(item)}
-                  width={column.width}
-                  style={column.style}
-                  onClick={() => column.onClick && column.onClick(item)}
-                >
-                  {column.render(item)}
-                </Table.Cell>
-              ))}
-              {!withoutActions && (
-                <Table.Cell textAlign="center">
-                  {canEdit?.(item) && (
-                    <Icon
-                      name="edit"
-                      onClick={() => onEdit?.(item)}
-                      style={{ cursor: 'pointer', marginLeft: '0', marginRight: '0' }}
-                    />
-                  )}
-                  {(!canDelete || canDelete(item)) && (
-                    <Icon
-                      name="trash"
-                      color="red"
-                      onClick={() => onDelete?.(item.id as number)}
-                      style={{
-                        cursor: 'pointer',
-                        marginLeft: canEdit?.(item) && '10%',
-                        marginRight: '0',
-                      }}
-                    />
-                  )}
-                </Table.Cell>
-              )}
-            </Table.Row>
-          ))
-        )}
-      </Table.Body>
-      {pagination}
-    </Table>
+              #
+            </th>
+            {columns.map((column, index) => (
+              <th
+                key={index}
+                className="px-6 py-3 text-center font-medium text-gray-700 uppercase tracking-wider"
+                // sorted={sortState.column === column.field ? sortState.direction! : undefined}
+                // textAlign={column.textAlign ?? 'left'}
+                onClick={() => handleSort(column.field)}
+              >
+                {column.header}
+              </th>
+            ))}
+            {!withoutActions && (
+              <th className="px-6 py-3 text-center font-medium text-gray-700 uppercase tracking-wider">
+                Actions
+              </th>
+            )}
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-y-200">
+          {sortState.data.length === 0 ? (
+            <tr>
+              <td className="px-6 py-4 text-center" colSpan={20}>
+                {emptyMessage ?? 'No data'}
+              </td>
+            </tr>
+          ) : (
+            sortState.data.map((item) => (
+              <tr
+                key={item.id}
+                className="divide-x"
+                style={{ backgroundColor: rowBackgroundColor && rowBackgroundColor(item) }}
+              >
+                <td className="px-6 py-4 text-center">{item.id}</td>
+                {columns.map((column, index) => (
+                  <td
+                    key={`${item.id}-${index}`}
+                    className={classNames(
+                      `px-6 py-4 text-${column.textAlign ?? 'left'}`,
+                      column.className,
+                    )}
+                    // disabled={column.disabled && column.disabled(item)}
+                    style={column.style}
+                    onClick={() => column.onClick && column.onClick(item)}
+                  >
+                    {column.render(item)}
+                  </td>
+                ))}
+                {!withoutActions && (
+                  <td>
+                    <div className="flex items-center justify-center h-full gap-1">
+                      {canEdit?.(item) && (
+                        <PencilAltIcon
+                          className="p-2 w-10 h-10 cursor-pointer rounded-full hover:bg-gray-200"
+                          onClick={() => onEdit?.(item)}
+                        />
+                      )}
+                      {(!canDelete || canDelete(item)) && (
+                        <TrashIcon
+                          className="p-2 w-10 h-10 cursor-pointer rounded-full hover:bg-gray-200 text-red-700"
+                          onClick={() => onDelete?.(item.id as number)}
+                        />
+                      )}
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))
+          )}
+        </tbody>
+        {pagination}
+      </table>
+    </div>
   );
 }
 

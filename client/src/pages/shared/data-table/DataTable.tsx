@@ -17,7 +17,8 @@ export type ListPageTableColumn<T> = {
 
 export type DataTableItemForm<T> = React.FC<{
   item: T;
-  dismiss: () => void;
+  isOpen: boolean;
+  onClose: () => void;
   submit: (item: T) => void;
 }>;
 
@@ -102,8 +103,13 @@ function DataTable<T extends { id: number | string }>({
         canDelete={canDelete}
         rowBackgroundColor={rowBackgroundColor}
       />
-      {ItemForm && formOpen && (
-        <ItemForm item={formItem as T} dismiss={dismissForm} submit={submitForm} />
+      {ItemForm && (
+        <ItemForm
+          item={formItem as T}
+          isOpen={formOpen}
+          onClose={dismissForm}
+          submit={submitForm}
+        />
       )}
     </>
   );

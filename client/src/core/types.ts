@@ -1,12 +1,11 @@
 import React from 'react';
-import { SemanticICONS } from 'semantic-ui-react';
 import { CodeEditorLanguages } from '../pages/shared/CodeEditor';
 import { JudgingResult } from './models';
 
 export type Tabs = {
   key: string;
   title: string;
-  icon: SemanticICONS;
+  icon: React.FC<React.ComponentProps<'svg'>>;
   label?: React.ReactNode;
 }[];
 

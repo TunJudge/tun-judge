@@ -1,7 +1,21 @@
+import {
+  AcademicCapIcon,
+  ChartBarIcon,
+  ChatIcon,
+  ClipboardListIcon,
+  CodeIcon,
+  CogIcon,
+  HomeIcon,
+  PaperAirplaneIcon,
+  ServerIcon,
+  TagIcon,
+  UserIcon,
+  UsersIcon,
+} from '@heroicons/react/outline';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Icon, Label, Menu, Sidebar } from 'semantic-ui-react';
 import { rootStore } from '../../core/stores/RootStore';
 import { Tabs } from '../../core/types';
 
@@ -21,95 +35,106 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
     {
       key: '',
       title: 'Home',
-      icon: 'home',
+      icon: HomeIcon,
     },
     {
       key: 'contests',
       title: 'Contests',
-      icon: 'trophy',
+      icon: AcademicCapIcon,
     },
     {
       key: 'problems',
       title: 'Problems',
-      icon: 'file alternate',
+      icon: ClipboardListIcon,
     },
     {
       key: 'languages',
       title: 'Languages',
-      icon: 'code',
+      icon: CodeIcon,
     },
     {
       key: 'executables',
       title: 'Executables',
-      icon: 'cogs',
+      icon: CogIcon,
     },
     {
       key: 'users',
       title: 'Users',
-      icon: 'user',
+      icon: UserIcon,
     },
     {
       key: 'teams',
       title: 'Teams',
-      icon: 'users',
+      icon: UsersIcon,
     },
     {
       key: 'team-categories',
       title: 'Team Category',
-      icon: 'tags',
+      icon: TagIcon,
     },
     {
       key: 'judge-hosts',
       title: 'Judge Hosts',
-      icon: 'server',
+      icon: ServerIcon,
     },
     {
       key: 'submissions',
       title: 'Submissions',
-      icon: 'paper plane outline',
+      icon: PaperAirplaneIcon,
       label:
         totalPendingSubmissions > 0 ? (
-          <Label color="orange">{totalPendingSubmissions}</Label>
+          <div className="text-white px-2 py-0.5 rounded-md bg-yellow-500">
+            {totalPendingSubmissions}
+          </div>
         ) : undefined,
     },
     {
       key: 'clarifications',
       title: 'Clarifications',
-      icon: 'chat',
+      icon: ChatIcon,
     },
     {
       key: 'scoreboard',
       title: 'Scoreboard',
-      icon: 'list ol',
+      icon: ChartBarIcon,
     },
   ];
 
   return (
-    <Sidebar
-      as={Menu}
-      animation="push"
-      direction="left"
-      visible={visible}
-      inverted
-      vertical
-      borderless
-    >
-      <Menu.Item as="a" header onClick={() => onLinkClick('')} style={{ textAlign: 'center' }}>
-        <h1>TUN-JUDGE</h1>
-      </Menu.Item>
-      {tabs.map((tab) => (
-        <Menu.Item
-          key={tab.key}
-          as="a"
-          active={currentTab === tab.key}
-          onClick={() => onLinkClick(tab.key)}
+    <nav className="bg-gray-800">
+      <div
+        className={classNames('w-72 p-2 flex-col text-white h-full', {
+          flex: visible,
+          hidden: !visible,
+        })}
+      >
+        <div
+          className="text-2xl text-center p-4 mb-2 cursor-pointer"
+          onClick={() => onLinkClick('')}
         >
-          <Icon name={tab.icon} />
-          {tab.label}
-          {tab.title}
-        </Menu.Item>
-      ))}
-    </Sidebar>
+          TUN-JUDGE
+        </div>
+        <div className="space-y-1">
+          {tabs.map(({ key, icon: Icon, label, title }) => (
+            <div
+              key={key}
+              className={classNames(
+                'flex items-center w-full p-2 rounded-md font-medium cursor-pointer',
+                {
+                  'bg-gray-900 text-white': currentTab === key,
+                  'text-gray-400 hover:bg-gray-700 hover:text-white': currentTab !== key,
+                },
+              )}
+              onClick={() => onLinkClick(key)}
+            >
+              <Icon className="h-7 w-7 mr-2" />
+              {title}
+              <div className="flex items-center space-x-2 ml-auto">{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </nav>
   );
 });
 

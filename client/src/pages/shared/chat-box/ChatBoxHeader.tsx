@@ -43,13 +43,11 @@ const ChatBoxHeader: React.FC<{ clarification: Clarification }> = observer(({ cl
               <DropdownField<Clarification>
                 entity={clarification}
                 field="problem"
-                selection
                 defaultValue={clarification.problem}
                 options={currentContest?.problems.map((problem) => ({
                   ...problem.problem,
                   name: `${problem.shortName} - ${problem.problem.name}`,
                 }))}
-                isObject
                 optionsTextField="name"
                 errors={errors}
                 setErrors={setErrors}

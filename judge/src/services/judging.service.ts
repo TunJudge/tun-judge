@@ -24,6 +24,7 @@ export class JudgingService {
     private readonly executor: Executor,
   ) {
     this.logger = new JudgeLogger(JudgingService.name, getOnLog(this.socketService));
+    setInterval(() => this.logger.verbose('test'), 1000);
   }
 
   @Interval(1000)
