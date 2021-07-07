@@ -1,5 +1,5 @@
 import { Menu, Transition } from '@headlessui/react';
-import { LogoutIcon, UserIcon } from '@heroicons/react/outline';
+import { LogoutIcon, UploadIcon, UserIcon } from '@heroicons/react/outline';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -56,7 +56,12 @@ const TeamNavbar: React.FC = observer(() => {
         ]}
         rightItems={[
           {
-            content: 'Submit',
+            content: (
+              <div className="flex items-center gap-2">
+                <UploadIcon className="w-5 h-5" />
+                Submit
+              </div>
+            ),
             active: true,
             className: 'bg-green-600 hover:bg-green-700',
             onClick: () => setSubmitFormOpen(true),

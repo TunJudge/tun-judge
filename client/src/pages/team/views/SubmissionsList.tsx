@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { dateComparator, formatRestTime } from '../../../core/helpers';
@@ -46,9 +47,11 @@ const SubmissionsList: React.FC = observer(() => {
           .shift();
         return (
           <b
-            style={{
-              color: judging?.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey',
-            }}
+            className={classNames({
+              'text-green-600': judging?.result === 'AC',
+              'text-red-600': judging?.result && judging.result !== 'AC',
+              'text-gray-600': !judging?.result,
+            })}
           >
             {resultMap[judging?.result ?? 'PD']}
           </b>
@@ -75,8 +78,8 @@ const SubmissionsList: React.FC = observer(() => {
           !judging.result ||
           (currentContest!.verificationRequired && !judging.verified)
         )
-          return '#fff9c2';
-        return judging.result == 'AC' ? '#B3FFC2' : '#FFC2C2';
+          return 'yellow';
+        return judging.result == 'AC' ? 'green' : 'red';
       }}
     />
   );

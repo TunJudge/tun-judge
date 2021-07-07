@@ -48,7 +48,23 @@ export const FormModal: React.FC<React.PropsWithChildren<Props>> = ({
             leaveTo="opacity-0 scale-95"
           >
             <div
-              className={`inline-grid w-full max-w-${size} p-6 my-8 gap-y-4 text-left align-middle transition-all transform bg-white shadow-xl rounded-xl`}
+              className={classNames(
+                'inline-grid w-full p-6 my-8 gap-y-4 text-left align-middle transition-all transform bg-white shadow-xl rounded-xl',
+                {
+                  'max-w-xs': size === 'xs',
+                  'max-w-sm': size === 'sm',
+                  'max-w-md': size === 'md',
+                  'max-w-lg': size === 'lg',
+                  'max-w-xl': size === 'xl',
+                  'max-w-2xl': size === '2xl',
+                  'max-w-3xl': size === '3xl',
+                  'max-w-4xl': size === '4xl',
+                  'max-w-5xl': size === '5xl',
+                  'max-w-6xl': size === '6xl',
+                  'max-w-7xl': size === '7xl',
+                  'max-w-full': size === 'full',
+                },
+              )}
             >
               <div className="text-xl py-1 font-medium leading-6 text-gray-900">{title}</div>
               <form className="grid gap-y-2">{children}</form>

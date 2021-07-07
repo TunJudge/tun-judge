@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { observer, useLocalStore } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../core/helpers';
@@ -27,7 +28,12 @@ const ChatBoxHeader: React.FC<{ clarification: Clarification }> = observer(({ cl
           ({clarification.id}) {clarification.general ? 'General' : clarification.problem?.name}
         </div>
       ) : (
-        <form className={`grid grid-cols-${clarification.general ? '1' : '2'} gap-2`}>
+        <form
+          className={classNames('grid gap-2', {
+            'grid-cols-1': clarification.general,
+            'grid-cols-2': !clarification.general,
+          })}
+        >
           <DropdownField<{ type: 'general' | 'problem' }>
             entity={clarificationForm}
             field="type"

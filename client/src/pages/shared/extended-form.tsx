@@ -235,7 +235,27 @@ export function CheckBoxField<T>({
   }
 
   return (
-    <div className={`col-span-${width} flex items-center h-8`}>
+    <div
+      className={classNames('flex items-center h-8', {
+        'col-span-1': width === '1',
+        'col-span-2': width === '2',
+        'col-span-3': width === '3',
+        'col-span-4': width === '4',
+        'col-span-5': width === '5',
+        'col-span-6': width === '6',
+        'col-span-7': width === '7',
+        'col-span-8': width === '8',
+        'col-span-9': width === '9',
+        'col-span-10': width === '10',
+        'col-span-11': width === '11',
+        'col-span-12': width === '12',
+        'col-span-13': width === '13',
+        'col-span-14': width === '14',
+        'col-span-15': width === '15',
+        'col-span-16': width === '16',
+        'col-span-none': width === 'none',
+      })}
+    >
       <input
         className="h-5 w-5 text-blue-600 border-gray-300 rounded"
         type="checkbox"
@@ -532,7 +552,27 @@ export function DropdownField<T>({
     setSearchValue(event.target.value);
 
   return (
-    <div className={`col-span-${width}`}>
+    <div
+      className={classNames({
+        'col-span-1': width === '1',
+        'col-span-2': width === '2',
+        'col-span-3': width === '3',
+        'col-span-4': width === '4',
+        'col-span-5': width === '5',
+        'col-span-6': width === '6',
+        'col-span-7': width === '7',
+        'col-span-8': width === '8',
+        'col-span-9': width === '9',
+        'col-span-10': width === '10',
+        'col-span-11': width === '11',
+        'col-span-12': width === '12',
+        'col-span-13': width === '13',
+        'col-span-14': width === '14',
+        'col-span-15': width === '15',
+        'col-span-16': width === '16',
+        'col-span-none': width === 'none',
+      })}
+    >
       <Listbox value="" onChange={selectOption} disabled={readOnly}>
         <div className="relative" onBlur={() => setTouched(true)}>
           {label && (
@@ -1004,8 +1044,25 @@ export function DateTimeField<T>({
 
   return (
     <div
-      className={classNames(`flex flex-col col-span-${width}`, {
+      className={classNames('flex flex-col', {
         'opacity-50': disabled,
+        'col-span-1': width === '1',
+        'col-span-2': width === '2',
+        'col-span-3': width === '3',
+        'col-span-4': width === '4',
+        'col-span-5': width === '5',
+        'col-span-6': width === '6',
+        'col-span-7': width === '7',
+        'col-span-8': width === '8',
+        'col-span-9': width === '9',
+        'col-span-10': width === '10',
+        'col-span-11': width === '11',
+        'col-span-12': width === '12',
+        'col-span-13': width === '13',
+        'col-span-14': width === '14',
+        'col-span-15': width === '15',
+        'col-span-16': width === '16',
+        'col-span-none': width === 'none',
       })}
     >
       {label && (
@@ -1283,7 +1340,27 @@ const LabeledInput: React.FC<{
   width?: ColSpanWidth;
   input: (classNames: string) => JSX.Element;
 }> = ({ children, label, hasError, required, width = 'none', input }) => (
-  <div className={`col-span-${width}`}>
+  <div
+    className={classNames({
+      'col-span-1': width === '1',
+      'col-span-2': width === '2',
+      'col-span-3': width === '3',
+      'col-span-4': width === '4',
+      'col-span-5': width === '5',
+      'col-span-6': width === '6',
+      'col-span-7': width === '7',
+      'col-span-8': width === '8',
+      'col-span-9': width === '9',
+      'col-span-10': width === '10',
+      'col-span-11': width === '11',
+      'col-span-12': width === '12',
+      'col-span-13': width === '13',
+      'col-span-14': width === '14',
+      'col-span-15': width === '15',
+      'col-span-16': width === '16',
+      'col-span-none': width === 'none',
+    })}
+  >
     {label && (
       <label
         className={classNames('font-medium text-gray-700', {

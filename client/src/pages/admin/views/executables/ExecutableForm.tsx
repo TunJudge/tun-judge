@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../../core/helpers';
 import { Executable } from '../../../../core/models';
@@ -41,7 +42,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
         buildScript: isEmpty(executable.buildScript),
       });
     }
-  }, [executable]);
+  }, [executable, executable.type]);
 
   return (
     <FormModal
@@ -51,7 +52,12 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
       onSubmit={() => onSubmit(executable)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
-      <div className={`grid sm:grid-cols-${executable.type === 'CHECKER' ? '3' : '2'} gap-2`}>
+      <div
+        className={classNames('grid gap-2', {
+          'sm:grid-cols-2': executable.type !== 'CHECKER',
+          'sm:grid-cols-3': executable.type === 'CHECKER',
+        })}
+      >
         <TextField<Executable>
           entity={executable}
           field="name"

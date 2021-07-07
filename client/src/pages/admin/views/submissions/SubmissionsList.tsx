@@ -1,4 +1,5 @@
 import { BadgeCheckIcon } from '@heroicons/react/outline';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -99,9 +100,11 @@ const SubmissionsList: React.FC = observer(() => {
           .shift();
         return (
           <b
-            className={`text-${
-              judging?.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey'
-            }-600`}
+            className={classNames({
+              'text-green-600': judging?.result === 'AC',
+              'text-red-600': judging?.result && judging.result !== 'AC',
+              'text-gray-600': !judging?.result,
+            })}
           >
             {resultMap[judging?.result ?? 'PD']}
           </b>
@@ -164,15 +167,20 @@ const SubmissionsList: React.FC = observer(() => {
             {submission.problem.testcases
               .slice()
               .sort((a, b) => a.rank - b.rank)
-              .map((testcase) => (
-                <BadgeCheckIcon
-                  key={`${submission.id}-${testcase.id}`}
-                  className={`w-6 h-6 text-${getJudgingRunColor(
-                    testcase,
-                    judging.length ? judging[0] : undefined,
-                  )}-600`}
-                />
-              ))}
+              .map((testcase) => {
+                const color = getJudgingRunColor(testcase, judging[0]);
+
+                return (
+                  <BadgeCheckIcon
+                    key={`${submission.id}-${testcase.id}`}
+                    className={classNames('w-6 h-6', {
+                      'text-green-600': color === 'green',
+                      'text-red-600': color === 'red',
+                      'text-gray-600': color === 'gray',
+                    })}
+                  />
+                );
+              })}
           </div>
         );
       },

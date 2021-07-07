@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { Clarification } from '../../../core/models';
@@ -14,10 +15,11 @@ const ChatBoxMessageList: React.FC<Props> = observer(({ clarification }) => {
       {clarification.messages.map((message, index) => (
         <div key={index}>
           <div
-            className={`p-3 bg-gray-100 border border-gray-300 rounded-md w-min float-${
-              message.sentBy?.role.name === profile?.role.name ? 'right' : 'left'
-            }`}
-            ref={(el) => el?.scrollIntoView({ behavior: 'smooth' })}
+            className={classNames('p-3 bg-gray-100 border border-gray-300 rounded-md w-min', {
+              'float-right': message.sentBy?.role.name === profile?.role.name,
+              'float-left': message.sentBy?.role.name !== profile?.role.name,
+            })}
+            ref={(el) => setTimeout(() => el?.scrollIntoView(), 10)}
           >
             {message.content}
           </div>

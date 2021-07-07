@@ -2,7 +2,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { formatRestTime, getContestTimeProgress } from '../../core/helpers';
 import { Contest } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
@@ -14,10 +14,12 @@ type Props = {
 };
 
 const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
-  const [contestTimeProgress, setContestTimeProgress] = useState<number>(0);
-  const [restTime, setRestTime] = useState<number>(0);
-  const [contestStarted, setContestStarted] = useState<boolean>(false);
   const { setCurrentContest, contests, currentContest } = rootStore.publicStore;
+
+  const [restTime, setRestTime] = useState<number>(0);
+  const [contestStarted, setContestStarted] = useState<boolean>(true);
+  const [contestTimeProgress, setContestTimeProgress] = useState<number>(0);
+  const formattedRestTime = useMemo<string>(() => formatRestTime(restTime), [restTime]);
 
   const updateRestTime = (contest: Contest): void => {
     const startTime = new Date(contest.startTime).getTime();
@@ -58,7 +60,7 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
             }}
           >
             {!contestStarted && '- '}
-            {formatRestTime(restTime)}
+            {formattedRestTime}
           </div>
         )}
       </Menu.Button>

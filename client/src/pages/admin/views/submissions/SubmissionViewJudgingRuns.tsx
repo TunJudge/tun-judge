@@ -62,9 +62,11 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
                 <div className="text-lg font-medium">Testcase {run.testcase.id}</div>
                 <div>
                   <b
-                    className={`text-${
-                      judging?.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey'
-                    }-600`}
+                    className={classNames({
+                      'text-green-600': judging?.result === 'AC',
+                      'text-red-600': judging?.result && judging.result !== 'AC',
+                      'text-gray-600': !judging?.result,
+                    })}
                   >
                     {resultMap[run.result ?? 'PD']}
                   </b>

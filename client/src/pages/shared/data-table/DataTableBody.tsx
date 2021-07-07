@@ -24,7 +24,7 @@ type Props<T> = {
   canEdit?: (item: T) => boolean;
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
-  rowBackgroundColor?: (item: T) => string;
+  rowBackgroundColor?: (item: T) => 'white' | 'green' | 'yellow' | 'red';
 };
 
 function DataTableBody<T extends { id: number | string }>({
@@ -122,46 +122,59 @@ function DataTableBody<T extends { id: number | string }>({
               </td>
             </tr>
           ) : (
-            sortState.data.map((item) => (
-              <tr
-                key={item.id}
-                className="divide-x"
-                style={{ backgroundColor: rowBackgroundColor && rowBackgroundColor(item) }}
-              >
-                <td className="px-6 py-4 text-center">{item.id}</td>
-                {columns.map((column, index) => (
-                  <td
-                    key={`${item.id}-${index}`}
-                    className={classNames(
-                      `px-6 py-4 text-${column.textAlign ?? 'left'}`,
-                      column.className,
-                    )}
-                    // disabled={column.disabled && column.disabled(item)}
-                    onClick={() => column.onClick && column.onClick(item)}
-                  >
-                    {column.render(item)}
-                  </td>
-                ))}
-                {!withoutActions && (
-                  <td>
-                    <div className="flex items-center justify-center h-full gap-1">
-                      {canEdit?.(item) && (
-                        <PencilAltIcon
-                          className="p-2 w-10 h-10 cursor-pointer rounded-full hover:bg-gray-200"
-                          onClick={() => onEdit?.(item)}
-                        />
+            sortState.data.map((item) => {
+              const backgroundColor = rowBackgroundColor?.(item);
+
+              return (
+                <tr
+                  key={item.id}
+                  className={classNames('divide-x', {
+                    'bg-green-200': backgroundColor === 'green',
+                    'bg-yellow-200': backgroundColor === 'yellow',
+                    'bg-red-200': backgroundColor === 'red',
+                    'bg-white': backgroundColor === 'white',
+                  })}
+                >
+                  <td className="px-6 py-4 text-center">{item.id}</td>
+                  {columns.map((column, index) => (
+                    <td
+                      key={`${item.id}-${index}`}
+                      className={classNames(
+                        'px-6 py-4',
+                        {
+                          'text-center': column.textAlign === 'center',
+                          'text-right': column.textAlign === 'right',
+                          'text-left': (column.textAlign ?? 'left') === 'left',
+                        },
+                        column.className,
                       )}
-                      {(!canDelete || canDelete(item)) && (
-                        <TrashIcon
-                          className="p-2 w-10 h-10 cursor-pointer rounded-full hover:bg-gray-200 text-red-700"
-                          onClick={() => onDelete?.(item.id as number)}
-                        />
-                      )}
-                    </div>
-                  </td>
-                )}
-              </tr>
-            ))
+                      // disabled={column.disabled && column.disabled(item)}
+                      onClick={() => column.onClick && column.onClick(item)}
+                    >
+                      {column.render(item)}
+                    </td>
+                  ))}
+                  {!withoutActions && (
+                    <td>
+                      <div className="flex items-center justify-center h-full gap-1">
+                        {canEdit?.(item) && (
+                          <PencilAltIcon
+                            className="p-2 w-10 h-10 cursor-pointer rounded-full hover:bg-gray-200"
+                            onClick={() => onEdit?.(item)}
+                          />
+                        )}
+                        {(!canDelete || canDelete(item)) && (
+                          <TrashIcon
+                            className="p-2 w-10 h-10 cursor-pointer rounded-full hover:bg-gray-200 text-red-700"
+                            onClick={() => onDelete?.(item.id as number)}
+                          />
+                        )}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              );
+            })
           )}
         </tbody>
         {pagination}

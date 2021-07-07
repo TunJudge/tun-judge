@@ -58,7 +58,7 @@ const TeamsList: React.FC = observer(() => {
       onRefresh={fetchAll}
       withoutActions={!isUserAdmin}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-      rowBackgroundColor={(item) => (!item.user ? '#FFC2C2' : 'white')}
+      rowBackgroundColor={(item) => (!item.user ? 'red' : 'white')}
     />
   );
 });

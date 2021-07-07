@@ -64,11 +64,11 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
   const getScoreCache = (problem: Problem): ScoreCache | undefined =>
     scoreCaches.find((sc) => sc.team.id === profile?.team?.id && sc.problem.id === problem.id);
 
-  const getProblemColor = ({ problem }: ContestProblem): string => {
+  const getProblemColor = ({ problem }: ContestProblem): 'white' | 'green' | 'yellow' | 'red' => {
     const scoreCache = getScoreCache(problem);
-    if (scoreCache?.correct) return 'green-200';
-    if (scoreCache?.pending) return 'yellow-200';
-    if (scoreCache?.submissions) return 'red-200';
+    if (scoreCache?.correct) return 'green';
+    if (scoreCache?.pending) return 'yellow';
+    if (scoreCache?.submissions) return 'red';
     return 'white';
   };
 
@@ -87,49 +87,55 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
       ) : !currentContest ? (
         <NoActiveContest />
       ) : (
-        <div className="container mx-auto">
-          <div className="text-3xl text-center font-medium py-12">Contest Problems</div>
-          <div className="flex flex-wrap justify-center gap-4">
-            {problems.map((problem) => (
-              <div
-                key={problem.shortName}
-                className="w-1/4 flex flex-col bg-white rounded-md shadow-md border border-gray-200 divide-y"
-              >
-                <div
-                  className={`relative h-full py-2 px-3 bg-${getProblemColor(
-                    problem,
-                  )} rounded-t-md`}
-                >
-                  <div
-                    className={`h-6 w-6 absolute top-3 right-3 rounded-full`}
-                    style={{ backgroundColor: problem.color }}
-                  />
-                  <div className="text-2xl">
-                    {problem.shortName} - {problem.problem.name}
-                  </div>
-                  <div className="py-2 text-gray-500">
-                    Limits: {problem.problem.timeLimit}s /{' '}
-                    {formatBytes(problem.problem.memoryLimit * 1024)}
-                  </div>
-                </div>
-                <div className="flex p-2 gap-1">
-                  {profile?.team && contestStartedAndNotOver(currentContest) && (
-                    <button
-                      className="w-full p-2 text-green-600 border border-green-600 rounded-md hover:bg-green-100"
-                      onClick={() => setSubmission({ problem: problem.problem } as Submission)}
+        <div className="container mx-auto m-8 p-8 bg-white rounded-xl border shadow">
+          <div className="text-3xl text-center font-medium pb-8">Contest Problems</div>
+          <div className="flex flex-wrap justify-center ">
+            {problems.map((problem) => {
+              const color = getProblemColor(problem);
+
+              return (
+                <div key={problem.shortName} className="w-1/4 p-2">
+                  <div className="h-full flex flex-col bg-white rounded-md shadow border border-gray-200 divide-y">
+                    <div
+                      className={classNames('relative h-full py-2 px-3 rounded-t-md', {
+                        'bg-green-200': color === 'green',
+                        'bg-yellow-200': color === 'yellow',
+                        'bg-red-200': color === 'red',
+                        'bg-white': color === 'white',
+                      })}
                     >
-                      Submit
-                    </button>
-                  )}
-                  <button
-                    className="w-full p-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
-                    onClick={() => setPdfData(problem.problem.file.content.payload)}
-                  >
-                    PDF
-                  </button>
+                      <div
+                        className={`h-6 w-6 absolute top-3 right-3 rounded-full`}
+                        style={{ backgroundColor: problem.color }}
+                      />
+                      <div className="text-2xl">
+                        {problem.shortName} - {problem.problem.name}
+                      </div>
+                      <div className="py-2 text-gray-500">
+                        Limits: {problem.problem.timeLimit}s /{' '}
+                        {formatBytes(problem.problem.memoryLimit * 1024)}
+                      </div>
+                    </div>
+                    <div className="flex p-2 gap-1">
+                      {profile?.team && contestStartedAndNotOver(currentContest) && (
+                        <button
+                          className="w-full p-2 text-green-600 border border-green-600 rounded-md hover:bg-green-100"
+                          onClick={() => setSubmission({ problem: problem.problem } as Submission)}
+                        >
+                          Submit
+                        </button>
+                      )}
+                      <button
+                        className="w-full p-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                        onClick={() => setPdfData(problem.problem.file.content.payload)}
+                      >
+                        PDF
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

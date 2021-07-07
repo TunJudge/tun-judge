@@ -36,7 +36,7 @@ type Props<T> = {
   onRefresh?: () => void;
   onFormSubmit?: (item: T) => void;
   onFormDismiss?: () => void;
-  rowBackgroundColor?: (item: T) => string;
+  rowBackgroundColor?: (item: T) => 'white' | 'green' | 'yellow' | 'red';
 };
 
 function DataTable<T extends { id: number | string }>({

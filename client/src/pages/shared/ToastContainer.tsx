@@ -3,6 +3,7 @@ import {
   ExclamationCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/solid';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { rootStore } from '../../core/stores/RootStore';
@@ -32,10 +33,25 @@ const ToastContainer: React.FC = observer(() => {
         return (
           <div
             key={index}
-            className={`grid grid-cols-6 gap-x-4 rounded-xl border border-${colors[type]}-500 shadow-lg bg-white p-4`}
+            className={classNames(
+              `grid grid-cols-6 gap-x-4 rounded-xl border shadow-lg bg-white p-4`,
+              {
+                'border-gray-500': colors[type] === 'gray',
+                'border-green-500': colors[type] === 'green',
+                'border-yellow-500': colors[type] === 'yellow',
+                'border-red-500': colors[type] === 'red',
+              },
+            )}
           >
             <div className="flex items-center justify-center">
-              <Icon className={`h-10 w-10 text-${colors[type]}-500`} />
+              <Icon
+                className={classNames('h-10 w-10', {
+                  'text-gray-500': colors[type] === 'gray',
+                  'text-green-500': colors[type] === 'green',
+                  'text-yellow-500': colors[type] === 'yellow',
+                  'text-red-500': colors[type] === 'red',
+                })}
+              />
             </div>
             <div className="col-span-5">{message}</div>
           </div>

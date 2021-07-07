@@ -94,15 +94,16 @@ const JudgeHostsList: React.FC = observer(() => {
         onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
         rowBackgroundColor={(judgeHost) => {
-          if (!judgeHost.active) return '';
+          if (!judgeHost.active) return 'white';
+
           const diff = Date.now() - new Date(judgeHost.pollTime).getTime();
           if (diff < 30000) {
-            return '#B3FFC2';
+            return 'green';
           }
           if (diff < 60000) {
-            return '#FFEAC2';
+            return 'yellow';
           }
-          return '#FFC2C2';
+          return 'red';
         }}
       />
       <JudgeHostLogsViewer hostname={hostname} dismiss={() => setHostname(undefined)} />

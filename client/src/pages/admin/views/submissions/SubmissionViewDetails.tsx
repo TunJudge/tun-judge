@@ -58,13 +58,11 @@ const SubmissionViewDetails: React.FC<{
                 <td className="px-6 py-4">{submission.language.name}</td>
                 <td className="px-6 py-4">
                   <b
-                    className={`text-${
-                      judging?.result && !index
-                        ? judging.result === 'AC'
-                          ? 'green'
-                          : 'red'
-                        : 'grey'
-                    }-600`}
+                    className={classNames({
+                      'text-green-600': judging?.result === 'AC',
+                      'text-red-600': judging?.result && judging.result !== 'AC',
+                      'text-gray-600': !judging?.result || index,
+                    })}
                   >
                     {resultMap[judging?.result ?? 'PD']}
                   </b>
