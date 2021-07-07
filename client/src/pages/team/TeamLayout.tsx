@@ -23,9 +23,9 @@ const TeamLayout: React.FC = observer(() => {
   updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <TeamNavbar />
-      <div style={{ padding: '1rem', paddingTop: '4rem' }}>
+      <div className="h-full">
         {leftToContest ? (
           <ContestCountdown leftTime={leftToContest} />
         ) : (

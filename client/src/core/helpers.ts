@@ -132,10 +132,13 @@ export function getRandomHexColor(): string {
   return `#${Math.random().toString(16).substr(2, 6)}`;
 }
 
-export function isTestcaseSolved(testcase: Testcase, judging?: Judging): 'grey' | 'green' | 'red' {
-  if (!judging) return 'grey';
+export function getJudgingRunColor(
+  testcase: Testcase,
+  judging?: Judging,
+): 'gray' | 'green' | 'red' {
+  if (!judging) return 'gray';
   const judgeRun = judging.runs.find((r) => r.testcase.id === testcase.id);
-  return !judgeRun ? 'grey' : judgeRun.result === 'AC' ? 'green' : 'red';
+  return !judgeRun ? 'gray' : judgeRun.result === 'AC' ? 'green' : 'red';
 }
 
 export function useLongPress(

@@ -3,8 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
 import { ExtendedRepository } from '../core/extended-repository';
 import { AuthenticatedGuard, LoginGuard } from '../core/guards';
+import { LogClass } from '../core/log.decorator';
 import { User } from '../entities';
 
+@LogClass
 @Controller('auth')
 export class AuthController {
   constructor(

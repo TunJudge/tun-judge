@@ -1,32 +1,15 @@
-import { HomeIcon } from '@heroicons/react/solid';
+import { Menu, Transition } from '@headlessui/react';
+import { LogoutIcon, UserIcon } from '@heroicons/react/outline';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
-import { contestStartedAndNotOver } from '../../core/helpers';
 import { Submission } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
-import { Tabs } from '../../core/types';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
+import NavBar from '../shared/NavBar';
 import SubmitForm from './views/SubmitForm';
 
-const tabs: Tabs = [
-  {
-    key: '',
-    title: 'Home',
-    icon: HomeIcon,
-  },
-  {
-    key: 'problems',
-    title: 'Problem Set',
-    icon: HomeIcon,
-  },
-  {
-    key: 'scoreboard',
-    title: 'Scoreboard',
-    icon: HomeIcon,
-  },
-];
+type Tabs = '' | 'problems' | 'scoreboard';
 
 const TeamNavbar: React.FC = observer(() => {
   const [submitFormOpen, setSubmitFormOpen] = useState<boolean>(false);
@@ -35,62 +18,93 @@ const TeamNavbar: React.FC = observer(() => {
   const {
     profile,
     publicStore: { currentContest },
+    teamStore: { sendSubmission },
   } = rootStore;
 
-  const onLinkClick = (tab: string) => {
+  const onLinkClick = (tab: Tabs) => {
     setCurrentTab(tab);
     history.push(`/${tab}`);
   };
 
   return (
-    <Menu fixed="top" borderless inverted>
-      <Container>
-        <Menu.Item as="a" header onClick={() => onLinkClick('')}>
-          TUN-JUDGE
-        </Menu.Item>
-        {tabs.map((tab) => (
-          <Menu.Item
-            key={tab.key}
-            as="a"
-            active={currentTab === tab.key}
-            onClick={() => onLinkClick(tab.key)}
+    <>
+      <NavBar
+        logo={
+          <div
+            className="text-white text-xl font-medium cursor-pointer"
+            onClick={() => onLinkClick('')}
           >
-            <Icon />
-            {tab.title}
-          </Menu.Item>
-        ))}
-        <Menu.Menu position="right">
-          {contestStartedAndNotOver(currentContest) && (
-            <Menu.Item
-              className="cursor-pointer"
-              style={{ backgroundColor: '#21ba45' }}
-              onClick={() => setSubmitFormOpen(true)}
-            >
-              Submit
-            </Menu.Item>
-          )}
-          <ActiveContestSelector />
-          <Dropdown
-            item
-            floating
-            icon={
-              <>
-                <Icon name="user circle" />
-                {profile?.team?.name ?? '-'}
-              </>
-            }
-          >
-            <Dropdown.Menu>
-              <Dropdown.Item text="Logout" icon="log out" onClick={() => history.push('/logout')} />
-            </Dropdown.Menu>
-          </Dropdown>
-        </Menu.Menu>
-      </Container>
-      <SubmitForm
-        submission={submitFormOpen ? ({} as Submission) : undefined}
-        dismiss={() => setSubmitFormOpen(false)}
+            TunJudge
+          </div>
+        }
+        leftItems={[
+          {
+            content: 'Home',
+            active: currentTab === '',
+            onClick: () => onLinkClick(''),
+          },
+          {
+            content: 'Problem Set',
+            active: currentTab === 'problems',
+            onClick: () => onLinkClick('problems'),
+          },
+          {
+            content: 'Scoreboard',
+            active: currentTab === 'scoreboard',
+            onClick: () => onLinkClick('scoreboard'),
+          },
+        ]}
+        rightItems={[
+          {
+            content: 'Submit',
+            active: true,
+            className: 'bg-green-600 hover:bg-green-700',
+            onClick: () => setSubmitFormOpen(true),
+          },
+          { content: <ActiveContestSelector className="text-white" /> },
+          {
+            content: (
+              <Menu as="div" className="relative">
+                <Menu.Button
+                  as="div"
+                  className="flex items-center justify-center gap-1 rounded-md cursor-pointer hover:bg-gray-700"
+                >
+                  <UserIcon className="h-4 w-4" />
+                  {profile?.name ?? '-'}
+                </Menu.Button>
+                <Transition
+                  as={React.Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="text-black absolute right-0  mt-4 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg outline-none">
+                    <Menu.Item onClick={() => history.push('/logout')}>
+                      <div className="flex items-center rounded-md gap-1 px-3 py-2 cursor-pointer hover:bg-gray-200">
+                        <LogoutIcon className="h-4 w-4" />
+                        Logout
+                      </div>
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            ),
+          },
+        ]}
       />
-    </Menu>
+      <SubmitForm
+        isOpen={submitFormOpen}
+        item={{} as Submission}
+        onClose={() => setSubmitFormOpen(false)}
+        onSubmit={async (submission) => {
+          await sendSubmission(currentContest!.id, profile!.team.id, submission);
+          setSubmitFormOpen(false);
+        }}
+      />
+    </>
   );
 });
 

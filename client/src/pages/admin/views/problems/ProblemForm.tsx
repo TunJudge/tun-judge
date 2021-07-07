@@ -14,7 +14,7 @@ import {
 } from '../../../shared/extended-form';
 
 const ProblemForm: DataTableItemForm<Problem> = observer(
-  ({ item: problem, isOpen, onClose, submit }) => {
+  ({ item: problem, isOpen, onClose, onSubmit }) => {
     const [errors, setErrors] = useState<FormErrors<Problem>>({});
     const { runners, checkers, fetchAll } = rootStore.executablesStore;
 
@@ -53,7 +53,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
         title={`${problem.id ? 'Update' : 'Create'} Problem`}
         isOpen={isOpen}
         onClose={onClose}
-        onSubmit={() => submit(problem)}
+        onSubmit={() => onSubmit(problem)}
         submitDisabled={Object.values(errors).some((e) => e)}
       >
         <form className="grid gap-y-2">

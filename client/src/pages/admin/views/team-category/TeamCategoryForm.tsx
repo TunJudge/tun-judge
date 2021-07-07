@@ -9,7 +9,7 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
   item: teamCategory,
   isOpen,
   onClose,
-  submit,
+  onSubmit,
 }) => {
   const [errors, setErrors] = useState<FormErrors<TeamCategory>>({
     name: isEmpty(teamCategory.name),
@@ -20,7 +20,7 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
       title={`${teamCategory.id ? 'Update' : 'Create'} Team Category`}
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={() => submit(teamCategory)}
+      onSubmit={() => onSubmit(teamCategory)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className="grid sm:grid-cols-5 gap-2">

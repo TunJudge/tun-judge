@@ -7,11 +7,10 @@ import { FormModal } from '../../../../shared/dialogs';
 import { FileField, FormErrors, TextField } from '../../../../shared/extended-form';
 
 const TestcaseForm: DataTableItemForm<Testcase> = observer(
-  ({ item: testcase, isOpen, onClose, submit }) => {
+  ({ item: testcase, isOpen, onClose, onSubmit }) => {
     const [errors, setErrors] = useState<FormErrors<Testcase>>({});
 
     useEffect(() => {
-      console.log(testcase);
       setErrors({
         input: isEmpty(testcase.id) && isEmpty(testcase.input),
         output: isEmpty(testcase.id) && isEmpty(testcase.output),
@@ -23,7 +22,7 @@ const TestcaseForm: DataTableItemForm<Testcase> = observer(
         title={`${testcase.id ? 'Update' : 'Create'} Testcase`}
         isOpen={isOpen}
         onClose={onClose}
-        onSubmit={() => submit(testcase)}
+        onSubmit={() => onSubmit(testcase)}
         submitDisabled={Object.values(errors).some((e) => e)}
       >
         <div className="grid sm:grid-cols-2 gap-2">

@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Patch, Query, Session, UseGuards } from '@nestjs/common';
 import { AppGateway } from '../app.gateway';
 import { AuthenticatedGuard } from '../core/guards';
+import { LogClass } from '../core/log.decorator';
 import { Roles } from '../core/roles.decorator';
 import { FileContent, Submission } from '../entities';
 import {
@@ -11,6 +12,7 @@ import {
   SubmissionsService,
 } from '../services';
 
+@LogClass
 @Controller('submissions')
 @UseGuards(AuthenticatedGuard)
 export class SubmissionsController {
@@ -32,19 +34,9 @@ export class SubmissionsController {
     @Query('problems') problems: string,
     @Query('teams') teams: string,
     @Query('languages') languages: string,
-    @Query('notJudged') _notJudged: string,
-    @Query('notVerified') _notVerified: string,
+    @Query('status') status: 'notJudged' | 'notVerified' | undefined,
   ): Promise<[Submission[], number]> {
-    return this.submissionsService.search(
-      page,
-      size,
-      contest,
-      problems,
-      teams,
-      languages,
-      _notJudged,
-      _notVerified,
-    );
+    return this.submissionsService.search(page, size, contest, problems, teams, languages, status);
   }
 
   @Get(':id')

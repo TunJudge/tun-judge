@@ -3,6 +3,7 @@ import React from 'react';
 import { Testcase } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
 import CodeEditor from '../CodeEditor';
+import Spinner from '../Spinner';
 import { SimpleDialog } from './SimpleDialog';
 
 export const TestcaseContentDialog: React.FC<{
@@ -23,7 +24,11 @@ export const TestcaseContentDialog: React.FC<{
       onClose={onClose}
       size="2xl"
     >
-      <CodeEditor value={atob(testcase?.[field]?.content?.payload ?? '')} readOnly />
+      {!testcase?.[field]?.content ? (
+        <Spinner />
+      ) : (
+        <CodeEditor value={atob(testcase[field].content.payload ?? '')} readOnly />
+      )}
     </SimpleDialog>
   );
 });

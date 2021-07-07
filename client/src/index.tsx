@@ -1,18 +1,16 @@
 import { Provider } from 'mobx-react';
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import 'react-semantic-toasts/styles/react-semantic-alert.css';
-import 'semantic-ui-css/semantic.min.css';
 import App from './App';
 import { rootStore } from './core/stores/RootStore';
-import './index.css';
+import './index.scss';
 import Spinner from './pages/shared/Spinner';
 
 ReactDOM.render(
-  <Provider store={rootStore}>
-    <Suspense fallback={<Spinner />}>
+  <Suspense fallback={<Spinner fullScreen />}>
+    <Provider store={rootStore}>
       <App />
-    </Suspense>
-  </Provider>,
+    </Provider>
+  </Suspense>,
   document.getElementById('root'),
 );

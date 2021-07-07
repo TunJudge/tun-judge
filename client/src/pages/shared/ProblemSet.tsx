@@ -1,12 +1,14 @@
+import { UploadIcon } from '@heroicons/react/outline';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Button, Card, Container, Header, Icon, Image, Segment } from 'semantic-ui-react';
 import { contestStartedAndNotOver, dateComparator, formatBytes } from '../../core/helpers';
 import { ContestProblem, Problem, ScoreCache, Submission } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
 import SubmitForm from '../team/views/SubmitForm';
 import DataTable, { ListPageTableColumn } from './data-table/DataTable';
 import { PdfViewerDialog } from './dialogs';
+import { NoActiveContest } from './NoActiveContest';
 
 const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => {
   const [submission, setSubmission] = useState<Submission | undefined>(undefined);
@@ -15,6 +17,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
     profile,
     isUserJury,
     publicStore: { problems, currentContest, scoreCaches, fetchProblems },
+    teamStore: { sendSubmission },
   } = rootStore;
 
   const columns: ListPageTableColumn<ContestProblem>[] = [
@@ -23,7 +26,6 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
       field: 'shortName',
       className: 'cursor-pointer',
       onClick: ({ problem }) => setPdfData(problem.file.content.payload),
-      style: { display: 'flex', justifyContent: 'space-between' },
       render: ({ problem, color }) => {
         const sc = getScoreCache(problem);
         const shift = scoreCaches
@@ -35,15 +37,15 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           shift?.team.id === profile?.team.id && shift?.problem.id === problem.id;
         const nbrBalloons = sc?.correct ? (veryFirstToSolve ? 3 : sc.firstToSolve ? 2 : 1) : 0;
         return (
-          <>
-            <span>
-              {problem.name}{' '}
-              <span style={{ color: 'grey' }}>
+          <div className="flex justify-between">
+            <div className="flex gap-1">
+              {problem.name}
+              <div className="text-gray-500">
                 ({problem.timeLimit} s, {formatBytes(problem.memoryLimit * 1024)})
-              </span>
-            </span>
-            <span>{getXBalloons(nbrBalloons, color)}</span>
-          </>
+              </div>
+            </div>
+            {getXBalloons(nbrBalloons, color)}
+          </div>
         );
       },
     },
@@ -52,11 +54,10 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
     columns.push({
       header: '',
       field: 'shortName',
-      width: '1',
       textAlign: 'center',
       className: 'cursor-pointer',
       onClick: ({ problem }) => setSubmission({ problem } as Submission),
-      render: () => <Icon color="green" name="upload" />,
+      render: () => <UploadIcon className="h-6 w-6 text-green-800" />,
     });
   }
 
@@ -65,14 +66,14 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
 
   const getProblemColor = ({ problem }: ContestProblem): string => {
     const scoreCache = getScoreCache(problem);
-    if (scoreCache?.correct) return '#B3FFC2';
-    if (scoreCache?.pending) return '#fff9c2';
-    if (scoreCache?.submissions) return '#FFC2C2';
+    if (scoreCache?.correct) return 'green-200';
+    if (scoreCache?.pending) return 'yellow-200';
+    if (scoreCache?.submissions) return 'red-200';
     return 'white';
   };
 
   return (
-    <>
+    <div className={classNames('', { 'h-full': !listMode })}>
       {listMode ? (
         <DataTable<ContestProblem>
           header="Problems"
@@ -84,65 +85,65 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           rowBackgroundColor={getProblemColor}
         />
       ) : !currentContest ? (
-        <Container textAlign="center" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-          <Segment>
-            <Header size="huge">{'No Active Contest'}</Header>
-          </Segment>
-        </Container>
+        <NoActiveContest />
       ) : (
-        <Container>
-          <h1 style={{ marginTop: '1rem', marginBottom: '3rem', textAlign: 'center' }}>
-            Contest Problems
-          </h1>
-          <Card.Group centered stackable itemsPerRow="4">
+        <div className="container mx-auto">
+          <div className="text-3xl text-center font-medium py-12">Contest Problems</div>
+          <div className="flex flex-wrap justify-center gap-4">
             {problems.map((problem) => (
-              <Card fluid key={problem.shortName}>
-                <Card.Content style={{ backgroundColor: getProblemColor(problem) }}>
-                  <Image
-                    floated="right"
-                    style={{
-                      height: '23px',
-                      width: '23px',
-                      borderRadius: '50%',
-                      backgroundColor: problem.color,
-                    }}
+              <div
+                key={problem.shortName}
+                className="w-1/4 flex flex-col bg-white rounded-md shadow-md border border-gray-200 divide-y"
+              >
+                <div
+                  className={`relative h-full py-2 px-3 bg-${getProblemColor(
+                    problem,
+                  )} rounded-t-md`}
+                >
+                  <div
+                    className={`h-6 w-6 absolute top-3 right-3 rounded-full`}
+                    style={{ backgroundColor: problem.color }}
                   />
-                  <Card.Header>
+                  <div className="text-2xl">
                     {problem.shortName} - {problem.problem.name}
-                  </Card.Header>
-                  <Card.Meta>
+                  </div>
+                  <div className="py-2 text-gray-500">
                     Limits: {problem.problem.timeLimit}s /{' '}
                     {formatBytes(problem.problem.memoryLimit * 1024)}
-                  </Card.Meta>
-                </Card.Content>
-                <Card.Content extra>
-                  <Button.Group fluid widths="8">
-                    {profile?.team && contestStartedAndNotOver(currentContest) && (
-                      <Button
-                        basic
-                        color="green"
-                        onClick={() => setSubmission({ problem: problem.problem } as Submission)}
-                      >
-                        Submit
-                      </Button>
-                    )}
-                    <Button
-                      basic
-                      color="blue"
-                      onClick={() => setPdfData(problem.problem.file.content.payload)}
+                  </div>
+                </div>
+                <div className="flex p-2 gap-1">
+                  {profile?.team && contestStartedAndNotOver(currentContest) && (
+                    <button
+                      className="w-full p-2 text-green-600 border border-green-600 rounded-md hover:bg-green-100"
+                      onClick={() => setSubmission({ problem: problem.problem } as Submission)}
                     >
-                      PDF
-                    </Button>
-                  </Button.Group>
-                </Card.Content>
-              </Card>
+                      Submit
+                    </button>
+                  )}
+                  <button
+                    className="w-full p-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                    onClick={() => setPdfData(problem.problem.file.content.payload)}
+                  >
+                    PDF
+                  </button>
+                </div>
+              </div>
             ))}
-          </Card.Group>
-        </Container>
+          </div>
+        </div>
       )}
-      <SubmitForm submission={submission} dismiss={() => setSubmission(undefined)} />
+      <SubmitForm
+        isOpen={!!submission}
+        item={submission ?? ({} as Submission)}
+        onClose={() => setSubmission(undefined)}
+        onSubmit={async (submission) => {
+          await sendSubmission(currentContest!.id, profile!.team.id, submission);
+          setSubmission(undefined);
+        }}
+      />
       <PdfViewerDialog data={pdfData} dismiss={() => setPdfData(undefined)} />
-    </>
+    </div>
   );
 });
 
@@ -150,7 +151,7 @@ export default ProblemSet;
 
 function getXBalloons(n: number, color: string) {
   return (
-    <span style={{ position: 'absolute', right: '4.2rem' }}>
+    <div className="flex">
       {new Array(n).fill(0).map((_, index) => (
         <svg key={index} id="svg" version="1.1" width="20" height="20" viewBox="0, 0, 400,400">
           <g id="svgg">
@@ -175,6 +176,6 @@ function getXBalloons(n: number, color: string) {
           </g>
         </svg>
       ))}
-    </span>
+    </div>
   );
 }

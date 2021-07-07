@@ -4,10 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual } from 'typeorm';
 import { AppGateway } from '../app.gateway';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { submissionHasResult, submissionInFreezeTime, submissionIsPending } from '../core/utils';
 import { Contest, Problem, ScoreCache, Team } from '../entities';
 import { SubmissionsService } from './submissions.service';
 
+@LogClass
 @Injectable()
 export class ScoreboardService {
   private refreshing = false;
@@ -112,6 +114,9 @@ export class ScoreboardService {
 
   refreshScoreForContest = async (contest: Contest): Promise<void> => {
     const { problems, teams } = contest;
+
+    await this.scoreCachesRepository.delete({ contest });
+
     for (const team of teams) {
       for (const { problem } of problems) {
         await this.refreshScoreCache(contest, team, problem, false);

@@ -1,7 +1,7 @@
+import { RefreshIcon } from '@heroicons/react/outline';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Header, Icon, Menu, Segment } from 'semantic-ui-react';
 import { dateComparator, isSubmissionClaimedByMe } from '../../../../core/helpers';
 import { Judging, Submission } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
@@ -18,43 +18,35 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
   } = rootStore;
 
   return (
-    <Segment as={Menu} style={{ padding: 0 }} borderless>
-      <Menu.Item>
-        <Header>Submission {submission.id}</Header>
-      </Menu.Item>
-      <Menu.Item position="right">
+    <div className="flex items-center shadow rounded-md border w-full justify-between p-4 bg-white">
+      <div className="text-xl font-medium">Submission {submission.id}</div>
+      <div className="flex items-center space-x-2">
         {judging?.result && (
-          <Button
-            basic
-            color="linkedin"
-            className="mr-2"
+          <div
+            className="text-blue-600 border border-blue-600 hover:bg-blue-50 rounded-md p-2 cursor-pointer"
             onClick={async () => {
               await (submission!.valid ? ignore : unIgnore)(submission!.id);
               await fetchById(submission!.id);
             }}
           >
             {submission.valid ? 'Ignore' : 'UnIgnore'}
-          </Button>
+          </div>
         )}
         {judging?.result && judging.verified && (
-          <Button
-            basic
-            color="red"
-            className="mr-2"
+          <div
+            className="text-red-600 border border-red-600 hover:bg-red-50 rounded-md p-2 cursor-pointer"
             onClick={async () => {
               await rejudge(submission!.id);
               await fetchById(submission!.id);
             }}
           >
             Rejudge
-          </Button>
+          </div>
         )}
         {judging?.result && !judging.verified && (
-          <>
-            <Button
-              basic
-              color="blue"
-              className="mr-2"
+          <div className="flex space-x-2">
+            <div
+              className="text-blue-600 border border-blue-600 hover:bg-blue-50 rounded-md p-2 cursor-pointer"
               onClick={async () => {
                 if (isSubmissionClaimedByMe(judging, profile)) {
                   await unClaim(submission!.id);
@@ -65,25 +57,26 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
               }}
             >
               {isSubmissionClaimedByMe(judging, profile) ? 'UnClaim' : 'Claim'}
-            </Button>
-            <Button
-              basic
-              color="green"
-              className="mr-2"
+            </div>
+            <div
+              className="text-green-600 border border-green-600 hover:bg-green-50 rounded-md p-2 cursor-pointer"
               onClick={async () => {
                 await markVerified(submission!.id);
                 history.push('/submissions');
               }}
             >
               Mark Verified
-            </Button>
-          </>
+            </div>
+          </div>
         )}
-        <Button color="blue" icon onClick={() => fetchById(submission!.id)}>
-          <Icon name="refresh" />
-        </Button>
-      </Menu.Item>
-    </Segment>
+        <div
+          className="hover:bg-gray-200 rounded-md p-2 cursor-pointer"
+          onClick={() => fetchById(submission!.id)}
+        >
+          <RefreshIcon className="w-6 h-6" />
+        </div>
+      </div>
+    </div>
   );
 });
 

@@ -11,7 +11,12 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-const LanguageForm: DataTableItemForm<Language> = ({ item: language, isOpen, onClose, submit }) => {
+const LanguageForm: DataTableItemForm<Language> = ({
+  item: language,
+  isOpen,
+  onClose,
+  onSubmit,
+}) => {
   const [errors, setErrors] = useState<FormErrors<Language>>({});
 
   useEffect(() => {
@@ -28,7 +33,7 @@ const LanguageForm: DataTableItemForm<Language> = ({ item: language, isOpen, onC
       title={`${language.id ? 'Update' : 'Create'} Language`}
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={() => submit(language)}
+      onSubmit={() => onSubmit(language)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className="grid sm:grid-cols-3 gap-2">

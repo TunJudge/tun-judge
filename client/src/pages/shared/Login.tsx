@@ -1,44 +1,63 @@
-import { observer } from 'mobx-react';
+import { observer, useLocalStore } from 'mobx-react';
 import qs from 'querystring';
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
+import { isEmpty } from '../../core/helpers';
 import http from '../../core/utils/http-client';
+import { FormErrors, TextField } from './extended-form';
+
+type Credentials = {
+  username: string;
+  password: string;
+};
 
 const Login: React.FC = observer(() => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const credentials = useLocalStore<Credentials>(() => ({
+    username: '',
+    password: '',
+  }));
+  const [errors, setErrors] = useState<FormErrors<Credentials>>({});
+
+  useEffect(() => {
+    setErrors({
+      username: isEmpty(credentials.username),
+      password: isEmpty(credentials.password),
+    });
+  }, [credentials]);
 
   const login = async (event: FormEvent) => {
     event.preventDefault();
     try {
-      await http.post('api/auth/login', { username, password });
+      await http.post('api/auth/login', credentials);
       localStorage.setItem('connected', `${Date.now()}`);
       const { returnUrl } = qs.parse(location.search.substr(1));
       window.location.assign((returnUrl as string) ?? '/');
     } catch (e) {}
   };
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <div className="flex h-full items-center justify-center">
       <div className="flex flex-col items-center w-full mx-4 sm:w-1/2 md:w-1/3 sm:mx-0">
-        <div className="text-3xl text-gray-900 mb-4">Sign-in</div>
-        <form className="p-5 rounded-lg border bg-white w-full" onSubmit={login}>
-          <input
-            className="mb-3 focus:ring-gray-500 focus:border-gray-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-            type="text"
-            autoFocus
-            value={username}
-            placeholder="Username"
+        <div className="text-4xl text-gray-900 mb-4">Sign-in</div>
+        <form className="grid gap-3 p-4 rounded-lg border bg-white w-full" onSubmit={login}>
+          <TextField<Credentials>
+            entity={credentials}
+            field="username"
+            placeHolder="Username"
             autoComplete="username"
-            onChange={(e) => setUsername(e.target.value)}
+            required
+            errors={errors}
+            setErrors={setErrors}
           />
-          <input
-            className="mb-3 focus:ring-gray-500 focus:border-gray-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-            type="password"
-            value={password}
-            placeholder="Password"
-            autoComplete="password"
-            onChange={(e) => setPassword(e.target.value)}
+          <TextField<Credentials>
+            entity={credentials}
+            field="password"
+            type="Password"
+            placeHolder="Password"
+            autoComplete="username"
+            required
+            errors={errors}
+            setErrors={setErrors}
           />
-          <button className="p-2 rounded-md text-white bg-blue-500 w-full" type="submit">
+          <button className="p-2 rounded-md text-white bg-blue-500 w-1/4 mx-auto" type="submit">
             Login
           </button>
         </form>

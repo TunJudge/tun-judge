@@ -15,7 +15,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
   item: executable,
   isOpen,
   onClose,
-  submit,
+  onSubmit,
 }) => {
   const [errors, setErrors] = useState<FormErrors<Executable>>({
     name: isEmpty(executable.name),
@@ -48,7 +48,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
       title={`${executable.id ? 'Update' : 'Create'} Executable`}
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={() => submit(executable)}
+      onSubmit={() => onSubmit(executable)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className={`grid sm:grid-cols-${executable.type === 'CHECKER' ? '3' : '2'} gap-2`}>

@@ -14,7 +14,7 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClose, submit }) => {
+const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClose, onSubmit }) => {
   const [errors, setErrors] = useState<FormErrors<Team>>({});
   const {
     usersStore: { teamUsers: users, fetchAll: fetchAllUsers },
@@ -39,7 +39,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
       title={`${team.id ? 'Update' : 'Create'} Team`}
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={() => submit(team)}
+      onSubmit={() => onSubmit(team)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className="grid sm:grid-cols-3 gap-2">

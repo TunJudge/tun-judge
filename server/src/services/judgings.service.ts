@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { Judging } from '../entities';
 import { ScoreboardService } from './scoreboard.service';
 
+@LogClass
 @Injectable()
 export class JudgingsService {
   constructor(

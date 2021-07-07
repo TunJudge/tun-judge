@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { AppGateway } from '../app.gateway';
 import { AuthenticatedGuard } from '../core/guards';
+import { LogClass } from '../core/log.decorator';
 import { Roles } from '../core/roles.decorator';
 import { Clarification, Contest, Submission, User } from '../entities';
 import {
@@ -25,6 +26,7 @@ import {
   TeamsService,
 } from '../services';
 
+@LogClass
 @Controller('contests')
 @UseGuards(AuthenticatedGuard)
 export class ContestsController {

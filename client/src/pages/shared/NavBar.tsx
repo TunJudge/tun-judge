@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 
 type NavItem = {
   content: React.ReactNode;
+  className?: string;
   onClick?: () => void;
   active?: boolean;
 };
@@ -18,9 +19,9 @@ const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
 
   const MenuItems = ({ items }: { items?: NavItem[] }) => (
     <>
-      {items?.map(({ content, active, onClick }, index) => (
+      {items?.map(({ content, className, active, onClick }, index) => (
         <div
-          className={classNames('px-3 py-2 rounded-md font-medium cursor-pointer', {
+          className={classNames(className, 'px-3 py-2 rounded-md font-medium cursor-pointer', {
             'bg-gray-900 text-white': active,
             'text-gray-300 hover:bg-gray-700 hover:text-white': !active,
           })}
@@ -68,11 +69,11 @@ const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
           </div>
           <div className="flex-1 flex items-center justify-center sm:justify-start">
             {logo}
-            <div className="hidden sm:flex space-x-4 sm:ml-6">
+            <div className="hidden sm:flex gap-x-4 sm:ml-6">
               <MenuItems items={leftItems} />
             </div>
           </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm-pr-0">
+          <div className="absolute inset-y-0 right-0 flex gap-x-4 items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm-pr-0">
             <MenuItems items={rightItems} />
           </div>
         </div>

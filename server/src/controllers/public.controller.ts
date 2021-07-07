@@ -1,9 +1,11 @@
 import { Controller, Get, Param, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { Contest, ContestProblem, ScoreCache } from '../entities';
 import { ContestProblemsService, ContestsService, UsersService } from '../services';
 
+@LogClass
 @Controller('public')
 export class PublicController {
   constructor(

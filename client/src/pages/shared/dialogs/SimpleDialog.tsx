@@ -5,6 +5,7 @@ type Props = {
   title?: string;
   isOpen: boolean;
   onClose: () => void;
+  withoutFooter?: boolean;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'full';
 };
 
@@ -13,6 +14,7 @@ export const SimpleDialog: React.FC<React.PropsWithChildren<Props>> = ({
   isOpen,
   children,
   onClose,
+  withoutFooter,
   size = '5xl',
 }) => {
   return (
@@ -49,15 +51,17 @@ export const SimpleDialog: React.FC<React.PropsWithChildren<Props>> = ({
                 <div className="text-xl py-1 font-medium leading-6 text-gray-900">{title}</div>
               )}
               <div>{children}</div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="px-4 py-2 text-sm font-medium text-red-900 bg-red-100 border border-transparent rounded-md hover:bg-red-200"
-                  onClick={onClose}
-                >
-                  Close
-                </button>
-              </div>
+              {!withoutFooter && (
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    className="px-4 py-2 text-sm font-medium text-red-900 bg-red-100 border border-transparent rounded-md hover:bg-red-200"
+                    onClick={onClose}
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
             </div>
           </Transition.Child>
         </div>

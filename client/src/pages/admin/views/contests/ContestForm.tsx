@@ -16,7 +16,7 @@ import {
 } from '../../../shared/extended-form';
 
 const ContestForm: DataTableItemForm<Contest> = observer(
-  ({ item: contest, isOpen, onClose, submit }) => {
+  ({ item: contest, isOpen, onClose, onSubmit }) => {
     const [errors, setErrors] = useState<FormErrors<Contest>>({});
     const [problemsErrors, setProblemsErrors] = useState<{
       [index: number]: FormErrors<ContestProblem>;
@@ -60,7 +60,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
         title={`${contest.id ? 'Update' : 'Create'} Contest`}
         isOpen={isOpen}
         onClose={onClose}
-        onSubmit={() => submit(contest)}
+        onSubmit={() => onSubmit(contest)}
         submitDisabled={
           (problemsErrors &&
             Object.values(problemsErrors).some((errors) => Object.values(errors).some((e) => e))) ||

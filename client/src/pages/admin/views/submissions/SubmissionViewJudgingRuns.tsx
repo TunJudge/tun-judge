@@ -1,6 +1,7 @@
+import { EyeIcon } from '@heroicons/react/outline';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Button, Header, Icon, Menu, Segment } from 'semantic-ui-react';
 import { dateComparator, formatBytes } from '../../../../core/helpers';
 import { Judging, Submission, Testcase } from '../../../../core/models';
 import { JudgingRun } from '../../../../core/models/judging-run.model';
@@ -52,50 +53,63 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
     return (
       <>
         {judging?.runs?.map((run) => (
-          <Segment.Group key={`run-${run.id}`}>
-            <Segment as={Menu} style={{ padding: 0 }} borderless>
-              <Menu.Item as={Header}>Testcase {run.testcase.id}</Menu.Item>
-              <Menu.Item>
-                <b
-                  style={{
-                    color: run.result ? (run.result === 'AC' ? 'green' : 'red') : 'grey',
-                  }}
+          <div
+            key={`run-${run.id}`}
+            className="flex flex-col bg-white divide-y border shadow rounded-md"
+          >
+            <div className="flex p-3 items-center justify-between">
+              <div className="flex items-center gap-x-8">
+                <div className="text-lg font-medium">Testcase {run.testcase.id}</div>
+                <div>
+                  <b
+                    className={`text-${
+                      judging?.result ? (judging.result === 'AC' ? 'green' : 'red') : 'grey'
+                    }-600`}
+                  >
+                    {resultMap[run.result ?? 'PD']}
+                  </b>
+                </div>
+                <div>Time: {Math.floor(run.runTime * 1000)}ms</div>
+                <div>Memory: {formatBytes(run.runMemory * 1024)}</div>
+              </div>
+              <div className="flex select-none">
+                <div
+                  className="flex gap-x-1 p-2 text-green-600 border border-r-0 border-green-600 rounded-l-md cursor-pointer hover:bg-green-50"
+                  onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'input' })}
                 >
-                  {resultMap[run.result ?? 'PD']}
-                </b>
-              </Menu.Item>
-              <Menu.Item>Time: {Math.floor(run.runTime * 1000)}ms</Menu.Item>
-              <Menu.Item>Memory: {formatBytes(run.runMemory * 1024)}</Menu.Item>
-              <Menu.Item style={{ paddingTop: '.6rem', paddingBottom: '.6rem' }} position="right">
-                <Button.Group size="tiny">
-                  <Button
-                    basic
-                    color="green"
-                    onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'input' })}
-                  >
-                    <Icon name="eye" />
-                    Input
-                  </Button>
-                  <Button basic color="red" onClick={() => setRunViewData(run)}>
-                    <Icon name="eye" />
-                    Team Output
-                  </Button>
-                  <Button basic color="orange" onClick={() => loadOutputFileAndShowDiff(run)}>
-                    <Icon name="eye" />
-                    Difference
-                  </Button>
-                  <Button
-                    basic
-                    color="blue"
-                    onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'output' })}
-                  >
-                    <Icon name="eye" />
-                    Reference Output
-                  </Button>
-                </Button.Group>
-              </Menu.Item>
-            </Segment>
-            <Segment>
+                  <EyeIcon className="w-6 h-6" />
+                  Input
+                </div>
+                <div
+                  className={classNames(
+                    'flex gap-x-1 p-2 text-red-600 border border-r-0 border-red-600',
+                    {
+                      'opacity-50': !run.runOutput.size,
+                      'cursor-pointer hover:bg-red-50': run.runOutput.size,
+                    },
+                  )}
+                  onClick={() => (run.runOutput.size ? setRunViewData(run) : undefined)}
+                >
+                  <EyeIcon className="w-6 h-6" />
+                  Team Output
+                </div>
+                <div
+                  className="flex gap-x-1 p-2 text-yellow-600 border border-r-0 border-yellow-600 cursor-pointer hover:bg-yellow-50"
+                  onClick={() => loadOutputFileAndShowDiff(run)}
+                >
+                  <EyeIcon className="w-6 h-6" />
+                  Difference
+                </div>
+                <div
+                  className="flex gap-x-1 p-2 text-blue-600 border border-blue-600 rounded-r-md cursor-pointer hover:bg-blue-50"
+                  onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'output' })}
+                >
+                  <EyeIcon className="w-6 h-6" />
+                  Reference Output
+                </div>
+              </div>
+            </div>
+            <div className="p-3">
               {judging?.result === 'SE' && (
                 <OutputSection
                   title="System output"
@@ -117,15 +131,15 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
                   payload={atob(run.errorOutput.content.payload)}
                 />
               )}
-            </Segment>
-          </Segment.Group>
+            </div>
+          </div>
         ))}
         <TestcaseContentDialog
           testcase={testcaseViewData.testcase}
           field={testcaseViewData.field}
           onClose={() => setTestcaseViewData({ testcase: undefined, field: 'input' })}
         />
-        <RunContentDialog run={runViewData} dismiss={() => setRunViewData(undefined)} />
+        <RunContentDialog run={runViewData} onClose={() => setRunViewData(undefined)} />
         <DiffViewerDialog values={diffData} onClose={() => setDiffData(undefined)} />
       </>
     );
@@ -139,7 +153,7 @@ const OutputSection: React.FC<{
   color: 'grey' | 'black';
   payload?: string;
 }> = ({ title, color, payload }) => (
-  <>
+  <div className="flex flex-col gap-y-1">
     <b>{title}</b>
     <pre
       style={{
@@ -154,5 +168,5 @@ const OutputSection: React.FC<{
     >
       <code style={{ color: color }}>{payload ?? 'No Output'}</code>
     </pre>
-  </>
+  </div>
 );

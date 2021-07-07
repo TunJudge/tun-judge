@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import { MD5 } from 'crypto-js';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { isEmpty, useLongPress } from '../../core/helpers';
 import './extended-form.scss';
 
@@ -70,6 +70,8 @@ export function TextField<T>({
   setErrors,
   onChange,
 }: TextFieldProps<T>): JSX.Element {
+  const [touched, setTouched] = useState(false);
+
   const input = (className: string) => (
     <input
       className={className}
@@ -80,12 +82,13 @@ export function TextField<T>({
       autoComplete={autoComplete}
       placeholder={placeHolder ?? label}
       defaultValue={entity[field] ?? defaultValue}
+      onBlur={() => setTouched(true)}
       onChange={({ target: { value, validity } }) => {
         entity[field] = value as any;
         if (isEmpty(value.trim()) || !validity.valid) {
           required && setErrors?.({ ...errors, [field]: true });
         } else {
-          required && setErrors?.({ ...errors, [field]: false });
+          setErrors?.({ ...errors, [field]: false });
         }
         onChange?.(value);
       }}
@@ -95,7 +98,7 @@ export function TextField<T>({
   return (
     <LabeledInput
       label={label}
-      hasError={errors?.[field]}
+      hasError={touched && errors?.[field]}
       required={required}
       width={width}
       input={input}
@@ -117,6 +120,8 @@ export function TextAreaField<T>({
   setErrors,
   onChange,
 }: ExtendedFieldProps<T>): JSX.Element {
+  const [touched, setTouched] = useState(false);
+
   const input = (className: string) => (
     <textarea
       className={classNames('-mb-2', className)}
@@ -125,12 +130,13 @@ export function TextAreaField<T>({
       placeholder={placeHolder ?? label}
       autoComplete={autoComplete}
       defaultValue={entity[field] ?? defaultValue}
+      onBlur={() => setTouched(true)}
       onChange={({ target: { value, validity } }) => {
         entity[field] = value as any;
         if (isEmpty((value as string).trim()) || !validity.valid) {
           required && setErrors?.({ ...errors, [field]: true });
         } else {
-          required && setErrors?.({ ...errors, [field]: false });
+          setErrors?.({ ...errors, [field]: false });
         }
         onChange?.(value);
       }}
@@ -140,7 +146,7 @@ export function TextAreaField<T>({
   return (
     <LabeledInput
       label={label}
-      hasError={errors?.[field]}
+      hasError={touched && errors?.[field]}
       required={required}
       width={width}
       input={input}
@@ -166,6 +172,8 @@ export function NumberField<T>({
   setErrors,
   onChange,
 }: NumberFieldProps<T>): JSX.Element {
+  const [touched, setTouched] = useState(false);
+
   if (isEmpty(entity[field]) && !isEmpty(defaultValue)) {
     entity[field] = defaultValue;
   }
@@ -180,12 +188,13 @@ export function NumberField<T>({
       defaultValue={String(entity[field])}
       min={min}
       max={max}
+      onBlur={() => setTouched(true)}
       onChange={({ target: { value } }) => {
         entity[field] = Number(value) as any;
         if (isEmpty(value.trim())) {
           required && setErrors?.({ ...errors, [field]: true });
         } else {
-          required && setErrors?.({ ...errors, [field]: false });
+          setErrors?.({ ...errors, [field]: false });
         }
         onChange?.(Number(value));
       }}
@@ -195,7 +204,7 @@ export function NumberField<T>({
   return (
     <LabeledInput
       label={label}
-      hasError={errors?.[field]}
+      hasError={touched && errors?.[field]}
       required={required}
       width={width}
       input={input}
@@ -224,6 +233,7 @@ export function CheckBoxField<T>({
   if (isEmpty(entity[field]) && !isEmpty(defaultValue)) {
     entity[field] = defaultValue;
   }
+
   return (
     <div className={`col-span-${width} flex items-center h-8`}>
       <input
@@ -234,13 +244,13 @@ export function CheckBoxField<T>({
         defaultChecked={entity[field] ?? defaultValue}
         onChange={({ target: { checked } }) => {
           entity[field] = checked as any;
-          required && setErrors?.({ ...errors, [field]: false });
+          setErrors?.({ ...errors, [field]: false });
           onChange?.(checked);
         }}
       />
       {label && (
         <label
-          className={classNames('flex font-medium text-gray-700 ml-2', {
+          className={classNames('flex font-medium text-gray-700 ml-2 p-0', {
             'text-red-900': errors?.[field],
           })}
         >
@@ -271,6 +281,7 @@ export function FileField<T>({
 }: FileFieldProps<T>): JSX.Element {
   const [_fileName, setFileName] = useState<string>((entity[field] as any)?.name ?? '');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [touched, setTouched] = useState(false);
 
   const input = (className: string) => (
     <input
@@ -280,6 +291,7 @@ export function FileField<T>({
       readOnly
       value={_fileName}
       placeholder={placeHolder ?? label}
+      onBlur={() => setTouched(true)}
       onClick={() => fileInputRef.current?.click()}
     />
   );
@@ -288,7 +300,7 @@ export function FileField<T>({
     <>
       <LabeledInput
         label={label}
-        hasError={errors?.[field]}
+        hasError={touched && errors?.[field]}
         required={required}
         width={width}
         input={input}
@@ -319,8 +331,8 @@ export function FileField<T>({
                     payload: payload,
                   },
                 } as File as any;
-                required && setErrors?.({ ...errors, [field]: false });
-                onChange?.((event.target.result as string).split(';base64,').pop());
+                setErrors?.({ ...errors, [field]: false });
+                onChange?.(entity[field]);
               }
             };
           }
@@ -334,6 +346,7 @@ type DropdownFieldProps<T> = ExtendedFieldProps<T> & {
   options?: any[];
   optionsIdField?: string;
   optionsTextField?: string;
+  optionsValueField?: string;
   search?: boolean;
   multiple?: boolean;
   allowAdditions?: boolean;
@@ -344,11 +357,13 @@ export function DropdownField<T>({
   field,
   label,
   placeHolder,
-  width,
+  width = 'none',
   required,
+  readOnly,
   options,
   optionsIdField,
   optionsTextField,
+  optionsValueField,
   search,
   multiple,
   allowAdditions,
@@ -357,9 +372,7 @@ export function DropdownField<T>({
   onChange,
 }: DropdownFieldProps<T>): JSX.Element {
   const [optionsState, setOptions] = useState<{ key: string; text: string; value: any }[]>([]);
-  const [selectedValues, setSelectedValues] = useState<{ key: string; text: string; value: any }[]>(
-    [],
-  );
+  const [selectedValues, setSelectedValues] = useState<{ key: string; text: string }[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
   const [filteredOptions, setFilteredOptions] = useState<
     { key: string; text: string; value: any }[]
@@ -367,6 +380,8 @@ export function DropdownField<T>({
   const inputRef = useRef<HTMLInputElement>(null);
   const optionsRef = useRef<HTMLUListElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const [touched, setTouched] = useState(false);
+  const hasErrors = useMemo(() => touched && errors?.[field], [touched, errors, field]);
 
   useEffect(() => {
     setOptions(
@@ -375,7 +390,7 @@ export function DropdownField<T>({
           ? {
               key: value[optionsIdField ?? 'id'],
               text: value[optionsTextField ?? 'id'],
-              value: value,
+              value: optionsValueField ? value[optionsValueField] : value,
             }
           : {
               key: value,
@@ -405,25 +420,34 @@ export function DropdownField<T>({
             typeof value === 'object'
               ? {
                   key: value[optionsIdField ?? 'id'],
-                  text: value[optionsTextField ?? 'id'],
-                  value: value,
+                  text:
+                    optionsState.find((option) => option.key === value[optionsIdField ?? 'id'])
+                      ?.text ?? value,
                 }
               : {
                   key: value,
-                  text: value,
-                  value: value,
+                  text: optionsState.find((option) => option.key === value)?.text ?? value,
                 },
           )
         : typeof entity?.[field] === 'object'
         ? [
             {
               key: (entity[field] as any)[optionsIdField ?? 'id'],
-              text: (entity[field] as any)[optionsTextField ?? 'id'],
-              value: entity[field] as any,
+              text:
+                optionsState.find(
+                  (option) => option.key === (entity[field] as any)[optionsIdField ?? 'id'],
+                )?.text ?? (entity[field] as any)[optionsIdField ?? 'id'],
             },
           ]
         : entity[field]
-        ? [{ key: entity[field], text: entity[field], value: entity[field] }]
+        ? [
+            {
+              key: entity[field],
+              text:
+                optionsState.find((option) => option.key === (entity[field] as any))?.text ??
+                entity[field],
+            },
+          ]
         : [],
     );
 
@@ -458,9 +482,9 @@ export function DropdownField<T>({
     if (isEmpty(entity[field])) {
       required && setErrors?.({ ...errors, [field]: true });
     } else {
-      required && setErrors?.({ ...errors, [field]: false });
+      setErrors?.({ ...errors, [field]: false });
     }
-    onChange?.(value);
+    onChange?.(entity[field]);
   };
 
   const unselectValue = (key: string) => (event?: React.MouseEvent<HTMLOrSVGElement>) => {
@@ -478,8 +502,9 @@ export function DropdownField<T>({
     if (isEmpty(entity[field])) {
       required && setErrors?.({ ...errors, [field]: true });
     } else {
-      required && setErrors?.({ ...errors, [field]: false });
+      setErrors?.({ ...errors, [field]: false });
     }
+    onChange?.(entity[field]);
   };
 
   const addOptionAndSelect = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -508,12 +533,12 @@ export function DropdownField<T>({
 
   return (
     <div className={`col-span-${width}`}>
-      <Listbox value="" onChange={selectOption}>
-        <div className="relative">
+      <Listbox value="" onChange={selectOption} disabled={readOnly}>
+        <div className="relative" onBlur={() => setTouched(true)}>
           {label && (
             <Listbox.Label
               className={classNames('font-medium text-gray-700', {
-                'text-red-900': errors?.[field],
+                'text-red-900': hasErrors,
               })}
             >
               {label} {required && <span className="text-red-600">*</span>}
@@ -522,11 +547,11 @@ export function DropdownField<T>({
           <Listbox.Button
             className={classNames(
               'relative w-full text-left bg-white rounded-md shadow-sm cursor-default focus:outline-none border',
-              { 'border-red-600 placeholder-red-900': errors?.[field], 'mt-1': !!label },
+              { 'border-red-600 placeholder-red-900': hasErrors, 'mt-1': !!label },
             )}
             ref={triggerRef}
           >
-            <div className="flex items-center px-3 py-2 gap-x-2">
+            <div className="flex flex-wrap items-center px-3 py-2 gap-2">
               {!selectedValues.length && !allowAdditions && !search && (
                 <div className="pl-1 gap-x-1 block truncate text-gray-500">
                   {placeHolder ?? label}
@@ -535,15 +560,15 @@ export function DropdownField<T>({
               {selectedValues.map(({ key, text }) => (
                 <div
                   key={key}
-                  className={classNames('rounded pl-2 gap-x-1', {
+                  className={classNames('', {
                     'text-gray-500': !selectedValues,
-                    'flex items-center bg-gray-200': multiple,
+                    'flex items-center pl-2 py-1 rounded bg-gray-200': multiple,
                   })}
                 >
                   {text}
                   {multiple && (
                     <XIcon
-                      className="h-6 w-6 px-1 rounded-r hover:bg-gray-300"
+                      className="h-6 w-6 p-1 mx-1 rounded-full hover:bg-gray-300"
                       onClick={unselectValue(key)}
                     />
                   )}
@@ -553,7 +578,7 @@ export function DropdownField<T>({
                 <input
                   type="text"
                   ref={inputRef}
-                  className="w-full focus:outline-none focus:ring-0 border-none p-0"
+                  className="max-w-full focus:outline-none focus:ring-0 border-none p-0"
                   placeholder={allowAdditions ? 'Add option...' : 'Search option...'}
                   onChange={onInputChange}
                   onKeyDown={addOptionAndSelect}
@@ -561,7 +586,7 @@ export function DropdownField<T>({
                 />
               )}
             </div>
-            {errors?.[field] && (
+            {hasErrors && (
               <div className="absolute inset-y-0 right-5 flex items-center px-3">
                 <ExclamationCircleIcon className="text-red-600 h-6 w-6" />
               </div>
@@ -610,6 +635,127 @@ export function DropdownField<T>({
   );
 }
 
+const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+const months: { [id: number]: string } = {
+  0: 'January',
+  1: 'February',
+  2: 'March',
+  3: 'April',
+  4: 'May',
+  5: 'June',
+  6: 'July',
+  7: 'August',
+  8: 'September',
+  9: 'October',
+  10: 'November',
+  11: 'December',
+};
+
+const yearMonths: {
+  [id: number]: {
+    name: string;
+    shortName: string;
+    monthNumber: number;
+  };
+} = {
+  0: { name: 'January', shortName: 'Jan', monthNumber: 1 },
+  1: { name: 'February', shortName: 'Feb', monthNumber: 2 },
+  2: { name: 'March', shortName: 'Mar', monthNumber: 3 },
+  3: { name: 'April', shortName: 'Apr', monthNumber: 4 },
+  4: { name: 'May', shortName: 'May', monthNumber: 5 },
+  5: { name: 'June', shortName: 'Jun', monthNumber: 6 },
+  6: { name: 'July', shortName: 'Jul', monthNumber: 7 },
+  7: { name: 'August', shortName: 'Aug', monthNumber: 8 },
+  8: { name: 'September', shortName: 'Sep', monthNumber: 9 },
+  9: { name: 'October', shortName: 'Oct', monthNumber: 10 },
+  10: { name: 'November', shortName: 'Nov', monthNumber: 11 },
+  11: { name: 'December', shortName: 'Dec', monthNumber: 12 },
+};
+
+const weekDays: {
+  [id: number]: {
+    name: string;
+    shortName: string;
+    weekdayNumber: number;
+  };
+} = {
+  0: {
+    name: 'Sunday',
+    shortName: 'Sun',
+    weekdayNumber: 0,
+  },
+  1: {
+    name: 'Monday',
+    shortName: 'Mon',
+    weekdayNumber: 1,
+  },
+  2: {
+    name: 'Tuesday',
+    shortName: 'Tue',
+    weekdayNumber: 2,
+  },
+  3: {
+    name: 'Wednesday',
+    shortName: 'Wed',
+    weekdayNumber: 3,
+  },
+  4: {
+    name: 'Thursday',
+    shortName: 'Thu',
+    weekdayNumber: 4,
+  },
+  5: {
+    name: 'Friday',
+    shortName: 'Fri',
+    weekdayNumber: 5,
+  },
+  6: {
+    name: 'Saturday',
+    shortName: 'Sat',
+    weekdayNumber: 6,
+  },
+};
+
+function getDisplayDate(date: Date): string {
+  const year = date.getFullYear();
+  const monthShortName = yearMonths[date.getMonth()].shortName;
+  const day = date.getDate().toString().padStart(2, '0');
+  const dayShortName = weekDays[date.getDay()].shortName;
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  return `${dayShortName} ${day} ${monthShortName}, ${year} at ${hours}:${minutes}`;
+}
+
+function isEqualDate(date1: Date, date2: Date, type: 'time' | 'day' = 'time') {
+  return type === 'time'
+    ? date1.getTime() === date2.getTime()
+    : date1.toDateString() === date2.toDateString();
+}
+
+function isGreaterThanDate(date1: Date, date2: Date, type: 'time' | 'day' = 'time') {
+  if (type === 'day') {
+    const auxDate1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+    const auxDate2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+
+    return auxDate1.getTime() > auxDate2.getTime();
+  }
+
+  return date1.getTime() > date2.getTime();
+}
+
+function isLessThanDate(date1: Date, date2: Date, type: 'time' | 'day' = 'time') {
+  if (type === 'day') {
+    const auxDate1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+    const auxDate2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+
+    return auxDate1.getTime() < auxDate2.getTime();
+  }
+
+  return date1.getTime() < date2.getTime();
+}
+
 type DateTimeFieldProps<T> = ExtendedFieldProps<T> & {
   minDate?: Date;
   maxDate?: Date;
@@ -633,101 +779,22 @@ export function DateTimeField<T>({
   onChange,
 }: DateTimeFieldProps<T>): JSX.Element {
   const today = new Date();
-  const hasError = errors?.[field];
 
   const [isOpen, setIsOpen] = useState<boolean>();
   const [date, setDate] = useState<Date>(today);
-  const [displayDate, setDisplayDate] = useState<string>();
   const [month, setMonth] = useState<number>(today.getUTCMonth());
   const [year, setYear] = useState<number>(today.getUTCFullYear());
   const [daysInMonthArr, setDaysInMonthArr] = useState<number[]>([]);
   const [yearsRange, setYearsRange] = useState<number[]>([]);
   const [blankDaysArr, setBlankDaysArr] = useState<number[]>([]);
   const [calendarView, setCalendarView] = useState<'days' | 'months' | 'years'>('days');
+  const [touched, setTouched] = useState(false);
+
+  const displayDate = useMemo(() => entity[field] && getDisplayDate(date), [date, entity, field]);
+  const hasErrors = useMemo(() => touched && errors?.[field], [touched, errors, field]);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
-
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const months: { [id: number]: string } = {
-    0: 'January',
-    1: 'February',
-    2: 'March',
-    3: 'April',
-    4: 'May',
-    5: 'June',
-    6: 'July',
-    7: 'August',
-    8: 'September',
-    9: 'October',
-    10: 'November',
-    11: 'December',
-  };
-
-  const yearMonths: {
-    [id: number]: {
-      name: string;
-      shortName: string;
-      monthNumber: number;
-    };
-  } = {
-    0: { name: 'January', shortName: 'Jan', monthNumber: 1 },
-    1: { name: 'February', shortName: 'Feb', monthNumber: 2 },
-    2: { name: 'March', shortName: 'Mar', monthNumber: 3 },
-    3: { name: 'April', shortName: 'Apr', monthNumber: 4 },
-    4: { name: 'May', shortName: 'May', monthNumber: 5 },
-    5: { name: 'June', shortName: 'Jun', monthNumber: 6 },
-    6: { name: 'July', shortName: 'Jul', monthNumber: 7 },
-    7: { name: 'August', shortName: 'Aug', monthNumber: 8 },
-    8: { name: 'September', shortName: 'Sep', monthNumber: 9 },
-    9: { name: 'October', shortName: 'Oct', monthNumber: 10 },
-    10: { name: 'November', shortName: 'Nov', monthNumber: 11 },
-    11: { name: 'December', shortName: 'Dec', monthNumber: 12 },
-  };
-
-  const weekDays: {
-    [id: number]: {
-      name: string;
-      shortName: string;
-      weekdayNumber: number;
-    };
-  } = {
-    0: {
-      name: 'Sunday',
-      shortName: 'Sun',
-      weekdayNumber: 0,
-    },
-    1: {
-      name: 'Monday',
-      shortName: 'Mon',
-      weekdayNumber: 1,
-    },
-    2: {
-      name: 'Tuesday',
-      shortName: 'Tue',
-      weekdayNumber: 2,
-    },
-    3: {
-      name: 'Wednesday',
-      shortName: 'Wed',
-      weekdayNumber: 3,
-    },
-    4: {
-      name: 'Thursday',
-      shortName: 'Thu',
-      weekdayNumber: 4,
-    },
-    5: {
-      name: 'Friday',
-      shortName: 'Fri',
-      weekdayNumber: 5,
-    },
-    6: {
-      name: 'Saturday',
-      shortName: 'Sat',
-      weekdayNumber: 6,
-    },
-  };
 
   const setInitValue = () => {
     const today = entity[field] ? new Date(entity[field] as any) : new Date();
@@ -753,7 +820,6 @@ export function DateTimeField<T>({
     }
 
     setDate(newDate);
-    entity[field] && setDisplayDate(getDisplayDate(newDate));
     setMonth(month);
     setYear(year);
     setDaysInMonthArr(daysInMonthArr);
@@ -843,44 +909,6 @@ export function DateTimeField<T>({
     setBlankDaysArr(blankDaysArr);
   };
 
-  const getDisplayDate = (date: Date): string => {
-    const year = date.getFullYear();
-    const monthShortName = yearMonths[date.getMonth()].shortName;
-    const day = date.getDate().toString().padStart(2, '0');
-    const dayShortName = weekDays[date.getDay()].shortName;
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-
-    return `${dayShortName} ${day} ${monthShortName}, ${year} at ${hours}:${minutes}`;
-  };
-
-  const isEqualDate = (date1: Date, date2: Date, type: 'time' | 'day' = 'time') =>
-    type === 'time'
-      ? date1.getTime() === date2.getTime()
-      : date1.toDateString() === date2.toDateString();
-
-  const isGreaterThanDate = (date1: Date, date2: Date, type: 'time' | 'day' = 'time') => {
-    if (type === 'day') {
-      const auxDate1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
-      const auxDate2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
-
-      return auxDate1.getTime() > auxDate2.getTime();
-    }
-
-    return date1.getTime() > date2.getTime();
-  };
-
-  const isLessThanDate = (date1: Date, date2: Date, type: 'time' | 'day' = 'time') => {
-    if (type === 'day') {
-      const auxDate1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
-      const auxDate2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
-
-      return auxDate1.getTime() < auxDate2.getTime();
-    }
-
-    return date1.getTime() < date2.getTime();
-  };
-
   const setDayNumber = (dayNumber: number) => () => {
     const newDate = new Date(year, month, dayNumber, date.getHours(), date.getMinutes());
 
@@ -933,16 +961,14 @@ export function DateTimeField<T>({
 
   const setNewDate = (newDate: Date) => {
     setDate(newDate);
-    setDisplayDate(getDisplayDate(newDate));
 
     entity[field] = newDate as any;
-    required && setErrors?.({ ...errors, [field]: false });
+    setErrors?.({ ...errors, [field]: false });
     onChange?.(newDate);
   };
 
   const clearDate = () => {
     setDate(new Date());
-    setDisplayDate(undefined);
 
     entity[field] = null as any;
     required && setErrors?.({ ...errors, [field]: true });
@@ -985,7 +1011,7 @@ export function DateTimeField<T>({
       {label && (
         <label
           className={classNames('font-medium text-gray-700', {
-            'text-red-900': hasError,
+            'text-red-900': hasErrors,
           })}
         >
           {label} {required && <span className="text-red-600">*</span>}
@@ -998,14 +1024,15 @@ export function DateTimeField<T>({
           ref={inputRef}
           disabled={disabled}
           value={displayDate ?? ''}
+          onBlur={() => setTouched(true)}
           onClick={() => setIsOpen(!isOpen)}
           className={classNames('w-full border border-gray-300 rounded-md shadow-sm', {
-            'border-red-600 placeholder-red-900 opacity-70': hasError,
+            'border-red-600 placeholder-red-900 opacity-70': hasErrors,
           })}
           placeholder={placeHolder ?? label ?? 'Select date'}
         />
 
-        {hasError ? (
+        {hasErrors ? (
           <div className="absolute inset-y-0 right-0 flex items-center px-3">
             <ExclamationCircleIcon className="text-red-600 h-6 w-6" />
           </div>

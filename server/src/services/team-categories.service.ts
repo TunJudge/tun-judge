@@ -2,8 +2,10 @@ import { Injectable, NotFoundException, Param } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan } from 'typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { TeamCategory } from '../entities';
 
+@LogClass
 @Injectable()
 export class TeamCategoriesService {
   constructor(

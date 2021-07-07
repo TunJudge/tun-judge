@@ -1,6 +1,6 @@
 import { PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
-import React, { CSSProperties, ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { generalComparator } from '../../../core/helpers';
 
 export type ListPageTableColumn<T> = {
@@ -9,7 +9,6 @@ export type ListPageTableColumn<T> = {
   className?: string;
   disabled?: (obj: T) => boolean;
   textAlign?: 'center' | 'left' | 'right';
-  style?: CSSProperties;
   render: (obj: T) => React.ReactNode;
   onClick?: (obj: T) => void;
 };
@@ -87,7 +86,7 @@ function DataTableBody<T extends { id: number | string }>({
   };
 
   return (
-    <div className="shadow border overflow-hidden border-gray-200 rounded-md">
+    <div className="border overflow-auto border-gray-300 rounded-md shadow">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr className="divide-x">
@@ -138,7 +137,6 @@ function DataTableBody<T extends { id: number | string }>({
                       column.className,
                     )}
                     // disabled={column.disabled && column.disabled(item)}
-                    style={column.style}
                     onClick={() => column.onClick && column.onClick(item)}
                   >
                     {column.render(item)}

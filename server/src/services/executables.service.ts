@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { Executable, ExecutableType } from '../entities';
 
+@LogClass
 @Injectable()
 export class ExecutablesService {
   constructor(

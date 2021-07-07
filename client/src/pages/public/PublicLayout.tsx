@@ -18,16 +18,18 @@ const PublicLayout: React.FC = observer(() => {
   return (
     <div className="flex flex-col h-screen">
       <PublicNavbar />
-      {leftToContest && !window.location.pathname.startsWith('/login') ? (
-        <ContestCountdown leftTime={leftToContest} />
-      ) : (
-        <Switch>
-          <Route exact path="/" component={HomeView} />
-          <Route exact path="/problems" component={ProblemSet} />
-          <Route exact path="/login" component={Login} />
-          <Route render={() => <Redirect to={`/login?returnUrl=${location.pathname}`} />} />
-        </Switch>
-      )}
+      <div className="h-full">
+        {leftToContest && !window.location.pathname.startsWith('/login') ? (
+          <ContestCountdown leftTime={leftToContest} />
+        ) : (
+          <Switch>
+            <Route exact path="/" component={HomeView} />
+            <Route exact path="/problems" component={ProblemSet} />
+            <Route exact path="/login" component={Login} />
+            <Route render={() => <Redirect to={`/login?returnUrl=${location.pathname}`} />} />
+          </Switch>
+        )}
+      </div>
     </div>
   );
 });

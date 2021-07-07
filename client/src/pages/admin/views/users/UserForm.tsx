@@ -7,7 +7,7 @@ import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { FormModal } from '../../../shared/dialogs';
 import { CheckBoxField, DropdownField, FormErrors, TextField } from '../../../shared/extended-form';
 
-const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClose, submit }) => {
+const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClose, onSubmit }) => {
   const [errors, setErrors] = useState<FormErrors<User>>({});
 
   const { roles, fetchAllRoles } = rootStore.usersStore;
@@ -29,7 +29,7 @@ const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClos
       title={`${user.id ? 'Update' : 'Create'} User`}
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={() => submit(user)}
+      onSubmit={() => onSubmit(user)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className="grid sm:grid-cols-2 gap-2">

@@ -1,7 +1,6 @@
 import {
   ChevronDownIcon,
   ChevronUpIcon,
-  HashtagIcon,
   PencilAltIcon,
   PlusIcon,
   TrashIcon,
@@ -9,7 +8,6 @@ import {
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Popup } from 'semantic-ui-react';
 import { formatBytes } from '../../../../../core/helpers';
 import { Problem, Testcase } from '../../../../../core/models';
 import { rootStore } from '../../../../../core/stores/RootStore';
@@ -103,31 +101,23 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                     <td className="col-span-4 divide-y">
                       <div className="flex items-center p-2 gap-x-1">
                         <div
+                          title={testcase.input.md5Sum}
                           className="text-blue-500 cursor-pointer"
                           onClick={() => setContentViewData({ testcase, field: 'input' })}
                         >
                           {`test.${testcase.rank}.in`}
-                        </div>{' '}
+                        </div>
                         {formatBytes(testcase.input.size)}
-                        <Popup
-                          content={testcase.input.md5Sum}
-                          position="top center"
-                          trigger={<HashtagIcon className="h-4 w-4" />}
-                        />
                       </div>
                       <div className="flex items-center p-2 gap-x-1">
                         <div
+                          title={testcase.output.md5Sum}
                           className="text-blue-500 cursor-pointer"
                           onClick={() => setContentViewData({ testcase, field: 'output' })}
                         >
                           {`test.${testcase.rank}.out`}
                         </div>
                         {formatBytes(testcase.output.size)}
-                        <Popup
-                          content={testcase.output.md5Sum}
-                          position="top center"
-                          trigger={<HashtagIcon className="h-4 w-4" />}
-                        />
                       </div>
                     </td>
                     <td className="col-span-2 flex items-center justify-center">
@@ -173,7 +163,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
         isOpen={formOpen}
         item={formTestcase as Testcase}
         onClose={dismissForm}
-        submit={async (testcase) => {
+        onSubmit={async (testcase) => {
           if (testcase.id) {
             await update(testcase);
             await dismissForm();
