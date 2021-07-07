@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Container, Icon, Menu } from 'semantic-ui-react';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
+import NavBar from '../shared/NavBar';
 
-type Tabs = '' | 'problems';
+type Tabs = '' | 'problems' | 'login';
 
 const PublicNavbar: React.FC = () => {
   const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
@@ -15,31 +15,29 @@ const PublicNavbar: React.FC = () => {
   };
 
   return (
-    <Menu fixed="top" borderless>
-      <Container>
-        <Menu.Item as="a" header onClick={() => onLinkClick('')}>
-          TUN-JUDGE
-        </Menu.Item>
-        <Menu.Item as="a" active={currentTab === ''} onClick={() => onLinkClick('')}>
-          <Icon name="users" />
-          Scoreboard
-        </Menu.Item>
-        <Menu.Item
-          as="a"
-          active={currentTab === 'problems'}
-          onClick={() => onLinkClick('problems')}
-        >
-          <Icon name="file alternate" />
-          Problem Set
-        </Menu.Item>
-        <Menu.Menu position="right">
-          <Menu.Item header onClick={() => history.push('/login')}>
-            Login
-          </Menu.Item>
-          <ActiveContestSelector />
-        </Menu.Menu>
-      </Container>
-    </Menu>
+    <NavBar
+      logo={
+        <div className="text-white text-lg cursor-pointer" onClick={() => onLinkClick('')}>
+          TunJudge
+        </div>
+      }
+      leftItems={[
+        { content: 'Scoreboard', active: currentTab === '', onClick: () => onLinkClick('') },
+        {
+          content: 'Problem Set',
+          active: currentTab === 'problems',
+          onClick: () => onLinkClick('problems'),
+        },
+      ]}
+      rightItems={[
+        {
+          content: 'Login',
+          active: currentTab === 'login',
+          onClick: () => onLinkClick('login'),
+        },
+        { content: <ActiveContestSelector className="text-white" /> },
+      ]}
+    />
   );
 };
 

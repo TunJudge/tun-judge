@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { genSalt, hash } from 'bcrypt';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { Role } from '../entities';
 import { UsersService } from './users.service';
 
@@ -24,6 +25,7 @@ const roles: Partial<Role>[] = [
   },
 ];
 
+@LogClass
 @Injectable()
 export class AppService {
   constructor(

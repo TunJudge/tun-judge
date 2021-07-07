@@ -1,9 +1,10 @@
+import { RefreshIcon } from '@heroicons/react/outline';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { Button, Container, Header, Icon, Segment, Table } from 'semantic-ui-react';
 import { formatRestTime } from '../../core/helpers';
 import { rootStore } from '../../core/stores/RootStore';
-import './Scoreboard.scss';
+import { NoActiveContest } from './NoActiveContest';
 
 type TeamProblemScore = {
   problemName: string;
@@ -22,7 +23,9 @@ type TeamStandingRow = {
   problemsScores: TeamProblemScore[];
 };
 
-const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
+type Props = { compact?: boolean; className?: string };
+
+const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
   const [standing, setStanding] = useState<TeamStandingRow[]>([]);
   const {
     profile,
@@ -101,100 +104,121 @@ const Scoreboard: React.FC<{ compact?: boolean }> = observer(({ compact }) => {
     }
   }, [scoreCaches, isUserJury]);
 
-  return !currentContest ? (
-    <Container textAlign="center" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <Segment>
-        <Header size="huge">{'No Active Contest'}</Header>
-      </Segment>
-    </Container>
-  ) : (
-    <Container className="scoreboard" textAlign="center" fluid>
-      {!compact && (
-        <Header className="scoreboard-header">
-          Scoreboard of {currentContest?.name}
-          {isUserJury && (
-            <Button
-              floated="right"
-              style={{ position: 'absolute', right: '2.5rem' }}
-              color="blue"
-              onClick={() => refreshScoreboardCache(currentContest?.id)}
-            >
-              <Icon name="refresh" />
-              Refresh
-            </Button>
+  return (
+    <div className={classNames(className, 'flex justify-center h-full')}>
+      {!currentContest ? (
+        <NoActiveContest />
+      ) : (
+        <div>
+          {!compact && (
+            <div className="flex items-center justify-center text-3xl py-12 font-medium gap-x-1">
+              Scoreboard of {currentContest.name}
+              {isUserJury && (
+                <div
+                  className="p-2 hover:bg-gray-300 rounded-full cursor-pointer"
+                  title="Refresh"
+                  onClick={() => refreshScoreboardCache(currentContest.id)}
+                >
+                  <RefreshIcon className="h-8 w-8" />
+                </div>
+              )}
+            </div>
           )}
-        </Header>
+          <table>
+            <thead>
+              <tr>
+                <th className="p-1">
+                  <div className="p-3 bg-white shadow rounded-xl">#</div>
+                </th>
+                <th className="p-1">
+                  <div className="p-3 bg-white shadow rounded-xl text-left">Team</div>
+                </th>
+                <th className="p-1">
+                  <div className="p-3 bg-white shadow rounded-xl">=</div>
+                </th>
+                <th className="p-1">
+                  <div className="p-3 bg-white shadow rounded-xl">Score</div>
+                </th>
+                {currentContest.problems
+                  .slice()
+                  .sort((a, b) => a.shortName.localeCompare(b.shortName))
+                  .map((problem) => (
+                    <th key={problem.shortName} className="p-1">
+                      <div className="p-3 bg-white shadow rounded-xl">{problem.shortName}</div>
+                    </th>
+                  ))}
+              </tr>
+            </thead>
+            <tbody>
+              {standing.map(
+                ({ teamId, teamName, solvedProblems, totalScore, problemsScores }, index) => {
+                  return (
+                    (!compact || teamId === profile?.team.id) && (
+                      <tr key={`team-${teamId}`}>
+                        <td className="p-1">
+                          <div className="flex items-center justify-center p-3 h-14 bg-white shadow rounded-xl">
+                            {index > 0 &&
+                            standing[index - 1].totalScore === totalScore &&
+                            standing[index - 1].solvedProblems === solvedProblems
+                              ? '-'
+                              : index + 1}
+                          </div>
+                        </td>
+                        <td className="p-1">
+                          <div className="flex items-center p-3 h-14 w-52 bg-white shadow rounded-xl">
+                            {teamName}
+                          </div>
+                        </td>
+                        <td className="p-1">
+                          <div className="flex items-center justify-center p-3 h-14 bg-white shadow rounded-xl">
+                            {solvedProblems}
+                          </div>
+                        </td>
+                        <td className="p-1">
+                          <div className="flex items-center justify-center p-3 h-14 bg-white shadow rounded-xl">
+                            {totalScore}
+                          </div>
+                        </td>
+                        {problemsScores.map((problemScore) => (
+                          <td className="p-1" key={`score-${teamId}-${problemScore.problemName}`}>
+                            <div
+                              className={`flex flex-col items-center justify-center p-3 h-14 text-white shadow rounded-xl bg-${getScoreboardCellColor(
+                                problemScore,
+                              )}`}
+                            >
+                              {problemScore.numberOfAttempts ? (
+                                <b>
+                                  {problemScore.correct ? '+' : !problemScore.pending ? '-' : ''}
+                                  {problemScore.correct
+                                    ? problemScore.numberOfAttempts - 1 || ''
+                                    : problemScore.numberOfAttempts}
+                                </b>
+                              ) : (
+                                <br />
+                              )}
+                              <small>{problemScore.correct ? problemScore.solvedTime : ''}</small>
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    )
+                  );
+                },
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
-      <Table className="scoreboard-body" textAlign="center" striped collapsing>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>#</Table.HeaderCell>
-            <Table.HeaderCell>Team</Table.HeaderCell>
-            <Table.HeaderCell>=</Table.HeaderCell>
-            <Table.HeaderCell>Score</Table.HeaderCell>
-            {currentContest.problems
-              .slice()
-              .sort((a, b) => a.shortName.localeCompare(b.shortName))
-              .map((problem) => (
-                <Table.HeaderCell key={problem.shortName}>{problem.shortName}</Table.HeaderCell>
-              ))}
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {standing.map(
-            ({ teamId, teamName, solvedProblems, totalScore, problemsScores }, index) => {
-              return (
-                (!compact || teamId === profile?.team.id) && (
-                  <Table.Row key={`team-${teamId}`}>
-                    <Table.Cell>
-                      {index > 0 &&
-                      standing[index - 1].totalScore === totalScore &&
-                      standing[index - 1].solvedProblems === solvedProblems
-                        ? '-'
-                        : index + 1}
-                    </Table.Cell>
-                    <Table.Cell className="scoreboard-team-name" textAlign="left">
-                      {teamName}
-                    </Table.Cell>
-                    <Table.Cell>{solvedProblems}</Table.Cell>
-                    <Table.Cell>{totalScore}</Table.Cell>
-                    {problemsScores.map((problemScore) => (
-                      <Table.Cell
-                        className="scoreboard-score-column"
-                        key={`score-${teamId}-${problemScore.problemName}`}
-                        style={{ backgroundColor: getScoreboardCellColor(problemScore) }}
-                      >
-                        {problemScore.numberOfAttempts ? (
-                          <b>
-                            {problemScore.correct ? '+' : !problemScore.pending ? '-' : ''}
-                            {problemScore.correct
-                              ? problemScore.numberOfAttempts - 1 || ''
-                              : problemScore.numberOfAttempts}
-                          </b>
-                        ) : (
-                          <br />
-                        )}
-                        <br />
-                        <small>{problemScore.correct ? problemScore.solvedTime : ''}</small>
-                      </Table.Cell>
-                    ))}
-                  </Table.Row>
-                )
-              );
-            },
-          )}
-        </Table.Body>
-      </Table>
-    </Container>
+    </div>
   );
 });
 
 export default Scoreboard;
 
 function getScoreboardCellColor(problemScore: TeamProblemScore): string {
-  if (problemScore.firstToSolve) return '#1daa1d';
-  if (problemScore.correct) return '#60e760';
-  if (problemScore.pending) return '#fff368';
-  if (problemScore.numberOfAttempts) return '#e87272';
+  if (problemScore.firstToSolve) return 'green-800';
+  if (problemScore.correct) return 'green-600';
+  if (problemScore.pending) return 'yellow-600';
+  if (problemScore.numberOfAttempts) return 'red-600';
   return 'white';
 }

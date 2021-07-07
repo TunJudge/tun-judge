@@ -7,10 +7,12 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ExtendedRepository } from './core/extended-repository';
+import { LogClass } from './core/log.decorator';
 import { Team } from './entities';
 
 type UpdateEvents = 'contests' | 'scoreboard' | 'submissions' | 'judgings' | 'judgeRuns';
 
+@LogClass
 @WebSocketGateway({ namespace: 'ws' })
 export class AppGateway {
   @WebSocketServer()

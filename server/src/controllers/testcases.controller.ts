@@ -11,10 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
+import { LogClass } from '../core/log.decorator';
 import { Roles } from '../core/roles.decorator';
 import { FileContent, Testcase } from '../entities';
 import { TestcasesService } from '../services';
 
+@LogClass
 @Controller('testcases')
 @UseGuards(AuthenticatedGuard)
 export class TestcasesController {

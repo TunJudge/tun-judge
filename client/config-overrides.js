@@ -1,4 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { override, addPostcssPlugins } = require('customize-cra');
+
 module.exports = {
+  webpack: override(addPostcssPlugins([require('tailwindcss'), require('autoprefixer')])),
   devServer: (configFnc) => (proxy, allowedHost) =>
     configFnc(
       [

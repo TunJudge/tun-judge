@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { Team } from '../entities';
 import { TeamCategoriesService } from './team-categories.service';
 import { UsersService } from './users.service';
 
+@LogClass
 @Injectable()
 export class TeamsService {
   constructor(

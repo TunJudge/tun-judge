@@ -1,9 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
+import { LogClass } from '../core/log.decorator';
 import { Roles } from '../core/roles.decorator';
 import { TeamCategory } from '../entities';
 import { TeamCategoriesService } from '../services';
 
+@LogClass
 @Controller('team-categories')
 @UseGuards(AuthenticatedGuard)
 export class TeamCategoriesController {

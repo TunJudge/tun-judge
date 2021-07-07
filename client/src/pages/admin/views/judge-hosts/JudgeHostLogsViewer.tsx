@@ -1,7 +1,7 @@
 import Ansi from 'ansi-to-react';
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, Segment } from 'semantic-ui-react';
 import { rootStore } from '../../../../core/stores/RootStore';
+import { SimpleDialog } from '../../../shared/dialogs';
 
 type JudgeHostLogsViewerProps = { hostname?: string; dismiss: () => void };
 
@@ -25,24 +25,15 @@ const JudgeHostLogsViewer: React.FC<JudgeHostLogsViewerProps> = ({ hostname, dis
   }, [hostname, socket]);
 
   return (
-    <Modal open={!!hostname} onClose={dismiss} size="large">
-      <Modal.Header>Judge Host &apos;{hostname}&apos; logs</Modal.Header>
-      <Modal.Content>
-        <Segment id="terminal-logs" inverted style={{ height: 400, overflowY: 'auto' }}>
-          {logs.map((log, index) => (
-            <span key={index}>
-              <Ansi>{log}</Ansi>
-              <br />
-            </span>
-          ))}
-        </Segment>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button color="red" onClick={dismiss}>
-          Cancel
-        </Button>
-      </Modal.Actions>
-    </Modal>
+    <SimpleDialog title={`Judge Host '${hostname}' logs`} isOpen={!!hostname} onClose={dismiss}>
+      <div id="terminal-logs" className="text-white bg-gray-900 rounded-md h-96 overflow-auto">
+        {logs.map((log, index) => (
+          <span key={index}>
+            <Ansi>{log}</Ansi>
+          </span>
+        ))}
+      </div>
+    </SimpleDialog>
   );
 };
 

@@ -1,8 +1,10 @@
 import { Controller, Get, Session, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
+import { LogClass } from '../core/log.decorator';
 import { User } from '../entities';
 import { UsersService } from '../services';
 
+@LogClass
 @Controller()
 @UseGuards(AuthenticatedGuard)
 export class AppController {

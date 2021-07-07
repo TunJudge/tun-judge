@@ -9,8 +9,7 @@ export type Filters = {
   problems: number[];
   teams: number[];
   languages: number[];
-  notJudged: boolean;
-  notVerified: boolean;
+  status?: 'notJudged' | 'notVerified';
 };
 
 export class SubmissionsStore {

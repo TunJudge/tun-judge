@@ -14,7 +14,7 @@ const Logout: React.FC = () => {
       .finally(() => history.push('/'));
   }, [history]);
 
-  return <Spinner />;
+  return <Spinner fullScreen />;
 };
 
 export default Logout;

@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { AppGateway } from '../app.gateway';
 import { AuthenticatedGuard } from '../core/guards';
+import { LogClass } from '../core/log.decorator';
 import { Roles } from '../core/roles.decorator';
 import { Contest, JudgeHost, Judging, JudgingRun, Submission } from '../entities';
 import {
@@ -12,6 +13,7 @@ import {
   UsersService,
 } from '../services';
 
+@LogClass
 @Controller('judge-hosts')
 @UseGuards(AuthenticatedGuard)
 export class JudgeHostsController {

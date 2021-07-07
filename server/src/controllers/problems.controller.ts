@@ -1,9 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from '../core/guards';
+import { LogClass } from '../core/log.decorator';
 import { Roles } from '../core/roles.decorator';
 import { Problem } from '../entities';
 import { ProblemsService, SubmissionsService } from '../services';
 
+@LogClass
 @Controller('problems')
 @UseGuards(AuthenticatedGuard)
 export class ProblemsController {

@@ -1,5 +1,4 @@
-import React, { CSSProperties, ReactElement, useState } from 'react';
-import { SemanticWIDTHS } from 'semantic-ui-react';
+import React, { ReactElement, useState } from 'react';
 import DataTableActionBar from './DataTableActionBar';
 import DataTableBody from './DataTableBody';
 
@@ -8,17 +7,16 @@ export type ListPageTableColumn<T> = {
   field: keyof T;
   className?: string;
   disabled?: (obj: T) => boolean;
-  width?: SemanticWIDTHS;
   textAlign?: 'center' | 'left' | 'right';
-  style?: CSSProperties;
   render: (obj: T) => React.ReactNode;
   onClick?: (obj: T) => void;
 };
 
 export type DataTableItemForm<T> = React.FC<{
   item: T;
-  dismiss: () => void;
-  submit: (item: T) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (item: T) => void;
 }>;
 
 type Props<T> = {
@@ -81,7 +79,7 @@ function DataTable<T extends { id: number | string }>({
   };
 
   return (
-    <>
+    <div className="flex flex-col overflow-hidden gap-y-4">
       <DataTableActionBar
         header={header}
         canAdd={!!ItemForm}
@@ -102,10 +100,15 @@ function DataTable<T extends { id: number | string }>({
         canDelete={canDelete}
         rowBackgroundColor={rowBackgroundColor}
       />
-      {ItemForm && formOpen && (
-        <ItemForm item={formItem as T} dismiss={dismissForm} submit={submitForm} />
+      {ItemForm && (
+        <ItemForm
+          item={formItem as T}
+          isOpen={formOpen}
+          onClose={dismissForm}
+          onSubmit={submitForm}
+        />
       )}
-    </>
+    </div>
   );
 }
 

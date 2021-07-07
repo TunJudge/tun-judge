@@ -14,6 +14,7 @@ import { TeamCategoriesStore } from './TeamCategoriesStore';
 import { TeamsStore } from './TeamsStore';
 import { TeamStore } from './TeamStore';
 import { TestcasesStore } from './TestcasesStore';
+import { ToastsStore } from './ToastsStore';
 import { UsersStore } from './UsersStore';
 
 const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
@@ -58,6 +59,8 @@ export class RootStore {
   teamCategoriesStore: TeamCategoriesStore;
   clarificationsStore: ClarificationsStore;
 
+  toastsStore: ToastsStore;
+
   constructor() {
     this.publicStore = new PublicStore(this);
 
@@ -74,6 +77,8 @@ export class RootStore {
     this.submissionsStore = new SubmissionsStore(this);
     this.teamCategoriesStore = new TeamCategoriesStore(this);
     this.clarificationsStore = new ClarificationsStore(this);
+
+    this.toastsStore = new ToastsStore();
 
     this.initiateWebSocket();
 

@@ -1,7 +1,15 @@
+import {
+  CheckCircleIcon,
+  CheckIcon,
+  EyeIcon,
+  EyeOffIcon,
+  PlayIcon,
+  StopIcon,
+} from '@heroicons/react/outline';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import moment from 'moment';
 import React from 'react';
-import { Container, Header, Icon, Segment, Statistic, Step } from 'semantic-ui-react';
 import { Contest } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
 import { MOMENT_DEFAULT_FORMAT } from '../../shared/extended-form';
@@ -28,122 +36,121 @@ const Dashboard: React.FC = observer(() => {
     await update(contest);
   };
 
+  const controlActions: {
+    Icon: React.FC<{ className?: string }>;
+    action: string;
+    time: (contest: Contest) => Date;
+    completed: boolean;
+    disabled: boolean;
+    onClick: (contest: Contest) => () => void;
+  }[] = [
+    {
+      Icon: CheckIcon,
+      action: 'Activate',
+      time: (contest) => contest.activateTime,
+      completed: isCurrentContestActive,
+      disabled: isCurrentContestActive,
+      onClick: (contest) => () => setFieldAsNow(contest, 'activateTime'),
+    },
+    {
+      Icon: PlayIcon,
+      action: 'Start',
+      time: (contest) => contest.startTime,
+      completed: isCurrentContestStarted,
+      disabled: isCurrentContestStarted,
+      onClick: (contest) => () => setFieldAsNow(contest, 'startTime'),
+    },
+    {
+      Icon: EyeOffIcon,
+      action: 'Freeze',
+      time: (contest) => contest.freezeTime ?? contest.endTime,
+      completed: isCurrentContestFrozen || isCurrentContestOver,
+      disabled: isCurrentContestFrozen || isCurrentContestOver || !isCurrentContestStarted,
+      onClick: (contest) => () => setFieldAsNow(contest, 'freezeTime'),
+    },
+    {
+      Icon: StopIcon,
+      action: 'Stop',
+      time: (contest) => contest.endTime,
+      completed: isCurrentContestOver,
+      disabled: isCurrentContestOver || !isCurrentContestStarted,
+      onClick: (contest) => () => setFieldAsNow(contest, 'endTime'),
+    },
+    {
+      Icon: EyeIcon,
+      action: 'Unfreeze',
+      time: (contest) => contest.unfreezeTime ?? contest.endTime,
+      completed: isCurrentContestUnfrozen,
+      disabled: isCurrentContestUnfrozen || !isCurrentContestFrozen,
+      onClick: (contest) => () => setFieldAsNow(contest, 'unfreezeTime'),
+    },
+  ];
+
   return (
-    <Container textAlign="center" style={{ paddingTop: '2rem' }}>
-      <Segment>
-        <Header size="huge">{currentContest ? currentContest.name : 'No Active Contest'}</Header>
-      </Segment>
+    <div className="container mx-auto space-y-4">
+      <div className="flex items-center justify-center p-2 bg-white border rounded-md shadow">
+        <div className="text-4xl font-medium">
+          {currentContest ? currentContest.name : 'No Active Contest'}
+        </div>
+      </div>
       {currentContest && (
         <>
-          <Segment.Group>
-            <Segment as={Header}>Submissions Statistics</Segment>
-            <Segment>
-              <Statistic.Group widths="4">
-                <Statistic>
-                  <Statistic.Value>{totalSubmissions}</Statistic.Value>
-                  <Statistic.Label>Total</Statistic.Label>
-                </Statistic>
-                <Statistic color="yellow">
-                  <Statistic.Value>{totalPendingSubmissions}</Statistic.Value>
-                  <Statistic.Label>Pending</Statistic.Label>
-                </Statistic>
-                <Statistic color="red">
-                  <Statistic.Value>{totalWrongSubmissions}</Statistic.Value>
-                  <Statistic.Label>Wrong</Statistic.Label>
-                </Statistic>
-                <Statistic color="green">
-                  <Statistic.Value>{totalCorrectSubmissions}</Statistic.Value>
-                  <Statistic.Label>Correct</Statistic.Label>
-                </Statistic>
-              </Statistic.Group>
-            </Segment>
-          </Segment.Group>
-          <Segment.Group>
-            <Segment as={Header}>Control Contest</Segment>
-            <Segment>
-              <Step.Group widths="5">
-                <Step
-                  link
-                  completed={isCurrentContestActive}
-                  disabled={isCurrentContestActive}
-                  onClick={() => setFieldAsNow(currentContest, 'activateTime')}
+          <div className="divide-y border rounded bg-white shadow">
+            <div className="flex items-center justify-center p-2">
+              <div className="text-2xl">Submissions Statistics</div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 text-center">
+              <div className="flex flex-col space-y-1 py-4">
+                <div className="text-6xl font-medium">{totalSubmissions}</div>
+                <div className="text-md uppercase font-medium">Total</div>
+              </div>
+              <div className="flex flex-col space-y-1 py-4">
+                <div className="text-6xl font-medium text-yellow-600">
+                  {totalPendingSubmissions}
+                </div>
+                <div className="text-md uppercase font-medium">Pending</div>
+              </div>
+              <div className="flex flex-col space-y-1 py-4">
+                <div className="text-6xl font-medium text-red-600">{totalWrongSubmissions}</div>
+                <div className="text-md uppercase font-medium">Wrong</div>
+              </div>
+              <div className="flex flex-col space-y-1 py-4">
+                <div className="text-6xl font-medium text-green-600">{totalCorrectSubmissions}</div>
+                <div className="text-md uppercase font-medium">Correct</div>
+              </div>
+            </div>
+          </div>
+          <div className="divide-y border rounded bg-white shadow">
+            <div className="flex items-center justify-center p-2">
+              <div className="text-2xl">Control Contest</div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-5 text-center divide-x divide-y">
+              {controlActions.map(({ Icon, action, time, onClick, disabled, completed }, index) => (
+                <div
+                  key={index}
+                  className={classNames('flex items-center sm:col-auto select-none p-4', {
+                    'cursor-pointer hover:bg-gray-100': !disabled,
+                    'text-gray-400 bg-gray-50': disabled,
+                    'col-span-2': index === controlActions.length - 1,
+                  })}
+                  onClick={disabled || completed ? undefined : onClick(currentContest)}
                 >
-                  <Icon name="check circle outline" />
-                  <Step.Content>
-                    <Step.Title>Activate</Step.Title>
-                    <Step.Description>
-                      {moment(currentContest.activateTime).format(MOMENT_DEFAULT_FORMAT)}
-                    </Step.Description>
-                  </Step.Content>
-                </Step>
-                <Step
-                  link
-                  completed={isCurrentContestStarted}
-                  disabled={isCurrentContestStarted}
-                  onClick={() => setFieldAsNow(currentContest, 'startTime')}
-                >
-                  <Icon name="play circle outline" />
-                  <Step.Content>
-                    <Step.Title>Start</Step.Title>
-                    <Step.Description>
-                      {moment(currentContest.startTime).format(MOMENT_DEFAULT_FORMAT)}
-                    </Step.Description>
-                  </Step.Content>
-                </Step>
-                <Step
-                  link
-                  completed={isCurrentContestFrozen || isCurrentContestOver}
-                  disabled={
-                    isCurrentContestFrozen || isCurrentContestOver || !isCurrentContestStarted
-                  }
-                  onClick={() => setFieldAsNow(currentContest, 'freezeTime')}
-                >
-                  <Icon name="eye slash outline" />
-                  <Step.Content>
-                    <Step.Title>Freeze</Step.Title>
-                    <Step.Description>
-                      {moment(currentContest.freezeTime ?? currentContest.endTime).format(
-                        MOMENT_DEFAULT_FORMAT,
-                      )}
-                    </Step.Description>
-                  </Step.Content>
-                </Step>
-                <Step
-                  link
-                  completed={isCurrentContestOver}
-                  disabled={isCurrentContestOver || !isCurrentContestStarted}
-                  onClick={() => setFieldAsNow(currentContest, 'endTime')}
-                >
-                  <Icon name="stop circle outline" />
-                  <Step.Content>
-                    <Step.Title>Stop</Step.Title>
-                    <Step.Description>
-                      {moment(currentContest.endTime).format(MOMENT_DEFAULT_FORMAT)}
-                    </Step.Description>
-                  </Step.Content>
-                </Step>
-                <Step
-                  link
-                  completed={isCurrentContestUnfrozen}
-                  disabled={isCurrentContestUnfrozen || !isCurrentContestFrozen}
-                  onClick={() => setFieldAsNow(currentContest, 'unfreezeTime')}
-                >
-                  <Icon name="eye" />
-                  <Step.Content>
-                    <Step.Title>Unfreeze</Step.Title>
-                    <Step.Description>
-                      {moment(currentContest.unfreezeTime ?? currentContest.endTime).format(
-                        MOMENT_DEFAULT_FORMAT,
-                      )}
-                    </Step.Description>
-                  </Step.Content>
-                </Step>
-              </Step.Group>
-            </Segment>
-          </Segment.Group>
+                  {completed ? (
+                    <CheckCircleIcon className="h-16 w-16 ml-4 mr-2 text-green-600" />
+                  ) : (
+                    <Icon className="h-16 w-16 ml-4 mr-2" />
+                  )}
+                  <div className="flex flex-col space-y-1 w-full">
+                    <div className="text-lg font-medium">{action}</div>
+                    <div>{moment(time(currentContest)).format(MOMENT_DEFAULT_FORMAT)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </>
       )}
-    </Container>
+    </div>
   );
 });
 

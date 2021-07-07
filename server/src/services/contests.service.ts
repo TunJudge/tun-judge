@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThan } from 'typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { cleanNullProblems } from '../core/utils';
 import { Contest } from '../entities';
 import { ContestProblemsService } from './contest-problems.service';
 import { ProblemsService } from './problems.service';
 import { TeamsService } from './teams.service';
 
+@LogClass
 @Injectable()
 export class ContestsService {
   constructor(

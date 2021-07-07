@@ -32,7 +32,9 @@ const LanguagesList: React.FC = observer(() => {
       header: 'Build Script',
       field: 'buildScript',
       render: (language) => (
-        <a onClick={() => setScriptData(language)}>{language.buildScript.name}</a>
+        <div className="text-blue-700 cursor-pointer" onClick={() => setScriptData(language)}>
+          {language.buildScript.name}
+        </div>
       ),
     },
     {
@@ -64,23 +66,18 @@ const LanguagesList: React.FC = observer(() => {
         withoutActions={!isUserAdmin}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />
-      {scriptData && (
-        <CodeEditorDialog
-          file={scriptData.buildScript}
-          dismiss={async () => {
-            await fetchAll();
-            setScriptData(undefined);
-          }}
-          submit={
-            isUserAdmin
-              ? async () => {
-                  await update(scriptData);
-                  setScriptData(undefined);
-                }
-              : undefined
-          }
-        />
-      )}
+      <CodeEditorDialog
+        file={scriptData?.buildScript}
+        readOnly={!isUserAdmin}
+        dismiss={async () => {
+          await fetchAll();
+          setScriptData(undefined);
+        }}
+        submit={async () => {
+          await update(scriptData!);
+          setScriptData(undefined);
+        }}
+      />
     </>
   );
 });

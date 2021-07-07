@@ -1,5 +1,4 @@
 import React from 'react';
-import { Container, Grid } from 'semantic-ui-react';
 import ProblemSet from '../../shared/ProblemSet';
 import Scoreboard from '../../shared/Scoreboard';
 import ClarificationsList from './ClarificationsList';
@@ -7,22 +6,16 @@ import SubmissionsList from './SubmissionsList';
 
 const HomeView: React.FC = () => {
   return (
-    <>
-      <Scoreboard compact />
-      <Container>
-        <Grid columns="equal" stackable>
-          <Grid.Row>
-            <Grid.Column style={{ padding: '.5rem' }}>
-              <ProblemSet listMode />
-              <ClarificationsList />
-            </Grid.Column>
-            <Grid.Column style={{ padding: '.5rem' }}>
-              <SubmissionsList />
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Container>
-    </>
+    <div className="flex flex-col items-center gap-4">
+      <Scoreboard className="pt-12 pb-8" compact />
+      <div className="xl:container grid grid-cols-2 gap-4 px-4">
+        <div className="flex flex-col gap-4">
+          <ProblemSet listMode />
+          <ClarificationsList />
+        </div>
+        <SubmissionsList />
+      </div>
+    </div>
   );
 };
 

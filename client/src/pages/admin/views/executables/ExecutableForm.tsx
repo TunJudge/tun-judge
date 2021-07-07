@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { Executable } from '../../../../core/models';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
+import { FormModal } from '../../../shared/dialogs';
 import {
   CheckBoxField,
   DropdownField,
@@ -11,7 +11,12 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-const ExecutableForm: DataTableItemForm<Executable> = ({ item: executable, dismiss, submit }) => {
+const ExecutableForm: DataTableItemForm<Executable> = ({
+  item: executable,
+  isOpen,
+  onClose,
+  onSubmit,
+}) => {
   const [errors, setErrors] = useState<FormErrors<Executable>>({
     name: isEmpty(executable.name),
     type: isEmpty(executable.type),
@@ -20,102 +25,87 @@ const ExecutableForm: DataTableItemForm<Executable> = ({ item: executable, dismi
 
   useEffect(() => {
     if (executable.type === 'RUNNER') {
-      setErrors((errors) => ({ ...errors, dockerImage: false, buildScript: false }));
+      setErrors({
+        name: isEmpty(executable.name),
+        type: isEmpty(executable.type),
+        file: isEmpty(executable.file),
+        dockerImage: false,
+        buildScript: false,
+      });
     } else if (executable.type === 'CHECKER') {
-      setErrors((errors) => ({
-        ...errors,
+      setErrors({
+        name: isEmpty(executable.name),
+        type: isEmpty(executable.type),
+        file: isEmpty(executable.file),
         dockerImage: isEmpty(executable.dockerImage),
         buildScript: isEmpty(executable.buildScript),
-      }));
+      });
     }
-  }, [executable.type, executable.buildScript, executable.dockerImage]);
+  }, [executable]);
 
   return (
-    <Modal open onClose={dismiss} closeOnEscape={false}>
-      <Modal.Header>{executable.id ? 'Update' : 'Create'} Executable</Modal.Header>
-      <Modal.Content>
-        <Form>
-          <Form.Group widths="equal">
-            <TextField<Executable>
-              entity={executable}
-              field="name"
-              label="Name"
-              width="4"
-              required
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <TextField<Executable>
-              entity={executable}
-              field="description"
-              label="Description"
-              width="7"
-            />
-            {executable.type === 'CHECKER' && (
-              <TextField<Executable>
-                entity={executable}
-                field="dockerImage"
-                label="Docker Image"
-                width="4"
-                required
-                errors={errors}
-                setErrors={setErrors}
-              />
-            )}
-          </Form.Group>
-          <Form.Group widths="equal">
-            <DropdownField<Executable>
-              entity={executable}
-              field="type"
-              label="Type"
-              fluid
-              selection
-              options={[
-                { id: 'RUNNER', text: 'Runner' },
-                { id: 'CHECKER', text: 'Checker' },
-              ]}
-              optionsTextField="text"
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <FileField<Executable>
-              entity={executable}
-              field="file"
-              label="Source File"
-              required
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <FileField<Executable>
-              entity={executable}
-              field="buildScript"
-              label="Build Script"
-              required={executable.type === 'CHECKER'}
-              errors={errors}
-              setErrors={setErrors}
-            />
-          </Form.Group>
-          <CheckBoxField<Executable>
+    <FormModal
+      title={`${executable.id ? 'Update' : 'Create'} Executable`}
+      isOpen={isOpen}
+      onClose={onClose}
+      onSubmit={() => onSubmit(executable)}
+      submitDisabled={Object.values(errors).some((e) => e)}
+    >
+      <div className={`grid sm:grid-cols-${executable.type === 'CHECKER' ? '3' : '2'} gap-2`}>
+        <TextField<Executable>
+          entity={executable}
+          field="name"
+          label="Name"
+          required
+          errors={errors}
+          setErrors={setErrors}
+        />
+        <TextField<Executable> entity={executable} field="description" label="Description" />
+        {executable.type === 'CHECKER' && (
+          <TextField<Executable>
             entity={executable}
-            field="default"
-            label="Default"
-            defaultValue={false}
+            field="dockerImage"
+            label="Docker Image"
+            required
+            errors={errors}
+            setErrors={setErrors}
           />
-        </Form>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button color="red" onClick={dismiss}>
-          Cancel
-        </Button>
-        <Button
-          color="green"
-          onClick={() => submit(executable)}
-          disabled={Object.values(errors).some((e) => e)}
-        >
-          Submit
-        </Button>
-      </Modal.Actions>
-    </Modal>
+        )}
+      </div>
+      <div className="grid sm:grid-cols-3 gap-2">
+        <DropdownField<Executable>
+          entity={executable}
+          field="type"
+          label="Type"
+          required
+          options={['RUNNER', 'CHECKER']}
+          errors={errors}
+          setErrors={setErrors}
+        />
+        <FileField<Executable>
+          entity={executable}
+          field="file"
+          label="Source File"
+          required
+          errors={errors}
+          setErrors={setErrors}
+        />
+        <FileField<Executable>
+          entity={executable}
+          field="buildScript"
+          label="Build Script"
+          required={executable.type === 'CHECKER'}
+          errors={errors}
+          setErrors={setErrors}
+        />
+      </div>
+      <CheckBoxField<Executable>
+        entity={executable}
+        field="default"
+        label="Default"
+        defaultValue={false}
+      />
+    </FormModal>
   );
 };
 

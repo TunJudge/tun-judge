@@ -1,16 +1,12 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
-import ResizeDetector from 'react-resize-detector';
+import React, { useEffect } from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
-import { Button, Grid, Header, Menu, Segment, Table } from 'semantic-ui-react';
 import { Problem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import Spinner from '../../../shared/Spinner';
 import TestcasesList from './testcases/TestcasesList';
 
 const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {
-  const [rowHeight, setRowHeight] = useState<number>(window.innerHeight - 84);
-  const [problemInfoHeight, setProblemInfoHeight] = useState<number>(0);
   const {
     problemsStore: { item, fetchById, cleanItem, rejudge },
   } = rootStore;
@@ -20,76 +16,61 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
     return () => cleanItem();
   }, [fetchById, cleanItem, match]);
 
-  useEffect(() => {
-    window.onresize = () => setRowHeight(window.innerHeight - 84);
-  }, []);
-
   return !item.id ? (
     <Spinner />
   ) : (
-    <Grid columns="equal">
-      <Grid.Row style={{ height: rowHeight }}>
-        <Grid.Column style={{ paddingRight: '.5rem' }}>
-          <ResizeDetector handleHeight onResize={(_, height) => setProblemInfoHeight(height ?? 0)}>
-            {() => (
-              <Segment.Group>
-                <Segment as={Menu} style={{ padding: 0 }} borderless>
-                  <Menu.Item>
-                    <Header>Problem &apos;{item.name}&apos;</Header>
-                  </Menu.Item>
-                  <Menu.Item position="right">
-                    <Button color="blue" floated="right" icon onClick={() => rejudge(item.id!)}>
-                      Rejudge
-                    </Button>
-                  </Menu.Item>
-                </Segment>
-                <Segment>
-                  <Table striped celled>
-                    <Table.Body>
-                      <Table.Row>
-                        <Table.Cell width={6}>ID</Table.Cell>
-                        <Table.Cell width={10}>{item.id}</Table.Cell>
-                      </Table.Row>
-                      <Table.Row>
-                        <Table.Cell width={6}>Name</Table.Cell>
-                        <Table.Cell width={10}>{item.name}</Table.Cell>
-                      </Table.Row>
-                      <Table.Row>
-                        <Table.Cell width={6}>Time limit</Table.Cell>
-                        <Table.Cell width={10}>{item.timeLimit} s</Table.Cell>
-                      </Table.Row>
-                      <Table.Row>
-                        <Table.Cell width={6}>Memory limit</Table.Cell>
-                        <Table.Cell width={10}>{item.memoryLimit} Kb</Table.Cell>
-                      </Table.Row>
-                      <Table.Row>
-                        <Table.Cell width={6}>Output limit</Table.Cell>
-                        <Table.Cell width={10}>{item.outputLimit} Kb</Table.Cell>
-                      </Table.Row>
-                    </Table.Body>
-                  </Table>
-                </Segment>
-              </Segment.Group>
-            )}
-          </ResizeDetector>
-          <TestcasesList
-            problem={item as Problem}
-            rowHeight={rowHeight}
-            problemInfoHeight={problemInfoHeight}
-          />
-        </Grid.Column>
-        <Grid.Column style={{ paddingLeft: '.5rem' }}>
-          <Segment style={{ height: '100%' }}>
-            <embed
-              src={`data:${item.file?.type};base64,${item.file?.content.payload}`}
-              type={item.file?.type}
-              width="100%"
-              height="100%"
-            />
-          </Segment>
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
+    <div className="grid grid-cols-2 gap-4 overflow-hidden h-full">
+      <div className="flex flex-col gap-y-4 overflow-hidden">
+        <div className="bg-white divide-y border shadow rounded-md">
+          <div className="flex p-3 items-center justify-between">
+            <div className="text-lg font-medium">Problem &apos;{item.name}&apos;</div>
+            <div
+              className="text-white p-2 px-3 bg-blue-500 hover:bg-blue-400 rounded cursor-pointer"
+              onClick={() => rejudge(item.id!)}
+            >
+              Rejudge
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="border rounded-md">
+              <table className="min-w-full">
+                <tbody className="divide-y">
+                  <tr className="divide-x">
+                    <td className="p-2">ID</td>
+                    <td className="p-2">{item.id}</td>
+                  </tr>
+                  <tr className="divide-x bg-gray-100">
+                    <td className="p-2">Name</td>
+                    <td className="p-2">{item.name}</td>
+                  </tr>
+                  <tr className="divide-x">
+                    <td className="p-2">Time limit</td>
+                    <td className="p-2">{item.timeLimit} s</td>
+                  </tr>
+                  <tr className="divide-x bg-gray-100">
+                    <td className="p-2">Memory limit</td>
+                    <td className="p-2">{item.memoryLimit} Kb</td>
+                  </tr>
+                  <tr className="divide-x">
+                    <td className="p-2">Output limit</td>
+                    <td className="p-2">{item.outputLimit} Kb</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <TestcasesList problem={item as Problem} />
+      </div>
+      <div className="bg-white p-4 border shadow rounded-md">
+        <embed
+          src={`data:${item.file?.type};base64,${item.file?.content.payload}`}
+          type={item.file?.type}
+          width="100%"
+          height="100%"
+        />
+      </div>
+    </div>
   );
 });
 

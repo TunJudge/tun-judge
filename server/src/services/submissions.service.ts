@@ -1,10 +1,12 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../core/extended-repository';
+import { LogClass } from '../core/log.decorator';
 import { submissionInFreezeTime } from '../core/utils';
 import { Submission } from '../entities';
 import { ScoreboardService } from './scoreboard.service';
 
+@LogClass
 @Injectable()
 export class SubmissionsService {
   constructor(
@@ -21,13 +23,14 @@ export class SubmissionsService {
     problems: string,
     teams: string,
     languages: string,
-    _notJudged: string,
-    _notVerified: string,
+    status: 'notJudged' | 'notVerified' | undefined,
   ): Promise<[Submission[], number]> {
     page ??= 0;
     size ??= 10;
-    const notJudged = Boolean(_notJudged === 'true');
-    const notVerified = Boolean(_notVerified === 'true');
+
+    const notJudged = status === 'notJudged';
+    const notVerified = status === 'notVerified';
+
     let query = this.submissionsRepository
       .createQueryBuilder('submission')
       .leftJoinAndSelect('submission.team', 'team')

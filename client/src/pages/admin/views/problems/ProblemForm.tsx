@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Modal } from 'semantic-ui-react';
 import { isEmpty } from '../../../../core/helpers';
 import { Problem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
+import { FormModal } from '../../../shared/dialogs';
 import {
   DropdownField,
   FileField,
@@ -13,42 +13,51 @@ import {
   TextField,
 } from '../../../shared/extended-form';
 
-const ProblemForm: DataTableItemForm<Problem> = observer(({ item: problem, dismiss, submit }) => {
-  const [errors, setErrors] = useState<FormErrors<Problem>>({
-    name: isEmpty(problem.name),
-    timeLimit: isEmpty(problem.timeLimit),
-    file: isEmpty(problem.file),
-    runScript: isEmpty(problem.runScript),
-    checkScript: isEmpty(problem.checkScript),
-  });
-  const { runners, checkers, fetchAll } = rootStore.executablesStore;
+const ProblemForm: DataTableItemForm<Problem> = observer(
+  ({ item: problem, isOpen, onClose, onSubmit }) => {
+    const [errors, setErrors] = useState<FormErrors<Problem>>({});
+    const { runners, checkers, fetchAll } = rootStore.executablesStore;
 
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
+    useEffect(() => {
+      setErrors({
+        name: isEmpty(problem.name),
+        timeLimit: isEmpty(problem.timeLimit),
+        file: isEmpty(problem.file),
+        runScript: isEmpty(problem.runScript),
+        checkScript: isEmpty(problem.checkScript),
+      });
+    }, [problem]);
 
-  useEffect(() => {
-    if (!problem.runScript) {
-      const defaultRunner = runners.find((e) => e.default);
-      if (defaultRunner) problem.runScript = defaultRunner;
-      setErrors((errors) => ({ ...errors, runScript: false }));
-    }
+    useEffect(() => {
+      fetchAll();
+    }, [fetchAll]);
 
-    if (!problem.checkScript) {
-      const defaultChecker = checkers.find((e) => e.default);
-      if (defaultChecker) {
-        problem.checkScript = defaultChecker;
-        setErrors((errors) => ({ ...errors, checkScript: false }));
+    useEffect(() => {
+      if (!problem.runScript) {
+        const defaultRunner = runners.find((e) => e.default);
+        if (defaultRunner) problem.runScript = defaultRunner;
+        setErrors((errors) => ({ ...errors, runScript: false }));
       }
-    }
-  }, [problem, runners, checkers]);
 
-  return (
-    <Modal open onClose={dismiss} closeOnEscape={false}>
-      <Modal.Header>{problem.id ? 'Update' : 'Create'} Problem</Modal.Header>
-      <Modal.Content>
-        <Form>
-          <Form.Group widths="equal">
+      if (!problem.checkScript) {
+        const defaultChecker = checkers.find((e) => e.default);
+        if (defaultChecker) {
+          problem.checkScript = defaultChecker;
+          setErrors((errors) => ({ ...errors, checkScript: false }));
+        }
+      }
+    }, [problem, runners, checkers]);
+
+    return (
+      <FormModal
+        title={`${problem.id ? 'Update' : 'Create'} Problem`}
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={() => onSubmit(problem)}
+        submitDisabled={Object.values(errors).some((e) => e)}
+      >
+        <form className="grid gap-y-2">
+          <div className="grid sm:grid-cols-2 gap-2">
             <TextField<Problem>
               entity={problem}
               field="name"
@@ -66,8 +75,8 @@ const ProblemForm: DataTableItemForm<Problem> = observer(({ item: problem, dismi
               errors={errors}
               setErrors={setErrors}
             />
-          </Form.Group>
-          <Form.Group widths="equal">
+          </div>
+          <div className="grid sm:grid-cols-3 gap-2">
             <NumberField<Problem>
               entity={problem}
               field="timeLimit"
@@ -81,7 +90,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(({ item: problem, dismi
               entity={problem}
               field="memoryLimit"
               label="Memory Limit (Kb)"
-              placeHolder="2097152"
+              placeHolder="Memory Limit"
               defaultValue={2097152}
               unit="Kb"
               errors={errors}
@@ -91,21 +100,19 @@ const ProblemForm: DataTableItemForm<Problem> = observer(({ item: problem, dismi
               entity={problem}
               field="outputLimit"
               label="Output Limit (Kb)"
-              placeHolder="8192"
+              placeHolder="Output Limit"
               defaultValue={8192}
               unit="Kb"
               errors={errors}
               setErrors={setErrors}
             />
-          </Form.Group>
-          <Form.Group widths="equal">
+          </div>
+          <div className="grid sm:grid-cols-2 gap-2">
             <DropdownField<Problem>
               entity={problem}
               field="runScript"
               label="Run Script"
-              fluid
               required
-              selection
               options={runners}
               optionsTextField="name"
               errors={errors}
@@ -115,31 +122,17 @@ const ProblemForm: DataTableItemForm<Problem> = observer(({ item: problem, dismi
               entity={problem}
               field="checkScript"
               label="Check Script"
-              fluid
               required
-              selection
               options={checkers}
               optionsTextField="name"
               errors={errors}
               setErrors={setErrors}
             />
-          </Form.Group>
-        </Form>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button color="red" onClick={dismiss}>
-          Cancel
-        </Button>
-        <Button
-          color="green"
-          onClick={() => submit(problem)}
-          disabled={Object.values(errors).some((e) => e)}
-        >
-          Submit
-        </Button>
-      </Modal.Actions>
-    </Modal>
-  );
-});
+          </div>
+        </form>
+      </FormModal>
+    );
+  },
+);
 
 export default ProblemForm;

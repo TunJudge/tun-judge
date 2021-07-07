@@ -1,19 +1,19 @@
+import { Menu, Transition } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/solid';
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import React, { CSSProperties, useEffect, useState } from 'react';
-import { Dropdown, Icon, Menu } from 'semantic-ui-react';
+import React, { useEffect, useState } from 'react';
 import { formatRestTime, getContestTimeProgress } from '../../core/helpers';
 import { Contest } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
 
 let interval: NodeJS.Timeout | undefined = undefined;
 
-const progressBarStyle: CSSProperties = {
-  position: 'absolute',
-  marginLeft: '-1.14286em',
-  height: '100%',
+type Props = {
+  className?: string;
 };
 
-const ActiveContestSelector: React.FC = observer(() => {
+const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
   const [contestTimeProgress, setContestTimeProgress] = useState<number>(0);
   const [restTime, setRestTime] = useState<number>(0);
   const [contestStarted, setContestStarted] = useState<boolean>(false);
@@ -39,35 +39,57 @@ const ActiveContestSelector: React.FC = observer(() => {
     };
   }, [currentContest]);
 
+  const color = contestTimeProgress === 100 ? '#21ba45' : '#2185d0';
+
   return (
-    <>
-      <Dropdown
-        item
-        floating
-        text={currentContest?.shortName ?? 'No Active Contests'}
-        header={<Dropdown.Header>Change contest</Dropdown.Header>}
-        value={currentContest?.id}
-        options={contests.map((c) => ({ key: c.id, value: c.id, text: c.shortName }))}
-        onChange={(_, { value }) => setCurrentContest(value as number)}
-      />
-      {currentContest && (
-        <Menu.Item style={{ backgroundColor: 'rgba(33, 133, 208, .2)' }}>
+    <Menu as="div" className="relative select-none">
+      <Menu.Button
+        className={classNames('flex items-center justify-center gap-1 cursor-pointer', className)}
+      >
+        {currentContest?.shortName ?? 'No Active Contests'}
+        <ChevronDownIcon className="w-4 h-4" />
+        {currentContest && (
           <div
-            className="progress-bar"
+            className="ml-2 px-2 p-1 rounded-md"
             style={{
-              ...progressBarStyle,
-              width: `${contestTimeProgress}%`,
-              backgroundColor: contestTimeProgress === 100 ? '#21ba45' : '#2185d0',
+              background: `linear-gradient(to right, ${color} ${contestTimeProgress}%, rgba(33, 133, 208, .2) ${
+                100 - contestTimeProgress
+              }%)`,
             }}
-          />
-          <Icon name="clock" />
-          <div style={{ zIndex: 1 }}>
+          >
             {!contestStarted && '- '}
             {formatRestTime(restTime)}
           </div>
-        </Menu.Item>
-      )}
-    </>
+        )}
+      </Menu.Button>
+      <Transition
+        as={React.Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        <Menu.Items className="absolute right-0 w-36 mt-2 origin-top-right bg-white rounded-md shadow-lg outline-none text-gray-900 font-normal">
+          <Menu.Item>
+            <div className="flex items-center gap-1 px-3 py-2 cursor-none bg-gray-300 rounded-t-md">
+              Change Contest
+            </div>
+          </Menu.Item>
+          {contests.map((contest) => (
+            <Menu.Item key={contest.id}>
+              <div
+                className="flex items-center px-3 py-2 cursor-pointer rounded-md m-1 hover:bg-gray-100"
+                onClick={() => setCurrentContest(contest.id)}
+              >
+                {contest.shortName}
+              </div>
+            </Menu.Item>
+          ))}
+        </Menu.Items>
+      </Transition>
+    </Menu>
   );
 });
 

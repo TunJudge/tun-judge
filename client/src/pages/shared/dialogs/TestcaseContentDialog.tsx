@@ -1,8 +1,10 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { Button, Modal } from 'semantic-ui-react';
 import { Testcase } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
+import CodeEditor from '../CodeEditor';
+import Spinner from '../Spinner';
+import { SimpleDialog } from './SimpleDialog';
 
 export const TestcaseContentDialog: React.FC<{
   testcase?: Testcase;
@@ -16,29 +18,17 @@ export const TestcaseContentDialog: React.FC<{
   }
 
   return (
-    <Modal open={!!testcase} onClose={onClose} size="mini">
-      <Modal.Header>
-        Testcase {testcase?.rank} {field}
-      </Modal.Header>
-      <Modal.Content>
-        <pre
-          style={{
-            margin: 0,
-            maxHeight: '300px',
-            overflow: 'auto',
-            padding: '0.3rem',
-            border: '0.5px grey solid',
-            borderRadius: '.28571429rem',
-          }}
-        >
-          <code>{atob(testcase?.[field]?.content?.payload ?? '')}</code>
-        </pre>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button color="red" onClick={onClose} size="mini">
-          Close
-        </Button>
-      </Modal.Actions>
-    </Modal>
+    <SimpleDialog
+      title={`Testcase ${testcase?.rank} ${field}`}
+      isOpen={!!testcase}
+      onClose={onClose}
+      size="2xl"
+    >
+      {!testcase?.[field]?.content ? (
+        <Spinner />
+      ) : (
+        <CodeEditor value={atob(testcase[field].content.payload ?? '')} readOnly />
+      )}
+    </SimpleDialog>
   );
 });

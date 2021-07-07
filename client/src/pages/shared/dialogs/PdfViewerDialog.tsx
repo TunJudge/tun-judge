@@ -1,22 +1,23 @@
 import React from 'react';
-import { Modal } from 'semantic-ui-react';
+import { SimpleDialog } from './SimpleDialog';
 
 export const PdfViewerDialog: React.FC<{ data?: string; dismiss: () => void }> = ({
   data,
   dismiss,
 }) => {
   return (
-    <Modal open={!!data} onClose={dismiss} size="large">
-      <Modal.Content style={{ height: '94vh' }}>
+    <SimpleDialog isOpen={!!data} onClose={dismiss}>
+      <div style={{ height: '80vh' }}>
         {data && (
           <embed
+            className="rounded-lg"
             src={`data:application/pdf;base64,${data}`}
             type="application/pdf"
             width="100%"
             height="100%"
           />
         )}
-      </Modal.Content>
-    </Modal>
+      </div>
+    </SimpleDialog>
   );
 };

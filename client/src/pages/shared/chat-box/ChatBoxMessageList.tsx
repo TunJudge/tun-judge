@@ -1,40 +1,30 @@
 import { observer } from 'mobx-react';
-import React, { CSSProperties } from 'react';
-import { Message, Segment } from 'semantic-ui-react';
+import React from 'react';
 import { Clarification } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
 import './ChatBoxMessageList.scss';
 
-const style: CSSProperties = {
-  height: '40vh',
-  overflowY: 'auto',
-  msOverflowStyle: 'none',
-  scrollbarWidth: 'none',
-};
+type Props = { clarification: Clarification };
 
-const ChatBoxMessageList: React.FC<{ clarification: Clarification }> = observer(
-  ({ clarification }) => {
-    const { profile } = rootStore;
+const ChatBoxMessageList: React.FC<Props> = observer(({ clarification }) => {
+  const { profile } = rootStore;
 
-    return (
-      <Segment style={style}>
-        {clarification.messages.map((message, index) => (
+  return (
+    <div className="flex flex-col gap-2 p-2 h-96 overflow-y-auto border border-gray-200 rounded-lg">
+      {clarification.messages.map((message, index) => (
+        <div key={index}>
           <div
-            key={index}
-            style={{
-              right: 0,
-              width: '100%',
-              textAlign: message.sentBy?.role.name === profile?.role.name ? 'right' : 'left',
-            }}
+            className={`p-3 bg-gray-100 border border-gray-300 rounded-md w-min float-${
+              message.sentBy?.role.name === profile?.role.name ? 'right' : 'left'
+            }`}
+            ref={(el) => el?.scrollIntoView({ behavior: 'smooth' })}
           >
-            <Message compact style={{ marginBottom: '.3rem' }}>
-              {message.content}
-            </Message>
+            {message.content}
           </div>
-        ))}
-      </Segment>
-    );
-  },
-);
+        </div>
+      ))}
+    </div>
+  );
+});
 
 export default ChatBoxMessageList;

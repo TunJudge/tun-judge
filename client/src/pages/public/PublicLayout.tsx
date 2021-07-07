@@ -4,6 +4,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { updateLeftTimeToContest } from '../../core/helpers';
 import { rootStore } from '../../core/stores/RootStore';
 import ContestCountdown from '../shared/ContestCountdown';
+import Login from '../shared/Login';
 import ProblemSet from '../shared/ProblemSet';
 import PublicNavbar from './PublicNavbar';
 import HomeView from './views/HomeView';
@@ -15,15 +16,16 @@ const PublicLayout: React.FC = observer(() => {
   updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <PublicNavbar />
-      <div style={{ paddingTop: '7rem' }}>
-        {leftToContest ? (
+      <div className="h-full">
+        {leftToContest && !window.location.pathname.startsWith('/login') ? (
           <ContestCountdown leftTime={leftToContest} />
         ) : (
           <Switch>
             <Route exact path="/" component={HomeView} />
-            <Route exact path="/problems" component={() => <ProblemSet />} />
+            <Route exact path="/problems" component={ProblemSet} />
+            <Route exact path="/login" component={Login} />
             <Route render={() => <Redirect to={`/login?returnUrl=${location.pathname}`} />} />
           </Switch>
         )}

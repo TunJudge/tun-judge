@@ -21,15 +21,9 @@ const AdminLayout: React.FC = () => {
   const [sidebarVisible, toggleSidebar] = useState<boolean>(true);
 
   return (
-    <div>
+    <div className="flex h-screen">
       <AdminSideBar visible={sidebarVisible} />
-      <div
-        style={{
-          padding: '1rem',
-          marginLeft: sidebarVisible ? '260px' : 0,
-          transition: 'margin .5s ease',
-        }}
-      >
+      <div className="flex flex-col m-4 gap-4 w-full overflow-hidden">
         <AdminNavbar toggleSidebar={() => toggleSidebar(!sidebarVisible)} />
         <Switch>
           <Route exact path="/" component={Dashboard} />

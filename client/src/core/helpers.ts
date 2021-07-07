@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Contest, Judging, Testcase, User } from './models';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -132,8 +132,45 @@ export function getRandomHexColor(): string {
   return `#${Math.random().toString(16).substr(2, 6)}`;
 }
 
-export function isTestcaseSolved(testcase: Testcase, judging?: Judging): 'grey' | 'green' | 'red' {
-  if (!judging) return 'grey';
+export function getJudgingRunColor(
+  testcase: Testcase,
+  judging?: Judging,
+): 'gray' | 'green' | 'red' {
+  if (!judging) return 'gray';
   const judgeRun = judging.runs.find((r) => r.testcase.id === testcase.id);
-  return !judgeRun ? 'grey' : judgeRun.result === 'AC' ? 'green' : 'red';
+  return !judgeRun ? 'gray' : judgeRun.result === 'AC' ? 'green' : 'red';
+}
+
+export function useLongPress(
+  callback: () => void,
+  ms = 100,
+): {
+  onMouseDown: () => void;
+  onMouseUp: () => void;
+  onMouseLeave: () => void;
+  onTouchStart: () => void;
+  onTouchEnd: () => void;
+} {
+  const [startLongPress, setStartLongPress] = useState(false);
+
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+    if (startLongPress) {
+      timerId = setTimeout(callback, ms);
+    } else {
+      clearTimeout(timerId!);
+    }
+
+    return () => {
+      timerId && clearTimeout(timerId);
+    };
+  }, [callback, ms, startLongPress]);
+
+  return {
+    onMouseDown: () => setStartLongPress(true),
+    onMouseUp: () => setStartLongPress(false),
+    onMouseLeave: () => setStartLongPress(false),
+    onTouchStart: () => setStartLongPress(true),
+    onTouchEnd: () => setStartLongPress(false),
+  };
 }
