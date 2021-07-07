@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.19 (2021-07-07)
+
+
+### Bug Fixes
+
+* write implictaly tailwindcss classnames ([e738850](https://github.com/TunJudge/tun-judge/commit/e7388507ac97dbe49fa89f5614b3a6f83c1b3800))
+
 ### 0.0.18 (2021-07-07)
 
 ### 0.0.17 (2021-06-20)
