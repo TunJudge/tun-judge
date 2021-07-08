@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.20 (2021-07-08)
+
+
+### Bug Fixes
+
+* ui fixes ([dd3705d](https://github.com/TunJudge/tun-judge/commit/dd3705d4a5e2011fd1a8add8c7a78762d9373da7))
+
 ### 0.0.19 (2021-07-07)
 
 
