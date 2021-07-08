@@ -18,6 +18,7 @@ const SubmissionsList: React.FC = observer(() => {
     {
       header: 'Time',
       field: 'submitTime',
+      textAlign: 'center',
       render: (submission) =>
         formatRestTime(
           (new Date(submission.submitTime).getTime() -
@@ -28,6 +29,7 @@ const SubmissionsList: React.FC = observer(() => {
     {
       header: 'Problem',
       field: 'problem',
+      textAlign: 'center',
       render: (submission) =>
         currentContest?.problems?.find((p) => p.problem.id === submission.problem.id)?.shortName ??
         '-',
@@ -35,11 +37,13 @@ const SubmissionsList: React.FC = observer(() => {
     {
       header: 'Language',
       field: 'language',
+      textAlign: 'center',
       render: (submission) => submission.language.name,
     },
     {
       header: 'Result',
       field: 'language',
+      textAlign: 'center',
       render: (submission) => {
         const judging = submission.judgings
           .slice()

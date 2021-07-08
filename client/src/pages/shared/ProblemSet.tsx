@@ -54,8 +54,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
     columns.push({
       header: '',
       field: 'shortName',
-      textAlign: 'center',
-      className: 'cursor-pointer',
+      className: 'flex justify-center cursor-pointer',
       onClick: ({ problem }) => setSubmission({ problem } as Submission),
       render: () => <UploadIcon className="h-6 w-6 text-green-800" />,
     });

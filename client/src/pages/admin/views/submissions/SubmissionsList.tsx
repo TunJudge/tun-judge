@@ -1,4 +1,4 @@
-import { BadgeCheckIcon } from '@heroicons/react/outline';
+import { CheckCircleIcon, MinusCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
@@ -170,14 +170,20 @@ const SubmissionsList: React.FC = observer(() => {
               .map((testcase) => {
                 const color = getJudgingRunColor(testcase, judging[0]);
 
-                return (
-                  <BadgeCheckIcon
+                return color === 'gray' ? (
+                  <MinusCircleIcon
                     key={`${submission.id}-${testcase.id}`}
-                    className={classNames('w-6 h-6', {
-                      'text-green-600': color === 'green',
-                      'text-red-600': color === 'red',
-                      'text-gray-600': color === 'gray',
-                    })}
+                    className="w-6 h-6 text-gray-600"
+                  />
+                ) : color === 'red' ? (
+                  <XCircleIcon
+                    key={`${submission.id}-${testcase.id}`}
+                    className="w-6 h-6 text-red-600"
+                  />
+                ) : (
+                  <CheckCircleIcon
+                    key={`${submission.id}-${testcase.id}`}
+                    className="w-6 h-6 text-green-600"
                   />
                 );
               })}

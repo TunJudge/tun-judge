@@ -31,8 +31,8 @@ const TeamLayout: React.FC = observer(() => {
         ) : (
           <Switch>
             <Route exact path="/" component={HomeView} />
-            <Route exact path="/problems" component={() => <ProblemSet />} />
-            <Route exact path="/scoreboard" component={() => <Scoreboard />} />
+            <Route exact path="/problems" component={ProblemSet} />
+            <Route exact path="/scoreboard" component={Scoreboard} />
             <Route render={() => <Redirect to="/" />} />
           </Switch>
         )}
