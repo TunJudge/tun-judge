@@ -46,8 +46,10 @@ export class PublicStore {
   };
 
   @action
-  fetchProblems = async (contestId: number): Promise<void> => {
-    this.problems = await http.get<ContestProblem[]>(`api/public/contest/${contestId}/problems`);
+  fetchProblems = async (contestId: number): Promise<ContestProblem[]> => {
+    return (this.problems = await http.get<ContestProblem[]>(
+      `api/public/contest/${contestId}/problems`,
+    ));
   };
 
   @action

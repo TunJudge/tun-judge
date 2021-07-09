@@ -1,11 +1,10 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { JudgeHost } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
-import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
+import { getDisplayDate } from '../../../shared/extended-form';
 import JudgeHostLogsViewer from './JudgeHostLogsViewer';
 
 let interval: NodeJS.Timeout | undefined = undefined;
@@ -14,11 +13,10 @@ const JudgeHostsList: React.FC = observer(() => {
   const [hostname, setHostname] = useState<string>();
   const {
     isUserAdmin,
-    judgeHostsStore: { data, fetchAll, toggle, remove },
+    judgeHostsStore: { fetchAll, toggle, remove },
   } = rootStore;
 
   useEffect(() => {
-    fetchAll();
     interval = setInterval(() => fetchAll(), 5000);
     return () => {
       interval && clearInterval(interval);
@@ -39,8 +37,7 @@ const JudgeHostsList: React.FC = observer(() => {
     {
       header: 'Poll Time',
       field: 'pollTime',
-      render: (judgeHost) =>
-        judgeHost.pollTime ? moment(judgeHost.pollTime).format(MOMENT_DEFAULT_FORMAT) : '-',
+      render: (judgeHost) => (judgeHost.pollTime ? getDisplayDate(judgeHost.pollTime) : '-'),
     },
     {
       header: 'Active',
@@ -88,10 +85,9 @@ const JudgeHostsList: React.FC = observer(() => {
     <>
       <DataTable<JudgeHost>
         header="Judge Hosts"
-        data={data}
+        dataFetcher={fetchAll}
         columns={columns}
         onDelete={remove}
-        onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
         rowBackgroundColor={(judgeHost) => {
           if (!judgeHost.active) return 'white';

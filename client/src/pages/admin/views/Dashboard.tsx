@@ -8,11 +8,10 @@ import {
 } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import moment from 'moment';
 import React from 'react';
 import { Contest } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
-import { MOMENT_DEFAULT_FORMAT } from '../../shared/extended-form';
+import { getDisplayDate } from '../../shared/extended-form';
 
 const Dashboard: React.FC = observer(() => {
   const {
@@ -142,7 +141,7 @@ const Dashboard: React.FC = observer(() => {
                   )}
                   <div className="flex flex-col space-y-1 w-full">
                     <div className="text-lg font-medium">{action}</div>
-                    <div>{moment(time(currentContest)).format(MOMENT_DEFAULT_FORMAT)}</div>
+                    <div>{getDisplayDate(time(currentContest))}</div>
                   </div>
                 </div>
               ))}

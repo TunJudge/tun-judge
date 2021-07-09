@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Language } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
@@ -10,12 +10,8 @@ const LanguagesList: React.FC = observer(() => {
   const [scriptData, setScriptData] = useState<Language | undefined>();
   const {
     isUserAdmin,
-    languagesStore: { data: languages, fetchAll, create, update, remove },
+    languagesStore: { fetchAll, create, update, remove },
   } = rootStore;
-
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
 
   const columns: ListPageTableColumn<Language>[] = [
     {
@@ -58,11 +54,10 @@ const LanguagesList: React.FC = observer(() => {
     <>
       <DataTable<Language>
         header="Languages"
-        data={languages}
+        dataFetcher={fetchAll}
         columns={columns}
         ItemForm={isUserAdmin ? LanguageForm : undefined}
         onDelete={remove}
-        onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />

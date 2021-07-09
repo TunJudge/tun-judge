@@ -1,7 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { TeamCategory } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
@@ -12,10 +12,6 @@ const TeamCategoriesList: React.FC = observer(() => {
     isUserAdmin,
     teamCategoriesStore: { data: teamCategories, fetchAll, create, update, move, remove },
   } = rootStore;
-
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
 
   const columns: ListPageTableColumn<TeamCategory>[] = [
     {
@@ -66,11 +62,10 @@ const TeamCategoriesList: React.FC = observer(() => {
   return (
     <DataTable<TeamCategory>
       header="Team Categories"
-      data={teamCategories}
+      dataFetcher={fetchAll}
       columns={columns}
       ItemForm={isUserAdmin ? TeamCategoryForm : undefined}
       onDelete={remove}
-      onRefresh={fetchAll}
       withoutActions={!isUserAdmin}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
     />

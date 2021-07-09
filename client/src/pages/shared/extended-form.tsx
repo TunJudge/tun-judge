@@ -6,16 +6,17 @@ import {
   ChevronUpIcon,
   ExclamationCircleIcon,
   SelectorIcon,
+  UploadIcon,
   XIcon,
 } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import { MD5 } from 'crypto-js';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import moment from 'moment';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isEmpty, useLongPress } from '../../core/helpers';
 import './extended-form.scss';
 
 export type FormErrors<T> = Partial<Record<keyof T, boolean>>;
-export const MOMENT_DEFAULT_FORMAT = 'DD-MM-YYYY HH:mm:ss';
 
 type ColSpanWidth =
   | '1'
@@ -98,7 +99,7 @@ export function TextField<T>({
   return (
     <LabeledInput
       label={label}
-      hasError={touched && errors?.[field]}
+      hasErrors={touched && errors?.[field]}
       required={required}
       width={width}
       input={input}
@@ -146,7 +147,7 @@ export function TextAreaField<T>({
   return (
     <LabeledInput
       label={label}
-      hasError={touched && errors?.[field]}
+      hasErrors={touched && errors?.[field]}
       required={required}
       width={width}
       input={input}
@@ -154,7 +155,12 @@ export function TextAreaField<T>({
   );
 }
 
-type NumberFieldProps<T> = ExtendedFieldProps<T> & { min?: number; max?: number; unit?: string };
+type NumberFieldProps<T> = ExtendedFieldProps<T> & {
+  min?: number;
+  max?: number;
+  unit?: string;
+  step?: number;
+};
 
 export function NumberField<T>({
   entity,
@@ -168,6 +174,7 @@ export function NumberField<T>({
   min,
   max,
   unit,
+  step,
   errors,
   setErrors,
   onChange,
@@ -188,6 +195,7 @@ export function NumberField<T>({
       defaultValue={String(entity[field])}
       min={min}
       max={max}
+      step={step}
       onBlur={() => setTouched(true)}
       onChange={({ target: { value } }) => {
         entity[field] = Number(value) as any;
@@ -204,17 +212,16 @@ export function NumberField<T>({
   return (
     <LabeledInput
       label={label}
-      hasError={touched && errors?.[field]}
+      hasErrors={touched && errors?.[field]}
       required={required}
       width={width}
       input={input}
-    >
-      {!errors?.[field] && unit && (
-        <div className="absolute inset-y-0 right-0 flex items-center mr-4 text-gray-400">
-          {unit}
-        </div>
-      )}
-    </LabeledInput>
+      icon={
+        unit
+          ? ({ className }) => <div className={classNames(className, 'w-min')}>{unit}</div>
+          : undefined
+      }
+    />
   );
 }
 
@@ -320,10 +327,11 @@ export function FileField<T>({
     <>
       <LabeledInput
         label={label}
-        hasError={touched && errors?.[field]}
+        hasErrors={touched && errors?.[field]}
         required={required}
         width={width}
         input={input}
+        icon={UploadIcon}
       />
       <input
         ref={(ref) => (fileInputRef.current = ref)}
@@ -419,67 +427,80 @@ export function DropdownField<T>({
             },
       ),
     );
+  }, [entity, field, options, optionsIdField, optionsTextField, optionsValueField]);
+
+  const refreshSelectedValues = useCallback(
+    () =>
+      setSelectedValues(
+        multiple
+          ? ((entity[field] as any) ?? []).map((value: any) =>
+              typeof value === 'object'
+                ? {
+                    key: value[optionsIdField ?? 'id'],
+                    text:
+                      optionsState.find((option) => option.key === value[optionsIdField ?? 'id'])
+                        ?.text ?? value,
+                  }
+                : {
+                    key: value,
+                    text: optionsState.find((option) => option.key === value)?.text ?? value,
+                  },
+            )
+          : typeof entity?.[field] === 'object'
+          ? [
+              {
+                key: (entity[field] as any)[optionsIdField ?? 'id'],
+                text:
+                  optionsState.find(
+                    (option) => option.key === (entity[field] as any)[optionsIdField ?? 'id'],
+                  )?.text ?? (entity[field] as any)[optionsTextField ?? 'id'],
+              },
+            ]
+          : entity[field]
+          ? [
+              {
+                key: entity[field],
+                text:
+                  optionsState.find((option) => option.key === (entity[field] as any))?.text ??
+                  entity[field],
+              },
+            ]
+          : [],
+      ),
+    [entity, field, optionsState, multiple, optionsIdField, optionsTextField],
+  );
+
+  useEffect(() => {
     refreshSelectedValues();
-  }, [entity, field, options, multiple, optionsIdField, optionsTextField]);
+  }, [refreshSelectedValues]);
+
+  const isOptionSelected = useCallback(
+    (key: string) =>
+      multiple
+        ? !!((entity[field] as any) ?? []).find(
+            (value: any) =>
+              (typeof value === 'object' ? value[optionsIdField ?? 'id'] : value) === key,
+          )
+        : typeof entity?.[field] === 'object'
+        ? (entity[field] as any)[optionsIdField ?? 'id'] === key
+        : (entity[field] as any) === key,
+    [entity, field, multiple, optionsIdField],
+  );
+
+  const refreshFilteredOptions = useCallback(
+    () =>
+      setFilteredOptions(
+        optionsState.filter(
+          ({ key, text }) =>
+            !search || (!isOptionSelected(key) && text.includes(searchValue.trim())),
+        ),
+      ),
+    [isOptionSelected, optionsState, search, searchValue],
+  );
 
   useEffect(() => {
     refreshFilteredOptions();
-  }, [search, searchValue, multiple, optionsState, selectedValues]);
-
-  const refreshFilteredOptions = () =>
-    setFilteredOptions(
-      optionsState.filter(
-        ({ key, text }) => !search || (!isOptionSelected(key) && text.includes(searchValue.trim())),
-      ),
-    );
-
-  const refreshSelectedValues = () =>
-    setSelectedValues(
-      multiple
-        ? ((entity[field] as any) ?? []).map((value: any) =>
-            typeof value === 'object'
-              ? {
-                  key: value[optionsIdField ?? 'id'],
-                  text:
-                    optionsState.find((option) => option.key === value[optionsIdField ?? 'id'])
-                      ?.text ?? value,
-                }
-              : {
-                  key: value,
-                  text: optionsState.find((option) => option.key === value)?.text ?? value,
-                },
-          )
-        : typeof entity?.[field] === 'object'
-        ? [
-            {
-              key: (entity[field] as any)[optionsIdField ?? 'id'],
-              text:
-                optionsState.find(
-                  (option) => option.key === (entity[field] as any)[optionsIdField ?? 'id'],
-                )?.text ?? (entity[field] as any)[optionsIdField ?? 'id'],
-            },
-          ]
-        : entity[field]
-        ? [
-            {
-              key: entity[field],
-              text:
-                optionsState.find((option) => option.key === (entity[field] as any))?.text ??
-                entity[field],
-            },
-          ]
-        : [],
-    );
-
-  const isOptionSelected = (key: string) =>
-    multiple
-      ? !!((entity[field] as any) ?? []).find(
-          (value: any) =>
-            (typeof value === 'object' ? value[optionsIdField ?? 'id'] : value) === key,
-        )
-      : typeof entity?.[field] === 'object'
-      ? (entity[field] as any)[optionsIdField ?? 'id'] === key
-      : (entity[field] as any) === key;
+  }, [refreshFilteredOptions]);
 
   const selectOption = (key: string, value?: any) => {
     if (isOptionSelected(key)) return;
@@ -757,15 +778,8 @@ const weekDays: {
   },
 };
 
-function getDisplayDate(date: Date): string {
-  const year = date.getFullYear();
-  const monthShortName = yearMonths[date.getMonth()].shortName;
-  const day = date.getDate().toString().padStart(2, '0');
-  const dayShortName = weekDays[date.getDay()].shortName;
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-
-  return `${dayShortName} ${day} ${monthShortName}, ${year} at ${hours}:${minutes}`;
+export function getDisplayDate(date: Date): string {
+  return moment(date).format('ddd DD MMM, YYYY [at] HH:mm');
 }
 
 function isEqualDate(date1: Date, date2: Date, type: 'time' | 'day' = 'time') {
@@ -822,8 +836,8 @@ export function DateTimeField<T>({
 
   const [isOpen, setIsOpen] = useState<boolean>();
   const [date, setDate] = useState<Date>(today);
-  const [month, setMonth] = useState<number>(today.getUTCMonth());
-  const [year, setYear] = useState<number>(today.getUTCFullYear());
+  const [month, setMonth] = useState<number>(today.getMonth());
+  const [year, setYear] = useState<number>(today.getFullYear());
   const [daysInMonthArr, setDaysInMonthArr] = useState<number[]>([]);
   const [yearsRange, setYearsRange] = useState<number[]>([]);
   const [blankDaysArr, setBlankDaysArr] = useState<number[]>([]);
@@ -836,7 +850,7 @@ export function DateTimeField<T>({
   const inputRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  const setInitValue = () => {
+  const setInitValue = useCallback(() => {
     const today = entity[field] ? new Date(entity[field] as any) : new Date();
     const month = today.getMonth();
     const year = today.getFullYear();
@@ -865,7 +879,7 @@ export function DateTimeField<T>({
     setDaysInMonthArr(daysInMonthArr);
     setBlankDaysArr(blankDaysArr);
     refreshYearRange(year);
-  };
+  }, [entity, field]);
 
   useEffect(() => {
     setInitValue();
@@ -881,14 +895,14 @@ export function DateTimeField<T>({
     return () => {
       document.removeEventListener('mousedown', onClickListener);
     };
-  }, []);
+  }, [setInitValue]);
 
   useEffect(() => {
     if (!isOpen) {
       setInitValue();
       setCalendarView('days');
     }
-  }, [isOpen]);
+  }, [isOpen, setInitValue]);
 
   const refreshYearRange = (year: number) => {
     const yearsRangeArr: number[] = [];
@@ -1335,11 +1349,12 @@ export function DateTimeField<T>({
 
 const LabeledInput: React.FC<{
   label?: string;
-  hasError?: boolean;
+  hasErrors?: boolean;
   required?: boolean;
   width?: ColSpanWidth;
   input: (classNames: string) => JSX.Element;
-}> = ({ children, label, hasError, required, width = 'none', input }) => (
+  icon?: React.FC<React.ComponentProps<'svg'>>;
+}> = ({ children, label, hasErrors, required, width = 'none', input, icon: ExtraIcon }) => (
   <div
     className={classNames({
       'col-span-1': width === '1',
@@ -1364,7 +1379,7 @@ const LabeledInput: React.FC<{
     {label && (
       <label
         className={classNames('font-medium text-gray-700', {
-          'text-red-900': hasError,
+          'text-red-900': hasErrors,
         })}
       >
         {label} {required && <span className="text-red-600">*</span>}
@@ -1373,15 +1388,14 @@ const LabeledInput: React.FC<{
     <div className={classNames('relative', { 'mt-1': !!label })}>
       {input(
         classNames('w-full border border-gray-300 rounded-md shadow-sm', {
-          'border-red-600 placeholder-red-900 opacity-70': hasError,
+          'border-red-600 placeholder-red-900 opacity-70': hasErrors,
         }),
       )}
       {children}
-      {hasError && (
-        <div className="absolute inset-y-0 right-0 flex items-center px-3">
-          <ExclamationCircleIcon className="text-red-600 h-6 w-6" />
-        </div>
-      )}
+      <div className="absolute inset-y-0 right-0 flex items-center px-3 gap-x-1">
+        {hasErrors && <ExclamationCircleIcon className="text-red-600 h-6 w-6" />}
+        {ExtraIcon && <ExtraIcon className="h-6 w-6 text-gray-400" />}
+      </div>
     </div>
   </div>
 );

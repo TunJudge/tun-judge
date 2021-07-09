@@ -23,10 +23,10 @@ export class TeamStore {
   }
 
   @action
-  fetchSubmissions = async (contestId: number, teamId: number): Promise<void> => {
-    this.submissions = await http.get<Submission[]>(
+  fetchSubmissions = async (contestId: number, teamId: number): Promise<Submission[]> => {
+    return (this.submissions = await http.get<Submission[]>(
       `api/contests/${contestId}/team/${teamId}/submissions`,
-    );
+    ));
   };
 
   sendSubmission = async (

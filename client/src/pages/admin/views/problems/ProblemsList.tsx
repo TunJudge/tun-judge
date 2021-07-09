@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Problem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
@@ -10,12 +10,8 @@ const ProblemsList: React.FC = observer(() => {
   const history = useHistory();
   const {
     isUserAdmin,
-    problemsStore: { data: problems, fetchAll, create, update, remove },
+    problemsStore: { fetchAll, create, update, remove },
   } = rootStore;
-
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
 
   const columns: ListPageTableColumn<Problem>[] = [
     {
@@ -50,12 +46,11 @@ const ProblemsList: React.FC = observer(() => {
   return (
     <DataTable<Problem>
       header="Problems"
-      data={problems}
+      dataFetcher={fetchAll}
       columns={columns}
       ItemForm={isUserAdmin ? ProblemForm : undefined}
       withoutActions={!isUserAdmin}
       onDelete={remove}
-      onRefresh={fetchAll}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
     />
   );

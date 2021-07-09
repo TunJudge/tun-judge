@@ -2,6 +2,7 @@ import { PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { generalComparator } from '../../../core/helpers';
+import Spinner from '../Spinner';
 
 export type ListPageTableColumn<T> = {
   header: string;
@@ -15,6 +16,7 @@ export type ListPageTableColumn<T> = {
 
 type Props<T> = {
   data: T[];
+  loading: boolean;
   columns: ListPageTableColumn<T>[];
   emptyMessage?: string;
   pagination?: React.ReactNode;
@@ -24,11 +26,12 @@ type Props<T> = {
   canEdit?: (item: T) => boolean;
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
-  rowBackgroundColor?: (item: T) => 'white' | 'green' | 'yellow' | 'red';
+  rowBackgroundColor?: (item: T) => 'white' | 'green' | 'yellow' | 'red' | 'blue';
 };
 
 function DataTableBody<T extends { id: number | string }>({
   data,
+  loading,
   columns,
   emptyMessage,
   pagination,
@@ -91,7 +94,7 @@ function DataTableBody<T extends { id: number | string }>({
         <thead className="bg-gray-50">
           <tr className="divide-x">
             <th
-              className="px-6 py-3 text-center font-medium text-gray-700 uppercase tracking-wider"
+              className="px-4 py-2 text-center font-medium text-gray-700 uppercase tracking-wider"
               onClick={() => handleSort('id')}
             >
               #
@@ -99,7 +102,7 @@ function DataTableBody<T extends { id: number | string }>({
             {columns.map((column, index) => (
               <th
                 key={index}
-                className="px-6 py-3 text-center font-medium text-gray-700 uppercase tracking-wider"
+                className="px-4 py-2 text-center font-medium text-gray-700 uppercase tracking-wider"
                 // sorted={sortState.column === column.field ? sortState.direction! : undefined}
                 // textAlign={column.textAlign ?? 'left'}
                 onClick={() => handleSort(column.field)}
@@ -108,17 +111,24 @@ function DataTableBody<T extends { id: number | string }>({
               </th>
             ))}
             {!withoutActions && (
-              <th className="px-6 py-3 text-center font-medium text-gray-700 uppercase tracking-wider">
+              <th className="px-4 py-2 text-center font-medium text-gray-700 uppercase tracking-wider">
                 Actions
               </th>
             )}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-y-200">
+        <tbody className="relative bg-white divide-y divide-y-200">
+          {loading && (
+            <tr>
+              <td className="absolute h-full w-full items-center bg-gray-100 bg-opacity-50">
+                <Spinner />
+              </td>
+            </tr>
+          )}
           {sortState.data.length === 0 ? (
             <tr>
               <td className="px-6 py-4 text-center" colSpan={20}>
-                {emptyMessage ?? 'No data'}
+                {loading ? <Spinner /> : emptyMessage ?? 'No data'}
               </td>
             </tr>
           ) : (
@@ -129,18 +139,19 @@ function DataTableBody<T extends { id: number | string }>({
                 <tr
                   key={item.id}
                   className={classNames('divide-x', {
+                    'bg-blue-200': backgroundColor === 'blue',
                     'bg-green-200': backgroundColor === 'green',
                     'bg-yellow-200': backgroundColor === 'yellow',
                     'bg-red-200': backgroundColor === 'red',
                     'bg-white': backgroundColor === 'white',
                   })}
                 >
-                  <td className="px-6 py-4 text-center">{item.id}</td>
+                  <td className="px-4 py-2 text-center">{item.id}</td>
                   {columns.map((column, index) => (
                     <td
                       key={`${item.id}-${index}`}
                       className={classNames(
-                        'px-6 py-4',
+                        'px-4 py-2',
                         {
                           'text-center': column.textAlign === 'center',
                           'text-right': column.textAlign === 'right',
@@ -156,16 +167,16 @@ function DataTableBody<T extends { id: number | string }>({
                   ))}
                   {!withoutActions && (
                     <td>
-                      <div className="flex items-center justify-center h-full gap-1">
+                      <div className="flex items-center justify-center h-full gap-1 px-4 py-2">
                         {canEdit?.(item) && (
                           <PencilAltIcon
-                            className="p-2 w-10 h-10 cursor-pointer rounded-full hover:bg-gray-200"
+                            className="p-2 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200"
                             onClick={() => onEdit?.(item)}
                           />
                         )}
                         {(!canDelete || canDelete(item)) && (
                           <TrashIcon
-                            className="p-2 w-10 h-10 cursor-pointer rounded-full hover:bg-gray-200 text-red-700"
+                            className="p-2 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 text-red-700"
                             onClick={() => onDelete?.(item.id as number)}
                           />
                         )}

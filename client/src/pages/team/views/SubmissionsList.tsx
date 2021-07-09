@@ -11,7 +11,7 @@ const SubmissionsList: React.FC = observer(() => {
   const {
     profile,
     publicStore: { currentContest },
-    teamStore: { submissions, fetchSubmissions },
+    teamStore: { fetchSubmissions },
   } = rootStore;
 
   const columns: ListPageTableColumn<Submission>[] = [
@@ -64,14 +64,19 @@ const SubmissionsList: React.FC = observer(() => {
     },
   ];
 
+  const fetchAll = () =>
+    currentContest && profile?.team
+      ? fetchSubmissions(currentContest.id, profile.team.id)
+      : Promise.all([]);
+
   return (
     <DataTable<Submission>
       header="Submissions"
       emptyMessage="No Submissions"
-      data={submissions}
+      dataFetcher={fetchAll}
+      dataDependencies={[currentContest, profile]}
       columns={columns}
       withoutActions
-      onRefresh={() => fetchSubmissions(currentContest!.id, profile!.team.id)}
       rowBackgroundColor={(submission) => {
         const judging = submission.judgings
           .slice()

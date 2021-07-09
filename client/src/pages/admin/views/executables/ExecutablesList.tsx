@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Executable, ExecutableType } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
@@ -14,12 +14,8 @@ const ExecutablesList: React.FC = observer(() => {
   >();
   const {
     isUserAdmin,
-    executablesStore: { data: executables, fetchAll, create, update, remove },
+    executablesStore: { fetchAll, create, update, remove },
   } = rootStore;
-
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
 
   const columns: ListPageTableColumn<Executable>[] = [
     {
@@ -85,11 +81,10 @@ const ExecutablesList: React.FC = observer(() => {
     <>
       <DataTable<Executable>
         header="Executables"
-        data={executables}
+        dataFetcher={fetchAll}
         columns={columns}
         ItemForm={isUserAdmin ? ExecutableForm : undefined}
         onDelete={remove}
-        onRefresh={fetchAll}
         withoutActions={!isUserAdmin}
         onFormSubmit={(item) => (item.id ? update(item) : create(item))}
       />

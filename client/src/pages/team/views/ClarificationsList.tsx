@@ -1,6 +1,6 @@
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Clarification } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
 import ChatBox from '../../shared/chat-box/ChatBox';
@@ -10,14 +10,8 @@ const ClarificationsList: React.FC = observer(() => {
   const {
     profile,
     publicStore: { currentContest },
-    clarificationsStore: { data, fetchAllForTeam },
+    clarificationsStore: { fetchAllForTeam },
   } = rootStore;
-
-  useEffect(() => {
-    if (profile?.team && currentContest) {
-      fetchAllForTeam(currentContest.id, profile.team.id);
-    }
-  }, [profile?.team, currentContest, fetchAllForTeam]);
 
   const columns: ListPageTableColumn<Clarification>[] = [
     {
@@ -34,10 +28,16 @@ const ClarificationsList: React.FC = observer(() => {
     },
   ];
 
+  const fetchAll = () =>
+    currentContest && profile?.team
+      ? fetchAllForTeam(currentContest.id, profile.team.id)
+      : Promise.resolve([]);
+
   return (
     <DataTable<Clarification>
       header="Clarifications"
-      data={data}
+      dataFetcher={fetchAll}
+      dataDependencies={[currentContest, profile]}
       columns={columns}
       canDelete={() => false}
       ItemForm={ChatBox}
@@ -47,7 +47,6 @@ const ClarificationsList: React.FC = observer(() => {
         team: profile?.team,
         messages: [],
       })}
-      onRefresh={() => fetchAllForTeam(currentContest!.id, profile!.team.id)}
     />
   );
 });

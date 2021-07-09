@@ -1,38 +1,24 @@
 import { observer } from 'mobx-react';
-import moment from 'moment';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { User } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
-import { MOMENT_DEFAULT_FORMAT } from '../../../shared/extended-form';
+import { getDisplayDate } from '../../../shared/extended-form';
 import UserForm from './UserForm';
 
-const rolesColors = {
-  admin: '#FFC2C2',
-  jury: '#FFEAC2',
-  'judge-host': '#90d3ff',
-  team: '#B3FFC2',
+const rolesColors: Record<string, 'green' | 'yellow' | 'red' | 'blue'> = {
+  admin: 'red',
+  jury: 'yellow',
+  'judge-host': 'blue',
+  team: 'green',
 };
 
 const UsersList: React.FC = observer(() => {
   const {
     profile,
     isUserAdmin,
-    usersStore: {
-      adminUsers,
-      juryUsers,
-      judgeHostUsers,
-      teamUsers,
-      fetchAll,
-      create,
-      update,
-      remove,
-    },
+    usersStore: { fetchAll, create, update, remove },
   } = rootStore;
-
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
 
   const columns: ListPageTableColumn<User>[] = [
     {
@@ -58,8 +44,7 @@ const UsersList: React.FC = observer(() => {
     {
       header: 'Last Login',
       field: 'lastLogin',
-      render: (user) =>
-        user.lastLogin ? moment(user.lastLogin).format(MOMENT_DEFAULT_FORMAT) : '-',
+      render: (user) => (user.lastLogin ? getDisplayDate(user.lastLogin) : '-'),
     },
     {
       header: 'Last Ip',
@@ -76,15 +61,14 @@ const UsersList: React.FC = observer(() => {
   return (
     <DataTable<User>
       header="Users"
-      data={[...adminUsers, ...juryUsers, ...judgeHostUsers, ...teamUsers]}
+      dataFetcher={fetchAll}
       columns={columns}
       ItemForm={isUserAdmin ? UserForm : undefined}
       onDelete={remove}
       withoutActions={!isUserAdmin}
       canDelete={(item) => !!profile && item.username !== profile.username}
-      onRefresh={fetchAll}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-      rowBackgroundColor={(item) => (rolesColors as any)[item.role.name]}
+      rowBackgroundColor={(item) => rolesColors[item.role.name]}
     />
   );
 });

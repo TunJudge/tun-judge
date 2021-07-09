@@ -50,6 +50,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
       },
     },
   ];
+
   if (contestStartedAndNotOver(currentContest)) {
     columns.push({
       header: '',
@@ -71,6 +72,13 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
     return 'white';
   };
 
+  const fetchAll = () =>
+    currentContest
+      ? fetchProblems(currentContest.id).then((problems) =>
+          problems.map((problem) => ({ ...problem, id: problem.shortName as string })),
+        )
+      : Promise.resolve([]);
+
   return (
     <div className={classNames('', { 'h-full': !listMode })}>
       {listMode ? (
@@ -78,9 +86,9 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           header="Problems"
           notSortable
           withoutActions
-          data={problems.map((problem) => ({ ...problem, id: problem.shortName as string }))}
+          dataFetcher={fetchAll}
+          dataDependencies={[currentContest]}
           columns={columns}
-          onRefresh={() => fetchProblems(currentContest!.id)}
           rowBackgroundColor={getProblemColor}
         />
       ) : !currentContest ? (
@@ -156,7 +164,7 @@ export default ProblemSet;
 
 function getXBalloons(n: number, color: string) {
   return (
-    <div className="flex">
+    <div className="flex items-center">
       {new Array(n).fill(0).map((_, index) => (
         <svg key={index} id="svg" version="1.1" width="20" height="20" viewBox="0, 0, 400,400">
           <g id="svgg">

@@ -56,80 +56,82 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
         onSubmit={() => onSubmit(problem)}
         submitDisabled={Object.values(errors).some((e) => e)}
       >
-        <form className="grid gap-y-2">
-          <div className="grid sm:grid-cols-2 gap-2">
-            <TextField<Problem>
-              entity={problem}
-              field="name"
-              label="Name"
-              required
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <FileField<Problem>
-              entity={problem}
-              field="file"
-              label="Problem File"
-              accept="application/pdf, text/html"
-              required
-              errors={errors}
-              setErrors={setErrors}
-            />
-          </div>
-          <div className="grid sm:grid-cols-3 gap-2">
-            <NumberField<Problem>
-              entity={problem}
-              field="timeLimit"
-              label="Time Limit (Seconds)"
-              required
-              unit="S"
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <NumberField<Problem>
-              entity={problem}
-              field="memoryLimit"
-              label="Memory Limit (Kb)"
-              placeHolder="Memory Limit"
-              defaultValue={2097152}
-              unit="Kb"
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <NumberField<Problem>
-              entity={problem}
-              field="outputLimit"
-              label="Output Limit (Kb)"
-              placeHolder="Output Limit"
-              defaultValue={8192}
-              unit="Kb"
-              errors={errors}
-              setErrors={setErrors}
-            />
-          </div>
-          <div className="grid sm:grid-cols-2 gap-2">
-            <DropdownField<Problem>
-              entity={problem}
-              field="runScript"
-              label="Run Script"
-              required
-              options={runners}
-              optionsTextField="name"
-              errors={errors}
-              setErrors={setErrors}
-            />
-            <DropdownField<Problem>
-              entity={problem}
-              field="checkScript"
-              label="Check Script"
-              required
-              options={checkers}
-              optionsTextField="name"
-              errors={errors}
-              setErrors={setErrors}
-            />
-          </div>
-        </form>
+        <div className="grid sm:grid-cols-2 gap-2">
+          <TextField<Problem>
+            entity={problem}
+            field="name"
+            label="Name"
+            required
+            errors={errors}
+            setErrors={setErrors}
+          />
+          <FileField<Problem>
+            entity={problem}
+            field="file"
+            label="Problem File"
+            accept="application/pdf, text/html"
+            required
+            errors={errors}
+            setErrors={setErrors}
+          />
+        </div>
+        <div className="grid sm:grid-cols-3 gap-2">
+          <NumberField<Problem>
+            entity={problem}
+            field="timeLimit"
+            label="Time Limit (Seconds)"
+            required
+            unit="S"
+            min={0}
+            step={0.1}
+            errors={errors}
+            setErrors={setErrors}
+          />
+          <NumberField<Problem>
+            entity={problem}
+            field="memoryLimit"
+            label="Memory Limit (Kb)"
+            placeHolder="Memory Limit"
+            defaultValue={2097152}
+            unit="Kb"
+            min={0}
+            errors={errors}
+            setErrors={setErrors}
+          />
+          <NumberField<Problem>
+            entity={problem}
+            field="outputLimit"
+            label="Output Limit (Kb)"
+            placeHolder="Output Limit"
+            defaultValue={8192}
+            unit="Kb"
+            min={0}
+            errors={errors}
+            setErrors={setErrors}
+          />
+        </div>
+        <div className="grid sm:grid-cols-2 gap-2">
+          <DropdownField<Problem>
+            entity={problem}
+            field="runScript"
+            label="Run Script"
+            required
+            options={runners}
+            optionsTextField="name"
+            errors={errors}
+            setErrors={setErrors}
+          />
+          <DropdownField<Problem>
+            entity={problem}
+            field="checkScript"
+            label="Check Script"
+            required
+            options={checkers}
+            optionsTextField="name"
+            errors={errors}
+            setErrors={setErrors}
+          />
+        </div>
       </FormModal>
     );
   },
