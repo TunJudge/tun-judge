@@ -158,7 +158,7 @@ const OutputSection: React.FC<{
   <div className="flex flex-col gap-y-1">
     <b>{title}</b>
     <pre
-      className={classNames('p-2 mt-1 border rounded-md max-h-20 overflow-auto', {
+      className={classNames('p-2 mt-1 border border-gray-500 rounded-md max-h-20 overflow-auto', {
         'text-black dark:text-white': color === 'black',
         'text-gray-600 dark:text-gray-400': color === 'gray',
       })}

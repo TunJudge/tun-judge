@@ -62,7 +62,7 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
         </div>
         <TestcasesList problem={item as Problem} />
       </div>
-      <div className="bg-white p-4 border shadow rounded-md">
+      <div className="bg-white p-4 border shadow rounded-md dark:bg-gray-800 dark:border-gray-700">
         <embed
           src={`data:${item.file?.type};base64,${item.file?.content.payload}`}
           type={item.file?.type}

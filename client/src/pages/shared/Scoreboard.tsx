@@ -105,11 +105,11 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
   }, [scoreCaches, isUserJury]);
 
   return (
-    <div className={classNames(className, 'flex justify-center dark:text-white')}>
+    <div className={classNames(className, 'flex justify-center dark:text-white p-8 max-w-full')}>
       {!currentContest ? (
         <NoActiveContest />
       ) : (
-        <div className="m-8 p-8 bg-white rounded-xl border shadow select-none dark:bg-gray-800 dark:border-gray-700">
+        <div className="max-w-full p-8 bg-white rounded-xl border shadow select-none dark:bg-gray-800 dark:border-gray-700">
           {!compact && (
             <div className="flex items-center justify-center text-3xl mb-8 font-medium gap-x-1">
               Scoreboard of {currentContest.name}
@@ -124,109 +124,112 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
               )}
             </div>
           )}
-          <table>
-            <thead>
-              <tr>
-                <th className="p-1">
-                  <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">#</div>
-                </th>
-                <th className="p-1">
-                  <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl text-left">
-                    Team
-                  </div>
-                </th>
-                <th className="p-1">
-                  <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">=</div>
-                </th>
-                <th className="p-1">
-                  <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">Score</div>
-                </th>
-                {currentContest.problems
-                  .slice()
-                  .sort((a, b) => a.shortName.localeCompare(b.shortName))
-                  .map((problem) => (
-                    <th key={problem.shortName} className="p-1">
-                      <div
-                        className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl truncate w-20"
-                        title={`${problem.shortName} - ${problem.problem.name}`}
-                      >
-                        {problem.shortName}
-                      </div>
-                    </th>
-                  ))}
-              </tr>
-            </thead>
-            <tbody>
-              {standing.map(
-                ({ teamId, teamName, solvedProblems, totalScore, problemsScores }, index) => {
-                  return (
-                    (!compact || teamId === profile?.team.id) && (
-                      <tr key={`team-${teamId}`}>
-                        <td className="p-1">
-                          <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
-                            {index > 0 &&
-                            standing[index - 1].totalScore === totalScore &&
-                            standing[index - 1].solvedProblems === solvedProblems
-                              ? '-'
-                              : index + 1}
-                          </div>
-                        </td>
-                        <td className="p-1">
-                          <div
-                            className="flex items-center p-3 h-14 w-52 bg-gray-100 dark:bg-gray-700 shadow rounded-xl truncate"
-                            title={teamName}
-                          >
-                            {teamName}
-                          </div>
-                        </td>
-                        <td className="p-1">
-                          <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
-                            {solvedProblems}
-                          </div>
-                        </td>
-                        <td className="p-1">
-                          <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
-                            {totalScore}
-                          </div>
-                        </td>
-                        {problemsScores.map((problemScore) => (
-                          <td key={`score-${teamId}-${problemScore.problemName}`} className="p-1">
-                            <div
-                              className={classNames(
-                                'flex flex-col items-center justify-center p-3 h-14 text-gray-100 shadow rounded-xl',
-                                {
-                                  'bg-green-800':
-                                    getScoreboardCellColor(problemScore) === 'green-dark',
-                                  'bg-green-600': getScoreboardCellColor(problemScore) === 'green',
-                                  'bg-yellow-600':
-                                    getScoreboardCellColor(problemScore) === 'yellow',
-                                  'bg-red-600': getScoreboardCellColor(problemScore) === 'red',
-                                  'bg-gray-100 dark:bg-gray-700':
-                                    getScoreboardCellColor(problemScore) === 'white',
-                                },
-                              )}
-                            >
-                              {problemScore.numberOfAttempts ? (
-                                <b>
-                                  {problemScore.correct ? '+' : !problemScore.pending ? '-' : ''}
-                                  {problemScore.correct
-                                    ? problemScore.numberOfAttempts - 1 || ''
-                                    : problemScore.numberOfAttempts}
-                                </b>
-                              ) : (
-                                <br />
-                              )}
-                              <small>{problemScore.correct ? problemScore.solvedTime : ''}</small>
+          <div className="overflow-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th className="p-1">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">#</div>
+                  </th>
+                  <th className="p-1">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl text-left">
+                      Team
+                    </div>
+                  </th>
+                  <th className="p-1">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">=</div>
+                  </th>
+                  <th className="p-1">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">Score</div>
+                  </th>
+                  {currentContest.problems
+                    .slice()
+                    .sort((a, b) => a.shortName.localeCompare(b.shortName))
+                    .map((problem) => (
+                      <th key={problem.shortName} className="p-1">
+                        <div
+                          className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl truncate w-20"
+                          title={`${problem.shortName} - ${problem.problem.name}`}
+                        >
+                          {problem.shortName}
+                        </div>
+                      </th>
+                    ))}
+                </tr>
+              </thead>
+              <tbody>
+                {standing.map(
+                  ({ teamId, teamName, solvedProblems, totalScore, problemsScores }, index) => {
+                    return (
+                      (!compact || teamId === profile?.team.id) && (
+                        <tr key={`team-${teamId}`}>
+                          <td className="p-1">
+                            <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
+                              {index > 0 &&
+                              standing[index - 1].totalScore === totalScore &&
+                              standing[index - 1].solvedProblems === solvedProblems
+                                ? '-'
+                                : index + 1}
                             </div>
                           </td>
-                        ))}
-                      </tr>
-                    )
-                  );
-                },
-              )}
-            </tbody>
-          </table>
+                          <td className="p-1">
+                            <div
+                              className="flex items-center p-3 h-14 w-52 bg-gray-100 dark:bg-gray-700 shadow rounded-xl truncate"
+                              title={teamName}
+                            >
+                              {teamName}
+                            </div>
+                          </td>
+                          <td className="p-1">
+                            <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
+                              {solvedProblems}
+                            </div>
+                          </td>
+                          <td className="p-1">
+                            <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
+                              {totalScore}
+                            </div>
+                          </td>
+                          {problemsScores.map((problemScore) => (
+                            <td key={`score-${teamId}-${problemScore.problemName}`} className="p-1">
+                              <div
+                                className={classNames(
+                                  'flex flex-col items-center justify-center p-1 h-14 text-gray-100 shadow rounded-xl',
+                                  {
+                                    'bg-green-800':
+                                      getScoreboardCellColor(problemScore) === 'green-dark',
+                                    'bg-green-600':
+                                      getScoreboardCellColor(problemScore) === 'green',
+                                    'bg-yellow-600':
+                                      getScoreboardCellColor(problemScore) === 'yellow',
+                                    'bg-red-600': getScoreboardCellColor(problemScore) === 'red',
+                                    'bg-gray-100 dark:bg-gray-700':
+                                      getScoreboardCellColor(problemScore) === 'white',
+                                  },
+                                )}
+                              >
+                                {problemScore.numberOfAttempts ? (
+                                  <b>
+                                    {problemScore.correct ? '+' : !problemScore.pending ? '-' : ''}
+                                    {problemScore.correct
+                                      ? problemScore.numberOfAttempts - 1 || ''
+                                      : problemScore.numberOfAttempts}
+                                  </b>
+                                ) : (
+                                  <br />
+                                )}
+                                <small>{problemScore.correct ? problemScore.solvedTime : ''}</small>
+                              </div>
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    );
+                  },
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

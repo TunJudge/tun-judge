@@ -82,7 +82,12 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
           {contests.map((contest) => (
             <Menu.Item key={contest.id}>
               <div
-                className="flex items-center px-3 py-2 cursor-pointer rounded-md m-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+                className={classNames(
+                  'flex items-center px-3 py-2 cursor-pointer rounded-md m-1 hover:bg-gray-200 dark:hover:bg-gray-700',
+                  {
+                    'bg-gray-200 dark:bg-gray-700': contest.id === currentContest?.id,
+                  },
+                )}
                 onClick={() => setCurrentContest(contest.id)}
               >
                 {contest.shortName}

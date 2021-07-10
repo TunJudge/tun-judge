@@ -99,10 +99,7 @@ export class RootStore {
       { delay: 10 },
     );
 
-    autorun(() => {
-      console.log('reaction');
-      localStorage.setItem('settings', JSON.stringify(this.appLocalCache));
-    });
+    autorun(() => localStorage.setItem('settings', JSON.stringify(this.appLocalCache)));
   }
 
   private initiateWebSocket() {

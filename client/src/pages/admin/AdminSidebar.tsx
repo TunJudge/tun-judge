@@ -101,43 +101,46 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
   ];
 
   return (
-    <nav className="bg-gray-800">
+    <nav className="text-black dark:text-white">
       <div
-        className={classNames(
-          'flex-col text-white h-full transition-all duration-300 ease-in-out',
-          {
-            'w-72 p-2': visible,
-            'w-0': !visible,
-          },
-        )}
+        className={classNames('flex-col h-full transition-all duration-200 ease-in-out', {
+          'w-72': visible,
+          'w-16': !visible,
+        })}
       >
-        {visible && (
+        <div className="bg-white h-full rounded-lg p-2 shadow border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <div
-            className="text-2xl text-center p-4 mb-2 cursor-pointer"
+            className="text-2xl text-center p-2 py-4 mb-2 cursor-pointer"
             onClick={() => onLinkClick('')}
           >
-            TUN-JUDGE
+            {visible ? 'TUN-JUDGE' : 'TJ'}
           </div>
-        )}
-        <div className="space-y-1">
-          {visible &&
-            tabs.map(({ key, icon: Icon, label, title }) => (
+          <div className="space-y-1">
+            {tabs.map(({ key, icon: Icon, label, title }) => (
               <div
                 key={key}
                 className={classNames(
-                  'flex items-center w-full p-2 rounded-md font-medium cursor-pointer',
+                  'flex items-center w-full p-2 gap-2 rounded-md font-medium cursor-pointer',
                   {
-                    'bg-gray-900 text-white': currentTab === key,
-                    'text-gray-400 hover:bg-gray-700 hover:text-white': currentTab !== key,
+                    'bg-gray-800 text-white dark:bg-gray-900': currentTab === key,
+                    'text-gray-500 hover:bg-gray-500 hover:text-white dark:text-gray-400 dark:hover:bg-gray-700':
+                      currentTab !== key,
+                    'justify-center': !visible,
                   },
                 )}
+                title={title}
                 onClick={() => onLinkClick(key)}
               >
-                <Icon className="h-7 w-7 mr-2" />
-                {title}
-                <div className="flex items-center space-x-2 ml-auto">{label}</div>
+                <Icon className="h-6 w-6" />
+                {visible && (
+                  <>
+                    {title}
+                    <div className="flex items-center space-x-2 ml-auto">{label}</div>
+                  </>
+                )}
               </div>
             ))}
+          </div>
         </div>
       </div>
     </nav>

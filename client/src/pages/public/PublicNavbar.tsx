@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
@@ -6,7 +7,7 @@ import NavBar from '../shared/NavBar';
 
 type Tabs = '' | 'problems' | 'login';
 
-const PublicNavbar: React.FC = () => {
+const PublicNavbar: React.FC = observer(() => {
   const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
   const history = useHistory();
 
@@ -41,6 +42,6 @@ const PublicNavbar: React.FC = () => {
       ]}
     />
   );
-};
+});
 
 export default PublicNavbar;

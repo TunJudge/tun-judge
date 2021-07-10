@@ -87,9 +87,9 @@ const TeamNavbar: React.FC = observer(() => {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="text-black absolute right-0  mt-4 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg outline-none">
+                  <Menu.Items className="absolute text-black right-0 w-36 mt-2 p-2 gap-2 origin-top-right bg-white rounded-md shadow-lg outline-none dark:bg-gray-800 dark:text-white">
                     <Menu.Item onClick={() => history.push('/logout')}>
-                      <div className="flex items-center rounded-md gap-1 px-3 py-2 cursor-pointer hover:bg-gray-200">
+                      <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
                         <LogoutIcon className="h-4 w-4" />
                         Logout
                       </div>

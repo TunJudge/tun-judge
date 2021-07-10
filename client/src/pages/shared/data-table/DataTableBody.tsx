@@ -1,4 +1,4 @@
-import { PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon, ChevronUpIcon, PencilAltIcon, TrashIcon } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { generalComparator } from '../../../core/helpers';
@@ -7,7 +7,6 @@ import Spinner from '../Spinner';
 export type ListPageTableColumn<T> = {
   header: string;
   field: keyof T;
-  className?: string;
   disabled?: (obj: T, index: number) => boolean;
   textAlign?: 'center' | 'left' | 'right';
   render: (obj: T, index: number) => React.ReactNode;
@@ -92,9 +91,9 @@ function DataTableBody<T extends { id: number | string }>({
   };
 
   return (
-    <div className="border border-gray-300 rounded-md shadow dark:border-gray-700">
+    <div className="flex overflow-auto border border-gray-300 rounded-md shadow dark:border-gray-700">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-        <thead className="text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+        <thead className="sticky top-0 z-10 text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
           <tr className="divide-x dark:divide-gray-800">
             <th
               className="px-4 py-2 font-medium tracking-wider"
@@ -106,14 +105,26 @@ function DataTableBody<T extends { id: number | string }>({
               <th
                 key={index}
                 className={classNames('px-4 py-2 font-medium tracking-wider', {
-                  'text-center': column.textAlign === 'center',
-                  'text-right': column.textAlign === 'right',
-                  'text-left': (column.textAlign ?? 'left') === 'left',
+                  'cursor-pointer': !notSortable,
                 })}
                 onClick={() => !notSortable && handleSort(column.field)}
               >
-                {column.header}
-                {sortState.column === column.field ? sortState.direction! : undefined}
+                <div
+                  className={classNames('flex items-center gap-2', {
+                    'justify-left text-left': (column.textAlign ?? 'left') === 'left',
+                    'justify-center text-center': column.textAlign === 'center',
+                    'justify-right text-right': column.textAlign === 'right',
+                  })}
+                >
+                  {column.header}
+                  {sortState.column === column.field ? (
+                    sortState.direction === 'ascending' ? (
+                      <ChevronDownIcon className="h-4 w-4" />
+                    ) : sortState.direction === 'descending' ? (
+                      <ChevronUpIcon className="h-4 w-4" />
+                    ) : undefined
+                  ) : undefined}
+                </div>
               </th>
             ))}
             {!withoutActions && <th className="px-4 py-2 font-medium tracking-wider">Actions</th>}
@@ -141,10 +152,10 @@ function DataTableBody<T extends { id: number | string }>({
                 <tr
                   key={item.id}
                   className={classNames('divide-x dark:divide-gray-700', {
-                    'bg-blue-200 dark:bg-blue-800': backgroundColor === 'blue',
-                    'bg-green-200 dark:bg-green-800': backgroundColor === 'green',
-                    'bg-yellow-200 dark:bg-yellow-800': backgroundColor === 'yellow',
-                    'bg-red-200 dark:bg-red-800': backgroundColor === 'red',
+                    'bg-blue-300 dark:bg-blue-800': backgroundColor === 'blue',
+                    'bg-green-300 dark:bg-green-800': backgroundColor === 'green',
+                    'bg-yellow-300 dark:bg-yellow-800': backgroundColor === 'yellow',
+                    'bg-red-300 dark:bg-red-800': backgroundColor === 'red',
                     'bg-white dark:bg-gray-800': backgroundColor === 'white',
                     'text-gray-300 dark:text-gray-600': disabled?.(item, rowIndex),
                   })}
@@ -153,33 +164,33 @@ function DataTableBody<T extends { id: number | string }>({
                   {columns.map((column, index) => (
                     <td
                       key={`${item.id}-${index}`}
-                      className={classNames(
-                        'px-4 py-2',
-                        {
-                          'text-center': column.textAlign === 'center',
-                          'text-right': column.textAlign === 'right',
-                          'text-left': (column.textAlign ?? 'left') === 'left',
-                          'text-gray-300 dark:text-gray-600': column.disabled?.(item, rowIndex),
-                        },
-                        column.className,
-                      )}
-                      onClick={() => column.onClick && column.onClick(item)}
+                      className={classNames('px-4 py-2', { 'cursor-pointer': !!column.onClick })}
+                      onClick={() => column.onClick?.(item)}
                     >
-                      {column.render(item, rowIndex)}
+                      <div
+                        className={classNames('flex items-center gap-2', {
+                          'justify-left text-left': (column.textAlign ?? 'left') === 'left',
+                          'justify-center text-center': column.textAlign === 'center',
+                          'justify-right text-right': column.textAlign === 'right',
+                          'text-gray-300 dark:text-gray-600': column.disabled?.(item, rowIndex),
+                        })}
+                      >
+                        {column.render(item, rowIndex)}
+                      </div>
                     </td>
                   ))}
                   {!withoutActions && (
                     <td>
-                      <div className="flex items-center justify-center h-full gap-1 px-4 py-2">
+                      <div className="flex items-center justify-center h-full gap-2 px-4 py-1">
                         {canEdit?.(item) && (
                           <PencilAltIcon
-                            className="p-2 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                            className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-900"
                             onClick={() => onEdit?.(item)}
                           />
                         )}
                         {(!canDelete || canDelete(item)) && (
                           <TrashIcon
-                            className="p-2 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 text-red-700 dark:hover:bg-gray-700"
+                            className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-red-700 dark:hover:bg-gray-900"
                             onClick={() => onDelete?.(item.id as number)}
                           />
                         )}
@@ -191,7 +202,11 @@ function DataTableBody<T extends { id: number | string }>({
             })
           )}
         </tbody>
-        {pagination}
+        {pagination && (
+          <tfoot className="sticky bottom-0 z-10 border-t bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+            {pagination}
+          </tfoot>
+        )}
       </table>
     </div>
   );

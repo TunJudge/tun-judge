@@ -14,9 +14,9 @@ const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => 
   const { profile } = rootStore;
 
   return (
-    <div className="select-none p-1 text-black bg-white shadow rounded-md border flex items-center w-full justify-between dark:text-white dark:bg-gray-800 dark:border-gray-700">
-      <ViewListIcon className="h-6 w-6 mx-2 cursor-pointer" onClick={toggleSidebar} />
-      <div className="flex items-center">
+    <div className="select-none p-1 px-3 text-black bg-white shadow rounded-md border flex items-center w-full justify-between dark:text-white dark:bg-gray-800 dark:border-gray-700">
+      <ViewListIcon className="h-6 w-6 cursor-pointer" onClick={toggleSidebar} />
+      <div className="flex items-center gap-2">
         <ActiveContestSelector className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700" />
         <Menu as="div" className="relative">
           <Menu.Button
@@ -45,7 +45,7 @@ const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => 
             </Menu.Items>
           </Transition>
         </Menu>
-        <DarkModeSwitcher className="mr-2 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700" />
+        <DarkModeSwitcher />
       </div>
     </div>
   );

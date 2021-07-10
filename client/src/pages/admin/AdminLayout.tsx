@@ -21,9 +21,9 @@ import UsersList from './views/users/UsersList';
 
 const AdminLayout: React.FC = observer(() => {
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen p-4 gap-4 bg-gray-100 dark:bg-gray-900">
       <AdminSideBar visible={!rootStore.appLocalCache.menuCollapsed} />
-      <div className="flex flex-col m-4 gap-4 w-full overflow-hidden">
+      <div className="flex flex-col gap-4 w-full overflow-hidden">
         <AdminNavbar
           toggleSidebar={() =>
             (rootStore.appLocalCache.menuCollapsed = !rootStore.appLocalCache.menuCollapsed)

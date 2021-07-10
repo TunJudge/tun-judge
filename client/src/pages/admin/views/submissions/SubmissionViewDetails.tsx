@@ -85,14 +85,16 @@ const SubmissionViewDetails: React.FC<{
   ];
 
   return (
-    <DataTable
-      dataFetcher={() => Promise.resolve(submission.judgings)}
-      columns={columns}
-      withoutActions
-      emptyMessage="Not judged yet"
-      notSortable
-      disabled={(_, index) => index > 0}
-    />
+    <div>
+      <DataTable
+        dataFetcher={() => Promise.resolve(submission.judgings)}
+        columns={columns}
+        withoutActions
+        emptyMessage="Not judged yet"
+        notSortable
+        disabled={(_, index) => index > 0}
+      />
+    </div>
   );
 };
 

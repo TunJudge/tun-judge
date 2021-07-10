@@ -37,7 +37,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           shift?.team.id === profile?.team.id && shift?.problem.id === problem.id;
         const nbrBalloons = sc?.correct ? (veryFirstToSolve ? 3 : sc.firstToSolve ? 2 : 1) : 0;
         return (
-          <div className="flex justify-between">
+          <div className="flex justify-between w-full">
             <div className="flex gap-1">
               {problem.name}
               <div className="text-gray-500">
@@ -55,7 +55,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
     columns.push({
       header: '',
       field: 'shortName',
-      className: 'flex justify-center cursor-pointer',
+      textAlign: 'center',
       onClick: ({ problem }) => setSubmission({ problem } as Submission),
       render: () => <UploadIcon className="h-6 w-6 text-green-800 dark:text-green-200" />,
     });
@@ -94,55 +94,59 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
       ) : !currentContest ? (
         <NoActiveContest />
       ) : (
-        <div className="max-w-6xl mx-auto m-8 p-8 bg-white rounded-xl border shadow dark:text-white dark:bg-gray-800 dark:border-gray-700">
-          <div className="text-3xl text-center font-medium pb-8">Contest Problems</div>
-          <div className="flex flex-wrap justify-center">
-            {problems.map((problem) => {
-              const color = getProblemColor(problem);
+        <div className="p-8">
+          <div className="max-w-6xl mx-auto p-8 bg-white rounded-xl border shadow dark:text-white dark:bg-gray-800 dark:border-gray-700">
+            <div className="text-3xl text-center font-medium pb-8">Contest Problems</div>
+            <div className="flex flex-wrap justify-center">
+              {problems.map((problem) => {
+                const color = getProblemColor(problem);
 
-              return (
-                <div key={problem.shortName} className="w-1/3 p-2">
-                  <div className="h-full flex flex-col bg-white rounded-md shadow border border-gray-200 divide-y dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
-                    <div
-                      className={classNames('relative h-full py-2 px-3 rounded-t-md', {
-                        'bg-green-200 dark:bg-green-800': color === 'green',
-                        'bg-yellow-200 dark:bg-yellow-800': color === 'yellow',
-                        'bg-red-200 dark:bg-red-800': color === 'red',
-                        'bg-white dark:bg-gray-800': color === 'white',
-                      })}
-                    >
+                return (
+                  <div key={problem.shortName} className="w-1/3 p-2">
+                    <div className="h-full flex flex-col bg-white rounded-md shadow border border-gray-200 divide-y dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
                       <div
-                        className={`h-6 w-6 absolute top-3 right-3 rounded-full`}
-                        style={{ backgroundColor: problem.color }}
-                      />
-                      <div className="text-2xl">
-                        {problem.shortName} - {problem.problem.name}
-                      </div>
-                      <div className="py-2 text-gray-500">
-                        Limits: {problem.problem.timeLimit}s /{' '}
-                        {formatBytes(problem.problem.memoryLimit * 1024)}
-                      </div>
-                    </div>
-                    <div className="flex p-2 gap-1">
-                      {profile?.team && contestStartedAndNotOver(currentContest) && (
-                        <button
-                          className="w-full p-2 text-green-600 border border-green-600 rounded-md hover:bg-green-100 dark:hover:bg-green-900"
-                          onClick={() => setSubmission({ problem: problem.problem } as Submission)}
-                        >
-                          Submit
-                        </button>
-                      )}
-                      <button
-                        className="w-full p-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900"
-                        onClick={() => setPdfData(problem.problem.file.content.payload)}
+                        className={classNames('relative h-full py-2 px-3 rounded-t-md', {
+                          'bg-green-200 dark:bg-green-800': color === 'green',
+                          'bg-yellow-200 dark:bg-yellow-800': color === 'yellow',
+                          'bg-red-200 dark:bg-red-800': color === 'red',
+                          'bg-white dark:bg-gray-800': color === 'white',
+                        })}
                       >
-                        PDF
-                      </button>
+                        <div
+                          className={`h-6 w-6 absolute top-3 right-3 rounded-full`}
+                          style={{ backgroundColor: problem.color }}
+                        />
+                        <div className="text-2xl">
+                          {problem.shortName} - {problem.problem.name}
+                        </div>
+                        <div className="py-2 text-gray-500">
+                          Limits: {problem.problem.timeLimit}s /{' '}
+                          {formatBytes(problem.problem.memoryLimit * 1024)}
+                        </div>
+                      </div>
+                      <div className="flex p-2 gap-1">
+                        {profile?.team && contestStartedAndNotOver(currentContest) && (
+                          <button
+                            className="w-full p-2 text-green-600 border border-green-600 rounded-md hover:bg-green-100 dark:hover:bg-green-900"
+                            onClick={() =>
+                              setSubmission({ problem: problem.problem } as Submission)
+                            }
+                          >
+                            Submit
+                          </button>
+                        )}
+                        <button
+                          className="w-full p-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900"
+                          onClick={() => setPdfData(problem.problem.file.content.payload)}
+                        >
+                          PDF
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

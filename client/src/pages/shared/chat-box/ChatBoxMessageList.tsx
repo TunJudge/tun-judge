@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { Clarification } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
-import './ChatBoxMessageList.scss';
 
 type Props = { clarification: Clarification };
 

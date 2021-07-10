@@ -57,86 +57,79 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
         )}
       </div>
       <div className="flex p-4 overflow-hidden">
-        <div className="flex w-full border rounded-md overflow-hidden dark:border-gray-700">
-          <table className="flex flex-col min-w-full divide-y dark:divide-gray-800">
-            <thead className="text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
-              <tr className="grid grid-cols-12 w-full divide-x dark:divide-gray-800">
+        <div className="flex w-full border rounded-md overflow-auto dark:border-gray-700">
+          <table className="min-w-full divide-y dark:divide-gray-800">
+            <thead className="sticky top-0 z-10 text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+              <tr className="divide-x dark:divide-gray-800">
                 <th className="p-2 font-medium">#</th>
-                <th className="p-2 font-medium col-span-4">Content</th>
-                <th className="p-2 font-medium col-span-2">Sample</th>
-                <th
-                  className={classNames('p-2 font-medium', {
-                    'col-span-4': isUserAdmin,
-                    'col-span-5': !isUserAdmin,
-                  })}
-                >
-                  Description
-                </th>
+                <th className="p-2 font-medium">Content</th>
+                <th className="p-2 font-medium">Sample</th>
+                <th className={classNames('p-2 font-medium')}>Description</th>
                 {isUserAdmin && <th />}
               </tr>
             </thead>
-            <tbody className="w-full overflow-scroll divide-y dark:divide-gray-700">
+            <tbody className="w-full divide-y dark:divide-gray-700">
               {data.length === 0 ? (
-                <tr className="flex w-full">
-                  <td className="w-full p-3 flex items-center justify-center">No data</td>
+                <tr>
+                  <td colSpan={10}>
+                    <div className="w-full p-3 flex items-center justify-center">No data</div>
+                  </td>
                 </tr>
               ) : (
                 data.map((testcase) => (
-                  <tr
-                    key={`${testcase.id}-in`}
-                    className="grid grid-cols-12 divide-x dark:divide-gray-700"
-                  >
-                    <td className="flex flex-col items-center justify-center">
-                      {testcase.rank > 0 && (
-                        <ChevronUpIcon
-                          className="w-4 h-4 cursor-pointer"
-                          onClick={() => move(testcase.id, 'up')}
-                        />
-                      )}
-                      {testcase.rank}
-                      {testcase.rank < data.length - 1 && (
-                        <ChevronDownIcon
-                          className="w-4 h-4 cursor-pointer"
-                          onClick={() => move(testcase.id, 'down')}
-                        />
-                      )}
-                    </td>
-                    <td className="col-span-4 divide-y dark:divide-gray-700">
-                      <div className="flex items-center p-2 gap-x-1">
-                        <div
-                          title={testcase.input.md5Sum}
-                          className="text-blue-500 cursor-pointer"
-                          onClick={() => setContentViewData({ testcase, field: 'input' })}
-                        >
-                          {`test.${testcase.rank}.in`}
-                        </div>
-                        {formatBytes(testcase.input.size)}
-                      </div>
-                      <div className="flex items-center p-2 gap-x-1">
-                        <div
-                          title={testcase.output.md5Sum}
-                          className="text-blue-500 cursor-pointer"
-                          onClick={() => setContentViewData({ testcase, field: 'output' })}
-                        >
-                          {`test.${testcase.rank}.out`}
-                        </div>
-                        {formatBytes(testcase.output.size)}
+                  <tr key={`${testcase.id}-in`} className="divide-x dark:divide-gray-700">
+                    <td>
+                      <div className="flex flex-col items-center justify-center">
+                        {testcase.rank > 0 && (
+                          <ChevronUpIcon
+                            className="w-4 h-4 cursor-pointer"
+                            onClick={() => move(testcase.id, 'up')}
+                          />
+                        )}
+                        {testcase.rank}
+                        {testcase.rank < data.length - 1 && (
+                          <ChevronDownIcon
+                            className="w-4 h-4 cursor-pointer"
+                            onClick={() => move(testcase.id, 'down')}
+                          />
+                        )}
                       </div>
                     </td>
-                    <td className="col-span-2 flex items-center justify-center">
-                      <CheckBoxField<Testcase>
-                        entity={testcase}
-                        field="sample"
-                        onChange={() => update(testcase)}
-                      />
+                    <td>
+                      <div className="divide-y dark:divide-gray-700">
+                        <div className="flex items-center p-2 gap-x-1">
+                          <div
+                            title={testcase.input.md5Sum}
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() => setContentViewData({ testcase, field: 'input' })}
+                          >
+                            {`test.${testcase.rank}.in`}
+                          </div>
+                          {formatBytes(testcase.input.size)}
+                        </div>
+                        <div className="flex items-center p-2 gap-x-1">
+                          <div
+                            title={testcase.output.md5Sum}
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() => setContentViewData({ testcase, field: 'output' })}
+                          >
+                            {`test.${testcase.rank}.out`}
+                          </div>
+                          {formatBytes(testcase.output.size)}
+                        </div>
+                      </div>
                     </td>
-                    <td
-                      className={classNames('flex items-center p-3', {
-                        'col-span-4': isUserAdmin,
-                        'col-span-5': !isUserAdmin,
-                      })}
-                    >
-                      {testcase.description ?? '-'}
+                    <td>
+                      <div className="flex items-center justify-center">
+                        <CheckBoxField<Testcase>
+                          entity={testcase}
+                          field="sample"
+                          onChange={() => update(testcase)}
+                        />
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex items-center p-3">{testcase.description ?? '-'}</div>
                     </td>
                     {isUserAdmin && (
                       <td>
