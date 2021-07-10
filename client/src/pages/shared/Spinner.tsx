@@ -1,13 +1,24 @@
 import classNames from 'classnames';
 import React from 'react';
 
-const Spinner: React.FC<{ fullScreen?: boolean }> = ({ fullScreen }) => (
+const Spinner: React.FC<{ className?: string; fullScreen?: boolean }> = ({
+  className,
+  fullScreen,
+}) => (
   <div
-    className={classNames('h-full w-full flex items-center justify-center', {
-      'h-screen': fullScreen,
-    })}
+    className={classNames(
+      className,
+      'flex items-center justify-center h-full w-full bg-gray-100 dark:bg-gray-800',
+      {
+        'h-screen': fullScreen,
+      },
+    )}
   >
-    <svg className="animate-spin h-8 w-8 text-black" fill="none" viewBox="0 0 24 24">
+    <svg
+      className="animate-spin h-8 w-8 text-black dark:text-white"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path
         className="opacity-75"

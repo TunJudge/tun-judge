@@ -1,7 +1,7 @@
 import { CheckCircleIcon, MinusCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { dateComparator, formatRestTime, getJudgingRunColor } from '../../../../core/helpers';
 import { Judging, Submission } from '../../../../core/models';
@@ -17,7 +17,6 @@ const SubmissionsList: React.FC = observer(() => {
     profile,
     updatesCount: { judgings, judgeRuns },
     submissionsStore: {
-      data,
       totalItems,
       currentPage,
       setCurrentPage,
@@ -28,20 +27,6 @@ const SubmissionsList: React.FC = observer(() => {
     },
     publicStore: { currentContest },
   } = rootStore;
-
-  useEffect(() => {
-    fetchAll();
-  }, [
-    currentContest,
-    currentPage,
-    filters.problems,
-    filters.teams,
-    filters.languages,
-    filters.status,
-    judgings,
-    judgeRuns,
-    fetchAll,
-  ]);
 
   const columns: ListPageTableColumn<Submission>[] = [
     {
@@ -70,6 +55,7 @@ const SubmissionsList: React.FC = observer(() => {
     {
       header: 'Problem',
       field: 'problem',
+      textAlign: 'center',
       disabled: (submission) => !submission.valid,
       render: ({ problem }) => (
         <a
@@ -196,7 +182,18 @@ const SubmissionsList: React.FC = observer(() => {
   return (
     <DataTable<Submission>
       header="Submissions"
-      data={data}
+      dataFetcher={fetchAll}
+      dataDependencies={[
+        currentContest,
+        currentPage,
+        filters.problems,
+        filters.teams,
+        filters.languages,
+        filters.status,
+        judgings,
+        judgeRuns,
+        fetchAll,
+      ]}
       columns={columns}
       filters={<SubmissionsFilters filters={filters} />}
       pagination={
@@ -206,7 +203,6 @@ const SubmissionsList: React.FC = observer(() => {
           setCurrentPage={setCurrentPage}
         />
       }
-      onRefresh={fetchAll}
       withoutActions
     />
   );

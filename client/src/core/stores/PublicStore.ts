@@ -39,15 +39,20 @@ export class PublicStore {
   @action
   fetchContests = async (): Promise<void> => {
     this.contests = await http.get<Contest[]>('api/public/contests');
-    if (!this.contests.length) return localStorage.removeItem('currentContestId');
-    const currentContestId = parseInt(localStorage.getItem('currentContestId') ?? '-1');
+    if (!this.contests.length) {
+      delete this.rootStore.appLocalCache.currentContestId;
+      return;
+    }
+    const currentContestId = this.rootStore.appLocalCache.currentContestId ?? -1;
     this.currentContest = this.contests.find((c) => c.id === currentContestId);
     if (!this.currentContest) this.setCurrentContest(this.contests[0]?.id);
   };
 
   @action
-  fetchProblems = async (contestId: number): Promise<void> => {
-    this.problems = await http.get<ContestProblem[]>(`api/public/contest/${contestId}/problems`);
+  fetchProblems = async (contestId: number): Promise<ContestProblem[]> => {
+    return (this.problems = await http.get<ContestProblem[]>(
+      `api/public/contest/${contestId}/problems`,
+    ));
   };
 
   @action
@@ -58,8 +63,9 @@ export class PublicStore {
   @action
   setCurrentContest = (id: number): void => {
     this.currentContest = this.contests.find((c) => c.id === id);
-    if (this.currentContest)
-      localStorage.setItem('currentContestId', this.currentContest.id.toString());
+    if (this.currentContest) {
+      this.rootStore.appLocalCache.currentContestId = this.currentContest.id;
+    }
   };
 
   @computed

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import { observer } from 'mobx-react';
+import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { rootStore } from '../../core/stores/RootStore';
 import Scoreboard from '../shared/Scoreboard';
 import AdminNavbar from './AdminNavbar';
 import AdminSideBar from './AdminSidebar';
@@ -17,14 +19,16 @@ import TeamCategoriesList from './views/team-category/TeamCategoriesList';
 import TeamsList from './views/teams/TeamsList';
 import UsersList from './views/users/UsersList';
 
-const AdminLayout: React.FC = () => {
-  const [sidebarVisible, toggleSidebar] = useState<boolean>(true);
-
+const AdminLayout: React.FC = observer(() => {
   return (
-    <div className="flex h-screen">
-      <AdminSideBar visible={sidebarVisible} />
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+      <AdminSideBar visible={!rootStore.appLocalCache.menuCollapsed} />
       <div className="flex flex-col m-4 gap-4 w-full overflow-hidden">
-        <AdminNavbar toggleSidebar={() => toggleSidebar(!sidebarVisible)} />
+        <AdminNavbar
+          toggleSidebar={() =>
+            (rootStore.appLocalCache.menuCollapsed = !rootStore.appLocalCache.menuCollapsed)
+          }
+        />
         <Switch>
           <Route exact path="/" component={Dashboard} />
           <Route exact path="/contests" component={ContestsList} />
@@ -45,6 +49,6 @@ const AdminLayout: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default AdminLayout;

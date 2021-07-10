@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action, observable, runInAction } from 'mobx';
 import { Problem } from '../models';
 import http from '../utils/http-client';
 import { BaseEntityStore } from './BaseEntityStore';
@@ -16,12 +16,10 @@ export class ProblemsStore extends BaseEntityStore<Problem> {
     this.item = {};
   };
 
-  @action
   fetchById = async (id: number): Promise<Problem> => {
-    return (this.item = await http.get<Problem>(`api/problems/${id}`));
+    return runInAction(async () => (this.item = await http.get<Problem>(`api/problems/${id}`)));
   };
 
-  @action
   rejudge = async (id: number): Promise<void> => {
     await http.patch(`api/problems/${id}/rejudge`);
   };

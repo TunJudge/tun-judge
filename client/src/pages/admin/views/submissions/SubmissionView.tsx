@@ -12,24 +12,21 @@ import SubmissionsViewJudgingRuns from './SubmissionViewJudgingRuns';
 const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {
   const {
     updatesCount: { judgings },
-    submissionsStore: { item: submission, cleanItem, fetchById },
+    submissionsStore: { item: submission, fetchById },
   } = rootStore;
 
   useEffect(() => {
     fetchById(parseInt(match!.params.id!)).catch(() => location.assign('/submissions'));
-  }, [fetchById, judgings, match]);
-
-  useEffect(() => {
-    return cleanItem;
-  }, [cleanItem]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchById, judgings]);
 
   return !submission ? (
     <Spinner />
   ) : (
-    <div className="overflow-auto flex flex-col gap-y-4">
+    <div className="overflow-auto flex flex-col gap-y-4 text-black dark:text-white">
       <SubmissionViewHeader submission={submission} />
       <SubmissionViewDetails submission={submission} />
-      <div className="flex flex-col bg-white divide-y border shadow rounded-md">
+      <div className="flex flex-col bg-white divide-y border shadow rounded-md dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
         <div className="text-lg font-medium p-3">Code Source</div>
         <div className="p-3">
           <CodeEditor

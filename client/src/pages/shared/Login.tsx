@@ -2,6 +2,7 @@ import { observer, useLocalStore } from 'mobx-react';
 import qs from 'querystring';
 import React, { FormEvent, useEffect, useState } from 'react';
 import { isEmpty } from '../../core/helpers';
+import { rootStore } from '../../core/stores/RootStore';
 import http from '../../core/utils/http-client';
 import { FormErrors, TextField } from './extended-form';
 
@@ -28,16 +29,21 @@ const Login: React.FC = observer(() => {
     event.preventDefault();
     try {
       await http.post('api/auth/login', credentials);
-      localStorage.setItem('connected', `${Date.now()}`);
+      rootStore.appLocalCache.connected = Date.now();
+      rootStore.appLocalCache.menuCollapsed = false;
       const { returnUrl } = qs.parse(location.search.substr(1));
       window.location.assign((returnUrl as string) ?? '/');
     } catch (e) {}
   };
+
   return (
-    <div className="flex h-full items-center justify-center">
-      <div className="flex flex-col items-center w-full mx-4 sm:w-1/2 md:w-1/3 sm:mx-0">
+    <div className="flex h-full items-center justify-center dark:text-white">
+      <div className="flex flex-col items-center w-full mx-4 sm:w-96 sm:mx-0">
         <div className="text-4xl text-gray-900 mb-4">Sign-in</div>
-        <form className="grid gap-3 p-4 rounded-lg border bg-white w-full" onSubmit={login}>
+        <form
+          className="grid gap-3 p-4 rounded-lg border bg-white w-full dark:bg-gray-800 dark:border-gray-700"
+          onSubmit={login}
+        >
           <TextField<Credentials>
             entity={credentials}
             field="username"

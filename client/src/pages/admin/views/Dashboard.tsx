@@ -8,11 +8,10 @@ import {
 } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import moment from 'moment';
 import React from 'react';
 import { Contest } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
-import { MOMENT_DEFAULT_FORMAT } from '../../shared/extended-form';
+import { getDisplayDate } from '../../shared/extended-form';
 
 const Dashboard: React.FC = observer(() => {
   const {
@@ -87,15 +86,15 @@ const Dashboard: React.FC = observer(() => {
   ];
 
   return (
-    <div className="container mx-auto space-y-4">
-      <div className="flex items-center justify-center p-2 bg-white border rounded-md shadow">
+    <div className="container mx-auto space-y-4 dark:text-white overflow-auto">
+      <div className="flex items-center justify-center p-2 bg-white border rounded-md shadow dark:bg-gray-800 dark:border-gray-700">
         <div className="text-4xl font-medium">
           {currentContest ? currentContest.name : 'No Active Contest'}
         </div>
       </div>
       {currentContest && (
         <>
-          <div className="divide-y border rounded bg-white shadow">
+          <div className="divide-y border rounded bg-white shadow dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
             <div className="flex items-center justify-center p-2">
               <div className="text-2xl">Submissions Statistics</div>
             </div>
@@ -120,17 +119,17 @@ const Dashboard: React.FC = observer(() => {
               </div>
             </div>
           </div>
-          <div className="divide-y border rounded bg-white shadow">
+          <div className="divide-y border rounded bg-white shadow dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
             <div className="flex items-center justify-center p-2">
               <div className="text-2xl">Control Contest</div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-5 text-center divide-x divide-y">
+            <div className="grid grid-cols-2 sm:grid-cols-5 text-center divide-x dark:divide-gray-700">
               {controlActions.map(({ Icon, action, time, onClick, disabled, completed }, index) => (
                 <div
                   key={index}
                   className={classNames('flex items-center sm:col-auto select-none p-4', {
-                    'cursor-pointer hover:bg-gray-100': !disabled,
-                    'text-gray-400 bg-gray-50': disabled,
+                    'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700': !disabled,
+                    'text-gray-400 bg-gray-50 dark:bg-gray-600': disabled,
                     'col-span-2': index === controlActions.length - 1,
                   })}
                   onClick={disabled || completed ? undefined : onClick(currentContest)}
@@ -142,7 +141,7 @@ const Dashboard: React.FC = observer(() => {
                   )}
                   <div className="flex flex-col space-y-1 w-full">
                     <div className="text-lg font-medium">{action}</div>
-                    <div>{moment(time(currentContest)).format(MOMENT_DEFAULT_FORMAT)}</div>
+                    <div>{getDisplayDate(time(currentContest))}</div>
                   </div>
                 </div>
               ))}

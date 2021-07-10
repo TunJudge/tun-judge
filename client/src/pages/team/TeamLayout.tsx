@@ -23,7 +23,7 @@ const TeamLayout: React.FC = observer(() => {
   updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
       <TeamNavbar />
       <div className="h-full">
         {leftToContest ? (

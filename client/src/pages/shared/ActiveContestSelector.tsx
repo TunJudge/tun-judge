@@ -73,16 +73,16 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 w-36 mt-2 origin-top-right bg-white rounded-md shadow-lg outline-none text-gray-900 font-normal">
+        <Menu.Items className="font-normal text-black absolute right-0 w-36 mt-2 origin-top-right bg-white rounded-md shadow-lg outline-none dark:text-white dark:bg-gray-800">
           <Menu.Item>
-            <div className="flex items-center gap-1 px-3 py-2 cursor-none bg-gray-300 rounded-t-md">
+            <div className="flex items-center px-3 py-2 cursor-none bg-gray-300 rounded-t-md dark:bg-gray-700">
               Change Contest
             </div>
           </Menu.Item>
           {contests.map((contest) => (
             <Menu.Item key={contest.id}>
               <div
-                className="flex items-center px-3 py-2 cursor-pointer rounded-md m-1 hover:bg-gray-100"
+                className="flex items-center px-3 py-2 cursor-pointer rounded-md m-1 hover:bg-gray-200 dark:hover:bg-gray-700"
                 onClick={() => setCurrentContest(contest.id)}
               >
                 {contest.shortName}

@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { Submission } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
+import { DarkModeSwitcher } from '../shared/DarkModeSwitcher';
 import NavBar from '../shared/NavBar';
 import SubmitForm from './views/SubmitForm';
 
@@ -98,6 +99,7 @@ const TeamNavbar: React.FC = observer(() => {
               </Menu>
             ),
           },
+          { content: <DarkModeSwitcher /> },
         ]}
       />
       <SubmitForm

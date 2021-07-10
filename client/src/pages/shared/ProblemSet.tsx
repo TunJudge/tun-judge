@@ -50,13 +50,14 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
       },
     },
   ];
+
   if (contestStartedAndNotOver(currentContest)) {
     columns.push({
       header: '',
       field: 'shortName',
       className: 'flex justify-center cursor-pointer',
       onClick: ({ problem }) => setSubmission({ problem } as Submission),
-      render: () => <UploadIcon className="h-6 w-6 text-green-800" />,
+      render: () => <UploadIcon className="h-6 w-6 text-green-800 dark:text-green-200" />,
     });
   }
 
@@ -71,6 +72,13 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
     return 'white';
   };
 
+  const fetchAll = () =>
+    currentContest
+      ? fetchProblems(currentContest.id).then((problems) =>
+          problems.map((problem) => ({ ...problem, id: problem.shortName as string })),
+        )
+      : Promise.resolve([]);
+
   return (
     <div className={classNames('', { 'h-full': !listMode })}>
       {listMode ? (
@@ -78,29 +86,29 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           header="Problems"
           notSortable
           withoutActions
-          data={problems.map((problem) => ({ ...problem, id: problem.shortName as string }))}
+          dataFetcher={fetchAll}
+          dataDependencies={[currentContest]}
           columns={columns}
-          onRefresh={() => fetchProblems(currentContest!.id)}
           rowBackgroundColor={getProblemColor}
         />
       ) : !currentContest ? (
         <NoActiveContest />
       ) : (
-        <div className="container mx-auto m-8 p-8 bg-white rounded-xl border shadow">
+        <div className="max-w-6xl mx-auto m-8 p-8 bg-white rounded-xl border shadow dark:text-white dark:bg-gray-800 dark:border-gray-700">
           <div className="text-3xl text-center font-medium pb-8">Contest Problems</div>
-          <div className="flex flex-wrap justify-center ">
+          <div className="flex flex-wrap justify-center">
             {problems.map((problem) => {
               const color = getProblemColor(problem);
 
               return (
-                <div key={problem.shortName} className="w-1/4 p-2">
-                  <div className="h-full flex flex-col bg-white rounded-md shadow border border-gray-200 divide-y">
+                <div key={problem.shortName} className="w-1/3 p-2">
+                  <div className="h-full flex flex-col bg-white rounded-md shadow border border-gray-200 divide-y dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
                     <div
                       className={classNames('relative h-full py-2 px-3 rounded-t-md', {
-                        'bg-green-200': color === 'green',
-                        'bg-yellow-200': color === 'yellow',
-                        'bg-red-200': color === 'red',
-                        'bg-white': color === 'white',
+                        'bg-green-200 dark:bg-green-800': color === 'green',
+                        'bg-yellow-200 dark:bg-yellow-800': color === 'yellow',
+                        'bg-red-200 dark:bg-red-800': color === 'red',
+                        'bg-white dark:bg-gray-800': color === 'white',
                       })}
                     >
                       <div
@@ -118,14 +126,14 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
                     <div className="flex p-2 gap-1">
                       {profile?.team && contestStartedAndNotOver(currentContest) && (
                         <button
-                          className="w-full p-2 text-green-600 border border-green-600 rounded-md hover:bg-green-100"
+                          className="w-full p-2 text-green-600 border border-green-600 rounded-md hover:bg-green-100 dark:hover:bg-green-900"
                           onClick={() => setSubmission({ problem: problem.problem } as Submission)}
                         >
                           Submit
                         </button>
                       )}
                       <button
-                        className="w-full p-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                        className="w-full p-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900"
                         onClick={() => setPdfData(problem.problem.file.content.payload)}
                       >
                         PDF
@@ -156,7 +164,7 @@ export default ProblemSet;
 
 function getXBalloons(n: number, color: string) {
   return (
-    <div className="flex">
+    <div className="flex items-center">
       {new Array(n).fill(0).map((_, index) => (
         <svg key={index} id="svg" version="1.1" width="20" height="20" viewBox="0, 0, 400,400">
           <g id="svgg">

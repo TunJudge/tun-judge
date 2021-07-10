@@ -37,11 +37,12 @@ export class SubmissionsStore {
   };
 
   @action
-  fetchAll = async (): Promise<void> => {
+  fetchAll = async (): Promise<Submission[]> => {
     this.filters.contest = this.rootStore.publicStore.currentContest?.id ?? -1;
     [this.data, this.totalItems] = await http.get<[Submission[], number]>(
       `api/submissions?page=${this.currentPage}&${buildSearchQuery(this.filters)}`,
     );
+    return this.data;
   };
 
   fetchById = async (id: number): Promise<Submission> => {

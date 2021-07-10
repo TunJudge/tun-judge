@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActiveContestSelector from '../shared/ActiveContestSelector';
+import { DarkModeSwitcher } from '../shared/DarkModeSwitcher';
 import NavBar from '../shared/NavBar';
 
 type Tabs = '' | 'problems' | 'login';
@@ -36,6 +37,7 @@ const PublicNavbar: React.FC = () => {
           onClick: () => onLinkClick('login'),
         },
         { content: <ActiveContestSelector className="text-white" /> },
+        { content: <DarkModeSwitcher /> },
       ]}
     />
   );

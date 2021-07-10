@@ -55,7 +55,7 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
         {judging?.runs?.map((run) => (
           <div
             key={`run-${run.id}`}
-            className="flex flex-col bg-white divide-y border shadow rounded-md"
+            className="flex flex-col bg-white divide-y border shadow rounded-md dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700"
           >
             <div className="flex p-3 items-center justify-between">
               <div className="flex items-center gap-x-8">
@@ -74,9 +74,9 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
                 <div>Time: {Math.floor(run.runTime * 1000)}ms</div>
                 <div>Memory: {formatBytes(run.runMemory * 1024)}</div>
               </div>
-              <div className="flex select-none">
+              <div className="flex select-none gap-2">
                 <div
-                  className="flex gap-x-1 p-2 text-green-600 border border-r-0 border-green-600 rounded-l-md cursor-pointer hover:bg-green-50"
+                  className="flex gap-x-1 p-2 text-green-600 border border-green-600 rounded-md cursor-pointer hover:bg-green-50 dark:hover:bg-green-900"
                   onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'input' })}
                 >
                   <EyeIcon className="w-6 h-6" />
@@ -84,10 +84,10 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
                 </div>
                 <div
                   className={classNames(
-                    'flex gap-x-1 p-2 text-red-600 border border-r-0 border-red-600',
+                    'flex gap-x-1 p-2 text-red-600 border border-red-600 rounded-md',
                     {
                       'opacity-50': !run.runOutput.size,
-                      'cursor-pointer hover:bg-red-50': run.runOutput.size,
+                      'cursor-pointer hover:bg-red-50 dark:hover:bg-red-900': run.runOutput.size,
                     },
                   )}
                   onClick={() => (run.runOutput.size ? setRunViewData(run) : undefined)}
@@ -96,14 +96,14 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
                   Team Output
                 </div>
                 <div
-                  className="flex gap-x-1 p-2 text-yellow-600 border border-r-0 border-yellow-600 cursor-pointer hover:bg-yellow-50"
+                  className="flex gap-x-1 p-2 text-yellow-600 border border-yellow-600 rounded-md cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900"
                   onClick={() => loadOutputFileAndShowDiff(run)}
                 >
                   <EyeIcon className="w-6 h-6" />
                   Difference
                 </div>
                 <div
-                  className="flex gap-x-1 p-2 text-blue-600 border border-blue-600 rounded-r-md cursor-pointer hover:bg-blue-50"
+                  className="flex gap-x-1 p-2 text-blue-600 border border-blue-600 rounded-md cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900"
                   onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'output' })}
                 >
                   <EyeIcon className="w-6 h-6" />
@@ -115,21 +115,21 @@ const SubmissionsViewJudgingRuns: React.FC<{ submission: Submission }> = observe
               {judging?.result === 'SE' && (
                 <OutputSection
                   title="System output"
-                  color={!judging.systemError ? 'grey' : 'black'}
+                  color={!judging.systemError ? 'gray' : 'black'}
                   payload={judging.systemError}
                 />
               )}
               {['AC', 'WA'].includes(run.result) && (
                 <OutputSection
                   title="Checker output"
-                  color={!run.checkerOutput ? 'grey' : 'black'}
+                  color={!run.checkerOutput ? 'gray' : 'black'}
                   payload={atob(run.checkerOutput.content.payload)}
                 />
               )}
               {['RE', 'TLE', 'MLE'].includes(run.result) && (
                 <OutputSection
                   title="Error output"
-                  color={!run.errorOutput ? 'grey' : 'black'}
+                  color={!run.errorOutput ? 'gray' : 'black'}
                   payload={atob(run.errorOutput.content.payload)}
                 />
               )}
@@ -152,23 +152,18 @@ export default SubmissionsViewJudgingRuns;
 
 const OutputSection: React.FC<{
   title: string;
-  color: 'grey' | 'black';
+  color: 'gray' | 'black';
   payload?: string;
 }> = ({ title, color, payload }) => (
   <div className="flex flex-col gap-y-1">
     <b>{title}</b>
     <pre
-      style={{
-        padding: '0.3rem',
-        border: '0.5px grey solid',
-        borderRadius: '.28571429rem',
-        margin: 0,
-        marginTop: 4,
-        maxHeight: '300px',
-        overflow: 'auto',
-      }}
+      className={classNames('p-2 mt-1 border rounded-md max-h-20 overflow-auto', {
+        'text-black dark:text-white': color === 'black',
+        'text-gray-600 dark:text-gray-400': color === 'gray',
+      })}
     >
-      <code style={{ color: color }}>{payload ?? 'No Output'}</code>
+      <code>{payload ?? 'No Output'}</code>
     </pre>
   </div>
 );

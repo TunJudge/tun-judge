@@ -48,7 +48,7 @@ const InlineDropdown: React.FC<Props> = ({ className, header, content, items }) 
           {items.map(({ content, onClick }, index) => (
             <div
               key={index}
-              className="text-gray-700 hover:bg-gray-100 block px-4 py-2 cursor-pointer"
+              className="text-gray-700 hover:bg-gray-200 block px-4 py-2 cursor-pointer"
               role="menuitem"
               tabIndex={-1}
               onClick={() => {
