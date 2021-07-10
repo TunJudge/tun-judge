@@ -55,6 +55,7 @@ const SubmissionsList: React.FC = observer(() => {
     {
       header: 'Problem',
       field: 'problem',
+      textAlign: 'center',
       disabled: (submission) => !submission.valid,
       render: ({ problem }) => (
         <a

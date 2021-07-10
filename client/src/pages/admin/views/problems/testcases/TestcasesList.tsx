@@ -42,7 +42,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white divide-y border shadow rounded-md overflow-hidden">
+    <div className="flex flex-col h-full bg-white divide-y border shadow rounded-md overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
       <div className="flex p-3 items-center justify-between">
         <div className="text-lg font-medium">Testcases</div>
         {isUserAdmin && (
@@ -57,15 +57,15 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
         )}
       </div>
       <div className="flex p-4 overflow-hidden">
-        <div className="flex w-full border rounded-md overflow-hidden">
-          <table className="flex flex-col min-w-full divide-y">
-            <thead>
-              <tr className="grid grid-cols-12 w-full divide-x">
-                <th className="p-2">#</th>
-                <th className="p-2 col-span-4">Content</th>
-                <th className="p-2 col-span-2">Sample</th>
+        <div className="flex w-full border rounded-md overflow-hidden dark:border-gray-700">
+          <table className="flex flex-col min-w-full divide-y dark:divide-gray-800">
+            <thead className="text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+              <tr className="grid grid-cols-12 w-full divide-x dark:divide-gray-800">
+                <th className="p-2 font-medium">#</th>
+                <th className="p-2 font-medium col-span-4">Content</th>
+                <th className="p-2 font-medium col-span-2">Sample</th>
                 <th
-                  className={classNames('p-2', {
+                  className={classNames('p-2 font-medium', {
                     'col-span-4': isUserAdmin,
                     'col-span-5': !isUserAdmin,
                   })}
@@ -75,14 +75,17 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                 {isUserAdmin && <th />}
               </tr>
             </thead>
-            <tbody className="w-full overflow-scroll divide-y">
+            <tbody className="w-full overflow-scroll divide-y dark:divide-gray-700">
               {data.length === 0 ? (
                 <tr className="flex w-full">
                   <td className="w-full p-3 flex items-center justify-center">No data</td>
                 </tr>
               ) : (
                 data.map((testcase) => (
-                  <tr key={`${testcase.id}-in`} className="grid grid-cols-12 divide-x">
+                  <tr
+                    key={`${testcase.id}-in`}
+                    className="grid grid-cols-12 divide-x dark:divide-gray-700"
+                  >
                     <td className="flex flex-col items-center justify-center">
                       {testcase.rank > 0 && (
                         <ChevronUpIcon
@@ -98,7 +101,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                         />
                       )}
                     </td>
-                    <td className="col-span-4 divide-y">
+                    <td className="col-span-4 divide-y dark:divide-gray-700">
                       <div className="flex items-center p-2 gap-x-1">
                         <div
                           title={testcase.input.md5Sum}
@@ -139,14 +142,14 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                       <td>
                         <div className="flex flex-col items-center justify-center gap-1 h-full select-none">
                           <PencilAltIcon
-                            className="p-1 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200"
+                            className="p-1 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                             onClick={() => {
                               setFormTestcase(testcase);
                               setFormOpen(true);
                             }}
                           />
                           <TrashIcon
-                            className="p-1 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 text-red-700"
+                            className="p-1 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 text-red-700 dark:hover:bg-gray-700"
                             onClick={() => remove(testcase.id)}
                           />
                         </div>

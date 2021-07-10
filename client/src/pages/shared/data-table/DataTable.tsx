@@ -1,3 +1,4 @@
+import { observable } from 'mobx';
 import React, { DependencyList, ReactElement, useEffect, useState } from 'react';
 import DataTableActionBar from './DataTableActionBar';
 import DataTableBody from './DataTableBody';
@@ -6,9 +7,9 @@ export type ListPageTableColumn<T> = {
   header: string;
   field: keyof T;
   className?: string;
-  disabled?: (obj: T) => boolean;
+  disabled?: (obj: T, index: number) => boolean;
   textAlign?: 'center' | 'left' | 'right';
-  render: (obj: T) => React.ReactNode;
+  render: (obj: T, index: number) => React.ReactNode;
   onClick?: (obj: T) => void;
 };
 
@@ -20,7 +21,7 @@ export type DataTableItemForm<T> = React.FC<{
 }>;
 
 type Props<T> = {
-  header: string;
+  header?: string;
   emptyMessage?: string;
   dataFetcher: () => Promise<T[]>;
   dataDependencies?: DependencyList;
@@ -31,6 +32,7 @@ type Props<T> = {
   formItemInitValue?: Partial<T>;
   ItemForm?: DataTableItemForm<T>;
   withoutActions?: boolean;
+  disabled?: (item: T, index: number) => boolean;
   canEdit?: (item: T) => boolean;
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
@@ -51,6 +53,7 @@ function DataTable<T extends { id: number | string }>({
   formItemInitValue,
   ItemForm,
   withoutActions,
+  disabled,
   canEdit,
   onDelete,
   canDelete,
@@ -80,7 +83,7 @@ function DataTable<T extends { id: number | string }>({
   };
 
   const openForm = (item: T) => {
-    setFormItem(item);
+    setFormItem(observable({ ...item }));
     setFormOpen(true);
   };
 
@@ -91,19 +94,20 @@ function DataTable<T extends { id: number | string }>({
 
   const dismissForm = async () => {
     await onFormDismiss?.();
-    onRefresh();
     setFormItem(formItemInitValue ?? {});
     setFormOpen(false);
   };
 
   return (
-    <div className="flex flex-col overflow-hidden gap-y-4">
-      <DataTableActionBar
-        header={header}
-        canAdd={!!ItemForm}
-        onAdd={() => setFormOpen(true)}
-        onRefresh={onRefresh}
-      />
+    <div className="flex flex-col gap-y-4 text-black dark:text-white">
+      {header && (
+        <DataTableActionBar
+          header={header}
+          canAdd={!!ItemForm}
+          onAdd={() => setFormOpen(true)}
+          onRefresh={onRefresh}
+        />
+      )}
       {filters}
       <DataTableBody
         data={data}
@@ -113,6 +117,7 @@ function DataTable<T extends { id: number | string }>({
         pagination={pagination}
         notSortable={notSortable}
         withoutActions={withoutActions}
+        disabled={disabled}
         onEdit={openForm}
         canEdit={(item) => (canEdit?.(item) ?? true) && !!ItemForm}
         onDelete={onDelete}

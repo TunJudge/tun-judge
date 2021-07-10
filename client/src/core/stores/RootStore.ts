@@ -17,15 +17,26 @@ import { TestcasesStore } from './TestcasesStore';
 import { ToastsStore } from './ToastsStore';
 import { UsersStore } from './UsersStore';
 
-const lastLogin: number = parseInt(localStorage.getItem('connected') ?? '0');
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
 
 const updateEvents = ['contests', 'scoreboard', 'submissions', 'judgings', 'judgeRuns'] as const;
 type UpdateEvents = typeof updateEvents[number];
 
+type AppLocalCache = {
+  connected?: number;
+  darkMode: boolean;
+  menuCollapsed: boolean;
+  currentContestId?: number;
+};
+
 export class RootStore {
-  @observable connected: boolean = Date.now() - new Date(lastLogin).getTime() < SESSION_LENGTH;
+  @observable appLocalCache: AppLocalCache = JSON.parse(localStorage.getItem('settings') ?? '{}');
+
+  @observable connected: boolean =
+    Date.now() - new Date(this.appLocalCache.connected ?? 0).getTime() < SESSION_LENGTH;
+
   @observable profile: User | undefined;
+
   private _updatesCount: Record<UpdateEvents, number> = {
     contests: 1,
     judgings: 1,
@@ -87,6 +98,11 @@ export class RootStore {
         this.connected && http.get<User>(`api/current`).then(this.setProfile).catch(this.logout),
       { delay: 10 },
     );
+
+    autorun(() => {
+      console.log('reaction');
+      localStorage.setItem('settings', JSON.stringify(this.appLocalCache));
+    });
   }
 
   private initiateWebSocket() {
@@ -115,10 +131,15 @@ export class RootStore {
   setProfile = (profile: User): User => (this.profile = profile);
 
   @action
+  setDarkMode = (darkMode: boolean): void => {
+    this.appLocalCache.darkMode = darkMode;
+  };
+
+  @action
   logout = (): void => {
     this.connected = false;
     this.profile = undefined;
-    localStorage.removeItem('connected');
+    delete this.appLocalCache.connected;
   };
 }
 

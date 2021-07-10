@@ -1,6 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import classNames from 'classnames';
 import React from 'react';
+import { rootStore } from '../../../core/stores/RootStore';
 
 type Props = {
   title: string;
@@ -22,7 +23,13 @@ export const FormModal: React.FC<React.PropsWithChildren<Props>> = ({
 }) => {
   return (
     <Transition appear show={isOpen} as={React.Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" onClose={onClose}>
+      <Dialog
+        as="div"
+        className={classNames('fixed inset-0 z-10 overflow-y-auto', {
+          dark: rootStore.appLocalCache.darkMode,
+        })}
+        onClose={onClose}
+      >
         <div className="min-h-screen px-4 text-center">
           <Transition.Child
             as={React.Fragment}
@@ -49,7 +56,7 @@ export const FormModal: React.FC<React.PropsWithChildren<Props>> = ({
           >
             <div
               className={classNames(
-                'inline-grid w-full p-6 my-8 gap-y-4 text-left align-middle transition-all transform bg-white shadow-xl rounded-xl',
+                'inline-grid w-full p-6 my-8 gap-y-4 text-left align-middle transition-all transform bg-white shadow-xl rounded-xl dark:bg-gray-800',
                 {
                   'max-w-xs': size === 'xs',
                   'max-w-sm': size === 'sm',
@@ -66,9 +73,11 @@ export const FormModal: React.FC<React.PropsWithChildren<Props>> = ({
                 },
               )}
             >
-              <div className="text-xl py-1 font-medium leading-6 text-gray-900">{title}</div>
+              <div className="text-xl py-1 font-medium leading-6 text-gray-900 dark:text-gray-100">
+                {title}
+              </div>
               <form className="grid gap-y-2">{children}</form>
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 mt-2">
                 <button
                   type="button"
                   className="px-4 py-2 text-sm font-medium text-red-900 bg-red-100 border border-transparent rounded-md hover:bg-red-200"

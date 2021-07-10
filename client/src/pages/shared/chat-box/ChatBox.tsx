@@ -20,7 +20,7 @@ const ChatBox: DataTableItemForm<Clarification> = observer(
 
     return (
       <SimpleDialog isOpen={isOpen} onClose={onClose} withoutFooter>
-        <div className="flex flex-col gap-y-4">
+        <div className="flex flex-col gap-y-4 dark:text-white">
           <ChatBoxHeader clarification={item} />
           <ChatBoxMessageList clarification={item} />
           <ChatBoxInput clarification={item} />

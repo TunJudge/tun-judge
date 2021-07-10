@@ -111,12 +111,14 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
           },
         )}
       >
-        <div
-          className="text-2xl text-center p-4 mb-2 cursor-pointer"
-          onClick={() => onLinkClick('')}
-        >
-          TUN-JUDGE
-        </div>
+        {visible && (
+          <div
+            className="text-2xl text-center p-4 mb-2 cursor-pointer"
+            onClick={() => onLinkClick('')}
+          >
+            TUN-JUDGE
+          </div>
+        )}
         <div className="space-y-1">
           {visible &&
             tabs.map(({ key, icon: Icon, label, title }) => (

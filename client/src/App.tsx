@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -19,16 +20,22 @@ function renderLayout(role?: Role): React.ReactNode {
 }
 
 export const App: React.FC = observer(() => {
-  const { connected, profile } = rootStore;
+  const {
+    connected,
+    profile,
+    appLocalCache: { darkMode },
+  } = rootStore;
 
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route path="/logout" component={Logout} />
-        {connected ? renderLayout(profile?.role) : <PublicLayout />}
-      </Switch>
-      <ToastContainer />
-    </BrowserRouter>
+    <div className={classNames({ dark: darkMode })}>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/logout" component={Logout} />
+          {connected ? renderLayout(profile?.role) : <PublicLayout />}
+        </Switch>
+        <ToastContainer />
+      </BrowserRouter>
+    </div>
   );
 });
 

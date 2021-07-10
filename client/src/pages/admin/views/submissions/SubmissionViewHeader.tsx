@@ -18,12 +18,12 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
   } = rootStore;
 
   return (
-    <div className="flex items-center shadow rounded-md border w-full justify-between p-4 bg-white">
+    <div className="flex items-center shadow rounded-md border w-full justify-between p-4 bg-white dark:bg-gray-800 dark:border-gray-700">
       <div className="text-xl font-medium">Submission {submission.id}</div>
       <div className="flex items-center space-x-2">
         {judging?.result && (
           <div
-            className="text-blue-600 border border-blue-600 hover:bg-blue-50 rounded-md p-2 cursor-pointer"
+            className="text-blue-600 border border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-md p-2 cursor-pointer"
             onClick={async () => {
               await (submission!.valid ? ignore : unIgnore)(submission!.id);
               await fetchById(submission!.id);
@@ -34,7 +34,7 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
         )}
         {judging?.result && judging.verified && (
           <div
-            className="text-red-600 border border-red-600 hover:bg-red-50 rounded-md p-2 cursor-pointer"
+            className="text-red-600 border border-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-md p-2 cursor-pointer"
             onClick={async () => {
               await rejudge(submission!.id);
               await fetchById(submission!.id);
@@ -46,7 +46,7 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
         {judging?.result && !judging.verified && (
           <div className="flex space-x-2">
             <div
-              className="text-blue-600 border border-blue-600 hover:bg-blue-50 rounded-md p-2 cursor-pointer"
+              className="text-blue-600 border border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-md p-2 cursor-pointer"
               onClick={async () => {
                 if (isSubmissionClaimedByMe(judging, profile)) {
                   await unClaim(submission!.id);
@@ -59,7 +59,7 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
               {isSubmissionClaimedByMe(judging, profile) ? 'UnClaim' : 'Claim'}
             </div>
             <div
-              className="text-green-600 border border-green-600 hover:bg-green-50 rounded-md p-2 cursor-pointer"
+              className="text-green-600 border border-green-600 hover:bg-green-50 dark:hover:bg-green-900 rounded-md p-2 cursor-pointer"
               onClick={async () => {
                 await markVerified(submission!.id);
                 history.push('/submissions');
@@ -70,7 +70,7 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
           </div>
         )}
         <div
-          className="hover:bg-gray-200 rounded-md p-2 cursor-pointer"
+          className="hover:bg-gray-200 rounded-md p-2 cursor-pointer dark:hover:bg-gray-700"
           onClick={() => fetchById(submission!.id)}
         >
           <RefreshIcon className="w-6 h-6" />

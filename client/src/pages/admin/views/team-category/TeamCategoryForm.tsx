@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../../core/helpers';
 import { TeamCategory } from '../../../../core/models';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
@@ -11,9 +11,13 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
   onClose,
   onSubmit,
 }) => {
-  const [errors, setErrors] = useState<FormErrors<TeamCategory>>({
-    name: isEmpty(teamCategory.name),
-  });
+  const [errors, setErrors] = useState<FormErrors<TeamCategory>>({});
+
+  useEffect(() => {
+    setErrors({
+      name: isEmpty(teamCategory.name),
+    });
+  }, [teamCategory]);
 
   return (
     <FormModal

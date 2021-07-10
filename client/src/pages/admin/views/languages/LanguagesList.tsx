@@ -10,7 +10,7 @@ const LanguagesList: React.FC = observer(() => {
   const [scriptData, setScriptData] = useState<Language | undefined>();
   const {
     isUserAdmin,
-    languagesStore: { fetchAll, create, update, remove },
+    languagesStore: { updateCount, fetchAll, create, update, remove },
   } = rootStore;
 
   const columns: ListPageTableColumn<Language>[] = [
@@ -55,6 +55,7 @@ const LanguagesList: React.FC = observer(() => {
       <DataTable<Language>
         header="Languages"
         dataFetcher={fetchAll}
+        dataDependencies={[updateCount]}
         columns={columns}
         ItemForm={isUserAdmin ? LanguageForm : undefined}
         onDelete={remove}

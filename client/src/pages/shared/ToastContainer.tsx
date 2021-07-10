@@ -34,7 +34,7 @@ const ToastContainer: React.FC = observer(() => {
           <div
             key={index}
             className={classNames(
-              `grid grid-cols-6 gap-x-4 rounded-xl border shadow-lg bg-white p-4`,
+              `grid grid-cols-6 gap-x-4 rounded-xl border shadow-lg bg-white p-4 dark:bg-gray-800 dark:text-white`,
               {
                 'border-gray-500': colors[type] === 'gray',
                 'border-green-500': colors[type] === 'green',
@@ -53,7 +53,7 @@ const ToastContainer: React.FC = observer(() => {
                 })}
               />
             </div>
-            <div className="col-span-5">{message}</div>
+            <div className="col-span-5 flex items-center">{message}</div>
           </div>
         );
       })}

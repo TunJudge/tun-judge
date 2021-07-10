@@ -10,7 +10,7 @@ import ContestForm from './ContestForm';
 const ContestsList: React.FC = observer(() => {
   const {
     isUserAdmin,
-    contestsStore: { fetchAll, create, update, remove },
+    contestsStore: { updateCount, fetchAll, create, update, remove },
   } = rootStore;
 
   const columns: ListPageTableColumn<Contest>[] = [
@@ -69,6 +69,7 @@ const ContestsList: React.FC = observer(() => {
     <DataTable<Contest>
       header="Contests"
       dataFetcher={fetchAll}
+      dataDependencies={[updateCount]}
       columns={columns}
       formItemInitValue={observable({ problems: [] })}
       ItemForm={isUserAdmin ? ContestForm : undefined}

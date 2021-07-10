@@ -44,9 +44,17 @@ const ContestForm: DataTableItemForm<Contest> = observer(
 
     useEffect(() => {
       setProblemsErrors(
-        contest.problems.map((p) => ({
-          problem: isEmpty(p.problem),
-          shortName: isEmpty(p.shortName),
+        contest.problems.map((cp) => ({
+          problem:
+            isEmpty(cp.problem) ||
+            contest.problems.filter(
+              (p) => p.problem && cp.problem && p.problem.id === cp.problem.id,
+            ).length > 1,
+          shortName:
+            isEmpty(cp.shortName) ||
+            contest.problems.filter(
+              (p) => p.shortName && cp.shortName && p.shortName.trim() === cp.shortName.trim(),
+            ).length > 1,
         })),
       );
     }, [contest.problems]);
@@ -192,32 +200,20 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="mt-2 shadow border border-gray-200 rounded-md">
-          <table className="table-fixed min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="w-1/4 p-3 text-center font-medium text-gray-700 uppercase tracking-wider">
-                  Problem
-                </th>
-                <th className="w-1/6 p-3 text-center font-medium text-gray-700 uppercase tracking-wider">
-                  Short Name
-                </th>
-                <th className="w-24 p-3 text-center font-medium text-gray-700 uppercase tracking-wider">
-                  Points
-                </th>
-                <th className="w-32 p-3 text-center font-medium text-gray-700 uppercase tracking-wider">
-                  Allow Submit
-                </th>
-                <th className="w-32 p-3 text-center font-medium text-gray-700 uppercase tracking-wider">
-                  Allow Judge
-                </th>
-                <th className="w-36 p-3 text-center font-medium text-gray-700 uppercase tracking-wider">
-                  Color
-                </th>
-                <th className="p-3 text-center font-medium text-gray-700 uppercase tracking-wider" />
+        <div className="mt-2 overflow-auto shadow border border-gray-200 rounded-md dark:border-gray-700 dark:text-white">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+            <thead className="text-center uppercase bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+              <tr className="divide-x dark:divide-gray-800">
+                <th className="w-1/4 p-3 font-medium tracking-wider">Problem</th>
+                <th className="w-1/6 p-3 font-medium tracking-wider">Short Name</th>
+                <th className="w-24 p-3 font-medium tracking-wider">Points</th>
+                <th className="w-32 p-3 font-medium tracking-wider">Allow Submit</th>
+                <th className="w-32 p-3 font-medium tracking-wider">Allow Judge</th>
+                <th className="w-36 p-3 font-medium tracking-wider">Color</th>
+                <th className="p-3 font-medium tracking-wider" />
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-y-200">
+            <tbody className="bg-white divide-y divide-y-200 dark:bg-gray-800 dark:divide-gray-700">
               {!contest.problems.length && (
                 <tr>
                   <td className="p-3 text-center bg-gray-50 opacity-50" colSpan={7}>
@@ -226,13 +222,17 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                 </tr>
               )}
               {contest.problems.map((problem, index) => (
-                <tr key={`${contest.id}-${index}`} className="divide-x divide-x-200">
+                <tr
+                  key={`${contest.id}-${index}`}
+                  className="divide-x divide-x-200 dark:divide-gray-700"
+                >
                   <td className="p-3">
                     <DropdownField<ContestProblem>
                       entity={problem}
                       field="problem"
                       placeHolder="Select Problem"
                       required
+                      defaultTouched
                       options={problems}
                       optionsIdField="id"
                       optionsTextField="name"
@@ -257,6 +257,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                       entity={problem}
                       field="shortName"
                       required
+                      defaultTouched
                       errors={problemsErrors[index]}
                       onChange={() => {
                         contest.problems.forEach((cp, index) => {
@@ -312,21 +313,21 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                       />
                     </div>
                   </td>
-                  <td className="p-3 cursor-pointer hover:bg-red-50">
+                  <td
+                    className="p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900"
+                    onClick={() =>
+                      (contest.problems = contest.problems.filter((_, i) => i !== index))
+                    }
+                  >
                     <div className="flex items-center justify-center">
-                      <TrashIcon
-                        className="text-red-600 w-6 h-6"
-                        onClick={() =>
-                          (contest.problems = contest.problems.filter((_, i) => i !== index))
-                        }
-                      />
+                      <TrashIcon className="text-red-600 w-6 h-6" />
                     </div>
                   </td>
                 </tr>
               ))}
               <tr>
                 <td
-                  className="p-2 cursor-pointer bg-gray-50 hover:bg-gray-100"
+                  className="p-2 cursor-pointer bg-gray-50 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
                   colSpan={7}
                   onClick={() =>
                     (contest.problems = [

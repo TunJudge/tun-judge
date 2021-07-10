@@ -10,7 +10,7 @@ const ProblemsList: React.FC = observer(() => {
   const history = useHistory();
   const {
     isUserAdmin,
-    problemsStore: { fetchAll, create, update, remove },
+    problemsStore: { updateCount, fetchAll, create, update, remove },
   } = rootStore;
 
   const columns: ListPageTableColumn<Problem>[] = [
@@ -47,6 +47,7 @@ const ProblemsList: React.FC = observer(() => {
     <DataTable<Problem>
       header="Problems"
       dataFetcher={fetchAll}
+      dataDependencies={[updateCount]}
       columns={columns}
       ItemForm={isUserAdmin ? ProblemForm : undefined}
       withoutActions={!isUserAdmin}

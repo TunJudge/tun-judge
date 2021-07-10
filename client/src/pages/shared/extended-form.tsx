@@ -48,6 +48,7 @@ type ExtendedFieldProps<T> = {
   width?: ColSpanWidth;
   required?: boolean;
   readOnly?: boolean;
+  defaultTouched?: boolean;
   errors?: FormErrors<T>;
   setErrors?: (errors: FormErrors<T>) => void;
   onChange?: (value: any) => void;
@@ -66,12 +67,13 @@ export function TextField<T>({
   width = 'none',
   required,
   readOnly,
+  defaultTouched,
   pattern,
   errors,
   setErrors,
   onChange,
 }: TextFieldProps<T>): JSX.Element {
-  const [touched, setTouched] = useState(false);
+  const [touched, setTouched] = useState(defaultTouched);
 
   const input = (className: string) => (
     <input
@@ -117,11 +119,12 @@ export function TextAreaField<T>({
   width,
   required,
   readOnly,
+  defaultTouched,
   errors,
   setErrors,
   onChange,
 }: ExtendedFieldProps<T>): JSX.Element {
-  const [touched, setTouched] = useState(false);
+  const [touched, setTouched] = useState(defaultTouched);
 
   const input = (className: string) => (
     <textarea
@@ -171,6 +174,7 @@ export function NumberField<T>({
   required,
   defaultValue,
   readOnly,
+  defaultTouched,
   min,
   max,
   unit,
@@ -179,7 +183,7 @@ export function NumberField<T>({
   setErrors,
   onChange,
 }: NumberFieldProps<T>): JSX.Element {
-  const [touched, setTouched] = useState(false);
+  const [touched, setTouched] = useState(defaultTouched);
 
   if (isEmpty(entity[field]) && !isEmpty(defaultValue)) {
     entity[field] = defaultValue;
@@ -277,8 +281,8 @@ export function CheckBoxField<T>({
       />
       {label && (
         <label
-          className={classNames('flex font-medium text-gray-700 ml-2 p-0', {
-            'text-red-900': errors?.[field],
+          className={classNames('flex ml-2 p-0 font-medium text-gray-700 dark:text-gray-100', {
+            'text-red-900 dark:text-red-500': errors?.[field],
           })}
         >
           {label} {required && <span className="text-red-600">*</span>}
@@ -305,10 +309,11 @@ export function FileField<T>({
   onChange,
   accept,
   multiple,
+  defaultTouched,
 }: FileFieldProps<T>): JSX.Element {
   const [_fileName, setFileName] = useState<string>((entity[field] as any)?.name ?? '');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [touched, setTouched] = useState(false);
+  const [touched, setTouched] = useState(defaultTouched);
 
   const input = (className: string) => (
     <input
@@ -388,6 +393,7 @@ export function DropdownField<T>({
   width = 'none',
   required,
   readOnly,
+  defaultTouched,
   options,
   optionsIdField,
   optionsTextField,
@@ -408,8 +414,12 @@ export function DropdownField<T>({
   const inputRef = useRef<HTMLInputElement>(null);
   const optionsRef = useRef<HTMLUListElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const [touched, setTouched] = useState(false);
-  const hasErrors = useMemo(() => touched && errors?.[field], [touched, errors, field]);
+  const [touched, setTouched] = useState(defaultTouched);
+  const hasErrors = useMemo(
+    () => touched && errors?.[field],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [touched, errors, field, errors?.[field]],
+  );
 
   useEffect(() => {
     setOptions(
@@ -439,11 +449,13 @@ export function DropdownField<T>({
                     key: value[optionsIdField ?? 'id'],
                     text:
                       optionsState.find((option) => option.key === value[optionsIdField ?? 'id'])
-                        ?.text ?? value,
+                        ?.text ?? value[optionsTextField ?? 'id'],
                   }
                 : {
                     key: value,
-                    text: optionsState.find((option) => option.key === value)?.text ?? value,
+                    text:
+                      optionsState.find((option) => option.key === value)?.text ??
+                      value[optionsTextField ?? 'id'],
                   },
             )
           : typeof entity?.[field] === 'object'
@@ -598,8 +610,8 @@ export function DropdownField<T>({
         <div className="relative" onBlur={() => setTouched(true)}>
           {label && (
             <Listbox.Label
-              className={classNames('font-medium text-gray-700', {
-                'text-red-900': hasErrors,
+              className={classNames('font-medium text-gray-700 dark:text-gray-100', {
+                'text-red-900 dark:text-red-500': hasErrors,
               })}
             >
               {label} {required && <span className="text-red-600">*</span>}
@@ -607,29 +619,33 @@ export function DropdownField<T>({
           )}
           <Listbox.Button
             className={classNames(
-              'relative w-full text-left bg-white rounded-md shadow-sm cursor-default focus:outline-none border',
-              { 'border-red-600 placeholder-red-900': hasErrors, 'mt-1': !!label },
+              'relative w-full text-left bg-white rounded-md shadow-sm cursor-default focus:outline-none border dark:text-white dark:bg-gray-700 dark:border-gray-600',
+              {
+                'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
+                  hasErrors,
+                'mt-1': !!label,
+              },
             )}
             ref={triggerRef}
           >
             <div className="flex flex-wrap items-center px-3 py-2 gap-2">
               {!selectedValues.length && !allowAdditions && !search && (
-                <div className="pl-1 gap-x-1 block truncate text-gray-500">
+                <div className="pl-1 gap-x-1 block truncate text-gray-500 dark:text-gray-400">
                   {placeHolder ?? label}
                 </div>
               )}
               {selectedValues.map(({ key, text }) => (
                 <div
                   key={key}
-                  className={classNames('', {
+                  className={classNames('text-sm', {
                     'text-gray-500': !selectedValues,
-                    'flex items-center pl-2 py-1 rounded bg-gray-200': multiple,
+                    'flex items-center pl-2 rounded bg-gray-200 dark:bg-gray-800': multiple,
                   })}
                 >
                   {text}
                   {multiple && (
                     <XIcon
-                      className="h-6 w-6 p-1 mx-1 rounded-full hover:bg-gray-300"
+                      className="h-4 w-4 mx-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700"
                       onClick={unselectValue(key)}
                     />
                   )}
@@ -639,7 +655,7 @@ export function DropdownField<T>({
                 <input
                   type="text"
                   ref={inputRef}
-                  className="max-w-full focus:outline-none focus:ring-0 border-none p-0"
+                  className="max-w-full focus:outline-none focus:ring-0 border-none p-0 bg-transparent dark:placeholder-gray-400"
                   placeholder={allowAdditions ? 'Add option...' : 'Search option...'}
                   onChange={onInputChange}
                   onKeyDown={addOptionAndSelect}
@@ -657,12 +673,12 @@ export function DropdownField<T>({
             </div>
           </Listbox.Button>
           <Listbox.Options
-            className="z-10 absolute w-full mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none"
+            className="z-10 absolute w-full mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700"
             ref={optionsRef}
           >
             {!filteredOptions.length && (
               <Listbox.Option
-                className="text-gray-500 cursor-default select-none relative p-2 pl-3"
+                className="text-gray-500 cursor-default select-none relative p-2 pl-3 dark:text-gray-200"
                 value="-1"
               >
                 <span className="font-normal block truncate">No options</span>
@@ -676,10 +692,10 @@ export function DropdownField<T>({
                   <Listbox.Option
                     key={key}
                     className={classNames(
-                      'text-gray-900 cursor-default select-none relative p-2 pl-3',
+                      'text-gray-900 cursor-default select-none relative p-2 pl-3 dark:text-gray-200',
                       {
-                        'bg-gray-200': optionSelected,
-                        'hover:bg-gray-100': !optionSelected,
+                        'bg-gray-200 dark:bg-gray-500': optionSelected,
+                        'hover:bg-gray-100 dark:hover:bg-gray-600': !optionSelected,
                       },
                     )}
                     value={key}
@@ -828,6 +844,7 @@ export function DateTimeField<T>({
   minDate,
   maxDate,
   disabled,
+  defaultTouched,
   errors,
   setErrors,
   onChange,
@@ -842,10 +859,14 @@ export function DateTimeField<T>({
   const [yearsRange, setYearsRange] = useState<number[]>([]);
   const [blankDaysArr, setBlankDaysArr] = useState<number[]>([]);
   const [calendarView, setCalendarView] = useState<'days' | 'months' | 'years'>('days');
-  const [touched, setTouched] = useState(false);
+  const [touched, setTouched] = useState(defaultTouched);
 
   const displayDate = useMemo(() => entity[field] && getDisplayDate(date), [date, entity, field]);
-  const hasErrors = useMemo(() => touched && errors?.[field], [touched, errors, field]);
+  const hasErrors = useMemo(
+    () => touched && errors?.[field],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [touched, errors, field, errors?.[field]],
+  );
 
   const inputRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -1081,14 +1102,14 @@ export function DateTimeField<T>({
     >
       {label && (
         <label
-          className={classNames('font-medium text-gray-700', {
-            'text-red-900': hasErrors,
+          className={classNames('font-medium text-gray-700 dark:text-gray-100', {
+            'text-red-900 dark:text-red-500': hasErrors,
           })}
         >
           {label} {required && <span className="text-red-600">*</span>}
         </label>
       )}
-      <div className="relative">
+      <div className={classNames('relative', { 'mt-1': !!label })}>
         <input
           type="text"
           readOnly
@@ -1097,9 +1118,13 @@ export function DateTimeField<T>({
           value={displayDate ?? ''}
           onBlur={() => setTouched(true)}
           onClick={() => setIsOpen(!isOpen)}
-          className={classNames('w-full border border-gray-300 rounded-md shadow-sm', {
-            'border-red-600 placeholder-red-900 opacity-70': hasErrors,
-          })}
+          className={classNames(
+            'w-full border border-gray-300 rounded-md shadow-sm dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400',
+            {
+              'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
+                hasErrors,
+            },
+          )}
           placeholder={placeHolder ?? label ?? 'Select date'}
         />
 
@@ -1120,15 +1145,15 @@ export function DateTimeField<T>({
         )}
 
         {isOpen && (
-          <div className="relative z-10">
+          <div className="relative z-10 dark:text-white">
             <div
-              className="flex flex-col duration-200 mt-1 bg-white border rounded-md shadow absolute origin-top-left"
+              className="flex flex-col duration-200 mt-1 bg-white border rounded-md shadow absolute origin-top-left dark:bg-gray-800 dark:border-gray-700"
               ref={calendarRef}
             >
               <div className="select-none">
                 <div className="flex pt-2 px-3">
                   <div
-                    className="flex items-center transition ease-in-out duration-100 cursor-pointer rounded-full px-2 py-1 -ml-1 hover:bg-gray-100"
+                    className="flex items-center transition ease-in-out duration-100 cursor-pointer rounded-full px-2 py-1 -ml-1 hover:bg-gray-200 dark:hover:bg-gray-700"
                     onClick={nextCalendarView}
                   >
                     {calendarView === 'years' && (
@@ -1137,23 +1162,23 @@ export function DateTimeField<T>({
                     {calendarView === 'days' && <span>{months[month]}</span>}
                     {calendarView !== 'years' ? (
                       <>
-                        <span className="text-gray-500 ml-1">{year}</span>
+                        <span className="ml-1 text-gray-500 dark:text-gray-300">{year}</span>
                         <ChevronRightIcon className="h-5 w-5 text-gray-400" />
                       </>
                     ) : (
-                      <span className="text-gray-500 ml-1">
+                      <span className="ml-1 text-gray-500 dark:text-gray-300">
                         {yearsRange[0]} - {yearsRange[11]}
                       </span>
                     )}
                   </div>
                   <div
-                    className="transition ease-in-out duration-100 cursor-pointer rounded-full p-1 ml-auto hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="transition ease-in-out duration-100 cursor-pointer rounded-full p-1 ml-auto hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={editCalendarViewPage('subtract')}
                   >
                     <ChevronLeftIcon className="h-6 w-6 text-gray-400" />
                   </div>
                   <div
-                    className="transition ease-in-out duration-100 cursor-pointer rounded-full p-1 -mr-1 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="transition ease-in-out duration-100 cursor-pointer rounded-full p-1 -mr-1 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={editCalendarViewPage('add')}
                   >
                     <ChevronRightIcon className="h-6 w-6 text-gray-400" />
@@ -1165,7 +1190,7 @@ export function DateTimeField<T>({
                       {days.map((day, index) => (
                         <span
                           key={index}
-                          className="uppercase text-xs text-gray-500 w-8 h-8 flex items-center justify-center"
+                          className="uppercase text-xs text-gray-500 dark:text-gray-400 w-8 h-8 flex items-center justify-center"
                         >
                           {day}
                         </span>
@@ -1194,8 +1219,9 @@ export function DateTimeField<T>({
                                 'border border-blue-500': isEqualToday,
                                 'bg-blue-500 text-white': isEqualSelectedDate,
                                 'cursor-pointer': isDaySelectable,
-                                'hover:bg-blue-100': isDaySelectable && !isEqualSelectedDate,
-                                'text-gray-400 bg-white': !isDaySelectable,
+                                'hover:bg-blue-100 dark:hover:bg-blue-900':
+                                  isDaySelectable && !isEqualSelectedDate,
+                                'text-gray-400 dark:text-gray-500': !isDaySelectable,
                               },
                             )}
                             onClick={isDaySelectable ? setDayNumber(dayNumber) : undefined}
@@ -1235,8 +1261,9 @@ export function DateTimeField<T>({
                               'border-transparent': !isEqualThisMonth,
                               'bg-blue-500 text-white': isEqualSelectedMonth,
                               'cursor-pointer': isMonthSelectable,
-                              'hover:bg-blue-100': isMonthSelectable && !isEqualSelectedMonth,
-                              'text-gray-400 bg-white': !isMonthSelectable,
+                              'hover:bg-blue-100 dark:hover:bg-blue-900':
+                                isMonthSelectable && !isEqualSelectedMonth,
+                              'text-gray-400 dark:text-gray-500': !isMonthSelectable,
                             },
                           )}
                           onClick={setMonthView(index)}
@@ -1274,8 +1301,9 @@ export function DateTimeField<T>({
                               'border-transparent': !isEqualThisYear,
                               'bg-blue-500 text-white': isEqualSelectedYear,
                               'cursor-pointer': isYearSelectable,
-                              'hover:bg-blue-100': isYearSelectable && !isEqualSelectedYear,
-                              'text-gray-400 bg-white': !isYearSelectable,
+                              'hover:bg-blue-100 dark:hover:bg-blue-900':
+                                isYearSelectable && !isEqualSelectedYear,
+                              'text-gray-400 dark:text-gray-500': !isYearSelectable,
                             },
                           )}
                           onClick={setYearView(yearNumber)}
@@ -1288,22 +1316,22 @@ export function DateTimeField<T>({
                 )}
               </div>
               {calendarView === 'days' && (
-                <div className="flex items-center justify-between px-4 py-2 select-none">
-                  <label className="text-sm text-gray-700">Time</label>
-                  <div className="flex space-x-2">
-                    <div className="flex flex-col items-center justify-center">
+                <div className="flex items-center justify-between px-3 py-2 select-none">
+                  <label className="text-sm text-gray-700 dark:text-gray-300">Time</label>
+                  <div className="flex justify-center flex-grow gap-2">
+                    <div className="flex flex-col items-center justify-center gap-1">
                       <ChevronUpIcon
-                        className="h-4 w-4 hover:bg-gray-200"
+                        className="h-4 w-4 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                         onClick={editDateField('hours', 1)}
                         {...increaseHours}
                       />
                       <ChevronDownIcon
-                        className="h-4 w-4 hover:bg-gray-200"
+                        className="h-4 w-4 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                         onClick={editDateField('hours', -1)}
                         {...decreaseHours}
                       />
                     </div>
-                    <div className="bg-gray-100 rounded-md w-full text-right flex items-center border border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-opacity-50">
+                    <div className="max-w-min bg-gray-100 rounded-md w-full text-right flex items-center border border-gray-100 dark:bg-gray-700 dark:border-gray-700">
                       <input
                         disabled
                         type="number"
@@ -1318,21 +1346,21 @@ export function DateTimeField<T>({
                         className="text-center p-0 w-8 h-8 bg-transparent text-sm border border-transparent"
                       />
                     </div>
-                    <div className="flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center justify-center gap-1">
                       <ChevronUpIcon
-                        className="h-4 w-4 hover:bg-gray-200"
+                        className="h-4 w-4 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                         onClick={editDateField('minutes', 1)}
                         {...increaseMinutes}
                       />
                       <ChevronDownIcon
-                        className="h-4 w-4 hover:bg-gray-200"
+                        className="h-4 w-4 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                         onClick={editDateField('minutes', -1)}
                         {...decreaseMinutes}
                       />
                     </div>
                   </div>
                   <div
-                    className="text-blue-600 text-sm uppercase font-bold transition duration-100 ease-in-out border border-transparent focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-opacity-50 rounded cursor-pointer"
+                    className="p-1 text-blue-600 dark:text-blue-500 text-sm uppercase font-bold transition duration-100 ease-in-out border border-transparent rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
                     onClick={() => setIsOpen(false)}
                   >
                     OK
@@ -1378,8 +1406,8 @@ const LabeledInput: React.FC<{
   >
     {label && (
       <label
-        className={classNames('font-medium text-gray-700', {
-          'text-red-900': hasErrors,
+        className={classNames('font-medium text-gray-700 dark:text-gray-100', {
+          'text-red-900 dark:text-red-500': hasErrors,
         })}
       >
         {label} {required && <span className="text-red-600">*</span>}
@@ -1387,13 +1415,17 @@ const LabeledInput: React.FC<{
     )}
     <div className={classNames('relative', { 'mt-1': !!label })}>
       {input(
-        classNames('w-full border border-gray-300 rounded-md shadow-sm', {
-          'border-red-600 placeholder-red-900 opacity-70': hasErrors,
-        }),
+        classNames(
+          'w-full border border-gray-300 rounded-md shadow-sm dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400',
+          {
+            'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
+              hasErrors,
+          },
+        ),
       )}
       {children}
       <div className="absolute inset-y-0 right-0 flex items-center px-3 gap-x-1">
-        {hasErrors && <ExclamationCircleIcon className="text-red-600 h-6 w-6" />}
+        {hasErrors && <ExclamationCircleIcon className="text-red-600 dark:text-red-500 h-6 w-6" />}
         {ExtraIcon && <ExtraIcon className="h-6 w-6 text-gray-400" />}
       </div>
     </div>

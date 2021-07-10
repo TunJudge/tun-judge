@@ -10,7 +10,15 @@ import TeamCategoryForm from './TeamCategoryForm';
 const TeamCategoriesList: React.FC = observer(() => {
   const {
     isUserAdmin,
-    teamCategoriesStore: { data: teamCategories, fetchAll, create, update, move, remove },
+    teamCategoriesStore: {
+      data: teamCategories,
+      updateCount,
+      fetchAll,
+      create,
+      update,
+      move,
+      remove,
+    },
   } = rootStore;
 
   const columns: ListPageTableColumn<TeamCategory>[] = [
@@ -23,7 +31,7 @@ const TeamCategoriesList: React.FC = observer(() => {
       header: 'Sort Order',
       field: 'sortOrder',
       render: (category) => (
-        <div className="flex items-center">
+        <div className="flex items-center justify-center gap-1">
           {isUserAdmin && (
             <ChevronDownIcon
               className={classNames('cursor-pointer h-4 w-4', {
@@ -33,10 +41,12 @@ const TeamCategoriesList: React.FC = observer(() => {
             />
           )}
           {category.sortOrder}
-          {isUserAdmin && category.sortOrder > 0 && (
+          {isUserAdmin && (
             <ChevronUpIcon
-              className="cursor-pointer h-4 w-4"
-              onClick={() => move(category.id, 'up')}
+              className={classNames('cursor-pointer h-4 w-4', {
+                'opacity-0': category.sortOrder === 0,
+              })}
+              onClick={() => (category.sortOrder > 0 ? move(category.id, 'up') : undefined)}
             />
           )}
         </div>
@@ -45,7 +55,15 @@ const TeamCategoriesList: React.FC = observer(() => {
     {
       header: 'Color',
       field: 'color',
-      render: (category) => <div style={{ backgroundColor: category.color }}>{category.color}</div>,
+      render: (category) => (
+        <div className="flex items-center justify-center gap-2 w-full">
+          {category.color}
+          <div
+            className="h-6 w-6 border border-black rounded-full dark:border-white"
+            style={{ backgroundColor: category.color }}
+          />
+        </div>
+      ),
     },
     {
       header: 'Visible?',
@@ -63,6 +81,7 @@ const TeamCategoriesList: React.FC = observer(() => {
     <DataTable<TeamCategory>
       header="Team Categories"
       dataFetcher={fetchAll}
+      dataDependencies={[updateCount]}
       columns={columns}
       ItemForm={isUserAdmin ? TeamCategoryForm : undefined}
       onDelete={remove}
