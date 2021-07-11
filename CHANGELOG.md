@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.25 (2021-07-11)
+
+
+### Features
+
+* add swagger api docs and swagger-stats ([9bd479e](https://github.com/TunJudge/tun-judge/commit/9bd479e228d86b4f78cf857ffbc151fdf3e1a5f2))
+
 ### 0.0.24 (2021-07-11)
 
 
