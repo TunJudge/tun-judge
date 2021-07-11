@@ -7,7 +7,7 @@ import SubmissionsList from './SubmissionsList';
 const HomeView: React.FC = () => {
   return (
     <div className="flex flex-col items-center gap-4">
-      <Scoreboard className="pt-4" compact />
+      <Scoreboard className="pt-12" compact />
       <div className="xl:container grid grid-cols-2 gap-4 px-4">
         <div className="flex flex-col gap-4">
           <ProblemSet listMode />

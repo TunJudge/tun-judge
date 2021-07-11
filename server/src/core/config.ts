@@ -15,6 +15,10 @@ const config = {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT),
   },
+  swaggerStats: {
+    username: process.env.SWAGGER_STATS_USERNAME,
+    password: process.env.SWAGGER_STATS_PASSWORD,
+  },
 };
 
 export default config;

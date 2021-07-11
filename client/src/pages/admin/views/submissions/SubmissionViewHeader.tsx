@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { dateComparator, isSubmissionClaimedByMe } from '../../../../core/helpers';
 import { Judging, Submission } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
+import Tooltip from '../../../shared/tooltip/Tooltip';
 
 const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ submission }) => {
   const history = useHistory();
@@ -69,12 +70,14 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
             </div>
           </div>
         )}
-        <div
-          className="hover:bg-gray-200 rounded-md p-2 cursor-pointer dark:hover:bg-gray-700"
-          onClick={() => fetchById(submission!.id)}
-        >
-          <RefreshIcon className="w-6 h-6" />
-        </div>
+        <Tooltip content="Refresh">
+          <div
+            className="hover:bg-gray-200 rounded-md p-2 cursor-pointer dark:hover:bg-gray-700"
+            onClick={() => fetchById(submission!.id)}
+          >
+            <RefreshIcon className="w-6 h-6" />
+          </div>
+        </Tooltip>
       </div>
     </div>
   );

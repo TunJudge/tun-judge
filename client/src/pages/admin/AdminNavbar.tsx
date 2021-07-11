@@ -26,7 +26,7 @@ const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => 
             <UserIcon className="h-4 w-4" />
             {profile?.name ?? '-'}
           </Menu.Button>
-          <Menu.Items className="absolute transform left-1/2 -translate-x-1/2 w-36 mt-4 p-2 gap-2 border bg-white rounded-md shadow-lg outline-none dark:bg-gray-800 dark:border-gray-700">
+          <Menu.Items className="absolute z-50 transform left-1/2 -translate-x-1/2 w-36 mt-4 p-2 gap-2 border bg-white rounded-md shadow-lg outline-none dark:bg-gray-800 dark:border-gray-700">
             <Menu.Item onClick={() => history.push('/logout')}>
               <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
                 <LogoutIcon className="h-4 w-4" />

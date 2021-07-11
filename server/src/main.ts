@@ -1,6 +1,9 @@
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
+import * as SwaggerStats from 'swagger-stats';
+import { version } from '../package.json';
 import { AppModule } from './app.module';
 import config from './core/config';
 import session from './core/session';
@@ -21,6 +24,25 @@ async function bootstrap() {
   app.useWebSocketAdapter(new SocketIoAdapter(app));
   app.use(passport.initialize());
   app.use(passport.session());
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Tun-Judge API')
+    .setDescription('Tun-Judge API Description')
+    .setVersion(version)
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/swagger', app, document);
+
+  app.use(
+    SwaggerStats.getMiddleware({
+      name: 'Tun-Judge',
+      version: version,
+      swaggerSpec: document,
+      authentication: true,
+      onAuthenticate: (req: any) => req.session.passport?.user.role.name === 'admin',
+    }),
+  );
+
   await app.listen(3000, '0.0.0.0');
 }
 
