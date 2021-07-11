@@ -1,5 +1,6 @@
 import { PlusIcon, RefreshIcon } from '@heroicons/react/solid';
 import React from 'react';
+import Tooltip from '../tooltip/Tooltip';
 
 type Props = {
   header: string;
@@ -14,20 +15,24 @@ const DataTableActionBar: React.FC<Props> = ({ header, canAdd, onAdd, onRefresh 
       <div className="text-xl">{header}</div>
       <div className="flex items-center space-x-2">
         {onRefresh && (
-          <div
-            className="hover:bg-gray-200 rounded-md p-2 cursor-pointer dark:hover:bg-gray-700"
-            onClick={onRefresh}
-          >
-            <RefreshIcon className="w-6 h-6" />
-          </div>
+          <Tooltip content="Refresh">
+            <div
+              className="hover:bg-gray-200 rounded-md p-2 cursor-pointer dark:hover:bg-gray-700"
+              onClick={onRefresh}
+            >
+              <RefreshIcon className="w-6 h-6" />
+            </div>
+          </Tooltip>
         )}
         {canAdd && (
-          <div
-            className="hover:bg-gray-200 rounded-md p-2 cursor-pointer dark:hover:bg-gray-700"
-            onClick={onAdd}
-          >
-            <PlusIcon className="w-6 h-6" />
-          </div>
+          <Tooltip content="Add">
+            <div
+              className="hover:bg-gray-200 rounded-md p-2 cursor-pointer dark:hover:bg-gray-700"
+              onClick={onAdd}
+            >
+              <PlusIcon className="w-6 h-6" />
+            </div>
+          </Tooltip>
         )}
       </div>
     </div>

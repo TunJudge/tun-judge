@@ -1,4 +1,4 @@
-import { Menu, Transition } from '@headlessui/react';
+import { Menu } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
@@ -64,38 +64,28 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
           </div>
         )}
       </Menu.Button>
-      <Transition
-        as={React.Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items className="font-normal text-black absolute right-0 w-36 mt-2 origin-top-right bg-white rounded-md shadow-lg outline-none dark:text-white dark:bg-gray-800">
-          <Menu.Item>
-            <div className="flex items-center px-3 py-2 cursor-none bg-gray-300 rounded-t-md dark:bg-gray-700">
-              Change Contest
+      <Menu.Items className="absolute z-50 transform left-1/2 -translate-x-1/2 w-36 mt-4 font-normal text-black bg-white border rounded-md shadow-lg outline-none dark:text-white dark:bg-gray-800 dark:border-gray-700">
+        <Menu.Item>
+          <div className="flex items-center px-3 py-2 cursor-none bg-gray-300 rounded-t-md dark:bg-gray-700">
+            Change Contest
+          </div>
+        </Menu.Item>
+        {contests.map((contest) => (
+          <Menu.Item key={contest.id}>
+            <div
+              className={classNames(
+                'flex items-center px-3 py-2 cursor-pointer rounded-md m-1 hover:bg-gray-200 dark:hover:bg-gray-700',
+                {
+                  'bg-gray-200 dark:bg-gray-700': contest.id === currentContest?.id,
+                },
+              )}
+              onClick={() => setCurrentContest(contest.id)}
+            >
+              {contest.shortName}
             </div>
           </Menu.Item>
-          {contests.map((contest) => (
-            <Menu.Item key={contest.id}>
-              <div
-                className={classNames(
-                  'flex items-center px-3 py-2 cursor-pointer rounded-md m-1 hover:bg-gray-200 dark:hover:bg-gray-700',
-                  {
-                    'bg-gray-200 dark:bg-gray-700': contest.id === currentContest?.id,
-                  },
-                )}
-                onClick={() => setCurrentContest(contest.id)}
-              >
-                {contest.shortName}
-              </div>
-            </Menu.Item>
-          ))}
-        </Menu.Items>
-      </Transition>
+        ))}
+      </Menu.Items>
     </Menu>
   );
 });

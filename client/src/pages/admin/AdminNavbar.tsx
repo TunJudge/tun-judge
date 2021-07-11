@@ -1,4 +1,4 @@
-import { Menu, Transition } from '@headlessui/react';
+import { Menu } from '@headlessui/react';
 import { LogoutIcon, UserIcon, ViewListIcon } from '@heroicons/react/outline';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -26,24 +26,14 @@ const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => 
             <UserIcon className="h-4 w-4" />
             {profile?.name ?? '-'}
           </Menu.Button>
-          <Transition
-            as={React.Fragment}
-            enter="transition ease-out duration-100"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition ease-in duration-75"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95"
-          >
-            <Menu.Items className="absolute right-0 w-36 mt-2 p-2 gap-2 origin-top-right bg-white rounded-md shadow-lg outline-none dark:bg-gray-800">
-              <Menu.Item onClick={() => history.push('/logout')}>
-                <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
-                  <LogoutIcon className="h-4 w-4" />
-                  Logout
-                </div>
-              </Menu.Item>
-            </Menu.Items>
-          </Transition>
+          <Menu.Items className="absolute transform left-1/2 -translate-x-1/2 w-36 mt-4 p-2 gap-2 border bg-white rounded-md shadow-lg outline-none dark:bg-gray-800 dark:border-gray-700">
+            <Menu.Item onClick={() => history.push('/logout')}>
+              <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
+                <LogoutIcon className="h-4 w-4" />
+                Logout
+              </div>
+            </Menu.Item>
+          </Menu.Items>
         </Menu>
         <DarkModeSwitcher />
       </div>

@@ -1,14 +1,13 @@
 import classNames from 'classnames';
 import React from 'react';
 
-const Spinner: React.FC<{ className?: string; fullScreen?: boolean }> = ({
-  className,
-  fullScreen,
-}) => (
+type Props = { className?: string; fullScreen?: boolean };
+
+const Spinner: React.FC<Props> = ({ className, fullScreen }) => (
   <div
     className={classNames(
       className,
-      'flex items-center justify-center h-full w-full bg-gray-100 dark:bg-gray-800',
+      'flex items-center justify-center h-full w-full bg-white dark:bg-gray-800',
       {
         'h-screen': fullScreen,
       },

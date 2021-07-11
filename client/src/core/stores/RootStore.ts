@@ -15,6 +15,7 @@ import { TeamsStore } from './TeamsStore';
 import { TeamStore } from './TeamStore';
 import { TestcasesStore } from './TestcasesStore';
 import { ToastsStore } from './ToastsStore';
+import { TooltipStore } from './TooltipStore';
 import { UsersStore } from './UsersStore';
 
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
@@ -71,6 +72,7 @@ export class RootStore {
   clarificationsStore: ClarificationsStore;
 
   toastsStore: ToastsStore;
+  tooltipStore: TooltipStore;
 
   constructor() {
     this.publicStore = new PublicStore(this);
@@ -90,6 +92,7 @@ export class RootStore {
     this.clarificationsStore = new ClarificationsStore(this);
 
     this.toastsStore = new ToastsStore();
+    this.tooltipStore = new TooltipStore();
 
     this.initiateWebSocket();
 
@@ -133,10 +136,11 @@ export class RootStore {
   };
 
   @action
-  logout = (): void => {
+  logout = async (): Promise<void> => {
     this.connected = false;
     this.profile = undefined;
     delete this.appLocalCache.connected;
+    await this.publicStore.fetchContests();
   };
 }
 

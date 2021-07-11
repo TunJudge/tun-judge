@@ -38,19 +38,10 @@ export async function request<T>(
       })
     ).data;
   } catch (error) {
-    error?.response?.status === 401 && rootStore && rootStore.logout();
+    error?.response?.status === 401 && (await rootStore?.logout());
     if (error?.response?.data) {
       const { message } = error?.response?.data;
-      rootStore?.toastsStore.error(
-        message,
-        //   ,{
-        //   // title: 'Error',
-        //   description: message,
-        //   type: 'error',
-        //   time: 3000,
-        //   animation: 'bounce',
-        // }
-      );
+      rootStore?.toastsStore.error(message);
     }
     throw error;
   }

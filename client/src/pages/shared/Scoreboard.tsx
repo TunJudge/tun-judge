@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { formatRestTime } from '../../core/helpers';
 import { rootStore } from '../../core/stores/RootStore';
 import { NoActiveContest } from './NoActiveContest';
+import Tooltip from './tooltip/Tooltip';
 
 type TeamProblemScore = {
   problemName: string;
@@ -114,13 +115,14 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
             <div className="flex items-center justify-center text-3xl mb-8 font-medium gap-x-1">
               Scoreboard of {currentContest.name}
               {isUserJury && (
-                <div
-                  className="p-2 hover:bg-gray-300 rounded-full cursor-pointer dark:hover:bg-gray-700"
-                  title="Refresh"
-                  onClick={() => refreshScoreboardCache(currentContest.id)}
-                >
-                  <RefreshIcon className="h-8 w-8" />
-                </div>
+                <Tooltip content="Refresh" position="right">
+                  <div
+                    className="p-2 hover:bg-gray-300 rounded-full cursor-pointer dark:hover:bg-gray-700"
+                    onClick={() => refreshScoreboardCache(currentContest.id)}
+                  >
+                    <RefreshIcon className="h-8 w-8" />
+                  </div>
+                </Tooltip>
               )}
             </div>
           )}
@@ -147,12 +149,14 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
                     .sort((a, b) => a.shortName.localeCompare(b.shortName))
                     .map((problem) => (
                       <th key={problem.shortName} className="p-1">
-                        <div
-                          className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl truncate w-20"
-                          title={`${problem.shortName} - ${problem.problem.name}`}
+                        <Tooltip
+                          content={`${problem.shortName} - ${problem.problem.name}`}
+                          position="top"
                         >
-                          {problem.shortName}
-                        </div>
+                          <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl truncate w-20">
+                            {problem.shortName}
+                          </div>
+                        </Tooltip>
                       </th>
                     ))}
                 </tr>

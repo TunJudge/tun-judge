@@ -53,6 +53,7 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
         entity={teamCategory}
         field="visible"
         label="Visible"
+        description="Whether the teams under this category will be visible in the public scoreboard?"
         defaultValue={true}
       />
     </FormModal>

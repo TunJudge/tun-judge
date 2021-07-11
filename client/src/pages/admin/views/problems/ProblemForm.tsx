@@ -115,6 +115,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
             entity={problem}
             field="runScript"
             label="Run Script"
+            description="Submissions runner"
             required
             options={runners}
             optionsTextField="name"
@@ -125,6 +126,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
             entity={problem}
             field="checkScript"
             label="Check Script"
+            description="Submissions output checker"
             required
             options={checkers}
             optionsTextField="name"

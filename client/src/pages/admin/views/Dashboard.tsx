@@ -86,7 +86,7 @@ const Dashboard: React.FC = observer(() => {
   ];
 
   return (
-    <div className="container mx-auto space-y-4 dark:text-white overflow-auto">
+    <div className="xl:container mx-auto space-y-4 dark:text-white overflow-auto">
       <div className="flex items-center justify-center p-2 bg-white border rounded-md shadow dark:bg-gray-800 dark:border-gray-700">
         <div className="text-4xl font-medium">
           {currentContest ? currentContest.name : 'No Active Contest'}

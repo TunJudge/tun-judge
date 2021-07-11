@@ -49,6 +49,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
           entity={language}
           field="dockerImage"
           label="Docker Image"
+          description="Docker image to process any submission sent with this language"
           required
           errors={errors}
           setErrors={setErrors}
@@ -57,6 +58,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
           entity={language}
           field="buildScript"
           label="Build Script"
+          description="The script responsible for build a code source of this language"
           required
           errors={errors}
           setErrors={setErrors}
@@ -66,6 +68,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
         entity={language}
         field="extensions"
         label="File Extensions"
+        description="Possible file extensions for this language"
         search
         multiple
         required
@@ -78,6 +81,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
           entity={language}
           field="allowJudge"
           label="Allow Judge"
+          description="Whether to allow judges hosts to pull any submission sent with this language"
           defaultValue={true}
           errors={errors}
           setErrors={setErrors}
@@ -86,6 +90,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
           entity={language}
           field="allowSubmit"
           label="Allow Submit"
+          description="Whether to allow teams submit with this language"
           defaultValue={true}
           errors={errors}
           setErrors={setErrors}

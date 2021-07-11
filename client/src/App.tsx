@@ -9,6 +9,7 @@ import PublicLayout from './pages/public/PublicLayout';
 import Logout from './pages/shared/Logout';
 import Spinner from './pages/shared/Spinner';
 import ToastContainer from './pages/shared/ToastContainer';
+import TooltipContainer from './pages/shared/tooltip/TooltipContainer';
 import TeamLayout from './pages/team/TeamLayout';
 
 function renderLayout(role?: Role): React.ReactNode {
@@ -34,6 +35,7 @@ export const App: React.FC = observer(() => {
           {connected ? renderLayout(profile?.role) : <PublicLayout />}
         </Switch>
         <ToastContainer />
+        <TooltipContainer />
       </BrowserRouter>
     </div>
   );

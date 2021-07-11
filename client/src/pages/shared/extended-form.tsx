@@ -5,6 +5,7 @@ import {
   ChevronRightIcon,
   ChevronUpIcon,
   ExclamationCircleIcon,
+  QuestionMarkCircleIcon,
   SelectorIcon,
   UploadIcon,
   XIcon,
@@ -15,6 +16,7 @@ import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isEmpty, useLongPress } from '../../core/helpers';
 import './extended-form.scss';
+import Tooltip from './tooltip/Tooltip';
 
 export type FormErrors<T> = Partial<Record<keyof T, boolean>>;
 
@@ -49,6 +51,7 @@ type ExtendedFieldProps<T> = {
   required?: boolean;
   readOnly?: boolean;
   defaultTouched?: boolean;
+  description?: React.ReactNode;
   errors?: FormErrors<T>;
   setErrors?: (errors: FormErrors<T>) => void;
   onChange?: (value: any) => void;
@@ -68,6 +71,7 @@ export function TextField<T>({
   required,
   readOnly,
   defaultTouched,
+  description,
   pattern,
   errors,
   setErrors,
@@ -105,6 +109,7 @@ export function TextField<T>({
       required={required}
       width={width}
       input={input}
+      description={description}
     />
   );
 }
@@ -120,6 +125,7 @@ export function TextAreaField<T>({
   required,
   readOnly,
   defaultTouched,
+  description,
   errors,
   setErrors,
   onChange,
@@ -154,6 +160,7 @@ export function TextAreaField<T>({
       required={required}
       width={width}
       input={input}
+      description={description}
     />
   );
 }
@@ -179,6 +186,7 @@ export function NumberField<T>({
   max,
   unit,
   step,
+  description,
   errors,
   setErrors,
   onChange,
@@ -225,6 +233,7 @@ export function NumberField<T>({
           ? ({ className }) => <div className={classNames(className, 'w-min')}>{unit}</div>
           : undefined
       }
+      description={description}
     />
   );
 }
@@ -237,6 +246,7 @@ export function CheckBoxField<T>({
   required,
   readOnly,
   defaultValue,
+  description,
   errors,
   setErrors,
   onChange,
@@ -281,11 +291,21 @@ export function CheckBoxField<T>({
       />
       {label && (
         <label
-          className={classNames('flex ml-2 p-0 font-medium text-gray-700 dark:text-gray-100', {
-            'text-red-900 dark:text-red-500': errors?.[field],
-          })}
+          className={classNames(
+            'flex items-center gap-1 ml-2 p-0 font-medium text-gray-700 dark:text-gray-100',
+            {
+              'text-red-900 dark:text-red-500': errors?.[field],
+            },
+          )}
         >
-          {label} {required && <span className="text-red-600">*</span>}
+          <span>
+            {label} {required && <span className="text-red-600">*</span>}
+          </span>
+          {description && (
+            <Tooltip content={<div className="max-w-xs">{description}</div>} position="top">
+              <QuestionMarkCircleIcon className="h-4 w-4" />
+            </Tooltip>
+          )}
         </label>
       )}
     </div>
@@ -304,6 +324,7 @@ export function FileField<T>({
   placeHolder,
   width,
   required,
+  description,
   errors,
   setErrors,
   onChange,
@@ -337,6 +358,7 @@ export function FileField<T>({
         width={width}
         input={input}
         icon={UploadIcon}
+        description={description}
       />
       <input
         ref={(ref) => (fileInputRef.current = ref)}
@@ -401,6 +423,7 @@ export function DropdownField<T>({
   search,
   multiple,
   allowAdditions,
+  description,
   errors,
   setErrors,
   onChange,
@@ -610,11 +633,21 @@ export function DropdownField<T>({
         <div className="relative" onBlur={() => setTouched(true)}>
           {label && (
             <Listbox.Label
-              className={classNames('font-medium text-gray-700 dark:text-gray-100', {
-                'text-red-900 dark:text-red-500': hasErrors,
-              })}
+              className={classNames(
+                'flex items-center gap-1 font-medium text-gray-700 dark:text-gray-100',
+                {
+                  'text-red-900 dark:text-red-500': hasErrors,
+                },
+              )}
             >
-              {label} {required && <span className="text-red-600">*</span>}
+              <span>
+                {label} {required && <span className="text-red-600">*</span>}
+              </span>
+              {description && (
+                <Tooltip content={<div className="max-w-xs">{description}</div>} position="top">
+                  <QuestionMarkCircleIcon className="h-4 w-4" />
+                </Tooltip>
+              )}
             </Listbox.Label>
           )}
           <Listbox.Button
@@ -637,9 +670,9 @@ export function DropdownField<T>({
               {selectedValues.map(({ key, text }) => (
                 <div
                   key={key}
-                  className={classNames('text-sm', {
+                  className={classNames({
                     'text-gray-500': !selectedValues,
-                    'flex items-center pl-2 rounded bg-gray-200 dark:bg-gray-800': multiple,
+                    'flex items-center pl-2 rounded bg-gray-200 dark:bg-gray-800 text-sm': multiple,
                   })}
                 >
                   {text}
@@ -673,7 +706,7 @@ export function DropdownField<T>({
             </div>
           </Listbox.Button>
           <Listbox.Options
-            className="z-10 absolute w-full mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700"
+            className="z-20 absolute w-full mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700"
             ref={optionsRef}
           >
             {!filteredOptions.length && (
@@ -1381,8 +1414,18 @@ const LabeledInput: React.FC<{
   required?: boolean;
   width?: ColSpanWidth;
   input: (classNames: string) => JSX.Element;
+  description?: React.ReactNode;
   icon?: React.FC<React.ComponentProps<'svg'>>;
-}> = ({ children, label, hasErrors, required, width = 'none', input, icon: ExtraIcon }) => (
+}> = ({
+  children,
+  label,
+  hasErrors,
+  required,
+  width = 'none',
+  input,
+  description,
+  icon: ExtraIcon,
+}) => (
   <div
     className={classNames({
       'col-span-1': width === '1',
@@ -1406,11 +1449,21 @@ const LabeledInput: React.FC<{
   >
     {label && (
       <label
-        className={classNames('font-medium text-gray-700 dark:text-gray-100', {
-          'text-red-900 dark:text-red-500': hasErrors,
-        })}
+        className={classNames(
+          'flex items-center gap-1 font-medium text-gray-700 dark:text-gray-100',
+          {
+            'text-red-900 dark:text-red-500': hasErrors,
+          },
+        )}
       >
-        {label} {required && <span className="text-red-600">*</span>}
+        <span>
+          {label} {required && <span className="text-red-600">*</span>}
+        </span>
+        {description && (
+          <Tooltip content={<div className="max-w-xs">{description}</div>} position="top">
+            <QuestionMarkCircleIcon className="h-4 w-4" />
+          </Tooltip>
+        )}
       </label>
     )}
     <div className={classNames('relative', { 'mt-1': !!label })}>

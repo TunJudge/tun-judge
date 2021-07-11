@@ -72,6 +72,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
             entity={executable}
             field="dockerImage"
             label="Docker Image"
+            description="Docker image to run the checker script"
             required
             errors={errors}
             setErrors={setErrors}
@@ -83,6 +84,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           entity={executable}
           field="type"
           label="Type"
+          description="Whether this executable is a runner (to run submissions) or a checker (to check the submission output)"
           required
           options={['RUNNER', 'CHECKER']}
           errors={errors}
@@ -92,6 +94,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           entity={executable}
           field="file"
           label="Source File"
+          description="Source file of the executable"
           required
           errors={errors}
           setErrors={setErrors}
@@ -100,6 +103,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           entity={executable}
           field="buildScript"
           label="Build Script"
+          description="Build script to compile the source file of the executable"
           required={executable.type === 'CHECKER'}
           errors={errors}
           setErrors={setErrors}
@@ -109,6 +113,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
         entity={executable}
         field="default"
         label="Default"
+        description="Whether this executable is default of his type (Runner/Checker)"
         defaultValue={false}
       />
     </FormModal>

@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { rootStore } from '../../core/stores/RootStore';
 import { Tabs } from '../../core/types';
+import Tooltip from '../shared/tooltip/Tooltip';
 
 const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
   const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
@@ -117,28 +118,34 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
           </div>
           <div className="space-y-1">
             {tabs.map(({ key, icon: Icon, label, title }) => (
-              <div
+              <Tooltip
+                className="ml-1"
                 key={key}
-                className={classNames(
-                  'flex items-center w-full p-2 gap-2 rounded-md font-medium cursor-pointer',
-                  {
-                    'bg-gray-800 text-white dark:bg-gray-900': currentTab === key,
-                    'text-gray-500 hover:bg-gray-500 hover:text-white dark:text-gray-400 dark:hover:bg-gray-700':
-                      currentTab !== key,
-                    'justify-center': !visible,
-                  },
-                )}
-                title={title}
-                onClick={() => onLinkClick(key)}
+                position="right"
+                content={title}
+                forceHide={visible}
               >
-                <Icon className="h-6 w-6" />
-                {visible && (
-                  <>
-                    {title}
-                    <div className="flex items-center space-x-2 ml-auto">{label}</div>
-                  </>
-                )}
-              </div>
+                <div
+                  className={classNames(
+                    'flex items-center w-full p-2 gap-2 rounded-md font-medium cursor-pointer',
+                    {
+                      'bg-gray-800 text-white dark:bg-gray-900': currentTab === key,
+                      'text-gray-500 hover:bg-gray-500 hover:text-white dark:text-gray-400 dark:hover:bg-gray-700':
+                        currentTab !== key,
+                      'justify-center': !visible,
+                    },
+                  )}
+                  onClick={() => onLinkClick(key)}
+                >
+                  <Icon className="h-6 w-6" />
+                  {visible && (
+                    <>
+                      {title}
+                      <div className="flex items-center space-x-2 ml-auto">{label}</div>
+                    </>
+                  )}
+                </div>
+              </Tooltip>
             ))}
           </div>
         </div>

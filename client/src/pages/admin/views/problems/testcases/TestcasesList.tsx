@@ -13,6 +13,7 @@ import { Problem, Testcase } from '../../../../../core/models';
 import { rootStore } from '../../../../../core/stores/RootStore';
 import { TestcaseContentDialog } from '../../../../shared/dialogs';
 import { CheckBoxField } from '../../../../shared/extended-form';
+import Tooltip from '../../../../shared/tooltip/Tooltip';
 import TestcaseBulkUploader from './TestcaseBulkUploader';
 import TestcaseForm from './TestcaseForm';
 
@@ -98,23 +99,33 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                     <td>
                       <div className="divide-y dark:divide-gray-700">
                         <div className="flex items-center p-2 gap-x-1">
-                          <div
-                            title={testcase.input.md5Sum}
-                            className="text-blue-500 cursor-pointer"
-                            onClick={() => setContentViewData({ testcase, field: 'input' })}
+                          <Tooltip
+                            className="ml-1"
+                            content={testcase.input.md5Sum}
+                            position="right"
                           >
-                            {`test.${testcase.rank}.in`}
-                          </div>
+                            <div
+                              className="text-blue-500 cursor-pointer"
+                              onClick={() => setContentViewData({ testcase, field: 'input' })}
+                            >
+                              {`test.${testcase.rank}.in`}
+                            </div>
+                          </Tooltip>
                           {formatBytes(testcase.input.size)}
                         </div>
                         <div className="flex items-center p-2 gap-x-1">
-                          <div
-                            title={testcase.output.md5Sum}
-                            className="text-blue-500 cursor-pointer"
-                            onClick={() => setContentViewData({ testcase, field: 'output' })}
+                          <Tooltip
+                            className="ml-1"
+                            content={testcase.output.md5Sum}
+                            position="right"
                           >
-                            {`test.${testcase.rank}.out`}
-                          </div>
+                            <div
+                              className="text-blue-500 cursor-pointer"
+                              onClick={() => setContentViewData({ testcase, field: 'output' })}
+                            >
+                              {`test.${testcase.rank}.out`}
+                            </div>
+                          </Tooltip>
                           {formatBytes(testcase.output.size)}
                         </div>
                       </div>

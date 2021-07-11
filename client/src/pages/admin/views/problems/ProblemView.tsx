@@ -17,7 +17,7 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
   }, [fetchById]);
 
   return !item.id ? (
-    <Spinner />
+    <Spinner className="rounded-md border shadow dark:border-gray-700" />
   ) : (
     <div className="grid grid-cols-2 gap-4 overflow-hidden h-full dark:text-white">
       <div className="flex flex-col gap-y-4 overflow-hidden">

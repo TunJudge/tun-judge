@@ -141,7 +141,7 @@ function DataTableBody<T extends { id: number | string }>({
           {sortState.data.length === 0 ? (
             <tr>
               <td className="px-6 py-4 text-center dark:bg-gray-800" colSpan={20}>
-                {loading ? <Spinner className="dark:bg-gray-800" /> : emptyMessage ?? 'No data'}
+                {loading ? <Spinner /> : emptyMessage ?? 'No data'}
               </td>
             </tr>
           ) : (
@@ -184,13 +184,13 @@ function DataTableBody<T extends { id: number | string }>({
                       <div className="flex items-center justify-center h-full gap-2 px-4 py-1">
                         {canEdit?.(item) && (
                           <PencilAltIcon
-                            className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-900"
+                            className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-900"
                             onClick={() => onEdit?.(item)}
                           />
                         )}
                         {(!canDelete || canDelete(item)) && (
                           <TrashIcon
-                            className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-red-700 dark:hover:bg-gray-900"
+                            className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-red-700 dark:hover:bg-gray-900"
                             onClick={() => onDelete?.(item.id as number)}
                           />
                         )}
