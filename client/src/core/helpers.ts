@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Contest, Judging, Testcase, User } from './models';
 
@@ -173,4 +174,8 @@ export function useLongPress(
     onTouchStart: () => setStartLongPress(true),
     onTouchEnd: () => setStartLongPress(false),
   };
+}
+
+export function getDisplayDate(date: Date): string {
+  return moment(date).format('ddd DD MMM, YYYY [at] HH:mm');
 }

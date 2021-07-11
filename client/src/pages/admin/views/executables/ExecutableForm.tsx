@@ -1,16 +1,14 @@
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../../core/helpers';
-import { Executable } from '../../../../core/models';
+import { Executable, ExecutableType } from '../../../../core/models';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { FormModal } from '../../../shared/dialogs';
-import {
-  CheckBoxField,
-  DropdownField,
-  FileField,
-  FormErrors,
-  TextField,
-} from '../../../shared/extended-form';
+import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
+import DropDownInput from '../../../shared/form-controls/DropDownInput';
+import FileInput from '../../../shared/form-controls/FileInput';
+import TextInput from '../../../shared/form-controls/TextInput';
+import { FormErrors } from '../../../shared/form-controls/types';
 
 const ExecutableForm: DataTableItemForm<Executable> = ({
   item: executable,
@@ -58,7 +56,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           'sm:grid-cols-3': executable.type === 'CHECKER',
         })}
       >
-        <TextField<Executable>
+        <TextInput<Executable>
           entity={executable}
           field="name"
           label="Name"
@@ -66,9 +64,9 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           errors={errors}
           setErrors={setErrors}
         />
-        <TextField<Executable> entity={executable} field="description" label="Description" />
+        <TextInput<Executable> entity={executable} field="description" label="Description" />
         {executable.type === 'CHECKER' && (
-          <TextField<Executable>
+          <TextInput<Executable>
             entity={executable}
             field="dockerImage"
             label="Docker Image"
@@ -80,7 +78,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
         )}
       </div>
       <div className="grid sm:grid-cols-3 gap-2">
-        <DropdownField<Executable>
+        <DropDownInput<Executable, ExecutableType>
           entity={executable}
           field="type"
           label="Type"
@@ -90,7 +88,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           errors={errors}
           setErrors={setErrors}
         />
-        <FileField<Executable>
+        <FileInput<Executable>
           entity={executable}
           field="file"
           label="Source File"
@@ -99,7 +97,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           errors={errors}
           setErrors={setErrors}
         />
-        <FileField<Executable>
+        <FileInput<Executable>
           entity={executable}
           field="buildScript"
           label="Build Script"
@@ -109,7 +107,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           setErrors={setErrors}
         />
       </div>
-      <CheckBoxField<Executable>
+      <CheckBoxInput<Executable>
         entity={executable}
         field="default"
         label="Default"

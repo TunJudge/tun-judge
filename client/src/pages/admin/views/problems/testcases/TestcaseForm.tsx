@@ -4,7 +4,9 @@ import { isEmpty } from '../../../../../core/helpers';
 import { File, Testcase } from '../../../../../core/models';
 import { DataTableItemForm } from '../../../../shared/data-table/DataTable';
 import { FormModal } from '../../../../shared/dialogs';
-import { FileField, FormErrors, TextField } from '../../../../shared/extended-form';
+import FileInput from '../../../../shared/form-controls/FileInput';
+import TextInput from '../../../../shared/form-controls/TextInput';
+import { FormErrors } from '../../../../shared/form-controls/types';
 
 const TestcaseForm: DataTableItemForm<Testcase> = observer(
   ({ item: testcase, isOpen, onClose, onSubmit }) => {
@@ -26,7 +28,7 @@ const TestcaseForm: DataTableItemForm<Testcase> = observer(
         submitDisabled={Object.values(errors).some((e) => e)}
       >
         <div className="grid sm:grid-cols-2 gap-2">
-          <FileField<Testcase>
+          <FileInput<Testcase>
             entity={testcase}
             field="input"
             label="Input File"
@@ -36,7 +38,7 @@ const TestcaseForm: DataTableItemForm<Testcase> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <TextField<File>
+          <TextInput<File>
             entity={testcase.input ?? {}}
             field="md5Sum"
             label="Input File MD5"
@@ -44,7 +46,7 @@ const TestcaseForm: DataTableItemForm<Testcase> = observer(
           />
         </div>
         <div className="grid sm:grid-cols-2 gap-2">
-          <FileField<Testcase>
+          <FileInput<Testcase>
             entity={testcase}
             field="output"
             label="Output File"
@@ -54,14 +56,14 @@ const TestcaseForm: DataTableItemForm<Testcase> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <TextField<File>
+          <TextInput<File>
             entity={testcase.output ?? {}}
             field="md5Sum"
             label="Output File MD5"
             readOnly
           />
         </div>
-        <TextField<Testcase> entity={testcase} field="description" label="Description" />
+        <TextInput<Testcase> entity={testcase} field="description" label="Description" />
       </FormModal>
     );
   },

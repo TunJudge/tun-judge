@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import { getDisplayDate } from '../../../../core/helpers';
 import { JudgeHost } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
-import { getDisplayDate } from '../../../shared/extended-form';
 import JudgeHostLogsViewer from './JudgeHostLogsViewer';
 
 let interval: NodeJS.Timeout | undefined = undefined;

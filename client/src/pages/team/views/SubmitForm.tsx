@@ -1,11 +1,13 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../core/helpers';
-import { Submission } from '../../../core/models';
+import { Language, Problem, Submission } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
 import { DataTableItemForm } from '../../shared/data-table/DataTable';
 import { FormModal } from '../../shared/dialogs';
-import { DropdownField, FileField, FormErrors } from '../../shared/extended-form';
+import DropDownInput from '../../shared/form-controls/DropDownInput';
+import FileInput from '../../shared/form-controls/FileInput';
+import { FormErrors } from '../../shared/form-controls/types';
 
 const SubmitForm: DataTableItemForm<Submission> = observer(
   ({ item: submission, isOpen, onClose, onSubmit }) => {
@@ -32,7 +34,7 @@ const SubmitForm: DataTableItemForm<Submission> = observer(
         onSubmit={() => onSubmit(submission)}
         submitDisabled={Object.values(errors).some((e) => e)}
       >
-        <DropdownField<Submission>
+        <DropDownInput<Submission, Problem>
           entity={submission}
           field="problem"
           label="Problem"
@@ -45,7 +47,7 @@ const SubmitForm: DataTableItemForm<Submission> = observer(
           errors={errors}
           setErrors={setErrors}
         />
-        <FileField<Submission>
+        <FileInput<Submission>
           entity={submission}
           field="file"
           label="Source file"
@@ -63,7 +65,7 @@ const SubmitForm: DataTableItemForm<Submission> = observer(
             }
           }}
         />
-        <DropdownField<Submission>
+        <DropDownInput<Submission, Language>
           entity={submission}
           field="language"
           label="Language"

@@ -1,10 +1,10 @@
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
+import { getDisplayDate } from '../../../../core/helpers';
 import { Contest } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
-import { getDisplayDate } from '../../../shared/extended-form';
 import ContestForm from './ContestForm';
 
 const ContestsList: React.FC = observer(() => {

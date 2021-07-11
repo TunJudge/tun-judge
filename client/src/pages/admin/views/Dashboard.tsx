@@ -9,9 +9,9 @@ import {
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
+import { getDisplayDate } from '../../../core/helpers';
 import { Contest } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
-import { getDisplayDate } from '../../shared/extended-form';
 
 const Dashboard: React.FC = observer(() => {
   const {

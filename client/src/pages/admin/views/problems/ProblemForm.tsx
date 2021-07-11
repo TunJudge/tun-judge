@@ -1,17 +1,15 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../../core/helpers';
-import { Problem } from '../../../../core/models';
+import { Executable, Problem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { FormModal } from '../../../shared/dialogs';
-import {
-  DropdownField,
-  FileField,
-  FormErrors,
-  NumberField,
-  TextField,
-} from '../../../shared/extended-form';
+import DropDownInput from '../../../shared/form-controls/DropDownInput';
+import FileInput from '../../../shared/form-controls/FileInput';
+import NumberInput from '../../../shared/form-controls/NumberInput';
+import TextInput from '../../../shared/form-controls/TextInput';
+import { FormErrors } from '../../../shared/form-controls/types';
 
 const ProblemForm: DataTableItemForm<Problem> = observer(
   ({ item: problem, isOpen, onClose, onSubmit }) => {
@@ -57,7 +55,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
         submitDisabled={Object.values(errors).some((e) => e)}
       >
         <div className="grid sm:grid-cols-2 gap-2">
-          <TextField<Problem>
+          <TextInput<Problem>
             entity={problem}
             field="name"
             label="Name"
@@ -65,7 +63,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <FileField<Problem>
+          <FileInput<Problem>
             entity={problem}
             field="file"
             label="Problem File"
@@ -76,7 +74,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
           />
         </div>
         <div className="grid sm:grid-cols-3 gap-2">
-          <NumberField<Problem>
+          <NumberInput<Problem>
             entity={problem}
             field="timeLimit"
             label="Time Limit (Seconds)"
@@ -87,7 +85,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <NumberField<Problem>
+          <NumberInput<Problem>
             entity={problem}
             field="memoryLimit"
             label="Memory Limit (Kb)"
@@ -98,7 +96,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <NumberField<Problem>
+          <NumberInput<Problem>
             entity={problem}
             field="outputLimit"
             label="Output Limit (Kb)"
@@ -111,7 +109,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
           />
         </div>
         <div className="grid sm:grid-cols-2 gap-2">
-          <DropdownField<Problem>
+          <DropDownInput<Problem, Executable>
             entity={problem}
             field="runScript"
             label="Run Script"
@@ -122,7 +120,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <DropdownField<Problem>
+          <DropDownInput<Problem, Executable>
             entity={problem}
             field="checkScript"
             label="Check Script"

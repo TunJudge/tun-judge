@@ -3,13 +3,11 @@ import { isEmpty } from '../../../../core/helpers';
 import { Language } from '../../../../core/models';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { FormModal } from '../../../shared/dialogs';
-import {
-  CheckBoxField,
-  DropdownField,
-  FileField,
-  FormErrors,
-  TextField,
-} from '../../../shared/extended-form';
+import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
+import DropDownInput from '../../../shared/form-controls/DropDownInput';
+import FileInput from '../../../shared/form-controls/FileInput';
+import TextInput from '../../../shared/form-controls/TextInput';
+import { FormErrors } from '../../../shared/form-controls/types';
 
 const LanguageForm: DataTableItemForm<Language> = ({
   item: language,
@@ -37,7 +35,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className="grid sm:grid-cols-3 gap-2">
-        <TextField<Language>
+        <TextInput<Language>
           entity={language}
           field="name"
           label="Name"
@@ -45,7 +43,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
           errors={errors}
           setErrors={setErrors}
         />
-        <TextField<Language>
+        <TextInput<Language>
           entity={language}
           field="dockerImage"
           label="Docker Image"
@@ -54,7 +52,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
           errors={errors}
           setErrors={setErrors}
         />
-        <FileField<Language>
+        <FileInput<Language>
           entity={language}
           field="buildScript"
           label="Build Script"
@@ -64,7 +62,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
           setErrors={setErrors}
         />
       </div>
-      <DropdownField<Language>
+      <DropDownInput<Language, string>
         entity={language}
         field="extensions"
         label="File Extensions"
@@ -77,7 +75,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
         setErrors={setErrors}
       />
       <div className="grid sm:grid-cols-2 gap-2">
-        <CheckBoxField<Language>
+        <CheckBoxInput<Language>
           entity={language}
           field="allowJudge"
           label="Allow Judge"
@@ -86,7 +84,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
           errors={errors}
           setErrors={setErrors}
         />
-        <CheckBoxField<Language>
+        <CheckBoxInput<Language>
           entity={language}
           field="allowSubmit"
           label="Allow Submit"

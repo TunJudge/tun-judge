@@ -4,7 +4,8 @@ import React, { FormEvent, useEffect, useState } from 'react';
 import { isEmpty } from '../../core/helpers';
 import { rootStore } from '../../core/stores/RootStore';
 import http from '../../core/utils/http-client';
-import { FormErrors, TextField } from './extended-form';
+import TextInput from './form-controls/TextInput';
+import { FormErrors } from './form-controls/types';
 
 type Credentials = {
   username: string;
@@ -39,12 +40,12 @@ const Login: React.FC = observer(() => {
   return (
     <div className="flex h-full items-center justify-center dark:text-white">
       <div className="flex flex-col items-center w-full mx-4 sm:w-96 sm:mx-0">
-        <div className="text-4xl text-gray-900 mb-4">Sign-in</div>
+        <div className="mb-4 text-4xl text-gray-900 dark:text-white">Sign-in</div>
         <form
           className="grid gap-3 p-4 rounded-lg border bg-white w-full dark:bg-gray-800 dark:border-gray-700"
           onSubmit={login}
         >
-          <TextField<Credentials>
+          <TextInput<Credentials>
             entity={credentials}
             field="username"
             placeHolder="Username"
@@ -53,7 +54,7 @@ const Login: React.FC = observer(() => {
             errors={errors}
             setErrors={setErrors}
           />
-          <TextField<Credentials>
+          <TextInput<Credentials>
             entity={credentials}
             field="password"
             type="Password"

@@ -2,9 +2,10 @@ import classNames from 'classnames';
 import { observer, useLocalStore } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../core/helpers';
-import { Clarification } from '../../../core/models';
+import { Clarification, Problem } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
-import { DropdownField, FormErrors } from '../extended-form';
+import DropDownInput from '../form-controls/DropDownInput';
+import { FormErrors } from '../form-controls/types';
 
 const ChatBoxHeader: React.FC<{ clarification: Clarification }> = observer(({ clarification }) => {
   const clarificationForm = useLocalStore<{ type: 'general' | 'problem' }>(() => ({
@@ -34,7 +35,7 @@ const ChatBoxHeader: React.FC<{ clarification: Clarification }> = observer(({ cl
             'grid-cols-2': !clarification.general,
           })}
         >
-          <DropdownField<{ type: 'general' | 'problem' }>
+          <DropDownInput<{ type: 'general' | 'problem' }>
             entity={clarificationForm}
             field="type"
             options={[
@@ -43,10 +44,14 @@ const ChatBoxHeader: React.FC<{ clarification: Clarification }> = observer(({ cl
             ]}
             optionsIdField="key"
             optionsTextField="text"
-            onChange={(value) => (clarification.general = value.key === 'general')}
+            optionsValueField="key"
+            onChange={(value: 'general' | 'problem') => {
+              clarification.general = value === 'general';
+              clarification.general && (clarification.problem = undefined);
+            }}
           />
           {!clarification.general && (
-            <DropdownField<Clarification>
+            <DropDownInput<Clarification, Problem>
               entity={clarification}
               field="problem"
               placeHolder="Problem"

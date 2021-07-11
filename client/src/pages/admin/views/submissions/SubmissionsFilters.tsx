@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { Filters } from '../../../../core/stores/SubmissionsStore';
-import { DropdownField } from '../../../shared/extended-form';
+import DropDownInput from '../../../shared/form-controls/DropDownInput';
 
 const SubmissionsFilters: React.FC<{
   filters: Partial<Filters>;
@@ -18,7 +18,7 @@ const SubmissionsFilters: React.FC<{
 
   return (
     <div className="grid sm:grid-cols-4 gap-4 p-4 bg-white rounded border shadow dark:bg-gray-800 dark:border-gray-700">
-      <DropdownField<Filters>
+      <DropDownInput<Filters>
         entity={filters}
         field="problems"
         label="Filter by problem"
@@ -34,7 +34,7 @@ const SubmissionsFilters: React.FC<{
         optionsTextField="text"
         optionsValueField="key"
       />
-      <DropdownField<Filters>
+      <DropDownInput<Filters>
         entity={filters}
         field="teams"
         label="Filter by team"
@@ -45,7 +45,7 @@ const SubmissionsFilters: React.FC<{
         optionsTextField="name"
         optionsValueField="id"
       />
-      <DropdownField<Filters>
+      <DropDownInput<Filters>
         entity={filters}
         field="languages"
         label="Filter by language"
@@ -56,7 +56,7 @@ const SubmissionsFilters: React.FC<{
         optionsTextField="name"
         optionsValueField="id"
       />
-      <DropdownField<Filters>
+      <DropDownInput<Filters>
         entity={filters}
         field="status"
         label="Filter by status"

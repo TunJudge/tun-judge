@@ -22,7 +22,7 @@ const ClarificationsList: React.FC = observer(() => {
           ? 'General'
           : `Problem ${
               currentContest?.problems?.find(
-                (problem) => problem.problem.id === clarification.problem.id,
+                (problem) => problem.problem.id === clarification.problem?.id,
               )?.shortName ?? '-'
             }`,
     },

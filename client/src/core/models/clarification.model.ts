@@ -8,6 +8,6 @@ export interface Clarification {
   general: boolean;
   messages: ClarificationMessage[];
   contest: Contest;
-  problem: Problem;
+  problem?: Problem;
   team: Team;
 }

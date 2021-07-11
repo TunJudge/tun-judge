@@ -1,18 +1,16 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../../core/helpers';
-import { Team } from '../../../../core/models';
+import { Contest, Team, TeamCategory, User } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { FormModal } from '../../../shared/dialogs';
-import {
-  CheckBoxField,
-  DropdownField,
-  FormErrors,
-  NumberField,
-  TextAreaField,
-  TextField,
-} from '../../../shared/extended-form';
+import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
+import DropDownInput from '../../../shared/form-controls/DropDownInput';
+import NumberInput from '../../../shared/form-controls/NumberInput';
+import TextareaInput from '../../../shared/form-controls/TextareaInput';
+import TextInput from '../../../shared/form-controls/TextInput';
+import { FormErrors } from '../../../shared/form-controls/types';
 
 const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClose, onSubmit }) => {
   const [errors, setErrors] = useState<FormErrors<Team>>({});
@@ -43,7 +41,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className="grid sm:grid-cols-3 gap-2">
-        <TextField<Team>
+        <TextInput<Team>
           entity={team}
           field="name"
           label="Name"
@@ -51,7 +49,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
           errors={errors}
           setErrors={setErrors}
         />
-        <DropdownField<Team>
+        <DropDownInput<Team, TeamCategory>
           entity={team}
           field="category"
           label="Category"
@@ -61,7 +59,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
           errors={errors}
           setErrors={setErrors}
         />
-        <DropdownField<Team>
+        <DropDownInput<Team, User>
           entity={team}
           field="user"
           label="User"
@@ -72,23 +70,23 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
           setErrors={setErrors}
         />
       </div>
-      <TextAreaField<Team>
+      <TextareaInput<Team>
         entity={team}
         field="members"
         label="Members"
         placeHolder="Members names..."
       />
       <div className="grid sm:grid-cols-2 gap-2">
-        <NumberField<Team> entity={team} field="penalty" label="Penalty Time" defaultValue={0} />
-        <TextField<Team> entity={team} field="room" label="Room" />
+        <NumberInput<Team> entity={team} field="penalty" label="Penalty Time" defaultValue={0} />
+        <TextInput<Team> entity={team} field="room" label="Room" />
       </div>
-      <TextAreaField<Team>
+      <TextareaInput<Team>
         entity={team}
         field="comments"
         label="Comments"
         placeHolder="Comments..."
       />
-      <DropdownField<Team>
+      <DropDownInput<Team, Contest>
         entity={team}
         field="contests"
         label="Contests"
@@ -97,7 +95,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
         options={contests}
         optionsTextField="name"
       />
-      <CheckBoxField<Team> entity={team} field="enabled" label="Enabled" defaultValue={true} />
+      <CheckBoxInput<Team> entity={team} field="enabled" label="Enabled" defaultValue={true} />
     </FormModal>
   );
 });

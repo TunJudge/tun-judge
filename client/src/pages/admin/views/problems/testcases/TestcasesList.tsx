@@ -12,7 +12,7 @@ import { formatBytes } from '../../../../../core/helpers';
 import { Problem, Testcase } from '../../../../../core/models';
 import { rootStore } from '../../../../../core/stores/RootStore';
 import { TestcaseContentDialog } from '../../../../shared/dialogs';
-import { CheckBoxField } from '../../../../shared/extended-form';
+import CheckBoxInput from '../../../../shared/form-controls/CheckBoxInput';
 import Tooltip from '../../../../shared/tooltip/Tooltip';
 import TestcaseBulkUploader from './TestcaseBulkUploader';
 import TestcaseForm from './TestcaseForm';
@@ -132,7 +132,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                     </td>
                     <td>
                       <div className="flex items-center justify-center">
-                        <CheckBoxField<Testcase>
+                        <CheckBoxInput<Testcase>
                           entity={testcase}
                           field="sample"
                           onChange={() => update(testcase)}

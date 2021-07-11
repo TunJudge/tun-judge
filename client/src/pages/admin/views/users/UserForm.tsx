@@ -1,11 +1,14 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isEmpty } from '../../../../core/helpers';
-import { User } from '../../../../core/models';
+import { Role, User } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { FormModal } from '../../../shared/dialogs';
-import { CheckBoxField, DropdownField, FormErrors, TextField } from '../../../shared/extended-form';
+import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
+import DropDownInput from '../../../shared/form-controls/DropDownInput';
+import TextInput from '../../../shared/form-controls/TextInput';
+import { FormErrors } from '../../../shared/form-controls/types';
 
 const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClose, onSubmit }) => {
   const [errors, setErrors] = useState<FormErrors<User>>({});
@@ -33,7 +36,7 @@ const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClos
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className="grid sm:grid-cols-2 gap-2">
-        <TextField<User>
+        <TextInput<User>
           entity={user}
           field="name"
           label="Name"
@@ -41,10 +44,10 @@ const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClos
           errors={errors}
           setErrors={setErrors}
         />
-        <TextField<User> entity={user} field="email" type="email" label="Email" />
+        <TextInput<User> entity={user} field="email" type="email" label="Email" />
       </div>
       <div className="grid sm:grid-cols-3 gap-2">
-        <TextField<User>
+        <TextInput<User>
           entity={user}
           field="username"
           label="Username"
@@ -53,14 +56,14 @@ const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClos
           errors={errors}
           setErrors={setErrors}
         />
-        <TextField<User>
+        <TextInput<User>
           entity={user}
           field="password"
           type="password"
           label="Password"
           autoComplete="new-password"
         />
-        <DropdownField<User>
+        <DropDownInput<User, Role>
           entity={user}
           field="role"
           label="Role"
@@ -72,7 +75,7 @@ const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClos
           setErrors={setErrors}
         />
       </div>
-      <CheckBoxField<User> entity={user} field="enabled" label="Enabled" defaultValue={true} />
+      <CheckBoxInput<User> entity={user} field="enabled" label="Enabled" defaultValue={true} />
     </FormModal>
   );
 });

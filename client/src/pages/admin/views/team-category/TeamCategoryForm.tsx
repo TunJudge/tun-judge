@@ -3,7 +3,9 @@ import { isEmpty } from '../../../../core/helpers';
 import { TeamCategory } from '../../../../core/models';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { FormModal } from '../../../shared/dialogs';
-import { CheckBoxField, FormErrors, TextField } from '../../../shared/extended-form';
+import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
+import TextInput from '../../../shared/form-controls/TextInput';
+import { FormErrors } from '../../../shared/form-controls/types';
 
 const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
   item: teamCategory,
@@ -28,7 +30,7 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
       submitDisabled={Object.values(errors).some((e) => e)}
     >
       <div className="grid sm:grid-cols-5 gap-2">
-        <TextField<TeamCategory>
+        <TextInput<TeamCategory>
           entity={teamCategory}
           field="name"
           label="Name"
@@ -37,7 +39,7 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
           errors={errors}
           setErrors={setErrors}
         />
-        <TextField<TeamCategory>
+        <TextInput<TeamCategory>
           entity={teamCategory}
           field="color"
           label="Color"
@@ -49,7 +51,7 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
           setErrors={setErrors}
         />
       </div>
-      <CheckBoxField<TeamCategory>
+      <CheckBoxInput<TeamCategory>
         entity={teamCategory}
         field="visible"
         label="Visible"

@@ -6,14 +6,12 @@ import { Contest, ContestProblem, Problem } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { DataTableItemForm } from '../../../shared/data-table/DataTable';
 import { FormModal } from '../../../shared/dialogs';
-import {
-  CheckBoxField,
-  DateTimeField,
-  DropdownField,
-  FormErrors,
-  NumberField,
-  TextField,
-} from '../../../shared/extended-form';
+import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
+import DateTimeInput from '../../../shared/form-controls/DateTimeInput';
+import DropDownInput from '../../../shared/form-controls/DropDownInput';
+import NumberInput from '../../../shared/form-controls/NumberInput';
+import TextInput from '../../../shared/form-controls/TextInput';
+import { FormErrors } from '../../../shared/form-controls/types';
 
 const ContestForm: DataTableItemForm<Contest> = observer(
   ({ item: contest, isOpen, onClose, onSubmit }) => {
@@ -76,7 +74,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
         }
       >
         <div className="grid sm:grid-cols-2 gap-2">
-          <TextField<Contest>
+          <TextInput<Contest>
             entity={contest}
             field="name"
             label="Name"
@@ -84,7 +82,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <TextField<Contest>
+          <TextInput<Contest>
             entity={contest}
             field="shortName"
             label="Short Name"
@@ -94,7 +92,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
           />
         </div>
         <div className="grid sm:grid-cols-3 gap-2">
-          <DateTimeField<Contest>
+          <DateTimeInput<Contest>
             entity={contest}
             field="activateTime"
             label="Activate Time"
@@ -103,7 +101,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <DateTimeField<Contest>
+          <DateTimeInput<Contest>
             entity={contest}
             field="startTime"
             label="Start Time"
@@ -114,7 +112,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <DateTimeField<Contest>
+          <DateTimeInput<Contest>
             entity={contest}
             field="endTime"
             label="End Time"
@@ -126,7 +124,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
           />
         </div>
         <div className="grid sm:grid-cols-3 gap-2">
-          <DateTimeField<Contest>
+          <DateTimeInput<Contest>
             entity={contest}
             field="freezeTime"
             label="Freeze Time"
@@ -137,7 +135,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <DateTimeField<Contest>
+          <DateTimeInput<Contest>
             entity={contest}
             field="unfreezeTime"
             label="Unfreeze Time"
@@ -147,7 +145,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <DateTimeField<Contest>
+          <DateTimeInput<Contest>
             entity={contest}
             field="finalizeTime"
             label="Finalize Time"
@@ -159,7 +157,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
           />
         </div>
         <div className="grid sm:grid-cols-3 gap-2">
-          <CheckBoxField<Contest>
+          <CheckBoxInput<Contest>
             entity={contest}
             field="enabled"
             label="Enabled"
@@ -168,7 +166,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <CheckBoxField<Contest>
+          <CheckBoxInput<Contest>
             entity={contest}
             field="public"
             label="Visible on public scoreboard"
@@ -177,7 +175,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <CheckBoxField<Contest>
+          <CheckBoxInput<Contest>
             entity={contest}
             field="openToAllTeams"
             label="Open to all teams"
@@ -186,7 +184,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <CheckBoxField<Contest>
+          <CheckBoxInput<Contest>
             entity={contest}
             field="verificationRequired"
             label="Verification required"
@@ -195,7 +193,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             errors={errors}
             setErrors={setErrors}
           />
-          <CheckBoxField<Contest>
+          <CheckBoxInput<Contest>
             entity={contest}
             field="processBalloons"
             label="Process balloons"
@@ -232,7 +230,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                   className="divide-x divide-x-200 dark:divide-gray-700"
                 >
                   <td className="p-3">
-                    <DropdownField<ContestProblem>
+                    <DropDownInput<ContestProblem, Problem>
                       entity={problem}
                       field="problem"
                       placeHolder="Select Problem"
@@ -243,7 +241,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                       optionsTextField="name"
                       errors={problemsErrors[index]}
                       setErrors={setProblemsErrorsByIndex(index)}
-                      onChange={(value: Problem) => {
+                      onChange={(value) => {
                         problem.problem = problems.find((p) => p.id === value.id)!;
                         contest.problems.forEach(
                           (cp, index) =>
@@ -258,7 +256,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                     />
                   </td>
                   <td className="p-3">
-                    <TextField<ContestProblem>
+                    <TextInput<ContestProblem>
                       entity={problem}
                       field="shortName"
                       required
@@ -284,7 +282,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                     />
                   </td>
                   <td className="p-3">
-                    <NumberField<ContestProblem>
+                    <NumberInput<ContestProblem>
                       entity={problem}
                       field="points"
                       min={1}
@@ -293,7 +291,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                   </td>
                   <td className="p-3">
                     <div className="flex items-center justify-center">
-                      <CheckBoxField<ContestProblem>
+                      <CheckBoxInput<ContestProblem>
                         entity={problem}
                         field="allowSubmit"
                         defaultValue={true}
@@ -302,7 +300,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                   </td>
                   <td className="p-3">
                     <div className="flex items-center justify-center">
-                      <CheckBoxField<ContestProblem>
+                      <CheckBoxInput<ContestProblem>
                         entity={problem}
                         field="allowJudge"
                         defaultValue={true}
