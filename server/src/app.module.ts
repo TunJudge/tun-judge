@@ -98,7 +98,7 @@ const SERVICES = [
     }),
     TypeOrmModule.forFeature(entities),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client'),
+      rootPath: join(__dirname, '..', '..', 'client'),
       exclude: ['/api*'],
     }),
     AuthModule,
