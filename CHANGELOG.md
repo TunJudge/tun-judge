@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.28 (2021-07-12)
+
+
+### Bug Fixes
+
+* replace judge pinging server to server sending events when new submissions are available ([ded90f3](https://github.com/TunJudge/tun-judge/commit/ded90f30a1356e35bd990eb0703aec8330d4f118))
+
 ### 0.0.27 (2021-07-12)
 
 
