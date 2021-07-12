@@ -38,6 +38,7 @@ type Props<T> = {
   canDelete?: (item: T) => boolean;
   onFormSubmit?: (item: T) => void;
   onFormDismiss?: () => void;
+  onRowClick?: (item: T) => void;
   rowBackgroundColor?: (item: T) => 'white' | 'green' | 'yellow' | 'red' | 'blue';
 };
 
@@ -59,6 +60,7 @@ function DataTable<T extends { id: number | string }>({
   canDelete,
   onFormSubmit,
   onFormDismiss,
+  onRowClick,
   rowBackgroundColor,
 }: Props<T>): ReactElement {
   const [data, setData] = useState<T[]>([]);
@@ -122,6 +124,7 @@ function DataTable<T extends { id: number | string }>({
         canEdit={(item) => (canEdit?.(item) ?? true) && !!ItemForm}
         onDelete={onDelete}
         canDelete={canDelete}
+        onRowClick={onRowClick}
         rowBackgroundColor={rowBackgroundColor}
       />
       {ItemForm && (

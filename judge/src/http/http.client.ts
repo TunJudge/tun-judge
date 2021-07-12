@@ -6,8 +6,8 @@ import config from '../config';
 axiosCookieJarSupport(axios);
 
 export class HttpClient {
-  private url: string = config.url ?? '';
-  private cookieJar: CookieJar = new CookieJar();
+  url: string = config.url ?? '';
+  cookieJar: CookieJar = new CookieJar();
 
   get<T>(path: string, options?: AxiosRequestConfig): Promise<T> {
     return this.request<T>(path, 'GET', options);

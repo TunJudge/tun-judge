@@ -8,7 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ExtendedRepository } from './core/extended-repository';
 import { LogClass } from './core/log.decorator';
-import { Team } from './entities';
+import { JudgeHost, Team } from './entities';
 
 type UpdateEvents = 'contests' | 'scoreboard' | 'submissions' | 'judgings' | 'judgeRuns';
 
@@ -21,6 +21,8 @@ export class AppGateway {
   constructor(
     @InjectRepository(Team)
     private readonly teamsRepository: ExtendedRepository<Team>,
+    @InjectRepository(JudgeHost)
+    private readonly judgeHostsRepository: ExtendedRepository<JudgeHost>,
   ) {}
 
   pingForUpdates(...events: UpdateEvents[]) {
@@ -29,9 +31,21 @@ export class AppGateway {
 
   @SubscribeMessage('subscribe')
   subscribe(client: Socket) {
-    if (['admin', 'jury'].includes((client.request as any).session?.passport?.user.role.name)) {
+    const roleName = (client.request as any).session?.passport?.user.role.name;
+    if (['admin', 'jury'].includes(roleName)) {
       client.join('juries');
+    } else if (roleName === 'judge-host') {
+      client.join('judgeHosts');
     }
+  }
+
+  @SubscribeMessage('judge-host-ping')
+  async judgeHostPing(client: Socket, hostname: string) {
+    await this.judgeHostsRepository.update({ hostname }, { pollTime: new Date() });
+  }
+
+  pingForNewSubmissions() {
+    this.server.in('judgeHosts').emit('new-submission');
   }
 
   @SubscribeMessage('judgeHostLogs')

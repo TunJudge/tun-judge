@@ -1,5 +1,7 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AppGateway } from '../app.gateway';
 import { ExtendedRepository } from '../core/extended-repository';
 import { LogClass } from '../core/log.decorator';
 import { submissionInFreezeTime } from '../core/utils';
@@ -14,6 +16,7 @@ export class SubmissionsService {
     private readonly submissionsRepository: ExtendedRepository<Submission>,
     @Inject(forwardRef(() => ScoreboardService))
     private readonly scoreboardService: ScoreboardService,
+    private readonly socketService: AppGateway,
   ) {}
 
   search(
@@ -195,5 +198,12 @@ export class SubmissionsService {
       .andWhere('language.allowJudge = true')
       .orderBy('s.submitTime', 'ASC')
       .getOne();
+  }
+
+  @Interval(1000)
+  async triggerForNewSubmissions() {
+    if (await this.getNextSubmission()) {
+      this.socketService.pingForNewSubmissions();
+    }
   }
 }

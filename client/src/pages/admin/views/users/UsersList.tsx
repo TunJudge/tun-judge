@@ -17,7 +17,7 @@ const UsersList: React.FC = observer(() => {
   const {
     profile,
     isUserAdmin,
-    usersStore: { fetchAll, create, update, remove },
+    usersStore: { fetchAll, updateCount, create, update, remove },
   } = rootStore;
 
   const columns: ListPageTableColumn<User>[] = [
@@ -62,6 +62,7 @@ const UsersList: React.FC = observer(() => {
     <DataTable<User>
       header="Users"
       dataFetcher={fetchAll}
+      dataDependencies={[updateCount]}
       columns={columns}
       ItemForm={isUserAdmin ? UserForm : undefined}
       onDelete={remove}

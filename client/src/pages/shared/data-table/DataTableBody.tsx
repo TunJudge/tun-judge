@@ -26,6 +26,7 @@ type Props<T> = {
   canEdit?: (item: T) => boolean;
   onDelete?: (id: number) => void;
   canDelete?: (item: T) => boolean;
+  onRowClick?: (item: T) => void;
   rowBackgroundColor?: (item: T) => 'white' | 'green' | 'yellow' | 'red' | 'blue';
 };
 
@@ -42,6 +43,7 @@ function DataTableBody<T extends { id: number | string }>({
   canEdit,
   onDelete,
   canDelete,
+  onRowClick,
   rowBackgroundColor,
 }: Props<T>): ReactElement {
   const [sortState, setSortState] = useState<{
@@ -158,7 +160,9 @@ function DataTableBody<T extends { id: number | string }>({
                     'bg-red-300 dark:bg-red-800': backgroundColor === 'red',
                     'bg-white dark:bg-gray-800': backgroundColor === 'white',
                     'text-gray-300 dark:text-gray-600': disabled?.(item, rowIndex),
+                    'cursor-pointer': !!onRowClick,
                   })}
+                  onClick={() => onRowClick?.(item)}
                 >
                   <td className="px-4 py-2 text-center">{item.id}</td>
                   {columns.map((column, index) => (

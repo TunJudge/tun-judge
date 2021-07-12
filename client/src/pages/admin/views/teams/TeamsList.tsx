@@ -8,7 +8,7 @@ import TeamForm from './TeamForm';
 const TeamsList: React.FC = observer(() => {
   const {
     isUserAdmin,
-    teamsStore: { fetchAll, create, update, remove },
+    teamsStore: { fetchAll, updateCount, create, update, remove },
   } = rootStore;
 
   const columns: ListPageTableColumn<Team>[] = [
@@ -48,6 +48,7 @@ const TeamsList: React.FC = observer(() => {
     <DataTable<Team>
       header="Teams"
       dataFetcher={fetchAll}
+      dataDependencies={[updateCount]}
       columns={columns}
       ItemForm={isUserAdmin ? TeamForm : undefined}
       onDelete={remove}

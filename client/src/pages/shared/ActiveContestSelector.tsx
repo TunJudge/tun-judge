@@ -41,7 +41,7 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
     };
   }, [currentContest]);
 
-  const color = contestTimeProgress === 100 ? '#21ba45' : '#2185d0';
+  const color = contestTimeProgress === 100 ? '#059669' : '#2185d0';
 
   return (
     <Menu as="div" className="relative select-none">
@@ -54,9 +54,7 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
           <div
             className="ml-2 px-2 p-1 rounded-md"
             style={{
-              background: `linear-gradient(to right, ${color} ${contestTimeProgress}%, rgba(33, 133, 208, .2) ${
-                100 - contestTimeProgress
-              }%)`,
+              background: `linear-gradient(to right, ${color} ${contestTimeProgress}%, rgba(33, 133, 208, .2) ${contestTimeProgress}%)`,
             }}
           >
             {!contestStarted && '- '}

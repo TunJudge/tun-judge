@@ -30,6 +30,7 @@ const JudgeHostLogsViewer: React.FC<JudgeHostLogsViewerProps> = ({ hostname, dis
         {logs.map((log, index) => (
           <span key={index}>
             <Ansi>{log}</Ansi>
+            <br />
           </span>
         ))}
       </div>

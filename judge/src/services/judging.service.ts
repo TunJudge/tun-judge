@@ -24,38 +24,42 @@ export class JudgingService {
     private readonly executor: Executor,
   ) {
     this.logger = new JudgeLogger(JudgingService.name, getOnLog(this.socketService));
-    setInterval(() => this.logger.verbose('test'), 1000);
+    this.run();
   }
 
-  @Interval(1000)
-  async run(): Promise<void> {
-    if (!this.lock) {
-      this.lock = true;
-      try {
-        const judging = await this.systemService.getNextJudging();
-        if (judging) {
-          this.logger.log(
-            `Judging '${judging.id}' for problem '${judging.submission.problem.name}' and language '${judging.submission.language.name}' received!`,
-          );
-          await this.runJudging(judging);
+  run(): void {
+    this.socketService.onNewSubmission(async () => {
+      if (!this.lock) {
+        this.lock = true;
+        try {
+          const judging = await this.systemService.getNextJudging();
+          if (judging) await this.runJudging(judging);
+        } catch (e) {
+          this.logger.error(e.message);
+        } finally {
+          this.lock = false;
         }
-      } catch (e) {
-        this.logger.error(e.message);
-      } finally {
-        this.lock = false;
       }
-    }
+    });
   }
 
   async runJudging(judging: Judging): Promise<void> {
     try {
+      this.logger.log(
+        `Judging '${judging.id}' for problem '${judging.submission.problem.name}' and language '${judging.submission.language.name}' received!`,
+      );
       this.submissionHelper.setSubmission(judging.submission);
       await this.initializer.run(judging);
       await this.compiler.run(judging);
       await this.executor.run(judging);
     } catch (e) {
-      await this.systemService.setJudgingResult(judging, 'SE', e.message);
       this.logger.error(e.message, e.trace);
+      await this.systemService.setJudgingResult(judging, 'SE', e.message);
     }
+  }
+
+  @Interval(1000)
+  ping(): void {
+    this.socketService.ping();
   }
 }

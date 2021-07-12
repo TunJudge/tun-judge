@@ -23,7 +23,7 @@ import { Team } from './team.entity';
 @Index(['problem'])
 @Index(['language'])
 @Index(['judgeHost'])
-@Index(['originalSubmission'])
+@Index(['submitTime'])
 export class Submission {
   @PrimaryGeneratedColumn({ comment: 'Submission ID' })
   id: number;
@@ -70,12 +70,6 @@ export class Submission {
     onUpdate: 'RESTRICT',
   })
   judgeHost: JudgeHost;
-
-  @ManyToOne(() => Submission, {
-    onDelete: 'SET NULL',
-    onUpdate: 'RESTRICT',
-  })
-  originalSubmission: Submission;
 
   @OneToOne(() => File, {
     cascade: true,

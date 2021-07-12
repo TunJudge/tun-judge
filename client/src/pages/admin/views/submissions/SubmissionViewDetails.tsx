@@ -1,13 +1,15 @@
 import classNames from 'classnames';
 import React from 'react';
-import { formatRestTime } from '../../../../core/helpers';
+import { dateComparator, formatRestTime } from '../../../../core/helpers';
 import { Judging, Submission } from '../../../../core/models';
 import { resultMap } from '../../../../core/types';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
 
 const SubmissionViewDetails: React.FC<{
   submission: Submission;
-}> = ({ submission }) => {
+  highlightedJudging?: Judging;
+  setHighlightedJudging: (judging: Judging) => void;
+}> = ({ submission, highlightedJudging, setHighlightedJudging }) => {
   const columns: ListPageTableColumn<Judging>[] = [
     {
       header: 'Team',
@@ -31,11 +33,13 @@ const SubmissionViewDetails: React.FC<{
       header: 'Result',
       field: 'result',
       textAlign: 'center',
-      render: (judging, index) => (
+      render: (judging) => (
         <b
           className={classNames({
-            'text-green-600': !index && judging.result === 'AC',
-            'text-red-600': !index && judging.result && judging.result !== 'AC',
+            'text-green-600': judging.id === highlightedJudging?.id && judging.result === 'AC',
+            'text-yellow-600': judging.id === highlightedJudging?.id && !judging.result,
+            'text-red-600':
+              judging.id === highlightedJudging?.id && judging.result && judging.result !== 'AC',
           })}
         >
           {resultMap[judging.result ?? 'PD']}
@@ -87,12 +91,18 @@ const SubmissionViewDetails: React.FC<{
   return (
     <div>
       <DataTable
-        dataFetcher={() => Promise.resolve(submission.judgings)}
+        dataFetcher={() =>
+          Promise.resolve(
+            submission.judgings.slice().sort(dateComparator<Judging>('startTime', true)),
+          )
+        }
+        dataDependencies={[submission]}
         columns={columns}
         withoutActions
         emptyMessage="Not judged yet"
         notSortable
-        disabled={(_, index) => index > 0}
+        disabled={(judging) => judging.id !== highlightedJudging?.id}
+        onRowClick={setHighlightedJudging}
       />
     </div>
   );

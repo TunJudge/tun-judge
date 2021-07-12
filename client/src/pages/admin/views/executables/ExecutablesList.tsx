@@ -14,7 +14,7 @@ const ExecutablesList: React.FC = observer(() => {
   >();
   const {
     isUserAdmin,
-    executablesStore: { fetchAll, create, update, remove },
+    executablesStore: { fetchAll, updateCount, create, update, remove },
   } = rootStore;
 
   const columns: ListPageTableColumn<Executable>[] = [
@@ -82,6 +82,7 @@ const ExecutablesList: React.FC = observer(() => {
       <DataTable<Executable>
         header="Executables"
         dataFetcher={fetchAll}
+        dataDependencies={[updateCount]}
         columns={columns}
         ItemForm={isUserAdmin ? ExecutableForm : undefined}
         onDelete={remove}
