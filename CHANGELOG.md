@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.27 (2021-07-12)
+
+
+### Bug Fixes
+
+* fix server loading client ([77b81ed](https://github.com/TunJudge/tun-judge/commit/77b81ed4ad610e9f654444cb22acbf5c49ded0a0))
+
 ### 0.0.26 (2021-07-12)
 
 
