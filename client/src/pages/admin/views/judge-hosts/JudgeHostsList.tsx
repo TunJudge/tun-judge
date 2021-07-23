@@ -13,7 +13,7 @@ const JudgeHostsList: React.FC = observer(() => {
   const [hostname, setHostname] = useState<string>();
   const {
     isUserAdmin,
-    judgeHostsStore: { fetchAll, toggle, remove },
+    judgeHostsStore: { updateCount, fetchAll, toggle, remove },
   } = rootStore;
 
   useEffect(() => {
@@ -86,6 +86,7 @@ const JudgeHostsList: React.FC = observer(() => {
       <DataTable<JudgeHost>
         header="Judge Hosts"
         dataFetcher={fetchAll}
+        dataDependencies={[updateCount]}
         columns={columns}
         onDelete={remove}
         withoutActions={!isUserAdmin}

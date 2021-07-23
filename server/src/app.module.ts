@@ -5,82 +5,27 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { AppGateway } from './app.gateway';
-import { AuthModule } from './auth/auth.module';
-import {
-  AppController,
-  ContestsController,
-  ExecutablesController,
-  JudgeHostsController,
-  LanguagesController,
-  ProblemsController,
-  PublicController,
-  RolesController,
-  SubmissionsController,
-  TeamCategoriesController,
-  TeamsController,
-  TestcasesController,
-  UsersController,
-} from './controllers';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import config from './core/config';
-import { CustomRepositoryProviders } from './core/extended-repository';
-import { RolesGuard } from './core/guards';
 import { entities } from './entities';
-import {
-  AppService,
-  ClarificationsService,
-  ContestProblemsService,
-  ContestsService,
-  ExecutablesService,
-  FilesService,
-  JudgeHostsService,
-  JudgingRunsService,
-  JudgingsService,
-  LanguagesService,
-  ProblemsService,
-  ScoreboardService,
-  SubmissionsService,
-  TeamCategoriesService,
-  TeamsService,
-  TestcasesService,
-  UsersService,
-} from './services';
-
-const CONTROLLERS = [
-  AppController,
-  RolesController,
-  UsersController,
-  TeamsController,
-  PublicController,
-  ContestsController,
-  ProblemsController,
-  TestcasesController,
-  LanguagesController,
-  JudgeHostsController,
-  ExecutablesController,
-  SubmissionsController,
-  TeamCategoriesController,
-];
-
-const SERVICES = [
-  AppService,
-  ClarificationsService,
-  ContestProblemsService,
-  ContestsService,
-  ExecutablesService,
-  FilesService,
-  JudgeHostsService,
-  JudgingRunsService,
-  JudgingsService,
-  LanguagesService,
-  ProblemsService,
-  ScoreboardService,
-  SubmissionsService,
-  TeamCategoriesService,
-  TeamsService,
-  TestcasesService,
-  UsersService,
-];
+import { AuthModule } from './features/auth/auth.module';
+import { ClarificationsModule } from './features/clarifications/clarifications.module';
+import { ContestsModule } from './features/contests/contests.module';
+import { ExecutablesModule } from './features/executables/executables.module';
+import { FilesModule } from './features/files/files.module';
+import { JudgeHostsModule } from './features/judge-hosts/judge-hosts.module';
+import { LanguagesModule } from './features/languages/languages.module';
+import { ProblemsModule } from './features/problems/problems.module';
+import { PublicModule } from './features/public/public.module';
+import { ScoreboardModule } from './features/scoreboard/scoreboard.module';
+import { SubmissionsModule } from './features/submissions/submissions.module';
+import { TeamCategoriesModule } from './features/team-categories/team-categories.module';
+import { TeamsModule } from './features/teams/teams.module';
+import { TestcasesModule } from './features/testcases/testcases.module';
+import { UsersModule } from './features/users/users.module';
+import { WebsocketModule } from './features/websocket/websocket.module';
+import { RolesGuard } from './guards';
 
 @Module({
   imports: [
@@ -96,19 +41,28 @@ const SERVICES = [
       entities: entities,
       synchronize: true,
     }),
-    TypeOrmModule.forFeature(entities),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client'),
       exclude: ['/api*'],
     }),
     AuthModule,
+    ClarificationsModule,
+    ContestsModule,
+    ExecutablesModule,
+    JudgeHostsModule,
+    FilesModule,
+    LanguagesModule,
+    ProblemsModule,
+    PublicModule,
+    ScoreboardModule,
+    SubmissionsModule,
+    TeamsModule,
+    TeamCategoriesModule,
+    TestcasesModule,
+    UsersModule,
+    WebsocketModule,
   ],
-  controllers: [...CONTROLLERS],
-  providers: [
-    AppGateway,
-    ...SERVICES,
-    ...CustomRepositoryProviders,
-    { provide: APP_GUARD, useClass: RolesGuard },
-  ],
+  controllers: [AppController],
+  providers: [AppService, { provide: APP_GUARD, useClass: RolesGuard }],
 })
 export class AppModule {}

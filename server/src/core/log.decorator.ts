@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { LoggerFactory } from './logger-factory';
+import { LoggerFactory } from './logger.factory';
 
 const decorateMethod =
   (logger: Logger): MethodDecorator =>
@@ -18,12 +18,12 @@ const decorateMethod =
     };
 
     const onError = (time: number) => (error: any) => {
-      logger.error(`[OUT] ${String(propertyKey)}() - ${getDuration(time)} s`);
+      logger.error(`[OUT] ${String(propertyKey)}() - ${getDuration(time)} s`, error.stack);
 
       throw error;
     };
 
-    descriptor.value = function (...args: any) {
+    descriptor.value = function (...args: any[]) {
       const time = Date.now();
       logger.debug(`[IN] ${String(propertyKey)}()`);
 
@@ -39,6 +39,8 @@ const decorateMethod =
         onError(time)(error);
       }
     };
+
+    Object.defineProperty(descriptor.value, 'name', { value: propertyKey });
 
     for (const key of metadataKeys) {
       const value = Reflect.getMetadata(key, currentMethod);

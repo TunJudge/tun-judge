@@ -32,6 +32,7 @@ type Props<T> = {
   formItemInitValue?: Partial<T>;
   ItemForm?: DataTableItemForm<T>;
   withoutActions?: boolean;
+  fetchOnClose?: boolean;
   disabled?: (item: T, index: number) => boolean;
   canEdit?: (item: T) => boolean;
   onDelete?: (id: number) => void;
@@ -54,6 +55,7 @@ function DataTable<T extends { id: number | string }>({
   formItemInitValue,
   ItemForm,
   withoutActions,
+  fetchOnClose,
   disabled,
   canEdit,
   onDelete,
@@ -98,6 +100,7 @@ function DataTable<T extends { id: number | string }>({
     await onFormDismiss?.();
     setFormItem(formItemInitValue ?? {});
     setFormOpen(false);
+    fetchOnClose && onRefresh();
   };
 
   return (

@@ -1,15 +1,19 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Clarification } from './clarification.entity';
 import { User } from './user.entity';
 
 @Entity()
 export class ClarificationMessage {
+  @ApiProperty({ description: 'Clarification Message ID', required: false })
   @PrimaryGeneratedColumn({ comment: 'Clarification Message ID' })
   id: number;
 
-  @Column({ comment: 'The message content', nullable: false })
+  @ApiProperty({ description: 'The message content' })
+  @Column({ comment: 'The message content' })
   content: string;
 
+  @ApiProperty({ description: 'User sender' })
   @ManyToOne(() => User, {
     onDelete: 'CASCADE',
     onUpdate: 'RESTRICT',
@@ -17,12 +21,15 @@ export class ClarificationMessage {
   })
   sentBy: User;
 
-  @Column({ comment: 'The message sent time', nullable: false })
+  @ApiProperty({ description: 'Sent time' })
+  @Column({ comment: 'The message sent time' })
   sentTime: Date;
 
+  @ApiProperty({ description: 'Whether the message has been seen', default: false })
   @Column({ comment: 'Whether the message has been seen', default: false })
   seen: boolean;
 
+  @ApiProperty({ description: 'Related clarification' })
   @ManyToOne(() => Clarification, (clarification) => clarification.messages, {
     onDelete: 'CASCADE',
     onUpdate: 'RESTRICT',

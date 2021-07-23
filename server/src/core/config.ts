@@ -3,6 +3,7 @@ dotenv.config();
 
 const config = {
   nodeEnv: process.env.NODE_ENV,
+  logLevel: process.env.LOG_LEVEL,
   sessionSecret: process.env.SESSION_SECRET,
   database: {
     host: process.env.DATABASE_HOSTNAME,

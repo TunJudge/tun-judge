@@ -1,10 +1,11 @@
-import { action, observable } from 'mobx';
+import { action, observable, runInAction } from 'mobx';
 import { JudgeHost } from '../models';
 import http from '../utils/http-client';
 import { RootStore } from './RootStore';
 
 export class JudgeHostsStore {
   @observable data: JudgeHost[] = [];
+  @observable updateCount: number = 0;
 
   constructor(private readonly rootStore: RootStore) {}
 
@@ -16,12 +17,12 @@ export class JudgeHostsStore {
   @action
   toggle = async (id: number, active: boolean): Promise<void> => {
     await http.patch(`api/judge-hosts/${id}/toggle/${active}`);
-    await this.fetchAll();
+    runInAction(() => this.updateCount++);
   };
 
   @action
   remove = async (id: number): Promise<void> => {
     await http.delete(`api/judge-hosts/${id}`);
-    await this.fetchAll();
+    runInAction(() => this.updateCount++);
   };
 }

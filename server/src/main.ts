@@ -1,3 +1,4 @@
+import { LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
@@ -9,8 +10,21 @@ import config from './core/config';
 import session from './core/session';
 import { SocketIoAdapter } from './core/socket-io.adapter';
 
+const logLevelRanks: Record<LogLevel, number> = {
+  error: 0,
+  warn: 1,
+  log: 2,
+  debug: 3,
+  verbose: 4,
+};
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'].slice(
+      0,
+      (logLevelRanks[config.logLevel ?? 'log'] ?? 2) + 1,
+    ) as LogLevel[],
+  });
   if (config.nodeEnv === 'development') {
     app.enableCors({
       origin: /.*/,

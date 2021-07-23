@@ -1,3 +1,4 @@
+import { Param, ParseBoolPipe, ParseIntPipe } from '@nestjs/common';
 import { Contest, Judging, JudgingResult, Submission } from '../entities';
 
 export function getFirstJudging(submission: Submission): Judging | undefined {
@@ -49,3 +50,7 @@ export function cleanNullProblems(contest: Contest): Contest {
   contest.problems = contest.problems.filter((problem) => !!problem.shortName);
   return contest;
 }
+
+export const NumberParam = (property: string) => Param(property, ParseIntPipe);
+
+export const BoolParam = (property: string) => Param(property, ParseBoolPipe);

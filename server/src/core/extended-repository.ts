@@ -1,6 +1,5 @@
 import { Connection, FindConditions, FindOneOptions, ObjectLiteral, Repository } from 'typeorm';
 import { ObjectID } from 'typeorm/driver/mongodb/typings';
-import { entities } from '../entities';
 
 export class ExtendedRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
   constructor(private readonly repository: Repository<Entity>) {
@@ -51,9 +50,7 @@ export class ExtendedRepository<Entity extends ObjectLiteral> extends Repository
 
 export const CustomRepositoryProvider = (entity: any) => ({
   provide: `${entity.name}Repository`,
-  useFactory: (connection: Connection): ExtendedRepository<any> =>
+  useFactory: (connection: Connection) =>
     new ExtendedRepository<any>(connection.getRepository(entity)),
   inject: [Connection],
 });
-
-export const CustomRepositoryProviders = entities.map(CustomRepositoryProvider);

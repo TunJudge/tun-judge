@@ -37,7 +37,8 @@ const ClarificationsList: React.FC = observer(() => {
     <DataTable<Clarification>
       header="Clarifications"
       dataFetcher={fetchAll}
-      dataDependencies={[currentContest, profile]}
+      dataDependencies={[currentContest]}
+      fetchOnClose
       columns={columns}
       canDelete={() => false}
       ItemForm={ChatBox}

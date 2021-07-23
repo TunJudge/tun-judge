@@ -203,7 +203,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="mt-2 overflow-auto shadow border border-gray-200 rounded-md dark:border-gray-700 dark:text-white">
+        <div className="mt-2 shadow border border-gray-200 rounded-md dark:border-gray-700 dark:text-white">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
             <thead className="text-center uppercase bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
               <tr className="divide-x dark:divide-gray-800">

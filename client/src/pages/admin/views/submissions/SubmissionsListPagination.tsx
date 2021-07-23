@@ -4,6 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/outline';
+import classNames from 'classnames';
 import React from 'react';
 
 type Props = {
@@ -39,7 +40,12 @@ const SubmissionsListPagination: React.FC<Props> = ({
             <div
               key={`page-${index}`}
               title={`Page ${index + 1}`}
-              className="p-2 px-4 border border-r-0 border-gray-400 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+              className={classNames(
+                'p-2 px-4 border border-r-0 border-gray-400 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600',
+                {
+                  'bg-gray-100 dark:bg-gray-700': index === currentPage,
+                },
+              )}
               onClick={() => setCurrentPage(index)}
             >
               {index + 1}
@@ -57,7 +63,13 @@ const SubmissionsListPagination: React.FC<Props> = ({
           <div
             title="Last page"
             className="p-2 border border-gray-400 rounded-r-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-            onClick={() => setCurrentPage(Math.ceil(totalItems / 10) - 1)}
+            onClick={() =>
+              setCurrentPage(
+                Math.floor(
+                  totalItems && !(totalItems % 10) ? (totalItems - 1) / 10 : totalItems / 10,
+                ),
+              )
+            }
           >
             <ChevronDoubleRightIcon className="w-6 h-6" />
           </div>

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
@@ -25,18 +26,25 @@ import { Team } from './team.entity';
 @Index(['judgeHost'])
 @Index(['submitTime'])
 export class Submission {
+  @ApiProperty({ description: 'Submission ID', required: false })
   @PrimaryGeneratedColumn({ comment: 'Submission ID' })
   id: number;
 
+  @ApiProperty({ description: 'Submission time' })
   @Column({ comment: 'Submission time' })
   submitTime: Date;
 
+  @ApiProperty({
+    description: 'If false, the submission should be ignored in all scoreboard calculation',
+    default: true,
+  })
   @Column({
     comment: 'If false, the submission should be ignored in all scoreboard calculation',
     default: true,
   })
   valid: boolean;
 
+  @ApiProperty({ description: 'Related contest', type: () => Contest })
   @ManyToOne(() => Contest, (contest) => contest.submissions, {
     nullable: false,
     onDelete: 'CASCADE',
@@ -44,6 +52,7 @@ export class Submission {
   })
   contest: Contest;
 
+  @ApiProperty({ description: 'Related team', type: Team })
   @ManyToOne(() => Team, {
     nullable: false,
     onDelete: 'CASCADE',
@@ -51,6 +60,7 @@ export class Submission {
   })
   team: Team;
 
+  @ApiProperty({ description: 'Related problem', type: Problem })
   @ManyToOne(() => Problem, {
     nullable: false,
     onDelete: 'CASCADE',
@@ -58,6 +68,7 @@ export class Submission {
   })
   problem: Problem;
 
+  @ApiProperty({ description: 'Related language', type: Language })
   @ManyToOne(() => Language, {
     nullable: false,
     onDelete: 'RESTRICT',
@@ -71,6 +82,7 @@ export class Submission {
   })
   judgeHost: JudgeHost;
 
+  @ApiProperty({ description: 'Source file', type: File })
   @OneToOne(() => File, {
     cascade: true,
     onDelete: 'RESTRICT',

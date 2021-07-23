@@ -8,7 +8,6 @@ import { filter, first, map, mergeMap, share, takeUntil } from 'rxjs/operators';
 import { Namespace, Server } from 'socket.io';
 import session from './session';
 
-// TODO: Using this until socket.io v3 is part of Nest.js, see: https://github.com/nestjs/nest/issues/5676
 export class SocketIoAdapter extends AbstractWsAdapter {
   constructor(appOrHttpServer?: INestApplicationContext | any) {
     super(appOrHttpServer);
@@ -16,20 +15,20 @@ export class SocketIoAdapter extends AbstractWsAdapter {
 
   public create(
     port: number,
-    options?: any & { namespace?: string; server?: any },
+    options?: { namespace?: string; server?: Server },
   ): Server | Namespace {
     if (!options) {
       return this.createIOServer(port);
     }
     const { namespace, server, ...opt } = options;
-    const _server =
+    const newServer =
       server && isFunction(server.of)
         ? server.of(namespace)
         : namespace
         ? this.createIOServer(port, opt).of(namespace)
         : this.createIOServer(port, opt);
     if (server) {
-      (_server as Namespace).use((socket, next) =>
+      newServer.use((socket, next) =>
         session(
           socket.request as Request,
           (socket.request as Request).res ?? ({} as Response),
@@ -37,10 +36,10 @@ export class SocketIoAdapter extends AbstractWsAdapter {
         ),
       );
     }
-    return _server;
+    return newServer;
   }
 
-  public createIOServer(port: number, options?: any): any {
+  public createIOServer(port: number, options?: any): Server {
     if (this.httpServer && port === 0) {
       return new Server(this.httpServer);
     }
