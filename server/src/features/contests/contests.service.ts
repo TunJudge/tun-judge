@@ -98,6 +98,9 @@ export class ContestsService {
 
   async delete(id: number): Promise<void> {
     await this.contestProblemsService.deleteByContestId(id);
+    const contest = await this.getById(id, ['teams']);
+    contest.teams = [];
+    await this.save(contest);
     await this.contestsRepository.delete(id);
   }
 
