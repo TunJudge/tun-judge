@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.29 (2021-10-03)
+
+
+### Bug Fixes
+
+* fix deleting contest bug ([5bc22a7](https://github.com/TunJudge/tun-judge/commit/5bc22a7303aa044770b0dee12d085105c3440dbf))
+
 ### 0.0.28 (2021-07-12)
 
 
