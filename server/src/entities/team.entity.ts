@@ -1,11 +1,10 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Contest } from './contest.entity';
@@ -26,9 +25,6 @@ export class Team {
   })
   enabled: boolean;
 
-  @Column({ comment: 'Team member names', nullable: true })
-  members: string;
-
   @Column({ comment: 'Team physical location', nullable: true })
   room: string;
 
@@ -38,12 +34,11 @@ export class Team {
   @Column({ comment: 'Additional penalty time in minutes', default: 0 })
   penalty: number;
 
-  @OneToOne(() => User, (user) => user.team, {
+  @OneToMany(() => User, (user) => user.team, {
     onDelete: 'SET NULL',
     onUpdate: 'RESTRICT',
   })
-  @JoinColumn()
-  user: User;
+  users: User[];
 
   @ManyToOne(() => TeamCategory, (category) => category.teams, {
     onDelete: 'RESTRICT',

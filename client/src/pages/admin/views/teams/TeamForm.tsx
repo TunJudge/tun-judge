@@ -28,7 +28,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
     setErrors({
       name: isEmpty(team.name),
       category: isEmpty(team.category),
-      user: isEmpty(team.user),
+      users: isEmpty(team.users),
     });
   }, [team]);
 
@@ -40,7 +40,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
       onSubmit={() => onSubmit(team)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
-      <div className="grid sm:grid-cols-3 gap-2">
+      <div className="grid sm:grid-cols-2 gap-2">
         <TextInput<Team>
           entity={team}
           field="name"
@@ -59,22 +59,21 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
           errors={errors}
           setErrors={setErrors}
         />
-        <DropDownInput<Team, User>
-          entity={team}
-          field="user"
-          label="User"
-          required
-          options={users.filter((user) => !user.team || team.user?.id === user.id)}
-          optionsTextField="name"
-          errors={errors}
-          setErrors={setErrors}
-        />
       </div>
-      <TextareaInput<Team>
+      <DropDownInput<Team, User>
         entity={team}
-        field="members"
+        field="users"
         label="Members"
-        placeHolder="Members names..."
+        search
+        multiple
+        required
+        options={users.filter(
+          (user) =>
+            !user.team || team.users?.some((t) => t.id === user.id) || user.team.id === team.id,
+        )}
+        optionsTextField="name"
+        errors={errors}
+        setErrors={setErrors}
       />
       <div className="grid sm:grid-cols-2 gap-2">
         <NumberInput<Team> entity={team} field="penalty" label="Penalty Time" defaultValue={0} />

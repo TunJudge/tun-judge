@@ -63,13 +63,13 @@ export class SubmissionsService {
 
     if (notJudged) {
       query = query.andWhere(
-        '(SELECT COUNT(*) FROM judging WHERE "judging"."submissionId" = "submission"."id") = 0',
+        '(SELECT COUNT(*) FROM "judging" WHERE "judging"."submissionId" = "submission"."id") = 0',
       );
     }
 
     if (notVerified) {
       query = query.andWhere(
-        '(SELECT COUNT(*) FROM judging WHERE "judging"."submissionId" = "submission"."id" AND "judging"."verified" = FALSE) > 0',
+        '(SELECT COUNT(*) FROM "judging" WHERE "judging"."submissionId" = "submission"."id" AND "judging"."verified" = FALSE) > 0',
       );
     }
     return query.getManyAndCount();

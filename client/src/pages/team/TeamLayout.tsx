@@ -4,13 +4,14 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { updateLeftTimeToContest } from '../../core/helpers';
 import { rootStore } from '../../core/stores/RootStore';
 import ContestCountdown from '../shared/ContestCountdown';
+import { NoActiveContest } from '../shared/NoActiveContest';
 import ProblemSet from '../shared/ProblemSet';
 import Scoreboard from '../shared/Scoreboard';
 import TeamNavbar from './TeamNavbar';
 import HomeView from './views/HomeView';
 
 const TeamLayout: React.FC = observer(() => {
-  const [leftToContest, setLeftToContest] = useState<number>(0);
+  const [leftToContest, setLeftToContest] = useState<number>(1);
   const {
     publicStore: { currentContest },
     languagesStore: { fetchAll },
@@ -26,7 +27,9 @@ const TeamLayout: React.FC = observer(() => {
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
       <TeamNavbar />
       <div className="h-full">
-        {leftToContest ? (
+        {!currentContest ? (
+          <NoActiveContest />
+        ) : leftToContest ? (
           <ContestCountdown leftTime={leftToContest} />
         ) : (
           <Switch>

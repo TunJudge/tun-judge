@@ -27,7 +27,7 @@ const ToastContainer: React.FC = observer(() => {
   const { toasts } = rootStore.toastsStore;
 
   return (
-    <div className="fixed bottom-8 right-8 z-50 w-80">
+    <div className="fixed bottom-8 right-8 z-50 w-80 flex flex-col gap-2">
       {toasts.map(({ type, message }, index) => {
         const Icon = icons[type];
         return (

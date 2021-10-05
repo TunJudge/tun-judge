@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../../core/extended-repository';
 import { LogClass } from '../../core/log.decorator';
 import { Team } from '../../entities';
-import { TeamCategoriesService } from '../team-categories/team-categories.service';
-import { UsersService } from '../users/users.service';
 
 @LogClass
 @Injectable()
@@ -12,22 +10,36 @@ export class TeamsService {
   constructor(
     @InjectRepository(Team)
     private readonly teamsRepository: ExtendedRepository<Team>,
-    private readonly teamCategoriesService: TeamCategoriesService,
-    private readonly usersService: UsersService,
   ) {}
 
   getAll(): Promise<Team[]> {
-    return this.teamsRepository.find({
-      order: { id: 'ASC' },
-      relations: ['user', 'category', 'contests'],
-    });
+    return this.teamsRepository
+      .find({
+        order: { id: 'ASC' },
+        relations: ['users', 'category', 'contests'],
+      })
+      .then((teams) =>
+        teams.map((team) => {
+          team.users.forEach((user) => user.clean());
+          return team;
+        }),
+      );
   }
 
-  getByUserId(userId: number): Promise<Team> {
-    return this.teamsRepository.findOneOrThrow(
-      { user: { id: userId } },
-      new NotFoundException('Team not found!'),
-    );
+  async getByUserId(userId: number): Promise<Team> {
+    try {
+      return await this.teamsRepository
+        .createQueryBuilder('team')
+        .where(
+          '(SELECT COUNT(*) FROM "user" WHERE "user"."id" = :userId AND "user"."teamId" = "team"."id") > 0',
+          {
+            userId,
+          },
+        )
+        .getOneOrFail();
+    } catch {
+      throw new NotFoundException('Team not found!');
+    }
   }
 
   save(team: Team): Promise<Team> {
@@ -43,17 +55,13 @@ export class TeamsService {
   }
 
   async deepSave(team: Team): Promise<Team> {
-    const user = team.user;
+    const users = team.users;
     const category = team.category;
     const contests = team.contests;
     team = (await this.teamsRepository.findOne({ name: team.name })) ?? team;
     team.contests = contests;
-    if (user) {
-      const dbUser = await this.usersService.getByUsername(user.username);
-      team.user = dbUser ?? (await this.usersService.create(user));
-    }
-    const dbCategory = await this.teamCategoriesService.getByName(category.name);
-    team.category = dbCategory ?? (await this.teamCategoriesService.create(category));
+    team.users = users;
+    team.category = category;
     return this.save(team);
   }
 

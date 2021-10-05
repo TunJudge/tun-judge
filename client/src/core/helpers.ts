@@ -121,6 +121,8 @@ export function updateLeftTimeToContest(
         }, 1000);
       } else if (interval) {
         window.location.reload();
+      } else {
+        setLeftToContest!(0);
       }
     }
     return () => {
@@ -178,4 +180,14 @@ export function useLongPress(
 
 export function getDisplayDate(date: Date): string {
   return moment(date).format('ddd DD MMM, YYYY [at] HH:mm');
+}
+
+export function getRGBColorContrast(rgb: string): number {
+  rgb = rgb.replaceAll('#', '');
+
+  const red = Number.parseInt(rgb.slice(0, 2), 16);
+  const green = Number.parseInt(rgb.slice(2, 4), 16);
+  const blue = Number.parseInt(rgb.slice(4), 16);
+
+  return (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
 }

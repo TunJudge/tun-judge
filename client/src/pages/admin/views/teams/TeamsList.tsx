@@ -24,13 +24,10 @@ const TeamsList: React.FC = observer(() => {
     },
     {
       header: 'User',
-      field: 'user',
-      render: (team) => team.user?.username ?? '-',
-    },
-    {
-      header: 'Ip',
-      field: 'user',
-      render: (team) => team.user?.lastIpAddress ?? '-',
+      field: 'users',
+      render: (team) =>
+        team.users.map((user) => `${user.username} (${user.lastIpAddress ?? '-'})`).join(', ') ||
+        '-',
     },
     {
       header: 'Enabled?',
@@ -54,7 +51,7 @@ const TeamsList: React.FC = observer(() => {
       onDelete={remove}
       withoutActions={!isUserAdmin}
       onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-      rowBackgroundColor={(item) => (!item.user ? 'red' : 'white')}
+      rowBackgroundColor={(item) => (!item.users.length ? 'red' : 'white')}
     />
   );
 });

@@ -1,32 +1,14 @@
-import { action, autorun, observable } from 'mobx';
+import { action } from 'mobx';
 import { Submission } from '../models';
 import http from '../utils/http-client';
 import { RootStore } from './RootStore';
 
 export class TeamStore {
-  @observable submissions: Submission[] = [];
-
-  constructor(private readonly rootStore: RootStore) {
-    autorun(
-      async () => {
-        const {
-          profile,
-          updatesCount: { submissions },
-          publicStore: { currentContest },
-        } = rootStore;
-        if (currentContest && profile?.team?.id && submissions) {
-          await this.fetchSubmissions(currentContest.id, profile.team.id);
-        }
-      },
-      { delay: 10 },
-    );
-  }
+  constructor(private readonly rootStore: RootStore) {}
 
   @action
   fetchSubmissions = async (contestId: number, teamId: number): Promise<Submission[]> => {
-    return (this.submissions = await http.get<Submission[]>(
-      `api/contests/${contestId}/team/${teamId}/submissions`,
-    ));
+    return await http.get<Submission[]>(`api/contests/${contestId}/team/${teamId}/submissions`);
   };
 
   sendSubmission = async (

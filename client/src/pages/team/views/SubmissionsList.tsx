@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { dateComparator, formatRestTime } from '../../../core/helpers';
+import { contestStartedAndNotOver, dateComparator, formatRestTime } from '../../../core/helpers';
 import { Judging, Submission } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
 import { resultMap } from '../../../core/types';
@@ -65,7 +65,7 @@ const SubmissionsList: React.FC = observer(() => {
   ];
 
   const fetchAll = () =>
-    currentContest && profile?.team
+    currentContest && contestStartedAndNotOver(currentContest) && profile?.team
       ? fetchSubmissions(currentContest.id, profile.team.id)
       : Promise.all([]);
 

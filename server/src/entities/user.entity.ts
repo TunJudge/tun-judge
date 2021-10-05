@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { compareSync } from 'bcrypt';
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from './role.entity';
 import { Team } from './team.entity';
 
@@ -64,7 +64,7 @@ export class User {
     required: false,
     nullable: true,
   })
-  @OneToOne(() => Team, (team) => team.user, {
+  @ManyToOne(() => Team, (team) => team.users, {
     onDelete: 'SET NULL',
     onUpdate: 'RESTRICT',
   })
