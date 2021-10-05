@@ -20,7 +20,7 @@
     "@commitlint/config-conventional": "^12.1.4",
     "husky": "^6.0.0",
     "run-in-all": "1.2.0",
-    "standard-version": "^9.3.0"
+    "standard-version": "^9.3.1"
   },
   "standard-version": {
     "skip": {

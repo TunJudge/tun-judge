@@ -36,7 +36,7 @@ export class DockerService {
           }
           this.connection.modem.followProgress(
             stream,
-            (error: Error) => (error ? reject(error) : resolve()),
+            (error: Error | null) => (error ? reject(error) : resolve()),
             ({ status }: { status: string }) => this.logger.debug(`${tag}: ${status}`),
           );
         });

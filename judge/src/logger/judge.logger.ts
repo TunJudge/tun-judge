@@ -11,7 +11,7 @@ const logLevelRanks: Record<LogLevel, number> = {
 };
 
 export class JudgeLogger extends Logger {
-  constructor(context?: string, private onLog?: (log: string) => void) {
+  constructor(context: string, private onLog?: (log: string) => void) {
     super(context);
   }
 
@@ -49,7 +49,7 @@ export class JudgeLogger extends Logger {
     const output = color(message);
     const pidMessage = color(`[${level.toUpperCase()}]\t`);
     const contextMessage = context ? clc.yellow(`[${context}] `) : '';
-    const computedMessage = `${pidMessage}${this.getTimestamp()}   ${contextMessage}${output}`;
+    const computedMessage = `${pidMessage}${Logger.getTimestamp()}   ${contextMessage}${output}`;
 
     process[writeStreamType].write(computedMessage);
     returnToLine && process[writeStreamType].write('\n');
