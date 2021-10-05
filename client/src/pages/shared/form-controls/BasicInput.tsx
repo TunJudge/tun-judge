@@ -123,7 +123,7 @@ const BasicInput: React.FC<FullInputProps> = ({
         ) : (
           <input
             className={classNames(
-              'w-full border border-gray-300 rounded-md shadow-sm dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400',
+              'h-11 w-full border border-gray-300 rounded-md shadow-sm dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400',
               {
                 'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
                   touched && hasErrors,

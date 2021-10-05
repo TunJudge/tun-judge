@@ -2,7 +2,7 @@ import { RefreshIcon } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { formatRestTime } from '../../core/helpers';
+import { formatRestTime, getRGBColorContrast } from '../../core/helpers';
 import { rootStore } from '../../core/stores/RootStore';
 import { NoActiveContest } from './NoActiveContest';
 import Tooltip from './tooltip/Tooltip';
@@ -153,7 +153,13 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
                           content={`${problem.shortName} - ${problem.problem.name}`}
                           position="top"
                         >
-                          <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl truncate w-20">
+                          <div
+                            className={classNames('p-3 shadow rounded-xl truncate w-20', {
+                              'text-white': getRGBColorContrast(problem.color) < 0.5,
+                              'text-black': getRGBColorContrast(problem.color) > 0.5,
+                            })}
+                            style={{ backgroundColor: problem.color }}
+                          >
                             {problem.shortName}
                           </div>
                         </Tooltip>

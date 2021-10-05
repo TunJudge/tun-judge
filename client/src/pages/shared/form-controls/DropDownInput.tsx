@@ -148,7 +148,7 @@ function DropDownInput<T, R = any>({
   }, [refreshFilteredOptions]);
 
   const selectOption = (key: string, value?: any) => {
-    if (isOptionSelected(key)) return;
+    if (key === '-1' || isOptionSelected(key)) return;
 
     if (!value) {
       value = optionsState.find((option) => option.key === key)?.value;
@@ -249,7 +249,7 @@ function DropDownInput<T, R = any>({
           />
           <Listbox.Button
             className={classNames(
-              'relative w-full text-left bg-white rounded-md shadow-sm cursor-default focus:outline-none border dark:text-white dark:bg-gray-700 dark:border-gray-600',
+              'relative h-11 w-full text-left bg-white rounded-md shadow-sm cursor-default focus:outline-none border border-gray-300 dark:text-white dark:bg-gray-700 dark:border-gray-600',
               {
                 'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
                   hasErrors,
@@ -258,7 +258,7 @@ function DropDownInput<T, R = any>({
             )}
             ref={triggerRef}
           >
-            <div className="flex flex-wrap items-center px-3 py-2 gap-2">
+            <div className="flex flex-wrap items-center px-3 gap-2">
               {!selectedValues.length && !allowAdditions && !search && (
                 <div className="pl-1 gap-x-1 block truncate text-gray-500 dark:text-gray-400">
                   {placeHolder ?? label}
@@ -269,7 +269,8 @@ function DropDownInput<T, R = any>({
                   key={key}
                   className={classNames({
                     'text-gray-500': !selectedValues,
-                    'flex items-center pl-2 rounded bg-gray-200 dark:bg-gray-800 text-sm': multiple,
+                    'flex items-center py-1 pl-2 rounded bg-gray-200 dark:bg-gray-800 text-sm':
+                      multiple,
                   })}
                 >
                   {text}

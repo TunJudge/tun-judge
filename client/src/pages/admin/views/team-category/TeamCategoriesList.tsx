@@ -2,6 +2,7 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
+import { getRGBColorContrast } from '../../../../core/helpers';
 import { TeamCategory } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
@@ -55,13 +56,16 @@ const TeamCategoriesList: React.FC = observer(() => {
     {
       header: 'Color',
       field: 'color',
+      textAlign: 'center',
       render: (category) => (
-        <div className="flex items-center justify-center gap-2 w-full">
+        <div
+          className={classNames('px-2 rounded-md', {
+            'text-white': getRGBColorContrast(category.color) <= 0.5,
+            'text-black': getRGBColorContrast(category.color) > 0.5,
+          })}
+          style={{ backgroundColor: category.color }}
+        >
           {category.color}
-          <div
-            className="h-6 w-6 border border-black rounded-full dark:border-white"
-            style={{ backgroundColor: category.color }}
-          />
         </div>
       ),
     },
