@@ -4,7 +4,7 @@ services:
   server:
     build:
       context: .
-      dockerfile: docker/Dockerfile.server
+      dockerfile: docker/server/Dockerfile
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -23,7 +23,7 @@ services:
   judge:
     build:
       context: .
-      dockerfile: docker/Dockerfile.judge
+      dockerfile: docker/judge/Dockerfile
     environment:
       TUN_JUDGE_HOSTNAME: server
       TUN_JUDGE_PORT: 3000

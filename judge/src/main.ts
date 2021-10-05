@@ -5,7 +5,7 @@ import http from './http/http.client';
 import { JudgeLogger } from './logger';
 
 async function bootstrap() {
-  const logger = new JudgeLogger();
+  const logger = new JudgeLogger('main');
   try {
     await http.post(`api/auth/login`, {
       username: config.username,
@@ -16,7 +16,7 @@ async function bootstrap() {
       username: config.username,
     });
     logger.log('Successfully connected to TunJudge!');
-  } catch (error) {
+  } catch (error: any) {
     const response = error?.response;
     if (response) {
       const { statusCode, message } = response.data;

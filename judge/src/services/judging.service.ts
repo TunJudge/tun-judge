@@ -34,8 +34,8 @@ export class JudgingService {
         try {
           const judging = await this.systemService.getNextJudging();
           if (judging) await this.runJudging(judging);
-        } catch (e) {
-          this.logger.error(e.message);
+        } catch (error: any) {
+          this.logger.error(error.message);
         } finally {
           this.lock = false;
         }
@@ -52,9 +52,9 @@ export class JudgingService {
       await this.initializer.run(judging);
       await this.compiler.run(judging);
       await this.executor.run(judging);
-    } catch (e) {
-      this.logger.error(e.message, e.trace);
-      await this.systemService.setJudgingResult(judging, 'SE', e.message);
+    } catch (error: any) {
+      this.logger.error(error.message, error.trace);
+      await this.systemService.setJudgingResult(judging, 'SE', error.message);
     }
   }
 

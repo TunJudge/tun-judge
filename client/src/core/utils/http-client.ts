@@ -37,7 +37,7 @@ export async function request<T>(
         ...options,
       })
     ).data;
-  } catch (error) {
+  } catch (error: any) {
     error?.response?.status === 401 && (await rootStore?.logout());
     if (error?.response?.data) {
       const { message } = error?.response?.data;

@@ -1,27 +1,27 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.19.0
+version: v1.22.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-JS-BROWSERSLIST-1090194:
     - react-scripts > react-dev-utils > browserslist:
         reason: None given
-        expires: '2021-07-19T23:50:50.107Z'
+        expires: '2021-11-04T19:43:15.854Z'
   SNYK-JS-CSSWHAT-1298035:
     - react-scripts > @svgr/webpack > @svgr/plugin-svgo > svgo > css-select > css-what:
         reason: None given
-        expires: '2021-07-19T23:50:50.107Z'
+        expires: '2021-11-04T19:43:15.854Z'
   SNYK-JS-EJS-1049328:
     - react-scripts > workbox-webpack-plugin > workbox-build > @surma/rollup-plugin-off-main-thread > ejs:
         reason: None given
-        expires: '2021-07-19T23:50:50.107Z'
+        expires: '2021-11-04T19:43:15.854Z'
   SNYK-JS-GLOBPARENT-1016905:
     - react-scripts > webpack > watchpack > watchpack-chokidar2 > chokidar > glob-parent:
         reason: None given
-        expires: '2021-07-19T23:50:50.107Z'
+        expires: '2021-11-04T19:43:15.854Z'
   SNYK-JS-LODASHTEMPLATE-1088054:
     - react-scripts > workbox-webpack-plugin > workbox-build > lodash.template:
         reason: None given
-        expires: '2021-07-19T23:50:50.107Z'
+        expires: '2021-11-04T19:43:15.854Z'
   SNYK-JS-NORMALIZEURL-1296539:
     - react-scripts > mini-css-extract-plugin > normalize-url:
         reason: None given
@@ -37,4 +37,33 @@ ignore:
     - react-scripts > resolve-url-loader > postcss:
         reason: None given
         expires: '2021-07-19T23:50:50.107Z'
+    - tailwindcss > postcss-functions > postcss:
+        reason: None given
+        expires: '2021-11-04T19:43:15.854Z'
+  SNYK-JS-ANSIHTML-1296849:
+    - react-scripts > @pmmmwh/react-refresh-webpack-plugin > ansi-html:
+        reason: None given
+        expires: '2021-11-04T19:43:15.854Z'
+    - react-scripts > webpack-dev-server > ansi-html:
+        reason: None given
+        expires: '2021-11-04T19:43:15.854Z'
+  SNYK-JS-ANSIREGEX-1583908:
+    - react-scripts > webpack-dev-server > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2021-11-04T19:43:15.854Z'
+  SNYK-JS-IMMER-1540542:
+    - react-scripts > react-dev-utils > immer:
+        reason: None given
+        expires: '2021-11-04T19:43:15.854Z'
+  SNYK-JS-NTHCHECK-1586032:
+    - react-scripts > @svgr/webpack > @svgr/plugin-svgo > svgo > css-select > nth-check:
+        reason: None given
+        expires: '2021-11-04T19:43:15.854Z'
+  SNYK-JS-SETVALUE-1540541:
+    - react-scripts > babel-jest > @jest/transform > jest-haste-map > sane > anymatch > micromatch > braces > snapdragon > base > cache-base > set-value:
+        reason: None given
+        expires: '2021-11-04T19:43:15.855Z'
+    - react-scripts > babel-jest > @jest/transform > jest-haste-map > sane > anymatch > micromatch > braces > snapdragon > base > cache-base > union-value > set-value:
+        reason: None given
+        expires: '2021-11-04T19:43:15.855Z'
 patch: {}

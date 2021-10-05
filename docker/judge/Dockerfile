@@ -1,4 +1,6 @@
-FROM node:14.16.1-alpine as build-stage
+FROM node:14.18.0-alpine as build-stage
+
+RUN apk add python3 gcc g++ make cmake
 
 WORKDIR /judge
 COPY judge .
@@ -6,7 +8,7 @@ RUN yarn
 RUN yarn build
 RUN yarn --prod
 
-FROM node:14.16.1-alpine as final-stage
+FROM node:14.18.0-alpine as final-stage
 
 WORKDIR /judge
 COPY --from=build-stage /judge/node_modules ./node_modules
