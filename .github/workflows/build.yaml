@@ -19,6 +19,9 @@ jobs:
       - name: Yarn Install
         run: yarn install
 
+      - name: Lint
+        run: yarn lint
+
       - name: Prettier
         run: yarn prettier
 

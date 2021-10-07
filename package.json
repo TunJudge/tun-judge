@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "run-in-all -y install judge client server",
-    "prettier": "run-in-all -y prettier judge client server",
+    "postinstall": "run-in-all -y install projects/client projects/server projects/judge",
+    "lint": "run-in-all -y lint projects/client projects/server projects/judge",
+    "prettier": "prettier --check projects/{client,server,judge}/{src,test}/**/*.{ts,tsx}",
+    "prettier:fix": "prettier --write projects/{client,server,judge}/{src,test}/**/*.{ts,tsx}",
     "release": "standard-version -a ",
     "image:tag-and-push": "node scripts/tag-and-push-image",
     "version:current": "node scripts/current-version.js",
     "version:new": "yarn version --no-git-tag-version --new-version",
-    "version:update": "run-in-all --yarn version:new . judge client server --args"
+    "version:update": "run-in-all --yarn version:new . projects/client projects/server projects/judge --args"
   },
   "keywords": [],
   "author": "",
@@ -18,9 +20,15 @@
   "dependencies": {
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "eslint": "^7.32.0",
     "husky": "^6.0.0",
+    "prettier": "^2.4.1",
+    "prettier-plugin-organize-imports": "^2.3.4",
     "run-in-all": "1.2.0",
-    "standard-version": "^9.3.1"
+    "standard-version": "^9.3.1",
+    "typescript": "^4.4.3"
   },
   "standard-version": {
     "skip": {
