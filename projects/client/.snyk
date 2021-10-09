@@ -37,6 +37,9 @@ ignore:
     - react-scripts > resolve-url-loader > postcss:
         reason: None given
         expires: '2021-07-19T23:50:50.107Z'
+    - postcss-functions > postcss:
+        reason: None given
+        expires: '2021-11-04T19:43:15.854Z'
     - tailwindcss > postcss-functions > postcss:
         reason: None given
         expires: '2021-11-04T19:43:15.854Z'
@@ -66,4 +69,11 @@ ignore:
     - react-scripts > babel-jest > @jest/transform > jest-haste-map > sane > anymatch > micromatch > braces > snapdragon > base > cache-base > union-value > set-value:
         reason: None given
         expires: '2021-11-04T19:43:15.855Z'
+  SNYK-JS-PROMPTS-1729737:
+    - react-scripts > prompts:
+        reason: None given
+        expires: '2021-11-08T14:40:57.114Z'
+    - react-scripts > react-dev-utils > prompts:
+        reason: None given
+        expires: '2021-11-08T14:40:57.115Z'
 patch: {}

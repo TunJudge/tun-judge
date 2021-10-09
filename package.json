@@ -6,8 +6,8 @@
   "scripts": {
     "postinstall": "run-in-all -y install projects/client projects/server projects/judge",
     "lint": "run-in-all -y lint projects/client projects/server projects/judge",
-    "prettier": "prettier --check projects/{client,server,judge}/{src,test}/**/*.{ts,tsx}",
-    "prettier:fix": "prettier --write projects/{client,server,judge}/{src,test}/**/*.{ts,tsx}",
+    "prettier": "prettier --check projects/*/{src,test}/**/*.{ts,tsx}",
+    "prettier:fix": "prettier --write projects/*/{src,test}/**/*.{ts,tsx}",
     "release": "standard-version -a ",
     "image:tag-and-push": "node scripts/tag-and-push-image",
     "version:current": "node scripts/current-version.js",
