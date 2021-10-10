@@ -3,7 +3,7 @@ FROM node:14.18.0-alpine as build-stage
 RUN apk add python3 gcc g++ make cmake
 
 WORKDIR /judge
-COPY judge .
+COPY projects/judge .
 RUN yarn
 RUN yarn build
 RUN yarn --prod
