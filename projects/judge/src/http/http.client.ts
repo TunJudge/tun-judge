@@ -1,12 +1,11 @@
 import axios, { AxiosRequestConfig, Method } from 'axios';
-import { wrapper as axiosCookieJarSupport } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 import config from '../config';
 
 export class HttpClient {
   url = config.url ?? '';
   cookieJar = new CookieJar();
-  axiosInstance = axiosCookieJarSupport(axios.create({ jar: this.cookieJar }));
+  axiosInstance = axios.create({ jar: this.cookieJar });
 
   get<T>(path: string, options?: AxiosRequestConfig): Promise<T> {
     return this.request<T>(path, 'GET', options);
@@ -35,3 +34,9 @@ export class HttpClient {
 const http = new HttpClient();
 
 export default http;
+
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    jar?: CookieJar | boolean;
+  }
+}

@@ -6,6 +6,6 @@ export interface ClarificationMessage {
   content: string;
   sentBy: User;
   sentTime: Date;
-  seen: boolean;
+  seenBy: User[];
   clarification: Clarification;
 }

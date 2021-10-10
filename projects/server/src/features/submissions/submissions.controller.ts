@@ -97,8 +97,9 @@ export class SubmissionsController {
       },
     }
   ): Promise<void> {
-    await this.judgingsService.setVerified(id, userId);
-    this.socketService.pingForUpdates('all', 'judgings', 'submissions');
+    const judging = await this.judgingsService.setVerified(id, userId);
+    this.socketService.pingForUpdates('juries', 'judgings');
+    this.socketService.pingForUpdates(`team-${judging.submission.team.id}`, 'submissions');
   }
 
   @Patch(':id/claim')

@@ -1,8 +1,6 @@
-import { observer } from 'mobx-react';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { rootStore } from '../../core/stores/RootStore';
-import { NoActiveContest } from '../shared/NoActiveContest';
 import Scoreboard from '../shared/Scoreboard';
 import AdminNavbar from './AdminNavbar';
 import AdminSideBar from './AdminSidebar';
@@ -20,46 +18,34 @@ import TeamCategoriesList from './views/team-category/TeamCategoriesList';
 import TeamsList from './views/teams/TeamsList';
 import UsersList from './views/users/UsersList';
 
-const AdminLayout: React.FC = observer(() => {
-  const {
-    publicStore: { currentContest },
-  } = rootStore;
-
-  return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      <AdminSideBar visible={!rootStore.appLocalCache.menuCollapsed} />
-      <div className="flex flex-col w-full overflow-hidden">
-        <AdminNavbar
-          toggleSidebar={() =>
-            (rootStore.appLocalCache.menuCollapsed = !rootStore.appLocalCache.menuCollapsed)
-          }
-        />
-        <Switch>
-          <Route exact path="/" component={Dashboard} />
-          <Route exact path="/contests" component={ContestsList} />
-          <Route exact path="/problems" component={ProblemsList} />
-          <Route path="/problems/:id" component={ProblemView} />
-          <Route exact path="/languages" component={LanguagesList} />
-          <Route exact path="/executables" component={ExecutablesList} />
-          <Route exact path="/users" component={UsersList} />
-          <Route exact path="/teams" component={TeamsList} />
-          <Route exact path="/team-categories" component={TeamCategoriesList} />
-          <Route exact path="/judge-hosts" component={JudgeHostsList} />
-          <Route exact path="/submissions" component={SubmissionsList} />
-          <Route path="/submissions/:id" component={SubmissionsView} />
-          <Route exact path="/clarifications" component={ClarificationsList} />
-          <Route
-            exact
-            path="/scoreboard"
-            render={() =>
-              currentContest ? <Scoreboard contest={currentContest} /> : <NoActiveContest />
-            }
-          />
-          <Route render={() => <Redirect to="/" />} />
-        </Switch>
-      </div>
+const AdminLayout: React.FC = () => (
+  <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <AdminSideBar visible={!rootStore.appLocalCache.menuCollapsed} />
+    <div className="flex flex-col w-full overflow-hidden">
+      <AdminNavbar
+        toggleSidebar={() =>
+          (rootStore.appLocalCache.menuCollapsed = !rootStore.appLocalCache.menuCollapsed)
+        }
+      />
+      <Switch>
+        <Route exact path="/" component={Dashboard} />
+        <Route exact path="/contests" component={ContestsList} />
+        <Route exact path="/problems" component={ProblemsList} />
+        <Route path="/problems/:id" component={ProblemView} />
+        <Route exact path="/languages" component={LanguagesList} />
+        <Route exact path="/executables" component={ExecutablesList} />
+        <Route exact path="/users" component={UsersList} />
+        <Route exact path="/teams" component={TeamsList} />
+        <Route exact path="/team-categories" component={TeamCategoriesList} />
+        <Route exact path="/judge-hosts" component={JudgeHostsList} />
+        <Route exact path="/submissions" component={SubmissionsList} />
+        <Route path="/submissions/:id" component={SubmissionsView} />
+        <Route exact path="/clarifications" component={ClarificationsList} />
+        <Route exact path="/scoreboard" component={Scoreboard} />
+        <Route render={() => <Redirect to="/" />} />
+      </Switch>
     </div>
-  );
-});
+  </div>
+);
 
 export default AdminLayout;

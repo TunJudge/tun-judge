@@ -52,17 +52,19 @@ const UsersList: React.FC = observer(() => {
   ];
 
   return (
-    <DataTable<User>
-      header="Users"
-      dataFetcher={fetchAll}
-      dataDependencies={[updateCount]}
-      columns={columns}
-      ItemForm={isUserAdmin ? UserForm : undefined}
-      onDelete={remove}
-      withoutActions={!isUserAdmin}
-      canDelete={(item) => !!profile && item.username !== profile.username}
-      onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-    />
+    <div className="p-4">
+      <DataTable<User>
+        header="Users"
+        dataFetcher={fetchAll}
+        dataDependencies={[updateCount]}
+        columns={columns}
+        ItemForm={isUserAdmin ? UserForm : undefined}
+        onDelete={remove}
+        withoutActions={!isUserAdmin}
+        canDelete={(item) => !!profile && item.username !== profile.username}
+        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
+      />
+    </div>
   );
 });
 

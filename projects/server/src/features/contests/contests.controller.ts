@@ -138,7 +138,7 @@ export class ContestsController {
       throw new BadRequestException();
     }
 
-    clarificationMessage.seen = true;
+    clarificationMessage.seenBy.push({ id: userId } as User);
 
     await this.clarificationsService.saveMessage(clarificationMessage);
   }

@@ -1,13 +1,12 @@
 import { CheckCircleIcon, MinusCircleIcon, XCircleIcon } from '@heroicons/react/outline';
-import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { dateComparator, formatRestTime, getJudgingRunColor } from '../../../../core/helpers';
 import { Judging, Submission } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
-import { resultMap } from '../../../../core/types';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
+import SubmissionResult from '../../../shared/SubmissionResult';
 import SubmissionsFilters from './SubmissionsFilters';
 import SubmissionsListPagination from './SubmissionsListPagination';
 
@@ -79,23 +78,7 @@ const SubmissionsList: React.FC = observer(() => {
       header: 'Result',
       field: 'language',
       textAlign: 'center',
-      render: (submission) => {
-        const judging = submission.judgings
-          .slice()
-          .sort(dateComparator<Judging>('startTime', true))
-          .shift();
-        return (
-          <b
-            className={classNames({
-              'text-green-600': judging?.result === 'AC',
-              'text-red-600': judging?.result && judging.result !== 'AC',
-              'text-gray-600': !judging?.result,
-            })}
-          >
-            {resultMap[judging?.result ?? 'PD']}
-          </b>
-        );
-      },
+      render: (submission) => <SubmissionResult submission={submission} />,
     },
     {
       header: 'Verified by',
@@ -180,31 +163,33 @@ const SubmissionsList: React.FC = observer(() => {
   ];
 
   return (
-    <DataTable<Submission>
-      header="Submissions"
-      dataFetcher={fetchAll}
-      dataDependencies={[
-        currentContest,
-        currentPage,
-        filters.problems,
-        filters.teams,
-        filters.languages,
-        filters.status,
-        judgings,
-        judgeRuns,
-        fetchAll,
-      ]}
-      columns={columns}
-      filters={<SubmissionsFilters filters={filters} />}
-      pagination={
-        <SubmissionsListPagination
-          totalItems={totalItems}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
-      }
-      withoutActions
-    />
+    <div className="p-4">
+      <DataTable<Submission>
+        header="Submissions"
+        dataFetcher={fetchAll}
+        dataDependencies={[
+          currentContest,
+          currentPage,
+          filters.problems,
+          filters.teams,
+          filters.languages,
+          filters.status,
+          judgings,
+          judgeRuns,
+          fetchAll,
+        ]}
+        columns={columns}
+        filters={<SubmissionsFilters filters={filters} />}
+        pagination={
+          <SubmissionsListPagination
+            totalItems={totalItems}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        }
+        withoutActions
+      />
+    </div>
   );
 });
 

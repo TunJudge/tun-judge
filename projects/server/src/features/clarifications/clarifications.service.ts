@@ -17,7 +17,7 @@ export class ClarificationsService {
   getByContestId(contestId: number): Promise<Clarification[]> {
     return this.clarificationsRepository.find({
       where: { contest: { id: contestId } },
-      relations: ['team', 'problem', 'messages', 'messages.sentBy'],
+      relations: ['team', 'problem', 'messages', 'messages.sentBy', 'messages.seenBy'],
     });
   }
 
@@ -31,7 +31,7 @@ export class ClarificationsService {
     return this.clarificationsRepository.findOneOrThrow(
       {
         where: { id, contest: { id: contestId } },
-        relations: ['team', 'problem', 'messages', 'messages.sentBy'],
+        relations: ['team', 'problem', 'messages', 'messages.sentBy', 'messages.seenBy'],
       },
       new NotFoundException('Clarification not found!')
     );
@@ -44,7 +44,7 @@ export class ClarificationsService {
   ): Promise<ClarificationMessage> {
     return this.clarificationMessagesRepository.findOneOrFail({
       where: { id, clarification: { id: clarificationId, contest: { id: contestId } } },
-      relations: ['sentBy', 'clarification', 'clarification.contest'],
+      relations: ['sentBy', 'clarification', 'clarification.contest', 'seenBy'],
     });
   }
 

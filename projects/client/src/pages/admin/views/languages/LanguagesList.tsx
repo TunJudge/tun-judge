@@ -51,7 +51,7 @@ const LanguagesList: React.FC = observer(() => {
   ];
 
   return (
-    <>
+    <div className="p-4">
       <DataTable<Language>
         header="Languages"
         dataFetcher={fetchAll}
@@ -74,7 +74,7 @@ const LanguagesList: React.FC = observer(() => {
           setScriptData(undefined);
         }}
       />
-    </>
+    </div>
   );
 });
 

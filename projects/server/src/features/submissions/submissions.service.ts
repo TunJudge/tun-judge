@@ -1,4 +1,5 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtendedRepository } from '../../core/extended-repository';
 import { LogClass } from '../../core/log.decorator';
@@ -194,7 +195,7 @@ export class SubmissionsService {
       .getOne();
   }
 
-  // @Interval(1000)
+  @Interval(1000)
   async triggerForNewSubmissions() {
     if (await this.getNextSubmission()) {
       this.websocketGateway.pingForNewSubmissions();

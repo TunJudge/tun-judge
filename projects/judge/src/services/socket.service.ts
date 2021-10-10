@@ -13,7 +13,6 @@ export class SocketService {
       transports: ['websocket'],
       extraHeaders: { Cookie },
     });
-    this.socket.emit('subscribe');
   }
 
   get connected(): boolean {

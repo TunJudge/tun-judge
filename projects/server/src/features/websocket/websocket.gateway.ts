@@ -1,5 +1,6 @@
 import {
   MessageBody,
+  OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -22,7 +23,7 @@ type Rooms = 'juries' | 'judgeHosts' | `team-${number}`;
 
 @LogClass
 @WebSocketGateway({ namespace: 'ws' })
-export class WebsocketGateway {
+export class WebsocketGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
@@ -37,8 +38,7 @@ export class WebsocketGateway {
     );
   }
 
-  @SubscribeMessage('subscribe')
-  async subscribe(client: Socket) {
+  async handleConnection(client: Socket) {
     const user: User = (client.request as any).session?.passport?.user;
     const roleName = user?.role.name;
     if (['admin', 'jury'].includes(roleName)) {

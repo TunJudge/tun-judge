@@ -28,6 +28,7 @@ type Props<T> = {
   canDelete?: (item: T) => boolean;
   onRowClick?: (item: T) => void;
   rowBackgroundColor?: (item: T) => 'white' | 'green' | 'yellow' | 'red' | 'blue';
+  editIcon?: React.FC<React.ComponentProps<'svg'>>;
 };
 
 function DataTableBody<T extends { id: number | string }>({
@@ -45,6 +46,7 @@ function DataTableBody<T extends { id: number | string }>({
   canDelete,
   onRowClick,
   rowBackgroundColor,
+  editIcon: EditIcon = PencilAltIcon,
 }: Props<T>): ReactElement {
   const [sortState, setSortState] = useState<{
     column: keyof T | null;
@@ -187,7 +189,7 @@ function DataTableBody<T extends { id: number | string }>({
                     <td>
                       <div className="flex items-center justify-center h-full gap-2 px-4 py-1">
                         {canEdit?.(item) && (
-                          <PencilAltIcon
+                          <EditIcon
                             className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-900"
                             onClick={() => onEdit?.(item)}
                           />

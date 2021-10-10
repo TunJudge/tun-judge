@@ -1,15 +1,15 @@
-import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { contestStartedAndNotOver, dateComparator, formatRestTime } from '../../../core/helpers';
 import { Judging, Submission } from '../../../core/models';
 import { rootStore } from '../../../core/stores/RootStore';
-import { resultMap } from '../../../core/types';
 import DataTable, { ListPageTableColumn } from '../../shared/data-table/DataTable';
+import SubmissionResult from '../../shared/SubmissionResult';
 
 const SubmissionsList: React.FC = observer(() => {
   const {
     profile,
+    updatesCount: { submissions },
     publicStore: { currentContest },
     teamStore: { fetchSubmissions },
   } = rootStore;
@@ -44,23 +44,7 @@ const SubmissionsList: React.FC = observer(() => {
       header: 'Result',
       field: 'language',
       textAlign: 'center',
-      render: (submission) => {
-        const judging = submission.judgings
-          .slice()
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-          .shift();
-        return (
-          <b
-            className={classNames({
-              'text-green-600': judging?.result === 'AC',
-              'text-red-600': judging?.result && judging.result !== 'AC',
-              'text-gray-600': !judging?.result,
-            })}
-          >
-            {resultMap[judging?.result ?? 'PD']}
-          </b>
-        );
-      },
+      render: (submission) => <SubmissionResult submission={submission} />,
     },
   ];
 
@@ -74,7 +58,7 @@ const SubmissionsList: React.FC = observer(() => {
       header="Submissions"
       emptyMessage="No Submissions"
       dataFetcher={fetchAll}
-      dataDependencies={[currentContest, profile]}
+      dataDependencies={[currentContest, profile, submissions]}
       columns={columns}
       withoutActions
       rowBackgroundColor={(submission) => {

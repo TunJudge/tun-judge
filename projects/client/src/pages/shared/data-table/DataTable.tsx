@@ -1,6 +1,7 @@
+import { PlusIcon, RefreshIcon } from '@heroicons/react/outline';
 import { observable } from 'mobx';
 import React, { DependencyList, ReactElement, useEffect, useState } from 'react';
-import DataTableActionBar from './DataTableActionBar';
+import HeaderActionBar from '../HeaderActionBar';
 import DataTableBody from './DataTableBody';
 
 export type ListPageTableColumn<T> = {
@@ -41,6 +42,7 @@ type Props<T> = {
   onFormDismiss?: () => void;
   onRowClick?: (item: T) => void;
   rowBackgroundColor?: (item: T) => 'white' | 'green' | 'yellow' | 'red' | 'blue';
+  editIcon?: React.FC<React.ComponentProps<'svg'>>;
 };
 
 function DataTable<T extends { id: number | string }>({
@@ -64,6 +66,7 @@ function DataTable<T extends { id: number | string }>({
   onFormDismiss,
   onRowClick,
   rowBackgroundColor,
+  editIcon,
 }: Props<T>): ReactElement {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -98,19 +101,29 @@ function DataTable<T extends { id: number | string }>({
 
   const dismissForm = async () => {
     await onFormDismiss?.();
-    setFormItem(formItemInitValue ?? {});
     setFormOpen(false);
+    setFormItem(formItemInitValue ?? {});
     fetchOnClose && onRefresh();
   };
 
   return (
-    <div className="flex flex-col p-4 overflow-hidden gap-y-4 text-black dark:text-white">
+    <div className="flex flex-col overflow-hidden gap-y-4 text-black dark:text-white">
       {header && (
-        <DataTableActionBar
+        <HeaderActionBar
           header={header}
-          canAdd={!!ItemForm}
-          onAdd={() => setFormOpen(true)}
-          onRefresh={onRefresh}
+          actions={[
+            {
+              label: 'Add',
+              visible: !!ItemForm,
+              icon: PlusIcon,
+              onClick: () => setFormOpen(true),
+            },
+            {
+              label: 'Refresh',
+              icon: RefreshIcon,
+              onClick: onRefresh,
+            },
+          ]}
         />
       )}
       {filters}
@@ -129,6 +142,7 @@ function DataTable<T extends { id: number | string }>({
         canDelete={canDelete}
         onRowClick={onRowClick}
         rowBackgroundColor={rowBackgroundColor}
+        editIcon={editIcon}
       />
       {ItemForm && (
         <ItemForm

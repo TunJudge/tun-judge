@@ -74,7 +74,7 @@ export class Executor {
 
         spinner.stop();
 
-        this.logger.error(`Running test ${testcase.rank}\tNOT OK!`);
+        this.logger.log(`Running test ${testcase.rank}\tNOT OK!`);
 
         return this.dockerService.pruneContainer(runnerContainer, checkerContainer);
       }
@@ -92,7 +92,7 @@ export class Executor {
         await this.sendJudgingRun(judging, testcase, guardOutput, 'WA');
         await this.systemService.setJudgingResult(judging, 'WA');
 
-        this.logger.error(`Running test ${testcase.rank}\tNOT OK!`);
+        this.logger.log(`Running test ${testcase.rank}\tNOT OK!`);
 
         return this.dockerService.pruneContainer(runnerContainer, checkerContainer);
       }

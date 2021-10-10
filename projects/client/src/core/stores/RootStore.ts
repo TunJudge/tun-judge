@@ -115,7 +115,6 @@ export class RootStore {
   }
 
   private initiateWebSocket() {
-    this.socket.emit('subscribe');
     for (const event of updateEvents) {
       this.socket.on(event, () => this._updatesCount[event]++);
     }

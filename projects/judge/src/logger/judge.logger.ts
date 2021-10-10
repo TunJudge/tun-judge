@@ -1,4 +1,4 @@
-import { Logger, LogLevel } from '@nestjs/common';
+import { ConsoleLogger, Logger, LogLevel } from '@nestjs/common';
 import { clc } from '@nestjs/common/utils/cli-colors.util';
 import config from '../config';
 
@@ -10,7 +10,7 @@ const logLevelRanks: Record<LogLevel, number> = {
   verbose: 4,
 };
 
-export class JudgeLogger extends Logger {
+export class JudgeLogger extends ConsoleLogger {
   constructor(context: string, private onLog?: (log: string) => void) {
     super(context);
   }

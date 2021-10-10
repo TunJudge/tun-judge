@@ -44,16 +44,18 @@ const ProblemsList: React.FC = observer(() => {
   ];
 
   return (
-    <DataTable<Problem>
-      header="Problems"
-      dataFetcher={fetchAll}
-      dataDependencies={[updateCount]}
-      columns={columns}
-      ItemForm={isUserAdmin ? ProblemForm : undefined}
-      withoutActions={!isUserAdmin}
-      onDelete={remove}
-      onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-    />
+    <div className="p-4">
+      <DataTable<Problem>
+        header="Problems"
+        dataFetcher={fetchAll}
+        dataDependencies={[updateCount]}
+        columns={columns}
+        ItemForm={isUserAdmin ? ProblemForm : undefined}
+        withoutActions={!isUserAdmin}
+        onDelete={remove}
+        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
+      />
+    </div>
   );
 });
 

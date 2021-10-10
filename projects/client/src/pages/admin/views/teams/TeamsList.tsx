@@ -42,17 +42,19 @@ const TeamsList: React.FC = observer(() => {
   ];
 
   return (
-    <DataTable<Team>
-      header="Teams"
-      dataFetcher={fetchAll}
-      dataDependencies={[updateCount]}
-      columns={columns}
-      ItemForm={isUserAdmin ? TeamForm : undefined}
-      onDelete={remove}
-      withoutActions={!isUserAdmin}
-      onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-      rowBackgroundColor={(item) => (!item.users.length ? 'red' : 'white')}
-    />
+    <div className="p-4">
+      <DataTable<Team>
+        header="Teams"
+        dataFetcher={fetchAll}
+        dataDependencies={[updateCount]}
+        columns={columns}
+        ItemForm={isUserAdmin ? TeamForm : undefined}
+        onDelete={remove}
+        withoutActions={!isUserAdmin}
+        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
+        rowBackgroundColor={(item) => (!item.users.length ? 'red' : 'white')}
+      />
+    </div>
   );
 });
 

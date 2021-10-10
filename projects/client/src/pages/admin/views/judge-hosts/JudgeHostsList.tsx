@@ -82,7 +82,7 @@ const JudgeHostsList: React.FC = observer(() => {
   ];
 
   return (
-    <>
+    <div className="p-4">
       <DataTable<JudgeHost>
         header="Judge Hosts"
         dataFetcher={fetchAll}
@@ -104,7 +104,7 @@ const JudgeHostsList: React.FC = observer(() => {
         }}
       />
       <JudgeHostLogsViewer hostname={hostname} dismiss={() => setHostname(undefined)} />
-    </>
+    </div>
   );
 });
 

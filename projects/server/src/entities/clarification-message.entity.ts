@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Clarification } from './clarification.entity';
 import { User } from './user.entity';
 
@@ -25,9 +25,10 @@ export class ClarificationMessage {
   @Column({ comment: 'The message sent time' })
   sentTime: Date;
 
-  @ApiProperty({ description: 'Whether the message has been seen', default: false })
-  @Column({ comment: 'Whether the message has been seen', default: false })
-  seen: boolean;
+  @ApiProperty({ description: 'The users that have seen this message', default: false })
+  @ManyToMany(() => User, { cascade: false })
+  @JoinTable()
+  seenBy: User[];
 
   @ApiProperty({ description: 'Related clarification' })
   @ManyToOne(() => Clarification, (clarification) => clarification.messages, {

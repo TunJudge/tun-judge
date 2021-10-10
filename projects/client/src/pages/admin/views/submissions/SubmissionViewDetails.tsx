@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import { dateComparator, formatRestTime } from '../../../../core/helpers';
+import { dateComparator, formatBytes, formatRestTime } from '../../../../core/helpers';
 import { Judging, Submission } from '../../../../core/models';
 import { resultMap } from '../../../../core/types';
 import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
@@ -60,9 +60,9 @@ const SubmissionViewDetails: React.FC<{
       field: 'id',
       textAlign: 'center',
       render: (judging) =>
-        `${Math.floor(
-          judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runTime), 0) * 1000
-        )} ms`,
+        formatBytes(
+          judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runMemory), 0) * 1024
+        ),
     },
     {
       header: 'Sent',

@@ -30,7 +30,10 @@ const ChatBox: DataTableItemForm<Clarification> = observer(({ item: clarificatio
     if (currentContest) {
       Promise.all(
         item.messages.map(async (message) => {
-          if (!compareRoles(profile!, message.sentBy) && !message.seen) {
+          if (
+            !compareRoles(profile!, message.sentBy) &&
+            !message.seenBy.some((u) => u.id === profile?.id)
+          ) {
             await setClarificationMessageAsSeen(currentContest.id, item.id, message.id);
             return true;
           }

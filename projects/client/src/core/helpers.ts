@@ -195,7 +195,11 @@ export function getRGBColorContrast(rgb: string): number {
 }
 
 export function countUnseenMessages(clarification: Clarification, currentUser: User): number {
-  return clarification.messages.filter((m) => !m.seen && m.sentBy.id !== currentUser.id).length;
+  return clarification.messages.filter(
+    (message) =>
+      !compareRoles(currentUser, message.sentBy) &&
+      !message.seenBy.some((u) => u.id === currentUser.id)
+  ).length;
 }
 
 export function compareRoles(currentUser: User, sendingUser: User): boolean {

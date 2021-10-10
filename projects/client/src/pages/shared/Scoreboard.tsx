@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { formatRestTime, getRGBColorContrast } from '../../core/helpers';
-import { Contest } from '../../core/models';
 import { rootStore } from '../../core/stores/RootStore';
+import { NoActiveContest } from './NoActiveContest';
 import Tooltip from './tooltip/Tooltip';
 
 type TeamProblemScore = {
@@ -24,14 +24,14 @@ type TeamStandingRow = {
   problemsScores: TeamProblemScore[];
 };
 
-type Props = { contest: Contest; compact?: boolean; className?: string };
+type Props = { compact?: boolean; className?: string };
 
-const Scoreboard: React.FC<Props> = observer(({ contest, compact, className }) => {
+const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
   const [standing, setStanding] = useState<TeamStandingRow[]>([]);
   const {
     profile,
     isUserJury,
-    publicStore: { scoreCaches },
+    publicStore: { scoreCaches, currentContest: contest },
     contestsStore: { refreshScoreboardCache },
   } = rootStore;
 
@@ -105,7 +105,9 @@ const Scoreboard: React.FC<Props> = observer(({ contest, compact, className }) =
     }
   }, [scoreCaches, isUserJury]);
 
-  return (
+  return !contest ? (
+    <NoActiveContest />
+  ) : (
     <div className={classNames(className, 'flex justify-center dark:text-white p-8 max-w-full')}>
       <div className="max-w-full p-8 bg-white rounded-xl border shadow select-none dark:bg-gray-800 dark:border-gray-700">
         {!compact && (

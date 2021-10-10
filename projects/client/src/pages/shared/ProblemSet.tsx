@@ -40,7 +40,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           <div className="flex justify-between w-full">
             <div className="flex gap-1">
               {problem.name}
-              <div className="text-gray-500">
+              <div className="text-gray-500 dark:text-gray-400">
                 ({problem.timeLimit} s, {formatBytes(problem.memoryLimit * 1024)})
               </div>
             </div>
@@ -119,7 +119,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
                         <div className="text-2xl">
                           {problem.shortName} - {problem.problem.name}
                         </div>
-                        <div className="py-2 text-gray-500">
+                        <div className="py-2 text-gray-500 dark:text-gray-400">
                           Limits: {problem.problem.timeLimit}s /{' '}
                           {formatBytes(problem.problem.memoryLimit * 1024)}
                         </div>

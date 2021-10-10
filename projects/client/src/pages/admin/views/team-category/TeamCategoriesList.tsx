@@ -82,16 +82,18 @@ const TeamCategoriesList: React.FC = observer(() => {
   ];
 
   return (
-    <DataTable<TeamCategory>
-      header="Team Categories"
-      dataFetcher={fetchAll}
-      dataDependencies={[updateCount]}
-      columns={columns}
-      ItemForm={isUserAdmin ? TeamCategoryForm : undefined}
-      onDelete={remove}
-      withoutActions={!isUserAdmin}
-      onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-    />
+    <div className="p-4">
+      <DataTable<TeamCategory>
+        header="Team Categories"
+        dataFetcher={fetchAll}
+        dataDependencies={[updateCount]}
+        columns={columns}
+        ItemForm={isUserAdmin ? TeamCategoryForm : undefined}
+        onDelete={remove}
+        withoutActions={!isUserAdmin}
+        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
+      />
+    </div>
   );
 });
 

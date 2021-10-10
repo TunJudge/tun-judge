@@ -19,8 +19,11 @@ async function bootstrap() {
   } catch (error: any) {
     const response = error?.response;
     if (response) {
-      const { statusCode, message } = response.data;
-      logger.error(`${statusCode}: ${message}`);
+      const {
+        data: { statusCode, message },
+        request: { path },
+      } = response;
+      logger.error(`${statusCode}: (${path}) ${message}`);
     } else {
       logger.error(error.message);
     }

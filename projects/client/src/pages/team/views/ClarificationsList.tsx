@@ -1,3 +1,4 @@
+import { EyeIcon } from '@heroicons/react/outline';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -62,6 +63,7 @@ const ClarificationsList: React.FC = observer(() => {
         team: profile?.team,
         messages: [],
       })}
+      editIcon={EyeIcon}
     />
   );
 });

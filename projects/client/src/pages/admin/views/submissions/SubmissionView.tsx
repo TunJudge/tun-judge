@@ -35,7 +35,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
   return !submission ? (
     <Spinner />
   ) : (
-    <div className="overflow-auto flex flex-col gap-y-4 text-black dark:text-white">
+    <div className="pl-4 py-4 overflow-auto flex flex-col gap-y-4 text-black dark:text-white">
       <SubmissionViewHeader submission={submission} />
       <SubmissionViewDetails
         submission={submission}

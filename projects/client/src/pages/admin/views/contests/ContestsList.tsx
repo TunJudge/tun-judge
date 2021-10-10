@@ -66,17 +66,19 @@ const ContestsList: React.FC = observer(() => {
   ];
 
   return (
-    <DataTable<Contest>
-      header="Contests"
-      dataFetcher={fetchAll}
-      dataDependencies={[updateCount]}
-      columns={columns}
-      formItemInitValue={observable({ problems: [] })}
-      ItemForm={isUserAdmin ? ContestForm : undefined}
-      onDelete={remove}
-      withoutActions={!isUserAdmin}
-      onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-    />
+    <div className="p-4">
+      <DataTable<Contest>
+        header="Contests"
+        dataFetcher={fetchAll}
+        dataDependencies={[updateCount]}
+        columns={columns}
+        formItemInitValue={observable({ problems: [] })}
+        ItemForm={isUserAdmin ? ContestForm : undefined}
+        onDelete={remove}
+        withoutActions={!isUserAdmin}
+        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
+      />
+    </div>
   );
 });
 

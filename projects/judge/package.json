@@ -27,7 +27,6 @@
     "@nestjs/platform-express": "^8.0.10",
     "@nestjs/schedule": "^1.0.1",
     "axios": "^0.22.0",
-    "axios-cookiejar-support": "^2.0.2",
     "cli-spinners": "^2.6.1",
     "crypto-js": "^4.1.1",
     "dockerode": "^3.3.1",

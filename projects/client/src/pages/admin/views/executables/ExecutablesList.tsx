@@ -78,7 +78,7 @@ const ExecutablesList: React.FC = observer(() => {
   ];
 
   return (
-    <>
+    <div className="p-4">
       <DataTable<Executable>
         header="Executables"
         dataFetcher={fetchAll}
@@ -102,7 +102,7 @@ const ExecutablesList: React.FC = observer(() => {
           setScriptData(undefined);
         }}
       />
-    </>
+    </div>
   );
 });
 
