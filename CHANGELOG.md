@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.32 (2021-10-10)
+
+
+### Features
+
+* add clarification messaging system between teams and judges ([540cbec](https://github.com/TunJudge/tun-judge/commit/540cbec3e02533476ce111354f1062f79d7ad28b))
+
 ### 0.0.31 (2021-10-05)
 
 ### 0.0.30 (2021-10-05)
