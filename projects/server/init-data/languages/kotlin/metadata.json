@@ -1,0 +1,8 @@
+{
+  "name": "Kotlin",
+  "dockerImage": "tunjudge/lang-kotlin:1.4.20-alpine",
+  "buildScript": "build.sh",
+  "extensions": [
+    "kt"
+  ]
+}

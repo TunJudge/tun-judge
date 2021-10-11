@@ -23,7 +23,7 @@ export class Compiler {
     this.logger = new JudgeLogger(Compiler.name, getOnLog(this.socketService));
   }
 
-  async run(judging: Judging): Promise<void> {
+  async run(judging: Judging): Promise<boolean> {
     const { submission } = judging;
     const {
       problem: { checkScript },
@@ -33,7 +33,8 @@ export class Compiler {
 
     if (compileSubmissionResult.exitCode) {
       this.logger.error(`Compiling submission file ${submission.file.name}\tNOT OK!`);
-      return this.systemService.setJudgingResult(judging, 'CE');
+      await this.systemService.setJudgingResult(judging, 'CE');
+      return false;
     }
     this.logger.log(`Compiling submission file ${submission.file.name}\tOK!`);
 
@@ -42,12 +43,14 @@ export class Compiler {
     if (compileCheckerResult) {
       if (compileCheckerResult.exitCode) {
         this.logger.error(`Compiling executable file ${checkScript.file.name}\tNOT OK!`);
-        return this.systemService.setJudgingResult(judging, 'SE', compileCheckerResult.stdout);
+        await this.systemService.setJudgingResult(judging, 'SE', compileCheckerResult.stdout);
+        return false;
       }
       this.logger.log(`Compiling executable file ${checkScript.file.name}\tOK!`);
     }
 
     this.logger.log(`Submission with id ${submission.id} compiled!`);
+    return true;
   }
 
   private async compileSubmissionFile(judging: Judging) {

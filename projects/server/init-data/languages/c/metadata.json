@@ -1,0 +1,8 @@
+{
+  "name": "C",
+  "dockerImage": "tunjudge/lang-cpp:7.3.0",
+  "buildScript": "build.sh",
+  "extensions": [
+    "c"
+  ]
+}

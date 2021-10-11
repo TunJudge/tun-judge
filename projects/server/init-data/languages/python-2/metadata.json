@@ -1,0 +1,8 @@
+{
+  "name": "Python 2",
+  "dockerImage": "tunjudge/lang-python:2.7.18-slim",
+  "buildScript": "build.sh",
+  "extensions": [
+    "py2"
+  ]
+}

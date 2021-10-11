@@ -26,7 +26,7 @@ export class JudgeHostsController {
     private readonly submissionsService: SubmissionsService,
     private readonly judgeHostsService: JudgeHostsService,
     private readonly scoreboardService: ScoreboardService,
-    private readonly websocketGateway: WebsocketGateway
+    private readonly socketService: WebsocketGateway
   ) {}
 
   @Get()
@@ -76,7 +76,8 @@ export class JudgeHostsController {
       oldJudging.submission.team,
       oldJudging.submission.problem
     );
-    this.websocketGateway.pingForUpdates('juries', 'judgings', 'submissions');
+    this.socketService.pingForUpdates('juries', 'judgings', 'submissions');
+    this.socketService.pingForUpdates(`team-${oldJudging.submission.team.id}`, 'submissions');
   }
 
   @Post(':hostname/add-judging-run/:id')
@@ -88,7 +89,7 @@ export class JudgeHostsController {
   ): Promise<void> {
     await this.judgingsService.getById(judgingId);
     await this.judgingRunsService.save(judgingRun);
-    this.websocketGateway.pingForUpdates('juries', 'judgeRuns');
+    this.socketService.pingForUpdates('juries', 'judgeRuns');
   }
 
   @Get(':hostname/next-judging')
@@ -110,7 +111,7 @@ export class JudgeHostsController {
       await this.submissionsService.save(submission);
       judging.submission = submission;
       judging.judgeHost = judgeHost;
-      this.websocketGateway.pingForUpdates('juries', 'judgings');
+      this.socketService.pingForUpdates('juries', 'judgings');
       return judging;
     }
   }

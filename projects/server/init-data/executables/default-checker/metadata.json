@@ -1,0 +1,8 @@
+{
+  "name": "Default Checker",
+  "type": "CHECKER",
+  "dockerImage": "tunjudge/lang-cpp:7.3.0",
+  "sourceFile": "checker.cpp",
+  "buildScript": "build.sh",
+  "default": true
+}

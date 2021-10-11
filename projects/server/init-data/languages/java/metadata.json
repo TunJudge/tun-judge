@@ -1,0 +1,8 @@
+{
+  "name": "Java",
+  "dockerImage": "tunjudge/lang-java:8-jdk-alpine",
+  "buildScript": "build.sh",
+  "extensions": [
+    "java"
+  ]
+}

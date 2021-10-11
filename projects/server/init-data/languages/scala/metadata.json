@@ -1,0 +1,8 @@
+{
+  "name": "Scala",
+  "dockerImage": "tunjudge/lang-scala:2.13.4-alpine",
+  "buildScript": "build.sh",
+  "extensions": [
+    "scala"
+  ]
+}

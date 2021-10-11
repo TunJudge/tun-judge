@@ -1,0 +1,8 @@
+{
+  "name": "TypeScript",
+  "dockerImage": "tunjudge/lang-node:14.18.0-alpine",
+  "buildScript": "build.sh",
+  "extensions": [
+    "ts"
+  ]
+}

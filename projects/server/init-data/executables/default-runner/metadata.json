@@ -1,0 +1,8 @@
+{
+  "name": "Default Runner",
+  "type": "RUNNER",
+  "dockerImage": null,
+  "sourceFile": "runner.sh",
+  "buildScript": null,
+  "default": true
+}
