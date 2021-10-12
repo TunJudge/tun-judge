@@ -5,7 +5,7 @@
 
 using namespace std;
 
-bool compareWords(string a, string b)
+bool compareWords(const string &a, const string &b)
 {
     vector<string> va, vb;
     stringstream sa;

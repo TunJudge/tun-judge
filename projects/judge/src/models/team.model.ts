@@ -6,11 +6,10 @@ export interface Team {
   id: number;
   name: string;
   enabled: boolean;
-  members: string;
   room: string;
   comments: string;
   penalty: number;
-  user: User;
+  users: User[];
   category: TeamCategory;
   contests: Contest[];
 }

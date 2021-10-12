@@ -10,9 +10,6 @@ export interface Contest {
   freezeTime: Date;
   endTime: Date;
   unfreezeTime: Date;
-  finalizeTime: Date;
-  finalizeComment: string;
-  extraBronzeMedals: number;
   enabled: boolean;
   processBalloons: boolean;
   public: boolean;

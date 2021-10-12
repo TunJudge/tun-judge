@@ -90,12 +90,12 @@ const Dashboard: React.FC = observer(() => {
     <NoActiveContest />
   ) : (
     <div className="p-4 xl:container mx-auto space-y-4 dark:text-white overflow-auto">
-      <div className="flex items-center justify-center p-2 bg-white border rounded-md shadow dark:bg-gray-800 dark:border-gray-700">
+      <div className="flex items-center justify-center p-2 bg-white rounded-md shadow dark:bg-gray-800">
         <div className="text-4xl font-medium">
           {currentContest ? currentContest.name : 'No Active Contest'}
         </div>
       </div>
-      <div className="divide-y border rounded-md bg-white shadow dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
+      <div className="divide-y rounded-md bg-white shadow dark:bg-gray-800 dark:divide-gray-700">
         <div className="flex items-center justify-center p-2">
           <div className="text-2xl">Submissions Statistics</div>
         </div>
@@ -118,7 +118,7 @@ const Dashboard: React.FC = observer(() => {
           </div>
         </div>
       </div>
-      <div className="divide-y border rounded-md bg-white shadow dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700 overflow-hidden">
+      <div className="divide-y rounded-md bg-white shadow dark:bg-gray-800 dark:divide-gray-700 overflow-hidden">
         <div className="flex items-center justify-center p-2">
           <div className="text-2xl">Control Contest</div>
         </div>

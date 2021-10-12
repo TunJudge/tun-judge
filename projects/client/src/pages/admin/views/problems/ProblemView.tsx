@@ -17,12 +17,12 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
   }, [fetchById]);
 
   return !item.id ? (
-    <Spinner className="rounded-md border shadow dark:border-gray-700" />
+    <Spinner className="rounded-md shadow" />
   ) : (
     <div className="grid grid-cols-2 p-4 pl-0 pb-0 overflow-hidden h-full dark:text-white">
       <div className="flex flex-col overflow-hidden">
         <div className="px-4">
-          <div className="bg-white divide-y border shadow rounded-md dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
+          <div className="bg-white divide-y shadow rounded-md dark:bg-gray-800 dark:divide-gray-700">
             <div className="flex p-3 items-center justify-between">
               <div className="text-lg font-medium">{`Problem '${item.name}'`}</div>
               <div
@@ -67,7 +67,7 @@ const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ m
         </div>
       </div>
       <div className="flex flex-col pb-4">
-        <div className="h-full bg-white p-4 border shadow rounded-md dark:bg-gray-800 dark:border-gray-700">
+        <div className="h-full bg-white p-4 shadow rounded-md dark:bg-gray-800">
           <embed
             className="rounded-lg"
             src={`data:${item.file?.type};base64,${item.file?.content.payload}`}

@@ -93,7 +93,10 @@ const SubmissionViewDetails: React.FC<{
       <DataTable
         dataFetcher={() =>
           Promise.resolve(
-            submission.judgings.slice().sort(dateComparator<Judging>('startTime', true))
+            submission.judgings
+              .slice()
+              .filter((j) => j.valid)
+              .sort(dateComparator<Judging>('startTime', true))
           )
         }
         dataDependencies={[submission]}

@@ -1,6 +1,7 @@
 import { Contest } from './contest.model';
 import { File } from './file.model';
 import { JudgeHost } from './judge-host.model';
+import { JudgingRun } from './judging-run.model';
 import { Submission } from './submission.model';
 import { User } from './user.model';
 
@@ -20,4 +21,5 @@ export interface Judging {
   contest: Contest;
   judgeHost: JudgeHost;
   submission: Submission;
+  runs: JudgingRun[];
 }

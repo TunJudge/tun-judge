@@ -35,7 +35,7 @@ export class JudgingService {
           const judging = await this.systemService.getNextJudging();
           if (judging) await this.runJudging(judging);
         } catch (error: any) {
-          this.logger.error(error.message);
+          this.logger.error(error.message, error.trace);
         } finally {
           this.lock = false;
         }

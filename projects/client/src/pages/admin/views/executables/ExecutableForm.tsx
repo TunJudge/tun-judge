@@ -19,7 +19,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
   const [errors, setErrors] = useState<FormErrors<Executable>>({
     name: isEmpty(executable.name),
     type: isEmpty(executable.type),
-    file: isEmpty(executable.file),
+    sourceFile: isEmpty(executable.sourceFile),
   });
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
       setErrors({
         name: isEmpty(executable.name),
         type: isEmpty(executable.type),
-        file: isEmpty(executable.file),
+        sourceFile: isEmpty(executable.sourceFile),
         dockerImage: false,
         buildScript: false,
       });
@@ -35,7 +35,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
       setErrors({
         name: isEmpty(executable.name),
         type: isEmpty(executable.type),
-        file: isEmpty(executable.file),
+        sourceFile: isEmpty(executable.sourceFile),
         dockerImage: isEmpty(executable.dockerImage),
         buildScript: isEmpty(executable.buildScript),
       });
@@ -90,7 +90,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
         />
         <FileInput<Executable>
           entity={executable}
-          field="file"
+          field="sourceFile"
           label="Source File"
           description="Source file of the executable"
           required

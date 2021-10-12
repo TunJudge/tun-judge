@@ -1,9 +1,11 @@
 {
   "name": "C#",
   "dockerImage": "tunjudge/lang-csharp:6.12.0.107-slim",
-  "buildScript": "build.sh",
   "extensions": [
     "cs",
     "csharp"
-  ]
+  ],
+  "allowSubmit": true,
+  "allowJudge": true,
+  "buildScript": "languages/c-sharp/build.sh"
 }

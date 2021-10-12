@@ -43,14 +43,6 @@ export class Contest {
   @Column({ comment: 'Time scoreboard is unfrozen', nullable: true })
   unfreezeTime: Date;
 
-  @ApiProperty({ description: 'Number of extra bronze medals', default: 0, required: false })
-  @Column({
-    comment: 'Number of extra bronze medals',
-    type: 'smallint',
-    default: 0,
-  })
-  extraBronzeMedals: number;
-
   @ApiProperty({ description: 'Whether the contest can be active', default: true })
   @Column({
     comment: 'Whether the contest can be active',

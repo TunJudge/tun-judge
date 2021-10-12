@@ -27,7 +27,10 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
   useEffect(() => {
     if (submission) {
       setHighlightedJudging(
-        submission.judgings.slice().sort(dateComparator<Judging>('startTime', true))[0]
+        submission.judgings
+          .slice()
+          .filter((j) => j.valid)
+          .sort(dateComparator<Judging>('startTime', true))[0]
       );
     }
   }, [submission]);
@@ -35,14 +38,14 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
   return !submission ? (
     <Spinner />
   ) : (
-    <div className="pl-4 py-4 overflow-auto flex flex-col gap-y-4 text-black dark:text-white">
+    <div className="p-4 overflow-auto flex flex-col gap-y-4 text-black dark:text-white">
       <SubmissionViewHeader submission={submission} />
       <SubmissionViewDetails
         submission={submission}
         highlightedJudging={highlightedJudging}
         setHighlightedJudging={setHighlightedJudging}
       />
-      <div className="flex flex-col bg-white divide-y border shadow rounded-md dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
+      <div className="flex flex-col bg-white divide-y shadow rounded-md dark:bg-gray-800 dark:divide-gray-700">
         <div className="text-lg font-medium p-3">Code Source</div>
         <div className="p-3">
           <CodeEditor

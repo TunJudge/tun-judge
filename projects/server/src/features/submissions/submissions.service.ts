@@ -70,7 +70,7 @@ export class SubmissionsService {
 
     if (notVerified) {
       query = query.andWhere(
-        '(SELECT COUNT(*) FROM "judging" WHERE "judging"."submissionId" = "submission"."id" AND "judging"."verified" = FALSE) > 0'
+        '(SELECT COUNT(*) FROM (SELECT "judging"."verified" FROM "judging" WHERE "judging"."submissionId" = "submission"."id" AND "judging"."valid" = TRUE ORDER BY "judging"."startTime" DESC LIMIT 1) AS "result" WHERE "result"."verified" = FALSE) > 0'
       );
     }
     return query.getManyAndCount();
@@ -179,12 +179,12 @@ export class SubmissionsService {
       .leftJoinAndSelect('testcases.input', 'input')
       .leftJoinAndSelect('testcases.output', 'output')
       .leftJoinAndSelect('problem.runScript', 'runScript')
-      .leftJoinAndSelect('runScript.file', 'runScriptFile')
+      .leftJoinAndSelect('runScript.sourceFile', 'runScriptFile')
       .leftJoinAndSelect('runScriptFile.content', 'runScriptFileContent')
       .leftJoinAndSelect('runScript.buildScript', 'runScriptBuildScript')
       .leftJoinAndSelect('runScriptBuildScript.content', 'runScriptBuildScriptContent')
       .leftJoinAndSelect('problem.checkScript', 'checkScript')
-      .leftJoinAndSelect('checkScript.file', 'checkScriptFile')
+      .leftJoinAndSelect('checkScript.sourceFile', 'checkScriptFile')
       .leftJoinAndSelect('checkScriptFile.content', 'checkScriptFileContent')
       .leftJoinAndSelect('checkScript.buildScript', 'checkScriptBuildScript')
       .leftJoinAndSelect('checkScriptBuildScript.content', 'checkScriptBuildScriptContent')

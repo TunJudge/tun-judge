@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Demo Contest",
+    "shortName": "DEMO",
+    "activateTime": "2020-12-31T23:00:00.000Z",
+    "startTime": "2020-12-31T23:00:00.000Z",
+    "freezeTime": null,
+    "endTime": "2021-12-31T23:00:00.000Z",
+    "unfreezeTime": null,
+    "enabled": true,
+    "processBalloons": false,
+    "public": true,
+    "openToAllTeams": false,
+    "verificationRequired": false,
+    "problems": [
+      {
+        "shortName": "A",
+        "color": "#115ad0",
+        "points": 1,
+        "allowJudge": true,
+        "allowSubmit": true,
+        "problem": {
+          "name": "Hello World"
+        }
+      },
+      {
+        "shortName": "B",
+        "color": "#90f240",
+        "points": 1,
+        "allowJudge": true,
+        "allowSubmit": true,
+        "problem": {
+          "name": "Float Power 2"
+        }
+      }
+    ],
+    "teams": [
+      {
+        "name": "Demo Team"
+      }
+    ]
+  }]

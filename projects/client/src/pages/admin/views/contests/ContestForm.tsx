@@ -123,7 +123,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="grid sm:grid-cols-3 gap-2">
+        <div className="grid sm:grid-cols-2 gap-2">
           <DateTimeInput<Contest>
             entity={contest}
             field="freezeTime"
@@ -141,16 +141,6 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             label="Unfreeze Time"
             clearable
             disabled={!contest.freezeTime}
-            minDate={contest.endTime}
-            errors={errors}
-            setErrors={setErrors}
-          />
-          <DateTimeInput<Contest>
-            entity={contest}
-            field="finalizeTime"
-            label="Finalize Time"
-            clearable
-            disabled={!contest.endTime}
             minDate={contest.endTime}
             errors={errors}
             setErrors={setErrors}
@@ -219,7 +209,10 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             <tbody className="bg-white divide-y divide-y-200 dark:bg-gray-800 dark:divide-gray-700">
               {!contest.problems.length && (
                 <tr>
-                  <td className="p-3 text-center bg-gray-50 opacity-50" colSpan={7}>
+                  <td
+                    className="p-3 text-center bg-gray-50 opacity-50  dark:bg-gray-700"
+                    colSpan={7}
+                  >
                     Add problems
                   </td>
                 </tr>

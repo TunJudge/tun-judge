@@ -38,7 +38,7 @@ const ClarificationsList: React.FC = observer(() => {
       </div>
       <div className="flex h-full p-4 gap-4 overflow-hidden">
         <ClarificationsSidebar />
-        <div className="w-full p-4 bg-white shadow-md rounded-md dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full p-4 bg-white shadow-md rounded-md dark:bg-gray-800">
           <ChatBox item={item} isOpen onClose={() => false} onSubmit={() => false} />
         </div>
       </div>

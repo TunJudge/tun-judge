@@ -11,5 +11,5 @@ export interface User {
   lastIpAddress: string;
   enabled: boolean;
   role: Role;
-  team: Team;
+  team?: Team;
 }

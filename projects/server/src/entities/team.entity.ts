@@ -35,6 +35,7 @@ export class Team {
   penalty: number;
 
   @OneToMany(() => User, (user) => user.team, {
+    cascade: true,
     onDelete: 'SET NULL',
     onUpdate: 'RESTRICT',
   })
