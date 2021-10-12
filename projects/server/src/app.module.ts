@@ -8,6 +8,7 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import config from './core/config';
+import { InitializersModule } from './core/initializers/initializers.module';
 import { entities } from './entities';
 import { AuthModule } from './features/auth/auth.module';
 import { ClarificationsModule } from './features/clarifications/clarifications.module';
@@ -45,6 +46,7 @@ import { RolesGuard } from './guards';
       rootPath: join(__dirname, '..', '..', 'client'),
       exclude: ['/api*'],
     }),
+    InitializersModule,
     AuthModule,
     ClarificationsModule,
     ContestsModule,

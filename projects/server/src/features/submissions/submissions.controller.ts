@@ -114,7 +114,7 @@ export class SubmissionsController {
     }
   ): Promise<void> {
     await this.judgingsService.setJuryMember(id, userId);
-    await this.socketService.pingForUpdates('juries', 'judgings');
+    this.socketService.pingForUpdates('juries', 'judgings');
   }
 
   @Patch(':id/un-claim')
@@ -129,14 +129,14 @@ export class SubmissionsController {
     }
   ): Promise<void> {
     await this.judgingsService.setJuryMember(id, userId, null);
-    await this.socketService.pingForUpdates('juries', 'judgings');
+    this.socketService.pingForUpdates('juries', 'judgings');
   }
 
   @Patch(':id/rejudge')
   @Roles('admin', 'jury')
   async rejudgeSubmission(@NumberParam('id') id: number): Promise<void> {
     await this.submissionsService.rejudge(id);
-    await this.socketService.pingForUpdates('all', 'judgings', 'submissions');
+    this.socketService.pingForUpdates('all', 'judgings', 'submissions');
   }
 
   @Patch(':id/ignore')

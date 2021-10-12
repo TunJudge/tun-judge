@@ -35,7 +35,7 @@ export class JudgingsService {
   async setVerified(id: number, userId: number): Promise<Judging> {
     const judging = await this.judgingsRepository.findOneOrThrow(
       {
-        where: { submission: { id } },
+        where: { submission: { id }, valid: true },
         relations: ['contest', 'submission', 'submission.team', 'submission.problem'],
         order: { startTime: 'DESC' },
       },

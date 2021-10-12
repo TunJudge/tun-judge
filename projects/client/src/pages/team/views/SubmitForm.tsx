@@ -52,6 +52,7 @@ const SubmitForm: DataTableItemForm<Submission> = observer(
           field="file"
           label="Source file"
           required
+          accept={submission.language?.extensions.map((ext) => `.${ext}`).join(',')}
           errors={errors}
           setErrors={setErrors}
           onChange={(file) => {

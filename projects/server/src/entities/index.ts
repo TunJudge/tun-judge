@@ -5,6 +5,7 @@ import { Contest } from './contest.entity';
 import { Executable } from './executable.entity';
 import { FileContent } from './file-content.entity';
 import { File } from './file.entity';
+import { InitialDataEntity } from './initial-data.entity';
 import { JudgeHost } from './judge-host.entity';
 import { JudgingRun } from './judging-run.entity';
 import { Judging } from './judging.entity';
@@ -37,6 +38,7 @@ export const entities = [
   TeamCategory,
   Clarification,
   ContestProblem,
+  InitialDataEntity,
   ClarificationMessage,
 ];
 
@@ -47,6 +49,7 @@ export * from './contest.entity';
 export * from './executable.entity';
 export * from './file-content.entity';
 export * from './file.entity';
+export * from './initial-data.entity';
 export * from './judge-host.entity';
 export * from './judging-run.entity';
 export * from './judging.entity';

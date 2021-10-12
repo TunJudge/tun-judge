@@ -35,7 +35,7 @@ export class JudgingService {
           const judging = await this.systemService.getNextJudging();
           if (judging) await this.runJudging(judging);
         } catch (error: any) {
-          this.logger.error(error.message);
+          this.logger.error(error.message, error.trace);
         } finally {
           this.lock = false;
         }
@@ -50,8 +50,8 @@ export class JudgingService {
       );
       this.submissionHelper.setSubmission(judging.submission);
       await this.initializer.run(judging);
-      await this.compiler.run(judging);
-      await this.executor.run(judging);
+      const compilationSucceeded = await this.compiler.run(judging);
+      compilationSucceeded && (await this.executor.run(judging));
     } catch (error: any) {
       this.logger.error(error.message, error.trace);
       await this.systemService.setJudgingResult(judging, 'SE', error.message);

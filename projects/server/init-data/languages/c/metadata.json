@@ -1,0 +1,10 @@
+{
+  "name": "C",
+  "dockerImage": "tunjudge/lang-cpp:7.3.0",
+  "extensions": [
+    "c"
+  ],
+  "allowSubmit": true,
+  "allowJudge": true,
+  "buildScript": "languages/c/build.sh"
+}

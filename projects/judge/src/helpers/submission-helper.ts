@@ -43,7 +43,7 @@ export class SubmissionHelper {
         this.assetsFilePath('guard'),
         this.submission.problem.timeLimit * 1000,
         this.submission.problem.memoryLimit,
-        `'${this.executableFilePath(runScript.id, runScript.file)} ${this.binPath()}'`,
+        `'${this.executableFilePath(runScript.id, runScript.sourceFile)} ${this.binPath()}'`,
         this.testcaseFilePath(testcase.id, testcase.input),
         'test.out',
         'test.err',
@@ -65,7 +65,7 @@ export class SubmissionHelper {
       problem: { checkScript },
     } = this.submission;
     return [
-      this.executableBinPath(checkScript.id, checkScript.file),
+      this.executableBinPath(checkScript.id, checkScript.sourceFile),
       this.testcaseFilePath(testcase.id, testcase.input),
       this.extraFilesPath('test.out'),
       this.testcaseFilePath(testcase.id, testcase.output),
@@ -79,8 +79,8 @@ export class SubmissionHelper {
     } = this.submission;
     return [
       this.executableFilePath(checkScript.id, checkScript.buildScript),
-      this.executableFilePath(checkScript.id, checkScript.file),
-      this.executableBinPath(checkScript.id, checkScript.file),
+      this.executableFilePath(checkScript.id, checkScript.sourceFile),
+      this.executableBinPath(checkScript.id, checkScript.sourceFile),
     ];
   };
 

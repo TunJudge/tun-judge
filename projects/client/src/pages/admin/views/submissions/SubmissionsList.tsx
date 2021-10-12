@@ -88,6 +88,7 @@ const SubmissionsList: React.FC = observer(() => {
       render: (submission) => {
         const judging = submission.judgings
           .slice()
+          .filter((j) => j.valid)
           .sort(dateComparator<Judging>('startTime', true))
           .shift();
         return judging?.result ? (
@@ -129,6 +130,7 @@ const SubmissionsList: React.FC = observer(() => {
       render: (submission) => {
         const judging = submission.judgings
           .slice()
+          .filter((j) => j.valid)
           .sort(dateComparator<Judging>('startTime', true));
 
         return (

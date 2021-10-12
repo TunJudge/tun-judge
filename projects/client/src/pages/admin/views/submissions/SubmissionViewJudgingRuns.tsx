@@ -3,8 +3,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { formatBytes } from '../../../../core/helpers';
-import { Judging, Testcase } from '../../../../core/models';
-import { JudgingRun } from '../../../../core/models/judging-run.model';
+import { Judging, JudgingRun, Testcase } from '../../../../core/models';
 import { rootStore } from '../../../../core/stores/RootStore';
 import { resultMap } from '../../../../core/types';
 import {
@@ -50,7 +49,7 @@ const SubmissionsViewJudgingRuns: React.FC<{ judging?: Judging }> = observer(({ 
       {judging?.runs?.map((run) => (
         <div
           key={`run-${run.id}`}
-          className="flex flex-col bg-white divide-y border shadow rounded-md dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700"
+          className="flex flex-col bg-white divide-y shadow rounded-md dark:bg-gray-800 dark:divide-gray-700"
         >
           <div className="flex p-3 items-center justify-between">
             <div className="flex items-center gap-x-8">

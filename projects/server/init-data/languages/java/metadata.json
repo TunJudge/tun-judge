@@ -1,0 +1,10 @@
+{
+  "name": "Java",
+  "dockerImage": "tunjudge/lang-java:8-jdk-alpine",
+  "extensions": [
+    "java"
+  ],
+  "allowSubmit": true,
+  "allowJudge": true,
+  "buildScript": "languages/java/build.sh"
+}

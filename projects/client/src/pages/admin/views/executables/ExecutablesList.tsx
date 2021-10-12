@@ -10,7 +10,7 @@ const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', C
 
 const ExecutablesList: React.FC = observer(() => {
   const [scriptData, setScriptData] = useState<
-    { executable: Executable; field: 'file' | 'buildScript' } | undefined
+    { executable: Executable; field: 'sourceFile' | 'buildScript' } | undefined
   >();
   const {
     isUserAdmin,
@@ -30,18 +30,18 @@ const ExecutablesList: React.FC = observer(() => {
     },
     {
       header: 'Source File',
-      field: 'file',
+      field: 'sourceFile',
       render: (executable) => (
         <div
           className="text-blue-700 cursor-pointer"
           onClick={() =>
             setScriptData({
               executable,
-              field: 'file',
+              field: 'sourceFile',
             })
           }
         >
-          {executable.file.name}
+          {executable.sourceFile.name}
         </div>
       ),
     },

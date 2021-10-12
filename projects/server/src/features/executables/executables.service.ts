@@ -14,7 +14,7 @@ export class ExecutablesService {
 
   getAll(): Promise<Executable[]> {
     return this.executablesRepository.find({
-      relations: ['file', 'file.content', 'buildScript', 'buildScript.content'],
+      relations: ['sourceFile', 'sourceFile.content', 'buildScript', 'buildScript.content'],
       order: { id: 'ASC' },
     });
   }

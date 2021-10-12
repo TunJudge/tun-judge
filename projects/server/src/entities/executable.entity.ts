@@ -27,7 +27,7 @@ export class Executable {
     nullable: false,
   })
   @JoinColumn()
-  file: File;
+  sourceFile: File;
 
   @OneToOne(() => File, {
     cascade: true,

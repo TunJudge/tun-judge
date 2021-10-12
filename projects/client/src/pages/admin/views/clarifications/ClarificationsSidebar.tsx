@@ -25,7 +25,7 @@ const ClarificationsSidebar: React.FC = observer(() => {
     setTabStatus((tabStatus) => ({ ...tabStatus, [tab]: !tabStatus[tab] }));
 
   return (
-    <div className="w-96 p-4 bg-white shadow-md rounded-md overflow-auto dark:bg-gray-800 dark:border-gray-700">
+    <div className="w-96 p-4 bg-white shadow-md rounded-md overflow-auto dark:bg-gray-800">
       <div className="flex flex-col gap-4 select-none">
         <div
           className="p-2 rounded-lg text-white bg-blue-600 text-center cursor-pointer"

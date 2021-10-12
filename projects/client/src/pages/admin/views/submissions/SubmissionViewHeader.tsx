@@ -11,6 +11,7 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
   const history = useHistory();
   const judging = submission.judgings
     .slice()
+    .filter((j) => j.valid)
     .sort(dateComparator<Judging>('startTime', true))
     .shift();
   const {
@@ -19,7 +20,7 @@ const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ s
   } = rootStore;
 
   return (
-    <div className="flex items-center shadow rounded-md border w-full justify-between p-4 bg-white dark:bg-gray-800 dark:border-gray-700">
+    <div className="flex items-center shadow rounded-md w-full justify-between p-4 bg-white dark:bg-gray-800">
       <div className="text-xl font-medium">Submission {submission.id}</div>
       <div className="flex items-center space-x-2">
         {judging?.result && (

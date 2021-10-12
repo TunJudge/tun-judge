@@ -43,7 +43,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white divide-y border shadow rounded-md overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
+    <div className="flex flex-col h-full bg-white divide-y shadow rounded-md overflow-hidden dark:bg-gray-800 dark:divide-gray-700">
       <div className="flex p-3 items-center justify-between">
         <div className="text-lg font-medium">Testcases</div>
         {isUserAdmin && (

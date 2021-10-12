@@ -8,7 +8,7 @@ export interface Executable {
   description: string;
   default: boolean;
   dockerImage: string;
-  file: File;
+  sourceFile: File;
   buildScript: File;
   type: ExecutableType;
 }

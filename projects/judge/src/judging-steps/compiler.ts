@@ -23,7 +23,7 @@ export class Compiler {
     this.logger = new JudgeLogger(Compiler.name, getOnLog(this.socketService));
   }
 
-  async run(judging: Judging): Promise<void> {
+  async run(judging: Judging): Promise<boolean> {
     const { submission } = judging;
     const {
       problem: { checkScript },
@@ -33,7 +33,8 @@ export class Compiler {
 
     if (compileSubmissionResult.exitCode) {
       this.logger.error(`Compiling submission file ${submission.file.name}\tNOT OK!`);
-      return this.systemService.setJudgingResult(judging, 'CE');
+      await this.systemService.setJudgingResult(judging, 'CE');
+      return false;
     }
     this.logger.log(`Compiling submission file ${submission.file.name}\tOK!`);
 
@@ -41,13 +42,15 @@ export class Compiler {
 
     if (compileCheckerResult) {
       if (compileCheckerResult.exitCode) {
-        this.logger.error(`Compiling executable file ${checkScript.file.name}\tNOT OK!`);
-        return this.systemService.setJudgingResult(judging, 'SE', compileCheckerResult.stdout);
+        this.logger.error(`Compiling executable file ${checkScript.sourceFile.name}\tNOT OK!`);
+        await this.systemService.setJudgingResult(judging, 'SE', compileCheckerResult.stdout);
+        return false;
       }
-      this.logger.log(`Compiling executable file ${checkScript.file.name}\tOK!`);
+      this.logger.log(`Compiling executable file ${checkScript.sourceFile.name}\tOK!`);
     }
 
     this.logger.log(`Submission with id ${submission.id} compiled!`);
+    return true;
   }
 
   private async compileSubmissionFile(judging: Judging) {
@@ -97,18 +100,18 @@ export class Compiler {
     // Check if we already built the check script or not to prevent the double work
     const checkerBinPath = this.submissionHelper.executableBinPath(
       checkScript.id,
-      checkScript.file
+      checkScript.sourceFile
     );
     if (existsSync(checkerBinPath)) return undefined;
 
-    this.logger.log(`Compiling executable file ${checkScript.file.name}\t`, undefined, false);
+    this.logger.log(`Compiling executable file ${checkScript.sourceFile.name}\t`, undefined, false);
     const spinner = new Spinner();
 
     // Create docker container to compile the checker file
     const checkerContainer = await this.dockerService.createContainer({
       Image: checkScript.dockerImage,
       name: `tun-judge-build-checker-${checkScript.id}-${Date.now()}`,
-      WorkingDir: this.submissionHelper.executableFileDir(checkScript.id, checkScript.file),
+      WorkingDir: this.submissionHelper.executableFileDir(checkScript.id, checkScript.sourceFile),
     });
 
     // Start the checker compiler container
@@ -123,7 +126,10 @@ export class Compiler {
     // Copy the testlib.h to the compiling directory to support the Codeforces checkers
     await fs.copyFile(
       this.submissionHelper.testLibPath,
-      join(this.submissionHelper.executableFileDir(checkScript.id, checkScript.file), 'testlib.h')
+      join(
+        this.submissionHelper.executableFileDir(checkScript.id, checkScript.sourceFile),
+        'testlib.h'
+      )
     );
 
     // Executing the compile command inside the checker compile container

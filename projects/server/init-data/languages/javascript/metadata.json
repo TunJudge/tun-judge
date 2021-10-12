@@ -1,0 +1,10 @@
+{
+  "name": "JavaScript",
+  "dockerImage": "tunjudge/lang-node:14.18.0-alpine",
+  "extensions": [
+    "js"
+  ],
+  "allowSubmit": true,
+  "allowJudge": true,
+  "buildScript": "languages/javascript/build.sh"
+}

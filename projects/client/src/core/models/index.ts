@@ -6,6 +6,7 @@ export * from './executable.model';
 export * from './file-content.model';
 export * from './file.model';
 export * from './judge-host.model';
+export * from './judging-run.model';
 export * from './judging.model';
 export * from './language.model';
 export * from './problem.model';

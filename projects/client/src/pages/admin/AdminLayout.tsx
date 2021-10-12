@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { rootStore } from '../../core/stores/RootStore';
@@ -18,7 +19,7 @@ import TeamCategoriesList from './views/team-category/TeamCategoriesList';
 import TeamsList from './views/teams/TeamsList';
 import UsersList from './views/users/UsersList';
 
-const AdminLayout: React.FC = () => (
+const AdminLayout: React.FC = observer(() => (
   <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
     <AdminSideBar visible={!rootStore.appLocalCache.menuCollapsed} />
     <div className="flex flex-col w-full overflow-hidden">
@@ -46,6 +47,6 @@ const AdminLayout: React.FC = () => (
       </Switch>
     </div>
   </div>
-);
+));
 
 export default AdminLayout;

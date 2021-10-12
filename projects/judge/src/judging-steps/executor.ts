@@ -31,7 +31,7 @@ export class Executor {
     const { testcases, runScript, checkScript } = problem;
 
     // Make the run script executable
-    chmodSync(this.submissionHelper.executableFilePath(runScript.id, runScript.file), '0775');
+    chmodSync(this.submissionHelper.executableFilePath(runScript.id, runScript.sourceFile), '0775');
 
     // Create docker container to run the submission
     const runnerContainer = await this.dockerService.createContainer({
