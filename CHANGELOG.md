@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.33 (2021-10-12)
+
+
+### Features
+
+* add initial data and implement database initializers ([3fd4b1b](https://github.com/TunJudge/tun-judge/commit/3fd4b1b9a2a508ac50b30a9719cacbcf7761f0f5))
+
 ### 0.0.32 (2021-10-10)
 
 
