@@ -24,10 +24,14 @@ services:
     build:
       context: .
       dockerfile: docker/judge/Dockerfile
+    restart: on-failure
     environment:
-      TUN_JUDGE_HOSTNAME: server
-      TUN_JUDGE_PORT: 3000
+      HOSTNAME: judgehost
+      TUN_JUDGE_URL: http://server:3000
+      TUN_JUDGE_USERNAME: judge-host
+      TUN_JUDGE_PASSWORD: judge-host
     volumes:
+      - /tmp/tun-judge/workDir:/tmp/tun-judge/workDir
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - server

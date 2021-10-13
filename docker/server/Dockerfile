@@ -17,6 +17,7 @@ WORKDIR /server
 COPY --from=build-stage /server/node_modules ./node_modules
 COPY --from=build-stage /server/nest-cli.json ./nest-cli.json
 COPY --from=build-stage /server/package.json ./package.json
+COPY --from=build-stage /server/init-data ./init-data
 COPY --from=build-stage /client/build ./client
 COPY --from=build-stage /server/dist ./dist
 
