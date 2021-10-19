@@ -9,7 +9,7 @@ const config = {
   title: 'TunJudge',
   tagline: 'The Tunisian Programming Judging System',
   url: 'https://tun-judge.org',
-  baseUrl: '/',
+  baseUrl: process.env.FOR_SERVER ? '/documentation/' : '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',

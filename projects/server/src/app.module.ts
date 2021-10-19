@@ -44,6 +44,11 @@ import { RolesGuard } from './guards';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client'),
+      exclude: ['/api*', '/documentation*'],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'docs'),
+      serveRoot: '/documentation',
       exclude: ['/api*'],
     }),
     InitializersModule,
