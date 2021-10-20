@@ -1,0 +1,14 @@
+{
+  "admin": {
+    "username": "admin",
+    "password": "admin"
+  },
+  "jury": {
+    "username": "jury",
+    "password": "jury"
+  },
+  "team": {
+    "username": "team",
+    "password": "team"
+  }
+}

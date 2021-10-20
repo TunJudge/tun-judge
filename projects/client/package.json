@@ -1,10 +1,11 @@
 {
-  "name": "client",
+  "name": "tun-judge-client",
   "version": "0.0.36",
+  "description": "The client of TunJudge",
   "private": true,
-  "license": "GPL-3.0",
+  "license": "MIT",
   "scripts": {
-    "start": "REACT_APP_VERSION=$npm_package_version PORT=3002 craco start",
+    "start": "REACT_APP_VERSION=$npm_package_version craco start",
     "build": "REACT_APP_VERSION=$npm_package_version craco build",
     "test": "REACT_APP_VERSION=$npm_package_version craco test",
     "lint": "eslint \"{src,test}/**/*.ts\"",

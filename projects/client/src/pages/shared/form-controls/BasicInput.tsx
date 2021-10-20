@@ -7,6 +7,7 @@ import { TextInputProps } from './TextInput';
 import { ColSpanWidth } from './types';
 
 export type BasicInputProps = {
+  name?: string;
   type?: string;
   label?: string;
   description?: React.ReactNode;
@@ -31,6 +32,7 @@ type InputProps = BasicInputProps & {
 type FullInputProps = InputProps & TextInputProps & NumberInputProps;
 
 const BasicInput: React.FC<FullInputProps> = ({
+  name,
   textarea,
   type,
   label,
@@ -101,6 +103,7 @@ const BasicInput: React.FC<FullInputProps> = ({
                   touched && hasErrors,
               }
             )}
+            name={name}
             required={required}
             readOnly={readOnly}
             placeholder={placeHolder ?? label}
@@ -114,6 +117,7 @@ const BasicInput: React.FC<FullInputProps> = ({
           <input
             className="h-5 w-5 text-blue-600 border-gray-300 rounded"
             type="checkbox"
+            name={name}
             required={required}
             readOnly={readOnly}
             defaultChecked={defaultValue}
@@ -129,6 +133,7 @@ const BasicInput: React.FC<FullInputProps> = ({
                   touched && hasErrors,
               }
             )}
+            name={name}
             required={required}
             readOnly={readOnly}
             pattern={pattern}

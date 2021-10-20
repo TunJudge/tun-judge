@@ -2,9 +2,8 @@ version: '3'
 
 services:
   server:
-    build:
-      context: .
-      dockerfile: docker/server/Dockerfile
+    image: tunjudge/server
+    restart: always
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -21,10 +20,8 @@ services:
       - redis
 
   judge:
-    build:
-      context: .
-      dockerfile: docker/judge/Dockerfile
-    restart: on-failure
+    image: tunjudge/judge
+    restart: always
     environment:
       HOSTNAME: judgehost
       TUN_JUDGE_URL: http://server:3000
@@ -45,14 +42,6 @@ services:
       POSTGRES_PASSWORD: tun-judge
     volumes:
       - /opt/tun-judge/db-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "8080:8080"
 
   redis:
     image: bitnami/redis:6.0
@@ -61,8 +50,6 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - redis-data:/bitnami/redis/data
-    ports:
-      - "6379:6379"
 
 volumes:
   redis-data:

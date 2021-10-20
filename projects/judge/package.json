@@ -1,10 +1,9 @@
 {
   "name": "tun-judge-judge",
   "version": "0.0.36",
-  "description": "",
-  "author": "",
+  "description": "The judge system of TunJudge",
   "private": true,
-  "license": "GPL-3.0",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
