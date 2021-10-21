@@ -40,8 +40,8 @@ const SubmitForm: DataTableItemForm<Submission> = observer(
           label="Problem"
           required
           options={(currentContest?.problems ?? [])
-            .map((p) => ({ ...p.problem, name: `${p.shortName} - ${p.problem.name}` }))
             .slice()
+            .map((p) => ({ ...p.problem, name: `${p.shortName} - ${p.problem.name}` }))
             .sort((a, b) => a.name.localeCompare(b.name))}
           optionsTextField="name"
           errors={errors}

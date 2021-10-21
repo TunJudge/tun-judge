@@ -38,6 +38,23 @@ jobs:
       - name: Build Judge
         run: docker build -t tunjudge/judge -f docker/judge/Dockerfile .
 
+      - name: Docker Compose Up
+        run: docker-compose -f docker-compose.test.yml up -d
+
+      - name: Integration tests
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: tests
+          install: false
+          browser: chrome
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Compose Down
+        run: docker-compose -f docker-compose.test.yml down
+
       - name: Push Images
         if: github.ref == 'refs/heads/main'
         run: |
