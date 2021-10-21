@@ -1,6 +1,14 @@
 name: Build
 
-on: push
+on:
+  push:
+    branches-ignore:
+      - 'chore(release): *'
+    tags-ignore:
+      - 'v*'
+  pull_request:
+    tags-ignore:
+      - 'v*'
 
 concurrency: ${{ github.ref }}
 
@@ -25,20 +33,19 @@ jobs:
       - name: Prettier
         run: yarn prettier
 
-      - name: Update Version
-        if: github.ref == 'refs/heads/main'
-        run: |
-          git config user.email "nasreddine.bacali95@gmail.com"
-          git config user.name "Nasreddine Bac Ali"
-          yarn release
+      - name: Build Server Docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: docker/server/Dockerfile
+          tags: tunjudge/server:latest
 
-      - name: Build Server
-        run: docker build -t tunjudge/server -f docker/server/Dockerfile .
+      - name: Build Judge Docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: docker/judge/Dockerfile
+          tags: tunjudge/judge:latest
 
-      - name: Build Judge
-        run: docker build -t tunjudge/judge -f docker/judge/Dockerfile .
-
-      - name: Docker Compose Up
+      - name: Start Application
         run: docker-compose -f docker-compose.test.yml up -d
 
       - name: Integration tests
@@ -52,16 +59,5 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker Compose Down
+      - name: Stop Application
         run: docker-compose -f docker-compose.test.yml down
-
-      - name: Push Images
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          yarn image:tag-and-push tunjudge/server
-          yarn image:tag-and-push tunjudge/judge
-
-      - name: Push Changes
-        if: github.ref == 'refs/heads/main'
-        run: git push

@@ -9,7 +9,6 @@
     "prettier": "prettier --check {projects/*,docs}/{src,test}/**/*.{ts,tsx} tests/**/*.ts",
     "prettier:fix": "prettier --write {projects/*,docs}/{src,test}/**/*.{ts,tsx} tests/**/*.ts",
     "release": "standard-version -a ",
-    "image:tag-and-push": "node scripts/tag-and-push-image",
     "version:current": "node scripts/current-version.js",
     "version:new": "yarn version --no-git-tag-version --new-version",
     "version:update": "run-in-all --yarn version:new . projects/client projects/server projects/judge docs --args"
@@ -31,9 +30,6 @@
     "typescript": "^4.4.3"
   },
   "standard-version": {
-    "skip": {
-      "tag": true
-    },
     "scripts": {
       "postbump": "(yarn --silent version:current | xargs yarn version:update) && git add ."
     }
