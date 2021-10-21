@@ -38,7 +38,7 @@ jobs:
       - name: Build Judge
         run: docker build -t tunjudge/judge -f docker/judge/Dockerfile .
 
-      - name: Run app for testing
+      - name: Docker Compose Up
         run: docker-compose -f docker-compose.test.yml up -d
 
       - name: Integration tests
@@ -52,7 +52,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Stop app
+      - name: Docker Compose Down
         run: docker-compose -f docker-compose.test.yml down
 
       - name: Push Images

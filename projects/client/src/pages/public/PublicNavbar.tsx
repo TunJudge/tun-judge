@@ -37,6 +37,7 @@ const PublicNavbar: React.FC = observer(() => {
         {
           content: 'Login',
           active: currentTab === 'login',
+          className: 't-navbar-login-btn',
           onClick: () => onLinkClick('login'),
         },
         { content: <ActiveContestSelector className="text-white" /> },
