@@ -25,12 +25,12 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/TunJudge/tun-judge/edit/main/projects/docs/',
+          editUrl: 'https://github.com/TunJudge/tun-judge/edit/main/docs/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
-          editUrl: 'https://github.com/TunJudge/tun-judge/edit/main/projects/docs/blog/',
+          editUrl: 'https://github.com/TunJudge/tun-judge/edit/main/docs/blog/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

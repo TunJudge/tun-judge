@@ -6,7 +6,7 @@ RUN yarn
 RUN yarn build
 
 WORKDIR /docs
-COPY projects/docs .
+COPY docs .
 RUN yarn
 RUN FOR_SERVER=true yarn build
 
