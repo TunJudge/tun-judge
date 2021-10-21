@@ -1,6 +1,6 @@
 {
   "name": "tun-judge-client",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "description": "The client of TunJudge",
   "private": true,
   "license": "MIT",

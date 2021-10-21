@@ -1,6 +1,6 @@
 {
   "name": "tun-judge-judge",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "description": "The judge system of TunJudge",
   "private": true,
   "license": "MIT",
