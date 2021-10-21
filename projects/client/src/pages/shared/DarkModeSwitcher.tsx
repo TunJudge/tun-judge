@@ -23,6 +23,7 @@ export const DarkModeSwitcher: React.FC<{ className?: string }> = observer(({ cl
           'bg-gray-100': !darkMode,
         }
       )}
+      test-id="dark-mode-switch"
     >
       <div
         className={classNames('flex transform transition ease-in-out duration-200', {

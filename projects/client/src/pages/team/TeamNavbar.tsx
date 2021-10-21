@@ -80,14 +80,18 @@ const TeamNavbar: React.FC = observer(() => {
               <Menu as="div" className="relative">
                 <Menu.Button
                   as="div"
-                  className="t-navbar-user flex items-center justify-center gap-1 rounded-md cursor-pointer hover:bg-gray-700"
+                  className="flex items-center justify-center gap-1 rounded-md cursor-pointer hover:bg-gray-700"
+                  test-id="navbar-user"
                 >
                   <UserIcon className="h-4 w-4" />
                   {profile?.name ?? '-'}
                 </Menu.Button>
                 <Menu.Items className="absolute transform text-black -translate-x-1/2 left-1/2 w-36 mt-4 p-2 gap-2 border bg-white rounded-md shadow-lg outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-white">
                   <Menu.Item onClick={() => history.push('/logout')}>
-                    <div className="t-logout-btn flex items-center gap-1 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <div
+                      className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+                      test-id="logout-btn"
+                    >
                       <LogoutIcon className="h-4 w-4" />
                       Logout
                     </div>

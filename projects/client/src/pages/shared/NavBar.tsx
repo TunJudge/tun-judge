@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 type NavItem = {
   content: React.ReactNode;
   className?: string;
+  testId?: string;
   onClick?: () => void;
   active?: boolean;
 };
@@ -19,8 +20,9 @@ const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
 
   const MenuItems = ({ items }: { items?: NavItem[] }) => (
     <>
-      {items?.map(({ content, className, active, onClick }, index) => (
+      {items?.map(({ content, className, testId, active, onClick }, index) => (
         <div
+          key={`item-${index}`}
           className={classNames(
             className,
             'flex items-center lg:justify-center lg:text-center px-3 py-2 rounded-md font-medium cursor-pointer',
@@ -29,7 +31,7 @@ const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
               'text-gray-300 hover:bg-gray-700 hover:text-white': !active,
             }
           )}
-          key={`item-${index}`}
+          test-id={testId}
           onClick={onClick}
         >
           {content}

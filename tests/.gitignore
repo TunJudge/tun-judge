@@ -7,6 +7,7 @@
 # Generated files
 cypress/screenshots
 cypress/videos
+cypress/downloads
 .cache-loader
 
 # Misc

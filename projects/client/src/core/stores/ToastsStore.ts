@@ -6,6 +6,7 @@ export type Toast = {
   id: string;
   type: ToastType;
   message: string;
+  testId: string;
 };
 
 export class ToastsStore {
@@ -38,6 +39,7 @@ export class ToastsStore {
       id: id,
       type: type,
       message: message,
+      testId: `${type}-toast`,
     });
     setTimeout(() => (this.toasts = this.toasts.filter((toast) => toast.id !== id)), timeout);
   }

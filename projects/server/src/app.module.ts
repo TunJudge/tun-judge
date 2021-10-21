@@ -27,6 +27,7 @@ import { TestcasesModule } from './features/testcases/testcases.module';
 import { UsersModule } from './features/users/users.module';
 import { WebsocketModule } from './features/websocket/websocket.module';
 import { RolesGuard } from './guards';
+import { migrations } from './migrations';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { RolesGuard } from './guards';
       username: config.database.username,
       password: config.database.password,
       entities: entities,
-      synchronize: true,
+      migrations: migrations,
+      migrationsRun: true,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client'),

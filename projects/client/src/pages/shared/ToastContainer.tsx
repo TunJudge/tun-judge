@@ -28,7 +28,7 @@ const ToastContainer: React.FC = observer(() => {
 
   return (
     <div className="fixed bottom-8 right-8 z-50 w-80 flex flex-col gap-2">
-      {toasts.map(({ type, message }, index) => {
+      {toasts.map(({ type, message, testId }, index) => {
         const Icon = icons[type];
         return (
           <div
@@ -42,6 +42,7 @@ const ToastContainer: React.FC = observer(() => {
                 'border-red-500': colors[type] === 'red',
               }
             )}
+            test-id={testId}
           >
             <div className="flex items-center justify-center">
               <Icon

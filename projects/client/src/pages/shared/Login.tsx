@@ -48,7 +48,7 @@ const Login: React.FC = observer(() => {
           <TextInput<Credentials>
             entity={credentials}
             field="username"
-            name="username"
+            testId="username"
             placeHolder="Username"
             autoComplete="username"
             required
@@ -58,7 +58,7 @@ const Login: React.FC = observer(() => {
           <TextInput<Credentials>
             entity={credentials}
             field="password"
-            name="password"
+            testId="password"
             type="Password"
             placeHolder="Password"
             autoComplete="username"
@@ -67,7 +67,8 @@ const Login: React.FC = observer(() => {
             setErrors={setErrors}
           />
           <button
-            className="t-login-btn p-2 rounded-md text-white bg-blue-500 w-1/4 mx-auto"
+            className="p-2 rounded-md text-white bg-blue-500 w-1/4 mx-auto"
+            test-id="login-btn"
             type="submit"
           >
             Login
