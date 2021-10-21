@@ -2,7 +2,7 @@ version: '3'
 
 services:
   server:
-    image: tunjudge/server
+    image: tun-judge/server
     restart: always
     environment:
       REDIS_HOST: redis
@@ -20,7 +20,7 @@ services:
       - redis
 
   judge:
-    image: tunjudge/judge
+    image: tun-judge/judge
     restart: always
     environment:
       HOSTNAME: judgehost

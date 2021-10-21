@@ -37,13 +37,13 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: docker/server/Dockerfile
-          tags: tunjudge/server:latest
+          tags: tun-judge/server:latest
 
       - name: Build Judge Docker image
         uses: docker/build-push-action@v2
         with:
           file: docker/judge/Dockerfile
-          tags: tunjudge/judge:latest
+          tags: tun-judge/judge:latest
 
       - name: Start Application
         run: docker-compose -f docker-compose.test.yml up -d

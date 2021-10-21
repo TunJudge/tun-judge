@@ -7,6 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   release:
@@ -26,7 +27,7 @@ jobs:
         id: server-meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/server
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/server
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -44,7 +45,7 @@ jobs:
         id: judge-meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/judge
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/judge
           tags: |
             type=ref,event=branch
             type=ref,event=pr
