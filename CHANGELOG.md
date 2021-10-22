@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.43](https://github.com/NaN-Projects/tun-judge/compare/v0.0.42...v0.0.43) (2021-10-22)
+
+
+### Bug Fixes
+
+* update languages docker images names ([2c441d5](https://github.com/NaN-Projects/tun-judge/commit/2c441d5de701ac190e89b8b7d416a9ebd2226e4b))
+
 ### [0.0.42](https://github.com/NaN-Projects/tun-judge/compare/v0.0.41...v0.0.42) (2021-10-21)
 
 ### [0.0.41](https://github.com/NaN-Projects/tun-judge/compare/v0.0.40...v0.0.41) (2021-10-21)

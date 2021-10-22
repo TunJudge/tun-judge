@@ -1,6 +1,6 @@
 {
   "name": "tun-judge-server",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "description": "The server of TunJudge",
   "private": true,
   "license": "MIT",
