@@ -1,6 +1,6 @@
 {
   "name": "JavaScript",
-  "dockerImage": "tunjudge/lang-node:14.18.0-alpine",
+  "dockerImage": "ghcr.io/tunjudge/lang/node:14.18.0",
   "extensions": [
     "js"
   ],

@@ -1,6 +1,6 @@
 {
   "name": "C#",
-  "dockerImage": "tunjudge/lang-csharp:6.12.0.107-slim",
+  "dockerImage": "ghcr.io/tunjudge/lang/csharp:6.12.0",
   "extensions": [
     "cs",
     "csharp"

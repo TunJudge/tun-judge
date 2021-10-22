@@ -1,6 +1,6 @@
 {
   "name": "C",
-  "dockerImage": "tunjudge/lang-cpp:7.3.0",
+  "dockerImage": "ghcr.io/tunjudge/lang/cpp:7.3.0",
   "extensions": [
     "c"
   ],

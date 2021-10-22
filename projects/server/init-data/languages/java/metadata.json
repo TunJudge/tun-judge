@@ -1,6 +1,6 @@
 {
   "name": "Java",
-  "dockerImage": "tunjudge/lang-java:8-jdk-alpine",
+  "dockerImage": "ghcr.io/tunjudge/lang/java:8",
   "extensions": [
     "java"
   ],

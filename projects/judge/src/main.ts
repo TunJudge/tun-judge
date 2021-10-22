@@ -30,7 +30,7 @@ async function bootstrap() {
     process.exit(-1);
   }
   const app = await NestFactory.create(AppModule, { logger });
-  await app.listen(3001);
+  await app.listen(3002);
 }
 
 bootstrap();

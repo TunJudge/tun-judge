@@ -2,7 +2,7 @@
   "name": "Default Checker",
   "description": "Default Checker",
   "default": true,
-  "dockerImage": "tunjudge/lang-cpp:7.3.0",
+  "dockerImage": "ghcr.io/tunjudge/lang/cpp:7.3.0",
   "type": "CHECKER",
   "sourceFile": "executables/default-checker/checker.cpp",
   "buildScript": "executables/default-checker/build.sh"

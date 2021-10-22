@@ -1,6 +1,6 @@
 {
   "name": "Python 2",
-  "dockerImage": "tunjudge/lang-python:2.7.18-slim",
+  "dockerImage": "ghcr.io/tunjudge/lang/python:2.7.18",
   "extensions": [
     "py2"
   ],

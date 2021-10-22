@@ -1,6 +1,6 @@
 {
   "name": "Scala",
-  "dockerImage": "tunjudge/lang-scala:2.13.4-alpine",
+  "dockerImage": "ghcr.io/tunjudge/lang/scala:2.13.4",
   "extensions": [
     "scala"
   ],
