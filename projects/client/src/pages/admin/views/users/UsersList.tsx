@@ -1,17 +1,17 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { getDisplayDate } from '../../../../core/helpers';
-import { User } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
+
+import { getDisplayDate } from '@core/helpers';
+import { User } from '@core/models';
+import { RootStore, UsersStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+
 import UserForm from './UserForm';
 
 const UsersList: React.FC = observer(() => {
-  const {
-    profile,
-    isUserAdmin,
-    usersStore: { fetchAll, updateCount, create, update, remove },
-  } = rootStore;
+  const { profile, isUserAdmin } = useStore<RootStore>('rootStore');
+  const { fetchAll, updateCount, create, update, remove } = useStore<UsersStore>('usersStore');
 
   const columns: ListPageTableColumn<User>[] = [
     {

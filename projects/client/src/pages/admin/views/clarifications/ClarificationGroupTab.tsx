@@ -1,8 +1,10 @@
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/outline';
 import React from 'react';
-import { countUnseenMessages } from '../../../../core/helpers';
-import { Clarification, ContestProblem } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
+
+import { countUnseenMessages } from '@core/helpers';
+import { Clarification, ContestProblem } from '@core/models';
+import { RootStore, useStore } from '@core/stores';
+
 import ClarificationTab from './ClarificationTab';
 
 type Props = {
@@ -22,7 +24,8 @@ const ClarificationGroupTab: React.FC<Props> = ({
   onTabClick,
   onClarificationClick,
 }) => {
-  const { profile } = rootStore;
+  const { profile } = useStore<RootStore>('rootStore');
+
   const unseenMessagesCount = clarifications.reduce(
     (prev, curr) => prev + countUnseenMessages(curr, profile!),
     0

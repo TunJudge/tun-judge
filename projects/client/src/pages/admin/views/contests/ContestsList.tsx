@@ -1,17 +1,19 @@
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { getDisplayDate } from '../../../../core/helpers';
-import { Contest } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
+
+import { getDisplayDate } from '@core/helpers';
+import { Contest } from '@core/models';
+import { ContestsStore, RootStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+
 import ContestForm from './ContestForm';
 
 const ContestsList: React.FC = observer(() => {
-  const {
-    isUserAdmin,
-    contestsStore: { updateCount, fetchAll, create, update, remove },
-  } = rootStore;
+  const { isUserAdmin } = useStore<RootStore>('rootStore');
+  const { updateCount, fetchAll, create, update, remove } =
+    useStore<ContestsStore>('contestsStore');
 
   const columns: ListPageTableColumn<Contest>[] = [
     {

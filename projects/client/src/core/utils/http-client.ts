@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, Method } from 'axios';
-import { rootStore } from '../stores/RootStore';
+
+import { rootStore } from '../stores';
 
 export class HttpClient {
   get<T>(path: string, options?: AxiosRequestConfig): Promise<T> {

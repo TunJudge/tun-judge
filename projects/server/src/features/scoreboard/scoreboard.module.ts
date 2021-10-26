@@ -1,4 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
+
 import { CustomRepositoryProvider } from '../../core/extended-repository';
 import { ScoreCache } from '../../entities';
 import { ContestsModule } from '../contests/contests.module';

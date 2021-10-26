@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { Contest } from './contest.entity';
 import { TeamCategory } from './team-category.entity';
 import { User } from './user.entity';

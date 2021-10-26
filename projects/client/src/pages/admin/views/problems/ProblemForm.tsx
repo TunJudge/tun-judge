@@ -1,20 +1,23 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { isEmpty } from '../../../../core/helpers';
-import { Executable, Problem } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { DataTableItemForm } from '../../../shared/data-table/DataTable';
-import { FormModal } from '../../../shared/dialogs';
-import DropDownInput from '../../../shared/form-controls/DropDownInput';
-import FileInput from '../../../shared/form-controls/FileInput';
-import NumberInput from '../../../shared/form-controls/NumberInput';
-import TextInput from '../../../shared/form-controls/TextInput';
-import { FormErrors } from '../../../shared/form-controls/types';
+
+import { isEmpty } from '@core/helpers';
+import { Executable, Problem } from '@core/models';
+import { ExecutablesStore, useStore } from '@core/stores';
+
+import { DataTableItemForm } from '@shared/data-table/DataTable';
+import { FormModal } from '@shared/dialogs';
+import DropDownInput from '@shared/form-controls/DropDownInput';
+import FileInput from '@shared/form-controls/FileInput';
+import NumberInput from '@shared/form-controls/NumberInput';
+import TextInput from '@shared/form-controls/TextInput';
+import { FormErrors } from '@shared/form-controls/types';
 
 const ProblemForm: DataTableItemForm<Problem> = observer(
   ({ item: problem, isOpen, onClose, onSubmit }) => {
+    const { runners, checkers, fetchAll } = useStore<ExecutablesStore>('executablesStore');
+
     const [errors, setErrors] = useState<FormErrors<Problem>>({});
-    const { runners, checkers, fetchAll } = rootStore.executablesStore;
 
     useEffect(() => {
       setErrors({

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { CustomRepositoryProvider } from '../../core/extended-repository';
 import { Language } from '../../entities';
 import { LanguagesController } from './languages.controller';

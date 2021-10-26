@@ -1,11 +1,11 @@
 import { action } from 'mobx';
+
 import { Contest } from '../models';
 import http from '../utils/http-client';
 import { BaseEntityStore } from './BaseEntityStore';
-import { RootStore } from './RootStore';
 
 export class ContestsStore extends BaseEntityStore<Contest> {
-  constructor(private readonly rootStore: RootStore) {
+  constructor() {
     super('contests');
   }
 

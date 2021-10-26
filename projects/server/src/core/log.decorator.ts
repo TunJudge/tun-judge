@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+
 import { LoggerFactory } from './logger.factory';
 
 const decorateMethod =

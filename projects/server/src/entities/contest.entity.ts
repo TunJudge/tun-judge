@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, Index, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
 import { ContestProblem } from './contest-problem.entity';
 import { Submission } from './submission.entity';
 import { Team } from './team.entity';

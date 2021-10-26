@@ -2,6 +2,7 @@ import * as connectRedis from 'connect-redis';
 import * as expressSession from 'express-session';
 import { MemoryStore, Store } from 'express-session';
 import * as redis from 'redis';
+
 import config from './config';
 
 function buildStore(): Store {

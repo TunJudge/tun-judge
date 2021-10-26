@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+
 import { MainInitializer } from './core/initializers/main.initializer';
 import { LogClass } from './core/log.decorator';
 

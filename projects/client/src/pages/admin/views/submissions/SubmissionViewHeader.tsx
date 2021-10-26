@@ -2,22 +2,24 @@ import { RefreshIcon } from '@heroicons/react/outline';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { dateComparator, isSubmissionClaimedByMe } from '../../../../core/helpers';
-import { Judging, Submission } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import Tooltip from '../../../shared/tooltip/Tooltip';
+
+import { dateComparator, isSubmissionClaimedByMe } from '@core/helpers';
+import { Judging, Submission } from '@core/models';
+import { RootStore, SubmissionsStore, useStore } from '@core/stores';
+
+import Tooltip from '@shared/tooltip/Tooltip';
 
 const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ submission }) => {
+  const { profile } = useStore<RootStore>('rootStore');
+  const { fetchById, ignore, unIgnore, rejudge, claim, unClaim, markVerified } =
+    useStore<SubmissionsStore>('submissionsStore');
+
   const history = useHistory();
   const judging = submission.judgings
     .slice()
     .filter((j) => j.valid)
     .sort(dateComparator<Judging>('startTime', true))
     .shift();
-  const {
-    profile,
-    submissionsStore: { fetchById, ignore, unIgnore, rejudge, claim, unClaim, markVerified },
-  } = rootStore;
 
   return (
     <div className="flex items-center shadow rounded-md w-full justify-between p-4 bg-white dark:bg-gray-800">

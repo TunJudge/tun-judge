@@ -1,28 +1,29 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
-import { dateComparator } from '../../../../core/helpers';
-import { Judging } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { languageMap } from '../../../../core/types';
-import CodeEditor from '../../../shared/CodeEditor';
-import Spinner from '../../../shared/Spinner';
+
+import { dateComparator } from '@core/helpers';
+import { Judging } from '@core/models';
+import { RootStore, SubmissionsStore, useStore } from '@core/stores';
+import { languageMap } from '@core/types';
+
+import CodeEditor from '@shared/CodeEditor';
+import Spinner from '@shared/Spinner';
+
 import SubmissionViewDetails from './SubmissionViewDetails';
 import SubmissionViewHeader from './SubmissionViewHeader';
 import SubmissionsViewJudgingRuns from './SubmissionViewJudgingRuns';
 
 const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {
-  const {
-    updatesCount: { judgings },
-    submissionsStore: { item: submission, fetchById },
-  } = rootStore;
+  const { updatesCount } = useStore<RootStore>('rootStore');
+  const { item: submission, fetchById } = useStore<SubmissionsStore>('submissionsStore');
 
   const [highlightedJudging, setHighlightedJudging] = useState<Judging | undefined>();
 
   useEffect(() => {
     fetchById(parseInt(match!.params.id!)).catch(() => location.assign('/submissions'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchById, judgings]);
+  }, [fetchById, updatesCount.judgings]);
 
   useEffect(() => {
     if (submission) {

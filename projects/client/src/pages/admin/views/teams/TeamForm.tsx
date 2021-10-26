@@ -1,24 +1,26 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { isEmpty } from '../../../../core/helpers';
-import { Contest, Team, TeamCategory, User } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { DataTableItemForm } from '../../../shared/data-table/DataTable';
-import { FormModal } from '../../../shared/dialogs';
-import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
-import DropDownInput from '../../../shared/form-controls/DropDownInput';
-import NumberInput from '../../../shared/form-controls/NumberInput';
-import TextareaInput from '../../../shared/form-controls/TextareaInput';
-import TextInput from '../../../shared/form-controls/TextInput';
-import { FormErrors } from '../../../shared/form-controls/types';
+
+import { isEmpty } from '@core/helpers';
+import { Contest, Team, TeamCategory, User } from '@core/models';
+import { ContestsStore, TeamCategoriesStore, UsersStore, useStore } from '@core/stores';
+
+import { DataTableItemForm } from '@shared/data-table/DataTable';
+import { FormModal } from '@shared/dialogs';
+import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
+import DropDownInput from '@shared/form-controls/DropDownInput';
+import NumberInput from '@shared/form-controls/NumberInput';
+import TextInput from '@shared/form-controls/TextInput';
+import TextareaInput from '@shared/form-controls/TextareaInput';
+import { FormErrors } from '@shared/form-controls/types';
 
 const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClose, onSubmit }) => {
+  const { teamUsers: users, fetchAll: fetchAllUsers } = useStore<UsersStore>('usersStore');
+  const { data: contests, fetchAll: fetchAllContests } = useStore<ContestsStore>('contestsStore');
+  const { data: categories, fetchAll: fetchAllCategories } =
+    useStore<TeamCategoriesStore>('teamCategoriesStore');
+
   const [errors, setErrors] = useState<FormErrors<Team>>({});
-  const {
-    usersStore: { teamUsers: users, fetchAll: fetchAllUsers },
-    contestsStore: { data: contests, fetchAll: fetchAllContests },
-    teamCategoriesStore: { data: categories, fetchAll: fetchAllCategories },
-  } = rootStore;
 
   useEffect(() => {
     Promise.all([fetchAllUsers(), fetchAllContests(), fetchAllCategories()]);

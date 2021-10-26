@@ -16,16 +16,18 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { rootStore } from '../../core/stores/RootStore';
-import { Tabs } from '../../core/types';
-import Tooltip from '../shared/tooltip/Tooltip';
+
+import { PublicStore } from '@core/stores/PublicStore';
+import { useStore } from '@core/stores/useStore';
+import { Tabs } from '@core/types';
+
+import Tooltip from '@shared/tooltip/Tooltip';
 
 const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
+  const { totalPendingSubmissions } = useStore<PublicStore>('publicStore');
+
   const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
   const history = useHistory();
-  const {
-    publicStore: { totalPendingSubmissions },
-  } = rootStore;
 
   history.listen(() => setCurrentTab(location.pathname.replace(/\/?/g, '')));
 

@@ -1,21 +1,24 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Executable, ExecutableType } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
-import { CodeEditorDialog } from '../../../shared/dialogs';
+
+import { Executable, ExecutableType } from '@core/models';
+import { ExecutablesStore, RootStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+import { CodeEditorDialog } from '@shared/dialogs';
+
 import ExecutableForm from './ExecutableForm';
 
 const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', CHECKER: 'Checker' };
 
 const ExecutablesList: React.FC = observer(() => {
+  const { isUserAdmin } = useStore<RootStore>('rootStore');
+  const { fetchAll, updateCount, create, update, remove } =
+    useStore<ExecutablesStore>('executablesStore');
+
   const [scriptData, setScriptData] = useState<
     { executable: Executable; field: 'sourceFile' | 'buildScript' } | undefined
   >();
-  const {
-    isUserAdmin,
-    executablesStore: { fetchAll, updateCount, create, update, remove },
-  } = rootStore;
 
   const columns: ListPageTableColumn<Executable>[] = [
     {

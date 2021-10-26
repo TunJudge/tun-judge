@@ -1,15 +1,16 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { Team } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
+
+import { Team } from '@core/models';
+import { RootStore, TeamsStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+
 import TeamForm from './TeamForm';
 
 const TeamsList: React.FC = observer(() => {
-  const {
-    isUserAdmin,
-    teamsStore: { fetchAll, updateCount, create, update, remove },
-  } = rootStore;
+  const { isUserAdmin } = useStore<RootStore>('rootStore');
+  const { fetchAll, updateCount, create, update, remove } = useStore<TeamsStore>('teamsStore');
 
   const columns: ListPageTableColumn<Team>[] = [
     {

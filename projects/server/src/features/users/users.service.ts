@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { genSalt, hash } from 'bcrypt';
+
 import { ExtendedRepository } from '../../core/extended-repository';
 import { LogClass } from '../../core/log.decorator';
 import { User } from '../../entities';

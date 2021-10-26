@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { CustomRepositoryProvider } from '../../core/extended-repository';
 import { Contest, ContestProblem } from '../../entities';
 import { ClarificationsModule } from '../clarifications/clarifications.module';

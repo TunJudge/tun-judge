@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import config from './core/config';

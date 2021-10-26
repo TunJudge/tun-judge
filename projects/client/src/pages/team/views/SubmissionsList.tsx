@@ -1,18 +1,17 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { contestStartedAndNotOver, dateComparator, formatRestTime } from '../../../core/helpers';
-import { Judging, Submission } from '../../../core/models';
-import { rootStore } from '../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../shared/data-table/DataTable';
-import SubmissionResult from '../../shared/SubmissionResult';
+
+import { contestStartedAndNotOver, dateComparator, formatRestTime } from '@core/helpers';
+import { Judging, Submission } from '@core/models';
+import { PublicStore, RootStore, TeamStore, useStore } from '@core/stores';
+
+import SubmissionResult from '@shared/SubmissionResult';
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 const SubmissionsList: React.FC = observer(() => {
-  const {
-    profile,
-    updatesCount: { submissions },
-    publicStore: { currentContest },
-    teamStore: { fetchSubmissions },
-  } = rootStore;
+  const { profile, updatesCount } = useStore<RootStore>('rootStore');
+  const { currentContest } = useStore<PublicStore>('publicStore');
+  const { fetchSubmissions } = useStore<TeamStore>('teamStore');
 
   const columns: ListPageTableColumn<Submission>[] = [
     {
@@ -58,7 +57,7 @@ const SubmissionsList: React.FC = observer(() => {
       header="Submissions"
       emptyMessage="No Submissions"
       dataFetcher={fetchAll}
-      dataDependencies={[currentContest, profile, submissions]}
+      dataDependencies={[currentContest, profile, updatesCount.submissions]}
       columns={columns}
       withoutActions
       rowBackgroundColor={(submission) => {

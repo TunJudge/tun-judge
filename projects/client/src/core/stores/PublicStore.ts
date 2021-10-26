@@ -1,4 +1,5 @@
-import { action, autorun, computed, observable } from 'mobx';
+import { action, autorun, computed, observable, reaction } from 'mobx';
+
 import { Contest, ContestProblem, ScoreCache } from '../models';
 import http from '../utils/http-client';
 import { RootStore } from './RootStore';
@@ -10,29 +11,18 @@ export class PublicStore {
   @observable currentContest: Contest | undefined;
 
   constructor(private readonly rootStore: RootStore) {
-    autorun(
-      async () => {
-        if (this.currentContest && rootStore.updatesCount.scoreboard) {
-          await this.fetchScoreCaches(this.currentContest.id);
-        }
-      },
-      { delay: 10 }
+    autorun(() => rootStore.updatesCount.contests && this.fetchContests());
+    reaction(
+      () => [this.currentContest, rootStore.updatesCount.scoreboard],
+      () => this.currentContest && this.fetchScoreCaches(this.currentContest.id)
     );
-    autorun(
-      async () => {
-        if (rootStore.updatesCount.contests) {
-          await this.fetchContests();
-        }
-      },
-      { delay: 10 }
+    reaction(
+      () => [this.currentContest, rootStore.connected],
+      () => this.currentContest && this.fetchProblems(this.currentContest.id)
     );
-    autorun(
-      async () => {
-        if (this.currentContest) {
-          await this.fetchProblems(this.currentContest.id);
-        }
-      },
-      { delay: 10 }
+    reaction(
+      () => rootStore.connected,
+      () => this.currentContest && this.fetchScoreCaches(this.currentContest.id)
     );
   }
 

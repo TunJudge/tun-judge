@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { CustomRepositoryProvider } from '../../core/extended-repository';
 import { TeamCategory } from '../../entities';
 import { TeamCategoriesController } from './team-categories.controller';

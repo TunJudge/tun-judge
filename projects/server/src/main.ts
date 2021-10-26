@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
 import * as SwaggerStats from 'swagger-stats';
+
 import { version } from '../package.json';
 import { AppModule } from './app.module';
 import config from './core/config';

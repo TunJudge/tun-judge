@@ -1,24 +1,28 @@
 import { RefreshIcon } from '@heroicons/react/outline';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import ChatBox from '../../../shared/chat-box/ChatBox';
-import HeaderActionBar from '../../../shared/HeaderActionBar';
-import { NoActiveContest } from '../../../shared/NoActiveContest';
+
+import { ClarificationsStore } from '@core/stores/ClarificationsStore';
+import { PublicStore } from '@core/stores/PublicStore';
+import { RootStore } from '@core/stores/RootStore';
+import { useStore } from '@core/stores/useStore';
+
+import HeaderActionBar from '@shared/HeaderActionBar';
+import { NoActiveContest } from '@shared/NoActiveContest';
+import ChatBox from '@shared/chat-box/ChatBox';
+
 import ClarificationsSidebar from './ClarificationsSidebar';
 
 const ClarificationsList: React.FC = observer(() => {
-  const {
-    updatesCount: { clarifications },
-    publicStore: { currentContest },
-    clarificationsStore: { item, fetchAllForContest },
-  } = rootStore;
+  const { updatesCount } = useStore<RootStore>('rootStore');
+  const { currentContest } = useStore<PublicStore>('publicStore');
+  const { item, fetchAllForContest } = useStore<ClarificationsStore>('clarificationsStore');
 
   useEffect(() => {
     if (currentContest) {
       fetchAllForContest(currentContest.id);
     }
-  }, [currentContest, clarifications, fetchAllForContest]);
+  }, [currentContest, updatesCount.clarifications, fetchAllForContest]);
 
   return !currentContest ? (
     <NoActiveContest />

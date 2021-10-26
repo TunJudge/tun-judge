@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { ContestsInitializer } from './contests.initializer';
 import { ExecutablesInitializer } from './executables.initializer';
 import { LanguagesInitializer } from './languages.initializer';

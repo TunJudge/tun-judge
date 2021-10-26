@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
+
 import { LogClass } from '../../core/log.decorator';
 import { submissionHasResult, submissionInFreezeTime, submissionIsPending } from '../../core/utils';
 import { Contest, Problem, ScoreCache, Team } from '../../entities';

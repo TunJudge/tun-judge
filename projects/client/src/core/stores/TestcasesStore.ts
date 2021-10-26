@@ -1,16 +1,18 @@
 import { action, autorun, observable } from 'mobx';
+
+import { ProblemsStore } from '@core/stores/ProblemsStore';
+
 import { FileContent, Testcase } from '../models';
 import http from '../utils/http-client';
-import { RootStore } from './RootStore';
 
 export class TestcasesStore {
   @observable data: Testcase[] = [];
   problemId: number | undefined;
 
-  constructor(private readonly rootStore: RootStore) {
+  constructor(private readonly problemsStore: ProblemsStore) {
     autorun(
       () => {
-        this.problemId = rootStore.problemsStore.item.id;
+        this.problemId = problemsStore.item.id;
         this.problemId && this.fetchAll();
         !this.problemId && (this.data = []);
       },

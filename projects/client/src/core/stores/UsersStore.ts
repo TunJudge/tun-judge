@@ -1,13 +1,13 @@
 import { action, computed, observable } from 'mobx';
+
 import { Role, User } from '../models';
 import http from '../utils/http-client';
 import { BaseEntityStore } from './BaseEntityStore';
-import { RootStore } from './RootStore';
 
 export class UsersStore extends BaseEntityStore<User> {
   @observable roles: Role[] = [];
 
-  constructor(private readonly rootStore: RootStore) {
+  constructor() {
     super('users');
   }
 

@@ -1,17 +1,20 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Problem } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
+
+import { Problem } from '@core/models';
+import { ProblemsStore, RootStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+
 import ProblemForm from './ProblemForm';
 
 const ProblemsList: React.FC = observer(() => {
+  const { isUserAdmin } = useStore<RootStore>('rootStore');
+  const { updateCount, fetchAll, create, update, remove } =
+    useStore<ProblemsStore>('problemsStore');
+
   const history = useHistory();
-  const {
-    isUserAdmin,
-    problemsStore: { updateCount, fetchAll, create, update, remove },
-  } = rootStore;
 
   const columns: ListPageTableColumn<Problem>[] = [
     {

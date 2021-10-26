@@ -9,6 +9,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { Contest } from './contest.entity';
 import { File } from './file.entity';
 import { JudgeHost } from './judge-host.entity';

@@ -1,22 +1,11 @@
 import { action, autorun, computed, observable } from 'mobx';
 import { io, Socket } from 'socket.io-client';
+
+import { ToastsStore } from '@core/stores/ToastsStore';
+import { TooltipStore } from '@core/stores/TooltipStore';
+
 import { User } from '../models';
 import http from '../utils/http-client';
-import { ClarificationsStore } from './ClarificationsStore';
-import { ContestsStore } from './ContestsStore';
-import { ExecutablesStore } from './ExecutablesStore';
-import { JudgeHostsStore } from './JudgeHostsStore';
-import { LanguagesStore } from './LanguagesStore';
-import { ProblemsStore } from './ProblemsStore';
-import { PublicStore } from './PublicStore';
-import { SubmissionsStore } from './SubmissionsStore';
-import { TeamCategoriesStore } from './TeamCategoriesStore';
-import { TeamsStore } from './TeamsStore';
-import { TeamStore } from './TeamStore';
-import { TestcasesStore } from './TestcasesStore';
-import { ToastsStore } from './ToastsStore';
-import { TooltipStore } from './TooltipStore';
-import { UsersStore } from './UsersStore';
 
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
 
@@ -40,9 +29,6 @@ type AppLocalCache = {
 export class RootStore {
   @observable appLocalCache: AppLocalCache = JSON.parse(localStorage.getItem('settings') ?? '{}');
 
-  @observable connected: boolean =
-    Date.now() - new Date(this.appLocalCache.connected ?? 0).getTime() < SESSION_LENGTH;
-
   @observable profile: User | undefined;
 
   private _updatesCount: Record<UpdateEvents, number> = {
@@ -64,42 +50,10 @@ export class RootStore {
 
   socket: Socket = io(`/ws`, { transports: ['websocket'] });
 
-  publicStore: PublicStore;
-
-  teamStore: TeamStore;
-
-  usersStore: UsersStore;
-  teamsStore: TeamsStore;
-  contestsStore: ContestsStore;
-  problemsStore: ProblemsStore;
-  testcasesStore: TestcasesStore;
-  languagesStore: LanguagesStore;
-  judgeHostsStore: JudgeHostsStore;
-  executablesStore: ExecutablesStore;
-  submissionsStore: SubmissionsStore;
-  teamCategoriesStore: TeamCategoriesStore;
-  clarificationsStore: ClarificationsStore;
-
   toastsStore: ToastsStore;
   tooltipStore: TooltipStore;
 
   constructor() {
-    this.publicStore = new PublicStore(this);
-
-    this.teamStore = new TeamStore(this);
-
-    this.usersStore = new UsersStore(this);
-    this.teamsStore = new TeamsStore(this);
-    this.contestsStore = new ContestsStore(this);
-    this.problemsStore = new ProblemsStore(this);
-    this.testcasesStore = new TestcasesStore(this);
-    this.languagesStore = new LanguagesStore(this);
-    this.judgeHostsStore = new JudgeHostsStore(this);
-    this.executablesStore = new ExecutablesStore(this);
-    this.submissionsStore = new SubmissionsStore(this);
-    this.teamCategoriesStore = new TeamCategoriesStore(this);
-    this.clarificationsStore = new ClarificationsStore(this);
-
     this.toastsStore = new ToastsStore();
     this.tooltipStore = new TooltipStore();
 
@@ -126,6 +80,11 @@ export class RootStore {
   }
 
   @computed
+  get connected(): boolean {
+    return Date.now() - new Date(this.appLocalCache.connected ?? 0).getTime() < SESSION_LENGTH;
+  }
+
+  @computed
   get isUserJury(): boolean {
     return !!this.profile && ['admin', 'jury'].includes(this.profile.role.name);
   }
@@ -145,10 +104,8 @@ export class RootStore {
 
   @action
   logout = async (): Promise<void> => {
-    this.connected = false;
     this.profile = undefined;
-    delete this.appLocalCache.connected;
-    await this.publicStore.fetchContests();
+    this.appLocalCache.connected = undefined;
   };
 }
 

@@ -1,4 +1,5 @@
 import { Param, ParseBoolPipe, ParseIntPipe } from '@nestjs/common';
+
 import { Contest, Judging, JudgingResult, Submission } from '../entities';
 
 export function getFirstJudging(submission: Submission): Judging | undefined {

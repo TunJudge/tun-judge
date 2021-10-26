@@ -7,6 +7,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { ContestProblem } from './contest-problem.entity';
 import { Executable } from './executable.entity';
 import { File } from './file.entity';

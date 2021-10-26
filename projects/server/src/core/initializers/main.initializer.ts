@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { InitialDataEntity } from '../../entities';
 import { AbstractInitializer } from './abstract-initializer';
 import { ContestsInitializer } from './contests.initializer';

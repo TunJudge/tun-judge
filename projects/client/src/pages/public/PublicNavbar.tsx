@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import ActiveContestSelector from '../shared/ActiveContestSelector';
-import { DarkModeSwitcher } from '../shared/DarkModeSwitcher';
-import NavBar from '../shared/NavBar';
+
+import ActiveContestSelector from '@shared/ActiveContestSelector';
+import { DarkModeSwitcher } from '@shared/DarkModeSwitcher';
+import NavBar from '@shared/NavBar';
 
 type Tabs = '' | 'problems' | 'login';
 

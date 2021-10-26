@@ -2,19 +2,19 @@ import { CloudUploadIcon } from '@heroicons/react/outline';
 import { MD5 } from 'crypto-js';
 import { observer } from 'mobx-react';
 import React, { useRef } from 'react';
-import { fileToBase64 } from '../../../../../core/helpers';
-import { File as DbFile, FileContent, Problem } from '../../../../../core/models';
-import { rootStore } from '../../../../../core/stores/RootStore';
+
+import { fileToBase64 } from '@core/helpers';
+import { File as DbFile, FileContent, Problem } from '@core/models';
+import { TestcasesStore, useStore } from '@core/stores';
 
 type TestcaseBulkUploaderProps = {
   problem: Problem;
 };
 
 const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ problem }) => {
+  const { create, data } = useStore<TestcasesStore>('testcasesStore');
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const {
-    testcasesStore: { create, data },
-  } = rootStore;
 
   return (
     <div onClick={() => fileInputRef.current?.click()}>

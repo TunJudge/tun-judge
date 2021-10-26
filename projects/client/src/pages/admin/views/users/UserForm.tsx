@@ -1,19 +1,21 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { isEmpty } from '../../../../core/helpers';
-import { Role, User } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { DataTableItemForm } from '../../../shared/data-table/DataTable';
-import { FormModal } from '../../../shared/dialogs';
-import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
-import DropDownInput from '../../../shared/form-controls/DropDownInput';
-import TextInput from '../../../shared/form-controls/TextInput';
-import { FormErrors } from '../../../shared/form-controls/types';
+
+import { isEmpty } from '@core/helpers';
+import { Role, User } from '@core/models';
+import { UsersStore, useStore } from '@core/stores';
+
+import { DataTableItemForm } from '@shared/data-table/DataTable';
+import { FormModal } from '@shared/dialogs';
+import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
+import DropDownInput from '@shared/form-controls/DropDownInput';
+import TextInput from '@shared/form-controls/TextInput';
+import { FormErrors } from '@shared/form-controls/types';
 
 const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClose, onSubmit }) => {
-  const [errors, setErrors] = useState<FormErrors<User>>({});
+  const { roles, fetchAllRoles } = useStore<UsersStore>('usersStore');
 
-  const { roles, fetchAllRoles } = rootStore.usersStore;
+  const [errors, setErrors] = useState<FormErrors<User>>({});
 
   useEffect(() => {
     fetchAllRoles();

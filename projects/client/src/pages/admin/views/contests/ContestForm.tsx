@@ -1,21 +1,25 @@
 import { PlusIcon, TrashIcon } from '@heroicons/react/solid';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { getRandomHexColor, isEmpty } from '../../../../core/helpers';
-import { Contest, ContestProblem, Problem } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { DataTableItemForm } from '../../../shared/data-table/DataTable';
-import { FormModal } from '../../../shared/dialogs';
-import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
-import DateTimeInput from '../../../shared/form-controls/DateTimeInput';
-import DropDownInput from '../../../shared/form-controls/DropDownInput';
-import NumberInput from '../../../shared/form-controls/NumberInput';
-import TextInput from '../../../shared/form-controls/TextInput';
-import { FormErrors } from '../../../shared/form-controls/types';
+
+import { getRandomHexColor, isEmpty } from '@core/helpers';
+import { Contest, ContestProblem, Problem } from '@core/models';
+import { ProblemsStore, useStore } from '@core/stores';
+
+import { DataTableItemForm } from '@shared/data-table/DataTable';
+import { FormModal } from '@shared/dialogs';
+import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
+import DateTimeInput from '@shared/form-controls/DateTimeInput';
+import DropDownInput from '@shared/form-controls/DropDownInput';
+import NumberInput from '@shared/form-controls/NumberInput';
+import TextInput from '@shared/form-controls/TextInput';
+import { FormErrors } from '@shared/form-controls/types';
 
 const ContestForm: DataTableItemForm<Contest> = observer(
   ({ item: contest, isOpen, onClose, onSubmit }) => {
     const [errors, setErrors] = useState<FormErrors<Contest>>({});
+    const { data: problems, fetchAll } = useStore<ProblemsStore>('problemsStore');
+
     const [problemsErrors, setProblemsErrors] = useState<{
       [index: number]: FormErrors<ContestProblem>;
     }>(
@@ -24,7 +28,6 @@ const ContestForm: DataTableItemForm<Contest> = observer(
         shortName: isEmpty(p.shortName),
       }))
     );
-    const { data: problems, fetchAll } = rootStore.problemsStore;
 
     useEffect(() => {
       setErrors({

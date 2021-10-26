@@ -1,11 +1,11 @@
 import { runInAction } from 'mobx';
+
 import { TeamCategory } from '../models';
 import http from '../utils/http-client';
 import { BaseEntityStore } from './BaseEntityStore';
-import { RootStore } from './RootStore';
 
 export class TeamCategoriesStore extends BaseEntityStore<TeamCategory> {
-  constructor(private readonly rootStore: RootStore) {
+  constructor() {
     super('team-categories');
   }
 

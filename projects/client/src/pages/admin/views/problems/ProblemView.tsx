@@ -1,15 +1,16 @@
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
-import { Problem } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import Spinner from '../../../shared/Spinner';
+
+import { Problem } from '@core/models';
+import { ProblemsStore, useStore } from '@core/stores';
+
+import Spinner from '@shared/Spinner';
+
 import TestcasesList from './testcases/TestcasesList';
 
 const ProblemView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {
-  const {
-    problemsStore: { item, fetchById, rejudge },
-  } = rootStore;
+  const { item, fetchById, rejudge } = useStore<ProblemsStore>('problemsStore');
 
   useEffect(() => {
     fetchById(parseInt(match!.params.id!)).catch(() => location.assign('/'));

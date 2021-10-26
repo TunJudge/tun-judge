@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { Executable } from '../../entities';
 import { AbstractInitializer } from './abstract-initializer';
 

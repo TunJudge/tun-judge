@@ -1,21 +1,23 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { updateLeftTimeToContest } from '../../core/helpers';
-import { rootStore } from '../../core/stores/RootStore';
-import ContestCountdown from '../shared/ContestCountdown';
-import { NoActiveContest } from '../shared/NoActiveContest';
-import ProblemSet from '../shared/ProblemSet';
-import Scoreboard from '../shared/Scoreboard';
+
+import { updateLeftTimeToContest } from '@core/helpers';
+import { LanguagesStore, PublicStore, useStore } from '@core/stores';
+
+import ContestCountdown from '@shared/ContestCountdown';
+import { NoActiveContest } from '@shared/NoActiveContest';
+import ProblemSet from '@shared/ProblemSet';
+import Scoreboard from '@shared/Scoreboard';
+
 import TeamNavbar from './TeamNavbar';
 import HomeView from './views/HomeView';
 
 const TeamLayout: React.FC = observer(() => {
+  const { currentContest } = useStore<PublicStore>('publicStore');
+  const { fetchAll } = useStore<LanguagesStore>('languagesStore');
+
   const [leftToContest, setLeftToContest] = useState<number>(1);
-  const {
-    publicStore: { currentContest },
-    languagesStore: { fetchAll },
-  } = rootStore;
 
   useEffect(() => {
     fetchAll();

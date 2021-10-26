@@ -1,4 +1,5 @@
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
+
 import { Contest } from './contest.entity';
 import { Problem } from './problem.entity';
 import { Team } from './team.entity';

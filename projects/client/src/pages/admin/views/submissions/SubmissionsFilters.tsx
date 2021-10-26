@@ -1,16 +1,17 @@
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { Filters } from '../../../../core/stores/SubmissionsStore';
-import DropDownInput from '../../../shared/form-controls/DropDownInput';
+
+import { LanguagesStore, PublicStore, useStore } from '@core/stores';
+import { Filters } from '@core/stores/SubmissionsStore';
+
+import DropDownInput from '@shared/form-controls/DropDownInput';
 
 const SubmissionsFilters: React.FC<{
   filters: Partial<Filters>;
 }> = observer(({ filters }) => {
-  const {
-    languagesStore: { fetchAll: fetchAllLanguages, data: languages },
-    publicStore: { currentContest },
-  } = rootStore;
+  const { currentContest } = useStore<PublicStore>('publicStore');
+  const { fetchAll: fetchAllLanguages, data: languages } =
+    useStore<LanguagesStore>('languagesStore');
 
   useEffect(() => {
     fetchAllLanguages();

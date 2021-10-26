@@ -16,15 +16,15 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
+    "@trivago/prettier-plugin-sort-imports": "^2.0.4",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
     "husky": "^6.0.0",
     "prettier": "^2.4.1",
-    "prettier-plugin-organize-imports": "^2.3.4",
     "run-in-all": "1.2.0",
     "standard-version": "^9.3.1",
     "typescript": "^4.4.3"

@@ -2,30 +2,24 @@ import { CheckCircleIcon, MinusCircleIcon, XCircleIcon } from '@heroicons/react/
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { dateComparator, formatRestTime, getJudgingRunColor } from '../../../../core/helpers';
-import { Judging, Submission } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
-import SubmissionResult from '../../../shared/SubmissionResult';
+
+import { dateComparator, formatRestTime, getJudgingRunColor } from '@core/helpers';
+import { Judging, Submission } from '@core/models';
+import { PublicStore, RootStore, SubmissionsStore, useStore } from '@core/stores';
+
+import SubmissionResult from '@shared/SubmissionResult';
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+
 import SubmissionsFilters from './SubmissionsFilters';
 import SubmissionsListPagination from './SubmissionsListPagination';
 
 const SubmissionsList: React.FC = observer(() => {
+  const { profile, updatesCount } = useStore<RootStore>('rootStore');
+  const { currentContest } = useStore<PublicStore>('publicStore');
+  const { totalItems, currentPage, setCurrentPage, filters, fetchAll, claim, unClaim } =
+    useStore<SubmissionsStore>('submissionsStore');
+
   const history = useHistory();
-  const {
-    profile,
-    updatesCount: { judgings, judgeRuns },
-    submissionsStore: {
-      totalItems,
-      currentPage,
-      setCurrentPage,
-      filters,
-      fetchAll,
-      claim,
-      unClaim,
-    },
-    publicStore: { currentContest },
-  } = rootStore;
 
   const columns: ListPageTableColumn<Submission>[] = [
     {
@@ -176,8 +170,8 @@ const SubmissionsList: React.FC = observer(() => {
           filters.teams,
           filters.languages,
           filters.status,
-          judgings,
-          judgeRuns,
+          updatesCount.judgings,
+          updatesCount.judgeRuns,
           fetchAll,
         ]}
         columns={columns}

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { isEmpty } from '../../../../core/helpers';
-import { Language } from '../../../../core/models';
-import { DataTableItemForm } from '../../../shared/data-table/DataTable';
-import { FormModal } from '../../../shared/dialogs';
-import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
-import DropDownInput from '../../../shared/form-controls/DropDownInput';
-import FileInput from '../../../shared/form-controls/FileInput';
-import TextInput from '../../../shared/form-controls/TextInput';
-import { FormErrors } from '../../../shared/form-controls/types';
+
+import { isEmpty } from '@core/helpers';
+import { Language } from '@core/models';
+
+import { DataTableItemForm } from '@shared/data-table/DataTable';
+import { FormModal } from '@shared/dialogs';
+import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
+import DropDownInput from '@shared/form-controls/DropDownInput';
+import FileInput from '@shared/form-controls/FileInput';
+import TextInput from '@shared/form-controls/TextInput';
+import { FormErrors } from '@shared/form-controls/types';
 
 const LanguageForm: DataTableItemForm<Language> = ({
   item: language,

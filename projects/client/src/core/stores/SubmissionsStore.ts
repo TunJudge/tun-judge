@@ -1,8 +1,10 @@
 import { action, observable } from 'mobx';
+
+import { PublicStore } from '@core/stores/PublicStore';
+
 import { isEmpty } from '../helpers';
 import { FileContent, Submission } from '../models';
 import http from '../utils/http-client';
-import { RootStore } from './RootStore';
 
 export type Filters = {
   contest: number;
@@ -19,7 +21,7 @@ export class SubmissionsStore {
   @observable item: Submission | undefined;
   @observable filters: Partial<Filters> = {};
 
-  constructor(private readonly rootStore: RootStore) {}
+  constructor(private readonly publicStore: PublicStore) {}
 
   @action
   cleanItem = (): void => {
@@ -38,7 +40,7 @@ export class SubmissionsStore {
 
   @action
   fetchAll = async (): Promise<Submission[]> => {
-    this.filters.contest = this.rootStore.publicStore.currentContest?.id ?? -1;
+    this.filters.contest = this.publicStore.currentContest?.id ?? -1;
     [this.data, this.totalItems] = await http.get<[Submission[], number]>(
       `api/submissions?page=${this.currentPage}&${buildSearchQuery(this.filters)}`
     );

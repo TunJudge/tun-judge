@@ -2,25 +2,26 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { getRGBColorContrast } from '../../../../core/helpers';
-import { TeamCategory } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
+
+import { getRGBColorContrast } from '@core/helpers';
+import { TeamCategory } from '@core/models';
+import { RootStore, TeamCategoriesStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+
 import TeamCategoryForm from './TeamCategoryForm';
 
 const TeamCategoriesList: React.FC = observer(() => {
+  const { isUserAdmin } = useStore<RootStore>('rootStore');
   const {
-    isUserAdmin,
-    teamCategoriesStore: {
-      data: teamCategories,
-      updateCount,
-      fetchAll,
-      create,
-      update,
-      move,
-      remove,
-    },
-  } = rootStore;
+    data: teamCategories,
+    updateCount,
+    fetchAll,
+    create,
+    update,
+    move,
+    remove,
+  } = useStore<TeamCategoriesStore>('teamCategoriesStore');
 
   const columns: ListPageTableColumn<TeamCategory>[] = [
     {

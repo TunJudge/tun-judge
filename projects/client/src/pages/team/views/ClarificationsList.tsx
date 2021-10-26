@@ -2,19 +2,18 @@ import { EyeIcon } from '@heroicons/react/outline';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { countUnseenMessages, generalComparator } from '../../../core/helpers';
-import { Clarification } from '../../../core/models';
-import { rootStore } from '../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../shared/data-table/DataTable';
-import { ChatBoxDialog } from '../../shared/dialogs';
+
+import { countUnseenMessages, generalComparator } from '@core/helpers';
+import { Clarification } from '@core/models';
+import { ClarificationsStore, PublicStore, RootStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+import { ChatBoxDialog } from '@shared/dialogs';
 
 const ClarificationsList: React.FC = observer(() => {
-  const {
-    profile,
-    updatesCount: { clarifications },
-    publicStore: { currentContest },
-    clarificationsStore: { fetchAllForTeam },
-  } = rootStore;
+  const { profile, updatesCount } = useStore<RootStore>('rootStore');
+  const { currentContest } = useStore<PublicStore>('publicStore');
+  const { fetchAllForTeam } = useStore<ClarificationsStore>('clarificationsStore');
 
   const columns: ListPageTableColumn<Clarification>[] = [
     {
@@ -53,7 +52,7 @@ const ClarificationsList: React.FC = observer(() => {
     <DataTable<Clarification>
       header="Clarifications"
       dataFetcher={fetchAll}
-      dataDependencies={[currentContest, clarifications]}
+      dataDependencies={[currentContest, updatesCount.clarifications]}
       fetchOnClose
       columns={columns}
       canDelete={() => false}

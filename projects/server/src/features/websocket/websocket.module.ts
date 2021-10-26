@@ -1,4 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
+
 import { JudgeHostsModule } from '../judge-hosts/judge-hosts.module';
 import { TeamsModule } from '../teams/teams.module';
 import { WebsocketGateway } from './websocket.gateway';

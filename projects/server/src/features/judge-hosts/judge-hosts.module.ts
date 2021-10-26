@@ -1,4 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
+
 import { CustomRepositoryProvider } from '../../core/extended-repository';
 import { JudgeHost, Judging, JudgingRun } from '../../entities';
 import { ScoreboardModule } from '../scoreboard/scoreboard.module';

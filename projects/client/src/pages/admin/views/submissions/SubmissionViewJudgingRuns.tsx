@@ -2,18 +2,23 @@ import { EyeIcon } from '@heroicons/react/outline';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { formatBytes } from '../../../../core/helpers';
-import { Judging, JudgingRun, Testcase } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { resultMap } from '../../../../core/types';
+
+import { formatBytes } from '@core/helpers';
+import { Judging, JudgingRun, Testcase } from '@core/models';
+import { SubmissionsStore, TestcasesStore, useStore } from '@core/stores';
+import { resultMap } from '@core/types';
+
 import {
   DiffValues,
   DiffViewerDialog,
   RunContentDialog,
   TestcaseContentDialog,
-} from '../../../shared/dialogs';
+} from '@shared/dialogs';
 
 const SubmissionsViewJudgingRuns: React.FC<{ judging?: Judging }> = observer(({ judging }) => {
+  const submissionsStore = useStore<SubmissionsStore>('submissionsStore');
+  const testcasesStore = useStore<TestcasesStore>('testcasesStore');
+
   const [testcaseViewData, setTestcaseViewData] = useState<{
     testcase: Testcase | undefined;
     field: 'input' | 'output';
@@ -23,13 +28,10 @@ const SubmissionsViewJudgingRuns: React.FC<{ judging?: Judging }> = observer(({ 
 
   const loadOutputFileAndShowDiff = async (run: JudgingRun) => {
     if (run.testcase.id && !run.testcase.output.content) {
-      run.testcase.output.content = await rootStore.testcasesStore.fetchContent(
-        run.testcase.id,
-        'output'
-      );
+      run.testcase.output.content = await testcasesStore.fetchContent(run.testcase.id, 'output');
     }
     if (run.id && !run.runOutput.content) {
-      run.runOutput.content = await rootStore.submissionsStore.fetchRunContent(run.id);
+      run.runOutput.content = await submissionsStore.fetchRunContent(run.id);
     }
 
     setDiffData({

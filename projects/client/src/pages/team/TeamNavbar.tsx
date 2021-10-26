@@ -3,25 +3,26 @@ import { LogoutIcon, UploadIcon, UserIcon } from '@heroicons/react/outline';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { contestStartedAndNotOver } from '../../core/helpers';
-import { Submission } from '../../core/models';
-import { rootStore } from '../../core/stores/RootStore';
-import ActiveContestSelector from '../shared/ActiveContestSelector';
-import { DarkModeSwitcher } from '../shared/DarkModeSwitcher';
-import NavBar from '../shared/NavBar';
-import SubmitForm from './views/SubmitForm';
+
+import { contestStartedAndNotOver } from '@core/helpers';
+import { Submission } from '@core/models';
+import { PublicStore, RootStore, TeamStore, useStore } from '@core/stores';
+
+import ActiveContestSelector from '@shared/ActiveContestSelector';
+import { DarkModeSwitcher } from '@shared/DarkModeSwitcher';
+import NavBar from '@shared/NavBar';
+import SubmitForm from '@shared/SubmitForm';
 
 type Tabs = '' | 'problems' | 'scoreboard';
 
 const TeamNavbar: React.FC = observer(() => {
+  const { profile } = useStore<RootStore>('rootStore');
+  const { currentContest } = useStore<PublicStore>('publicStore');
+  const { sendSubmission } = useStore<TeamStore>('teamsStore');
+
   const [submitFormOpen, setSubmitFormOpen] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
   const history = useHistory();
-  const {
-    profile,
-    publicStore: { currentContest },
-    teamStore: { sendSubmission },
-  } = rootStore;
 
   history.listen(() => setCurrentTab(location.pathname.replace(/\/?/g, '')));
 

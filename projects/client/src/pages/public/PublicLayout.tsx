@@ -1,17 +1,21 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { updateLeftTimeToContest } from '../../core/helpers';
-import { rootStore } from '../../core/stores/RootStore';
-import ContestCountdown from '../shared/ContestCountdown';
-import Login from '../shared/Login';
-import ProblemSet from '../shared/ProblemSet';
+
+import { updateLeftTimeToContest } from '@core/helpers';
+import { PublicStore, useStore } from '@core/stores';
+
+import ContestCountdown from '@shared/ContestCountdown';
+import Login from '@shared/Login';
+import ProblemSet from '@shared/ProblemSet';
+
 import PublicNavbar from './PublicNavbar';
 import HomeView from './views/HomeView';
 
 const PublicLayout: React.FC = observer(() => {
+  const { currentContest } = useStore<PublicStore>('publicStore');
+
   const [leftToContest, setLeftToContest] = useState<number>(0);
-  const { currentContest } = rootStore.publicStore;
 
   updateLeftTimeToContest(currentContest, setLeftToContest);
 

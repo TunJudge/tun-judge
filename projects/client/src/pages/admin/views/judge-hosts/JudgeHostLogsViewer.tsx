@@ -1,13 +1,16 @@
 import Ansi from 'ansi-to-react';
 import React, { useEffect, useState } from 'react';
-import { rootStore } from '../../../../core/stores/RootStore';
-import { SimpleDialog } from '../../../shared/dialogs';
+
+import { RootStore, useStore } from '@core/stores';
+
+import { SimpleDialog } from '@shared/dialogs';
 
 type JudgeHostLogsViewerProps = { hostname?: string; dismiss: () => void };
 
 const JudgeHostLogsViewer: React.FC<JudgeHostLogsViewerProps> = ({ hostname, dismiss }) => {
+  const { socket } = useStore<RootStore>('rootStore');
+
   const [logs, setLogs] = useState<string[]>([]);
-  const { socket } = rootStore;
 
   useEffect(() => {
     if (hostname) {

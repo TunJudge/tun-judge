@@ -1,5 +1,6 @@
 import { ConsoleLogger, Logger, LogLevel } from '@nestjs/common';
 import { clc } from '@nestjs/common/utils/cli-colors.util';
+
 import config from '../config';
 
 const logLevelRanks: Record<LogLevel, number> = {

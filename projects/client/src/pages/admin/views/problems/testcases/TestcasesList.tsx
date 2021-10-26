@@ -8,12 +8,15 @@ import {
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { formatBytes } from '../../../../../core/helpers';
-import { Problem, Testcase } from '../../../../../core/models';
-import { rootStore } from '../../../../../core/stores/RootStore';
-import { TestcaseContentDialog } from '../../../../shared/dialogs';
-import CheckBoxInput from '../../../../shared/form-controls/CheckBoxInput';
-import Tooltip from '../../../../shared/tooltip/Tooltip';
+
+import { formatBytes } from '@core/helpers';
+import { Problem, Testcase } from '@core/models';
+import { RootStore, TestcasesStore, useStore } from '@core/stores';
+
+import { TestcaseContentDialog } from '@shared/dialogs';
+import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
+import Tooltip from '@shared/tooltip/Tooltip';
+
 import TestcaseBulkUploader from './TestcaseBulkUploader';
 import TestcaseForm from './TestcaseForm';
 
@@ -30,11 +33,9 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
     testcase: Testcase | undefined;
     field: 'input' | 'output';
   }>({ testcase: undefined, field: 'input' });
-  const {
-    isUserAdmin,
-    testcasesStore: { data, fetchAll, create, update, remove, move },
-    toastsStore,
-  } = rootStore;
+  const { isUserAdmin, toastsStore } = useStore<RootStore>('rootStore');
+  const { data, fetchAll, create, update, remove, move } =
+    useStore<TestcasesStore>('testcasesStore');
 
   const dismissForm = async () => {
     setFormTestcase({ problem: problem });

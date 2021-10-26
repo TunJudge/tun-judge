@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { rootStore } from '../../../../core/stores/RootStore';
+
+import { ClarificationsStore, PublicStore, useStore } from '@core/stores';
+
 import ClarificationGroupTab from './ClarificationGroupTab';
 
 const ClarificationsSidebar: React.FC = observer(() => {
-  const {
-    publicStore: { currentContest },
-    clarificationsStore: { data, item, setItem },
-  } = rootStore;
+  const { data, item, setItem } = useStore<ClarificationsStore>('clarificationsStore');
+  const { currentContest } = useStore<PublicStore>('publicStore');
 
   const [tabStatus, setTabStatus] = useState<Record<number | 'general', boolean>>({
     general: false,

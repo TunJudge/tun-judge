@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 import { fromEvent, Observable } from 'rxjs';
 import { filter, first, map, mergeMap, share, takeUntil } from 'rxjs/operators';
 import { Namespace, Server } from 'socket.io';
+
 import session from './session';
 
 export class SocketIoAdapter extends AbstractWsAdapter {

@@ -1,13 +1,11 @@
 import { action, observable, runInAction } from 'mobx';
+
 import { JudgeHost } from '../models';
 import http from '../utils/http-client';
-import { RootStore } from './RootStore';
 
 export class JudgeHostsStore {
   @observable data: JudgeHost[] = [];
   @observable updateCount: number = 0;
-
-  constructor(private readonly rootStore: RootStore) {}
 
   @action
   fetchAll = async (): Promise<JudgeHost[]> => {

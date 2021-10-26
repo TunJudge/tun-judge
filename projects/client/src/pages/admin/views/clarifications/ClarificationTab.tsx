@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import React from 'react';
-import { countUnseenMessages } from '../../../../core/helpers';
-import { Clarification } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
+
+import { countUnseenMessages } from '@core/helpers';
+import { Clarification } from '@core/models';
+import { RootStore, useStore } from '@core/stores';
 
 type Props = {
   clarification: Clarification;
@@ -11,7 +12,8 @@ type Props = {
 };
 
 const ClarificationTab: React.FC<Props> = ({ clarification, active, onClick }) => {
-  const { profile } = rootStore;
+  const { profile } = useStore<RootStore>('rootStore');
+
   const unseenMessagesCount = countUnseenMessages(clarification, profile!);
 
   return (

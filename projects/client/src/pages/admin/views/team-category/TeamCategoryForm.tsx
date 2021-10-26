@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { isEmpty } from '../../../../core/helpers';
-import { TeamCategory } from '../../../../core/models';
-import { DataTableItemForm } from '../../../shared/data-table/DataTable';
-import { FormModal } from '../../../shared/dialogs';
-import CheckBoxInput from '../../../shared/form-controls/CheckBoxInput';
-import TextInput from '../../../shared/form-controls/TextInput';
-import { FormErrors } from '../../../shared/form-controls/types';
+
+import { isEmpty } from '@core/helpers';
+import { TeamCategory } from '@core/models';
+
+import { DataTableItemForm } from '@shared/data-table/DataTable';
+import { FormModal } from '@shared/dialogs';
+import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
+import TextInput from '@shared/form-controls/TextInput';
+import { FormErrors } from '@shared/form-controls/types';
 
 const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
   item: teamCategory,

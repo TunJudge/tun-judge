@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { compareSync } from 'bcrypt';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Role } from './role.entity';
 import { Team } from './team.entity';
 

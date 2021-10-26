@@ -1,20 +1,22 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { getDisplayDate } from '../../../../core/helpers';
-import { JudgeHost } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
+
+import { getDisplayDate } from '@core/helpers';
+import { JudgeHost } from '@core/models';
+import { JudgeHostsStore, RootStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+
 import JudgeHostLogsViewer from './JudgeHostLogsViewer';
 
 let interval: NodeJS.Timeout | undefined = undefined;
 
 const JudgeHostsList: React.FC = observer(() => {
+  const { isUserAdmin } = useStore<RootStore>('rootStore');
+  const { updateCount, fetchAll, toggle, remove } = useStore<JudgeHostsStore>('judgeHostsStore');
+
   const [hostname, setHostname] = useState<string>();
-  const {
-    isUserAdmin,
-    judgeHostsStore: { updateCount, fetchAll, toggle, remove },
-  } = rootStore;
 
   useEffect(() => {
     interval = setInterval(() => fetchAll(), 5000);

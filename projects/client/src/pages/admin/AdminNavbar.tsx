@@ -3,15 +3,18 @@ import { LogoutIcon, UserIcon, ViewListIcon } from '@heroicons/react/outline';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { rootStore } from '../../core/stores/RootStore';
-import ActiveContestSelector from '../shared/ActiveContestSelector';
-import { DarkModeSwitcher } from '../shared/DarkModeSwitcher';
+
+import { RootStore, useStore } from '@core/stores';
+
+import ActiveContestSelector from '@shared/ActiveContestSelector';
+import { DarkModeSwitcher } from '@shared/DarkModeSwitcher';
 
 type AdminNavbarProps = { toggleSidebar: () => void };
 
 const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => {
+  const { profile } = useStore<RootStore>('rootStore');
+
   const history = useHistory();
-  const { profile } = rootStore;
 
   return (
     <div className="p-4 pb-0">

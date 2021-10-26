@@ -1,17 +1,20 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Language } from '../../../../core/models';
-import { rootStore } from '../../../../core/stores/RootStore';
-import DataTable, { ListPageTableColumn } from '../../../shared/data-table/DataTable';
-import { CodeEditorDialog } from '../../../shared/dialogs';
+
+import { Language } from '@core/models';
+import { LanguagesStore, RootStore, useStore } from '@core/stores';
+
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+import { CodeEditorDialog } from '@shared/dialogs';
+
 import LanguageForm from './LanguageForm';
 
 const LanguagesList: React.FC = observer(() => {
+  const { isUserAdmin } = useStore<RootStore>('rootStore');
+  const { updateCount, fetchAll, create, update, remove } =
+    useStore<LanguagesStore>('languagesStore');
+
   const [scriptData, setScriptData] = useState<Language | undefined>();
-  const {
-    isUserAdmin,
-    languagesStore: { updateCount, fetchAll, create, update, remove },
-  } = rootStore;
 
   const columns: ListPageTableColumn<Language>[] = [
     {

@@ -1,13 +1,11 @@
 import { action, observable } from 'mobx';
+
 import { Clarification } from '../models';
 import http from '../utils/http-client';
-import { RootStore } from './RootStore';
 
 export class ClarificationsStore {
   @observable data: Clarification[] = [];
   @observable item: Clarification = { general: true, messages: [] } as any;
-
-  constructor(private readonly rootStore: RootStore) {}
 
   @action
   setItem = (item: Clarification): void => {

@@ -1,5 +1,4 @@
 /// <reference path="../../support/types.d.ts" />
-
 import { login } from '../../helpers';
 
 describe('Authentication', () => {

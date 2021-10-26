@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { CustomRepositoryProvider } from '../../core/extended-repository';
 import { Role, User } from '../../entities';
 import { RolesController } from './roles.controller';

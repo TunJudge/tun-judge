@@ -1,5 +1,7 @@
 import React from 'react';
-import { CodeEditorLanguages } from '../pages/shared/CodeEditor';
+
+import { CodeEditorLanguages } from '@shared/CodeEditor';
+
 import { JudgingResult } from './models';
 
 export type Tabs = {

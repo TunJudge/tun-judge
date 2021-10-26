@@ -9,27 +9,27 @@ import {
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { getDisplayDate } from '../../../core/helpers';
-import { Contest } from '../../../core/models';
-import { rootStore } from '../../../core/stores/RootStore';
-import { NoActiveContest } from '../../shared/NoActiveContest';
+
+import { getDisplayDate } from '@core/helpers';
+import { Contest } from '@core/models';
+import { ContestsStore, PublicStore, useStore } from '@core/stores';
+
+import { NoActiveContest } from '@shared/NoActiveContest';
 
 const Dashboard: React.FC = observer(() => {
+  const { update } = useStore<ContestsStore>('contestsStore');
   const {
-    publicStore: {
-      currentContest,
-      totalSubmissions,
-      totalPendingSubmissions,
-      totalWrongSubmissions,
-      totalCorrectSubmissions,
-      isCurrentContestActive,
-      isCurrentContestStarted,
-      isCurrentContestFrozen,
-      isCurrentContestOver,
-      isCurrentContestUnfrozen,
-    },
-    contestsStore: { update },
-  } = rootStore;
+    currentContest,
+    totalSubmissions,
+    totalPendingSubmissions,
+    totalWrongSubmissions,
+    totalCorrectSubmissions,
+    isCurrentContestActive,
+    isCurrentContestStarted,
+    isCurrentContestFrozen,
+    isCurrentContestOver,
+    isCurrentContestUnfrozen,
+  } = useStore<PublicStore>('publicStore');
 
   const setFieldAsNow = async (contest: Contest, timeField: keyof Contest): Promise<void> => {
     contest[timeField] = new Date() as never;

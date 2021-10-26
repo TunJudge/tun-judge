@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { ContestsModule } from '../contests/contests.module';
 import { ScoreboardModule } from '../scoreboard/scoreboard.module';
 import { UsersModule } from '../users/users.module';
