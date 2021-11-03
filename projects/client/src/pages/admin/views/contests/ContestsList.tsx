@@ -68,7 +68,7 @@ const ContestsList: React.FC = observer(() => {
   ];
 
   return (
-    <div className="p-4">
+    <div className="p-4" test-id="admin-contests-tab">
       <DataTable<Contest>
         header="Contests"
         dataFetcher={fetchAll}

@@ -74,7 +74,7 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
     },
     {
       key: 'team-categories',
-      title: 'Team Category',
+      title: 'Team Categories',
       icon: TagIcon,
     },
     {
@@ -112,6 +112,7 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
           'w-72': visible,
           'w-16': !visible,
         })}
+        test-id="admin-sidebar"
       >
         <div className="bg-white h-full rounded-lg p-2 shadow-md dark:bg-gray-800">
           <div
@@ -140,13 +141,14 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
                     }
                   )}
                   onClick={() => onLinkClick(key)}
+                  test-id={`admin-sidebar-item-${key}`}
                 >
                   <Icon className="h-6 w-6" />
                   {visible && (
-                    <>
+                    <div test-id="admin-sidebar-item-title">
                       {title}
                       <div className="flex items-center space-x-2 ml-auto">{label}</div>
-                    </>
+                    </div>
                   )}
                 </div>
               </Tooltip>

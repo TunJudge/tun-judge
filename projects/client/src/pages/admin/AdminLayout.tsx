@@ -26,7 +26,7 @@ const AdminLayout: React.FC = observer(() => {
   const { appLocalCache } = useStore<RootStore>('rootStore');
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900" test-id="admin-page">
       <AdminSideBar visible={!appLocalCache.menuCollapsed} />
       <div className="flex flex-col w-full overflow-hidden">
         <AdminNavbar

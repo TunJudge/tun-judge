@@ -99,7 +99,10 @@ function DataTableBody<T extends { id: number | string }>({
   return (
     <div className="flex overflow-auto rounded-md shadow">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-        <thead className="sticky top-0 z-10 text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+        <thead
+          className="sticky top-0 z-10 text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700"
+          test-id="data-table-header"
+        >
           <tr className="divide-x dark:divide-gray-800">
             <th
               className="px-4 py-2 font-medium tracking-wider"
@@ -136,7 +139,10 @@ function DataTableBody<T extends { id: number | string }>({
             {!withoutActions && <th className="px-4 py-2 font-medium tracking-wider">Actions</th>}
           </tr>
         </thead>
-        <tbody className="relative bg-white divide-y divide-y-200 dark:bg-gray-800 dark:divide-gray-700">
+        <tbody
+          className="relative bg-white divide-y divide-y-200 dark:bg-gray-800 dark:divide-gray-700"
+          test-id="data-table-body"
+        >
           {loading && (
             <tr>
               <td className="absolute h-full w-full items-center">
@@ -211,7 +217,10 @@ function DataTableBody<T extends { id: number | string }>({
           )}
         </tbody>
         {pagination && (
-          <tfoot className="sticky bottom-0 z-10 border-t bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+          <tfoot
+            className="sticky bottom-0 z-10 border-t bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700"
+            test-id="data-table-footer"
+          >
             {pagination}
           </tfoot>
         )}

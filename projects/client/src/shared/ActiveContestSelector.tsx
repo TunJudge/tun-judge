@@ -18,7 +18,7 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
   const { setCurrentContest, contests, currentContest } = useStore<PublicStore>('publicStore');
 
   return (
-    <Menu as="div" className="relative select-none">
+    <Menu as="div" className="relative select-none" test-id="active-contest-selector">
       <Menu.Button
         className={classNames('flex items-center justify-center gap-1 cursor-pointer', className)}
       >

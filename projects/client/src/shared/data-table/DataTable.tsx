@@ -108,7 +108,10 @@ function DataTable<T extends { id: number | string }>({
   };
 
   return (
-    <div className="flex flex-col overflow-hidden gap-y-4 text-black dark:text-white">
+    <div
+      className="flex flex-col overflow-hidden gap-y-4 text-black dark:text-white"
+      test-id="data-table"
+    >
       {header && (
         <HeaderActionBar
           header={header}

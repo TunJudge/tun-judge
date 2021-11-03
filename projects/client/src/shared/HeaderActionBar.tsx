@@ -16,7 +16,10 @@ type Props = {
 
 const HeaderActionBar: React.FC<Props> = ({ header, actions }) => {
   return (
-    <div className="flex items-center shadow rounded-md w-full justify-between px-4 py-2 bg-white dark:bg-gray-800">
+    <div
+      className="flex items-center shadow rounded-md w-full justify-between px-4 py-2 bg-white dark:bg-gray-800"
+      test-id="data-table-action-bar"
+    >
       <div className="text-xl font-medium">{header}</div>
       <div className="flex items-center space-x-2">
         {actions?.map(

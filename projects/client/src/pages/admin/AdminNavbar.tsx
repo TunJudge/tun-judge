@@ -17,12 +17,16 @@ const AdminNavbar: React.FC<AdminNavbarProps> = observer(({ toggleSidebar }) => 
   const history = useHistory();
 
   return (
-    <div className="p-4 pb-0">
+    <div className="p-4 pb-0" test-id="admin-navbar">
       <div className="select-none p-1 px-3 text-black bg-white shadow-md rounded-md flex items-center w-full justify-between dark:text-white dark:bg-gray-800">
-        <ViewListIcon className="h-6 w-6 cursor-pointer" onClick={toggleSidebar} />
+        <ViewListIcon
+          className="h-6 w-6 cursor-pointer"
+          onClick={toggleSidebar}
+          test-id="admin-sidebar-toggle"
+        />
         <div className="flex items-center gap-2">
           <ActiveContestSelector className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700" />
-          <Menu as="div" className="relative">
+          <Menu as="div" className="relative" test-id="admin-user-menu">
             <Menu.Button
               as="div"
               className="flex items-center justify-center gap-1 p-2 rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
