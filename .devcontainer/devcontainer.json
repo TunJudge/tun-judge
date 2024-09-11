@@ -1,0 +1,25 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:latest": {
+      "version": "latest"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.fontFamily": "MesloLGS NF",
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      },
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "nrwl.angular-console",
+        "dbaeumer.vscode-eslint",
+        "Prisma.prisma",
+        "GitHub.github-vscode-theme",
+        "bradlc.vscode-tailwindcss",
+        "zenstack.zenstack"
+      ]
+    }
+  }
+}
