@@ -35,7 +35,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["e2e/server-e2e/**/*"]
+      "exclude": ["e2e/server-e2e/**/*", "apps/judge-e2e/**/*"]
     }
   ]
 }
