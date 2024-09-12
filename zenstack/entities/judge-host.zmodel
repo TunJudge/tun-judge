@@ -1,0 +1,14 @@
+import 'user'
+import 'submission'
+import 'judging'
+
+model JudgeHost {
+  id          Int          @id @default(autoincrement())
+  hostname    String       @unique
+  active      Boolean      @default(true)
+  pollTime    DateTime?
+  userId      Int          @unique
+  user        User         @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  submissions Submission[]
+  judgings    Judging[]
+}

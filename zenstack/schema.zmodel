@@ -1,0 +1,27 @@
+import 'entities/initial-data-entity'
+import 'entities/user'
+import 'entities/role'
+import 'entities/file'
+import 'entities/team'
+import 'entities/team-category'
+import 'entities/contest'
+import 'entities/problem'
+import 'entities/executable'
+import 'entities/testcase'
+import 'entities/language'
+import 'entities/submission'
+import 'entities/judge-host'
+import 'entities/judging'
+import 'entities/judging-run'
+import 'entities/clarification'
+import 'entities/clarification-message'
+import 'entities/score-cache'
+
+datasource db {
+    provider = 'postgresql'
+    url = 'file:./dev.db'
+}
+
+generator client {
+    provider = "prisma-client-js"
+}

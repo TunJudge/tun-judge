@@ -1,0 +1,39 @@
+import 'user'
+import 'problem'
+import 'executable'
+import 'testcase'
+import 'language'
+import 'submission'
+import 'judging'
+import 'judging-run'
+
+enum FileKind {
+  FILE
+  DIRECTORY
+}
+
+model File {
+  name                        String      @id
+  type                        String
+  size                        Int
+  md5Sum                      String
+  kind                        FileKind    @default(FILE)
+  createdAt                   DateTime    @default(now())
+  createdById                 Int
+  createdBy                   User        @relation(fields: [createdById], references: [id])
+  parentDirectoryName         String?
+  parentDirectory             File?       @relation("FileParentDirectory", fields: [parentDirectoryName], references: [name])
+  children                    File[]      @relation("FileParentDirectory")
+
+  problems                    Problem[]
+  executableSourceFile        Executable? @relation("ExecutableSourceFile")
+  executableBuildScript       Executable? @relation("ExecutableBuildScript")
+  testcaseInputFile           Testcase?   @relation("TestcaseInputFile")
+  testcaseOutputFile          Testcase?   @relation("TestcaseOutputFile")
+  languageBuildScript         Language?
+  submissionSourceFile        Submission?
+  judgingCompileOutputFile    Judging?
+  judgingRunOutputFile        JudgingRun? @relation("JudgingRunOutputFile")
+  judgingRunErrorOutputFile   JudgingRun? @relation("JudgingRunErrorOutputFile")
+  judgingRunCheckerOutputFile JudgingRun? @relation("JudgingRunCheckerOutputFile")
+}

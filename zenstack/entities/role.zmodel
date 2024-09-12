@@ -1,0 +1,9 @@
+import 'user'
+
+model Role {
+  name        String @id @unique
+  description String
+  users       User[]
+
+  @@allow('read', auth() != null && auth().roleName == 'admin')
+}

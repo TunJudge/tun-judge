@@ -1,0 +1,22 @@
+import 'file'
+import 'problem'
+import 'judging-run'
+
+model Testcase {
+  id             Int          @id @default(autoincrement())
+  description    String?
+  rank           Int
+  sample         Boolean      @default(false)
+  deleted        Boolean      @default(false)
+  inputFileName  String       @unique
+  inputFile      File         @relation("TestcaseInputFile", fields: [inputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  outputFileName String       @unique
+  outputFile     File         @relation("TestcaseOutputFile", fields: [outputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  problemId      Int
+  problem        Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  judgingRuns    JudgingRun[]
+
+  @@index([problemId])
+  @@index([sample])
+  @@unique([problemId, rank])
+}

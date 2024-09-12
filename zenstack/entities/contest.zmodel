@@ -1,0 +1,30 @@
+import 'team'
+import 'problem'
+import 'submission'
+import 'judging'
+import 'clarification'
+import 'score-cache'
+
+model Contest {
+  id                   Int              @id @default(autoincrement())
+  name                 String
+  shortName            String           @unique
+  activateTime         DateTime
+  startTime            DateTime
+  freezeTime           DateTime?
+  endTime              DateTime?
+  unfreezeTime         DateTime?
+  enabled              Boolean          @default(true)
+  processBalloons      Boolean          @default(false)
+  public               Boolean          @default(true)
+  openToAllTeams       Boolean          @default(false)
+  verificationRequired Boolean          @default(false)
+  teams                TeamContest[]
+  problems             ContestProblem[]
+  submissions          Submission[]
+  judgings             Judging[]
+  scoreCaches          ScoreCache[]
+  clarifications       Clarification[]
+
+  @@index([id, enabled])
+}

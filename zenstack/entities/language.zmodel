@@ -1,0 +1,14 @@
+import 'file'
+import 'submission'
+
+model Language {
+  id              Int          @id @default(autoincrement())
+  name            String       @unique
+  dockerImage     String
+  extensions      String[]
+  allowSubmit     Boolean      @default(true)
+  allowJudge      Boolean      @default(true)
+  buildScriptName String       @unique
+  buildScript     File         @relation(fields: [buildScriptName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  submissions     Submission[]
+}

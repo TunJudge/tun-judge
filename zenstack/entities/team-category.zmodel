@@ -1,0 +1,13 @@
+import 'team'
+
+model TeamCategory {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  rank    Int     @unique
+  color   String  @default('#ffffff')
+  visible Boolean @default(true)
+  teams   Team[]
+
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
+}

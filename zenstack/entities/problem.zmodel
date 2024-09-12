@@ -1,0 +1,41 @@
+import 'file'
+import 'contest'
+import 'executable'
+import 'testcase'
+import 'submission'
+import 'clarification'
+import 'score-cache'
+
+model Problem {
+  id                Int              @id @default(autoincrement())
+  name              String
+  timeLimit         Float            @default(0) // in seconds
+  memoryLimit       Int              @default(2097152) // in KB
+  outputLimit       Int              @default(8192) // in KB
+  statementFileName String
+  statementFile     File             @relation(fields: [statementFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  runScriptId       Int
+  runScript         Executable       @relation("ProblemRunScript", fields: [runScriptId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  checkScriptId     Int
+  checkScript       Executable       @relation("ProblemCheckScript", fields: [checkScriptId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  testcases         Testcase[]
+  contests          ContestProblem[]
+  submissions       Submission[]
+  clarifications    Clarification[]
+  scores            ScoreCache[]
+}
+
+model ContestProblem {
+  contestId   Int
+  contest     Contest @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  problemId   Int
+  problem     Problem @relation(fields: [problemId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  shortName   String
+  points      Int     @default(1)
+  allowSubmit Boolean @default(true)
+  allowJudge  Boolean @default(true)
+  color       String?
+
+  @@index([contestId, problemId])
+  @@unique([contestId, shortName])
+}

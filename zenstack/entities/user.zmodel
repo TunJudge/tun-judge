@@ -1,0 +1,30 @@
+import 'role'
+import 'team'
+import 'file'
+import 'judge-host'
+import 'judging'
+import 'clarification-message'
+
+model User {
+  id            Int                    @id @default(autoincrement())
+  name          String
+  username      String                 @unique
+  password      String                 @password @omit
+  email         String?
+  lastLogin     DateTime?
+  lastIpAddress String?
+  enabled       Boolean                @default(true)
+  sessionId     String?                @omit
+  roleName      String
+  role          Role                   @relation(fields: [roleName], references: [name])
+  teamId        Int?
+  team          Team?                  @relation(fields: [teamId], references: [id], onDelete: SetNull, onUpdate: Restrict)
+  files         File[]
+  judgeHost     JudgeHost?
+  judgings      Judging[]
+  sentMessages  ClarificationMessage[]
+  seenMessages  ClarificationSeen[]
+
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
+}

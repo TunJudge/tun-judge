@@ -1,0 +1,7 @@
+model InitialDataEntity {
+  id   Int      @id @default(autoincrement())
+  name String   @default("")
+  date DateTime @db.Timestamp(6)
+
+  @@allow("all", auth().roleName in ["admin"])
+}

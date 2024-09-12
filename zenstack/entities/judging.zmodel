@@ -1,0 +1,38 @@
+import 'user'
+import 'file'
+import 'contest'
+import 'judge-host'
+import 'submission'
+import 'judging-run'
+
+enum JudgingResult {
+  ACCEPTED
+  WRONG_ANSWER
+  TIME_LIMIT_EXCEEDED
+  MEMORY_LIMIT_EXCEEDED
+  RUNTIME_ERROR
+  COMPILATION_ERROR
+  SYSTEM_ERROR
+}
+
+model Judging {
+  id                    Int            @id @default(autoincrement())
+  startTime             DateTime
+  endTime               DateTime?
+  result                JudgingResult?
+  systemError           String?
+  verified              Boolean        @default(false)
+  verifyComment         String?
+  valid                 Boolean        @default(true)
+  compileOutputFileName String         @unique
+  compileOutputFile     File           @relation(fields: [compileOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  submissionId          Int
+  submission            Submission     @relation(fields: [submissionId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  juryMemberId          Int
+  juryMember            User           @relation(fields: [juryMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  contestId             Int
+  contest               Contest        @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  judgeHostId           Int
+  judgeHost             JudgeHost      @relation(fields: [judgeHostId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  runs                  JudgingRun[]
+}

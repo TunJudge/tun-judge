@@ -1,0 +1,22 @@
+import 'user'
+import 'clarification'
+
+model ClarificationMessage {
+  id              Int                 @id @default(autoincrement())
+  content         String
+  sentTime        DateTime
+  sentById        Int
+  sentBy          User                @relation(fields: [sentById], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  seenBy          ClarificationSeen[]
+  clarificationId Int
+  clarification   Clarification       @relation(fields: [clarificationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+}
+
+model ClarificationSeen {
+  userId    Int
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  messageId Int
+  message   ClarificationMessage @relation(fields: [messageId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@id([userId, messageId])
+}

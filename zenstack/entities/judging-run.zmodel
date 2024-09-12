@@ -1,0 +1,31 @@
+import 'file'
+import 'testcase'
+import 'judging'
+
+enum JudgingRunResult {
+  ACCEPTED
+  WRONG_ANSWER
+  TIME_LIMIT_EXCEEDED
+  MEMORY_LIMIT_EXCEEDED
+  RUNTIME_ERROR
+}
+
+model JudgingRun {
+  id                    Int              @id @default(autoincrement())
+  result                JudgingRunResult
+  endTime               DateTime
+  runTime               Float
+  runMemory             Float
+  judgingId             Int
+  judging               Judging          @relation(fields: [judgingId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  testcaseId            Int
+  testcase              Testcase         @relation(fields: [testcaseId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  runOutputFileName     String           @unique
+  runOutputFile         File             @relation("JudgingRunOutputFile", fields: [runOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  errorOutputFileName   String           @unique
+  errorOutputFile       File             @relation("JudgingRunErrorOutputFile", fields: [errorOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  checkerOutputFileName String           @unique
+  checkerOutputFile     File             @relation("JudgingRunCheckerOutputFile", fields: [checkerOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([judgingId, testcaseId])
+}

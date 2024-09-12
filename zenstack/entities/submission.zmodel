@@ -1,0 +1,34 @@
+import 'file'
+import 'team'
+import 'contest'
+import 'problem'
+import 'language'
+import 'judge-host'
+import 'judging'
+
+model Submission {
+  id             Int       @id @default(autoincrement())
+  submitTime     DateTime
+  valid          Boolean   @default(true)
+  sourceFileName String    @unique
+  sourceFile     File      @relation(fields: [sourceFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  teamId         Int
+  team           Team      @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  contestId      Int
+  contest        Contest   @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  problemId      Int
+  problem        Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  languageId     Int
+  language       Language  @relation(fields: [languageId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  judgeHostId    Int
+  judgeHost      JudgeHost @relation(fields: [judgeHostId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  judgings       Judging[]
+
+  @@index([contestId, teamId])
+  @@index([contestId, problemId])
+  @@index([teamId])
+  @@index([problemId])
+  @@index([languageId])
+  @@index([judgeHostId])
+  @@index([submitTime])
+}

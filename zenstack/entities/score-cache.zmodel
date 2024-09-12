@@ -1,0 +1,29 @@
+import 'contest'
+import 'team'
+import 'problem'
+
+model ScoreCache {
+  contestId              Int
+  contest                Contest   @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  teamId                 Int
+  team                   Team      @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  problemId              Int
+  problem                Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  submissions            Int       @default(0)
+  pending                Int       @default(0)
+  solveTime              DateTime?
+  correct                Boolean   @default(false)
+  firstToSolve           Boolean   @default(false)
+
+  restrictedSubmissions  Int       @default(0)
+  restrictedPending      Int       @default(0)
+  restrictedSolveTime    DateTime?
+  restrictedCorrect      Boolean   @default(false)
+  restrictedFirstToSolve Boolean   @default(false)
+
+  @@index([teamId])
+  @@index([problemId])
+  @@index([contestId])
+  @@unique([contestId, teamId, problemId])
+}

@@ -1,0 +1,34 @@
+import 'user'
+import 'team-category'
+import 'contest'
+import 'submission'
+import 'clarification'
+import 'score-cache'
+
+model Team {
+  id             Int             @id @default(autoincrement())
+  name           String          @unique
+  enabled        Boolean         @default(true)
+  room           String?
+  comments       String?
+  penalty        Int             @default(0)
+  categoryId     Int
+  category       TeamCategory    @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  users          User[]
+  contests       TeamContest[]
+  submissions    Submission[]
+  clarifications Clarification[]
+  scores         ScoreCache[]
+
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
+}
+
+model TeamContest {
+  teamId    Int
+  team      Team    @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  contestId Int
+  contest   Contest @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([teamId, contestId])
+}
