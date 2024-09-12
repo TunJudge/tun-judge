@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "nrwl.angular-console",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "prisma.prisma",
+    "github.github-vscode-theme",
+    "bradlc.vscode-tailwindcss",
+    "zenstack.zenstack",
+    "firsttris.vscode-jest-runner"
+  ]
+}
