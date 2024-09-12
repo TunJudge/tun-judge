@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: tun-judge
+      POSTGRES_USER: tun-judge
+      POSTGRES_PASSWORD: tun-judge
+    volumes:
+      - /opt/tun-judge/db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  redis:
+    image: bitnami/redis:6.0
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-data:/bitnami/redis/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  redis-data:
+    driver: local

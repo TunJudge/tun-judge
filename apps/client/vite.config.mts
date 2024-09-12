@@ -11,11 +11,29 @@ export default defineConfig({
   server: {
     port: 4200,
     host: 'localhost',
+    proxy: {
+      '^/api/**': {
+        target: 'http://0.0.0.0:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '^/socket.io': {
+        target: `ws://localhost:3001/`,
+        ws: true,
+      },
+    },
   },
 
   preview: {
     port: 4300,
     host: 'localhost',
+  },
+
+  resolve: {
+    alias: {
+      '@core': './src/core',
+      '@shared': './src/shared',
+    },
   },
 
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],

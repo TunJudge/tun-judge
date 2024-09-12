@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  server:
+    image: tunjudge/server
+    restart: always
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DATABASE_HOSTNAME: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: tun-judge
+      DATABASE_USERNAME: tun-judge
+      DATABASE_PASSWORD: tun-judge
+      SESSION_SECRET: secret
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+
+  judge:
+    image: tunjudge/judge
+    restart: always
+    environment:
+      HOSTNAME: judgehost
+      TUN_JUDGE_URL: http://server:3000
+      TUN_JUDGE_USERNAME: judge-host
+      TUN_JUDGE_PASSWORD: judge-host
+    volumes:
+      - /tmp/tun-judge/workDir:/tmp/tun-judge/workDir
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - server
+
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: tun-judge
+      POSTGRES_USER: tun-judge
+      POSTGRES_PASSWORD: tun-judge
+    volumes:
+      - /opt/tun-judge/db-data:/var/lib/postgresql/data
+
+  redis:
+    image: bitnami/redis:6.0
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-data:/bitnami/redis/data
+
+volumes:
+  redis-data:
+    driver: local
