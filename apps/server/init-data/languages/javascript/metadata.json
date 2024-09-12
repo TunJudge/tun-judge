@@ -1,0 +1,10 @@
+{
+  "name": "JavaScript",
+  "dockerImage": "ghcr.io/tunjudge/lang/node:14.18.0",
+  "extensions": [
+    "js"
+  ],
+  "allowSubmit": true,
+  "allowJudge": true,
+  "buildScript": "languages/javascript/build.sh"
+}
