@@ -12,12 +12,12 @@ import session from './core/session';
 import { SocketIoAdapter } from './core/socket-io.adapter';
 
 const logLevelRanks: Record<LogLevel, number> = {
-  error: 0,
-  warn: 1,
-  log: 2,
-  debug: 3,
-  verbose: 4,
-  fatal: 5
+  fatal: 0,
+  error: 1,
+  warn: 2,
+  log: 3,
+  debug: 4,
+  verbose: 5,
 };
 
 async function bootstrap() {
