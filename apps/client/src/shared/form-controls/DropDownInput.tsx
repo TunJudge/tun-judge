@@ -55,7 +55,7 @@ function DropDownInput<T, R = any>({
   const hasErrors = useMemo(
     () => touched && errors?.[field],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [touched, errors, field, errors?.[field]]
+    [touched, errors, field, errors?.[field]],
   );
 
   useEffect(() => {
@@ -71,8 +71,8 @@ function DropDownInput<T, R = any>({
               key: value,
               text: value,
               value: value,
-            }
-      )
+            },
+      ),
     );
   }, [entity, field, options, optionsIdField, optionsTextField, optionsValueField]);
 
@@ -93,30 +93,30 @@ function DropDownInput<T, R = any>({
                     text:
                       optionsState.find((option) => option.key === value)?.text ??
                       value[optionsTextField ?? 'id'],
-                  }
+                  },
             )
           : typeof entity?.[field] === 'object'
-          ? [
-              {
-                key: (entity[field] as any)[optionsIdField ?? 'id'],
-                text:
-                  optionsState.find(
-                    (option) => option.key === (entity[field] as any)[optionsIdField ?? 'id']
-                  )?.text ?? (entity[field] as any)[optionsTextField ?? 'id'],
-              },
-            ]
-          : entity[field]
-          ? [
-              {
-                key: entity[field],
-                text:
-                  optionsState.find((option) => option.key === (entity[field] as any))?.text ??
-                  entity[field],
-              },
-            ]
-          : []
+            ? [
+                {
+                  key: (entity[field] as any)[optionsIdField ?? 'id'],
+                  text:
+                    optionsState.find(
+                      (option) => option.key === (entity[field] as any)[optionsIdField ?? 'id'],
+                    )?.text ?? (entity[field] as any)[optionsTextField ?? 'id'],
+                },
+              ]
+            : entity[field]
+              ? [
+                  {
+                    key: entity[field],
+                    text:
+                      optionsState.find((option) => option.key === (entity[field] as any))?.text ??
+                      entity[field],
+                  },
+                ]
+              : [],
       ),
-    [entity, field, optionsState, multiple, optionsIdField, optionsTextField]
+    [entity, field, optionsState, multiple, optionsIdField, optionsTextField],
   );
 
   useEffect(() => {
@@ -128,12 +128,12 @@ function DropDownInput<T, R = any>({
       multiple
         ? !!((entity[field] as any) ?? []).find(
             (value: any) =>
-              (typeof value === 'object' ? value[optionsIdField ?? 'id'] : value) === key
+              (typeof value === 'object' ? value[optionsIdField ?? 'id'] : value) === key,
           )
         : typeof entity?.[field] === 'object'
-        ? (entity[field] as any)[optionsIdField ?? 'id'] === key
-        : (entity[field] as any) === key,
-    [entity, field, multiple, optionsIdField]
+          ? (entity[field] as any)[optionsIdField ?? 'id'] === key
+          : (entity[field] as any) === key,
+    [entity, field, multiple, optionsIdField],
   );
 
   const refreshFilteredOptions = useCallback(
@@ -141,10 +141,10 @@ function DropDownInput<T, R = any>({
       setFilteredOptions(
         optionsState.filter(
           ({ key, text }) =>
-            !search || (!isOptionSelected(key) && text.includes(searchValue.trim()))
-        )
+            !search || (!isOptionSelected(key) && text.includes(searchValue.trim())),
+        ),
       ),
-    [isOptionSelected, optionsState, search, searchValue]
+    [isOptionSelected, optionsState, search, searchValue],
   );
 
   useEffect(() => {
@@ -181,10 +181,10 @@ function DropDownInput<T, R = any>({
     event?.stopPropagation();
 
     const unselectedItem = ((entity[field] as any) ?? []).find(
-      (value: any) => (typeof value === 'object' ? value[optionsIdField ?? 'id'] : value) === key
+      (value: any) => (typeof value === 'object' ? value[optionsIdField ?? 'id'] : value) === key,
     );
     entity[field] = ((entity[field] as any) ?? []).filter(
-      (value: any) => (typeof value === 'object' ? value[optionsIdField ?? 'id'] : value) !== key
+      (value: any) => (typeof value === 'object' ? value[optionsIdField ?? 'id'] : value) !== key,
     );
 
     refreshSelectedValues();
@@ -255,18 +255,18 @@ function DropDownInput<T, R = any>({
           />
           <Listbox.Button
             className={classNames(
-              'relative h-11 w-full text-left bg-white rounded-md shadow-sm cursor-default focus:outline-none border border-gray-300 dark:text-white dark:bg-gray-700 dark:border-gray-600',
+              'relative h-11 w-full cursor-default rounded-md border border-gray-300 bg-white text-left shadow-sm focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white',
               {
                 'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
                   hasErrors,
                 'mt-1': !!label,
-              }
+              },
             )}
             ref={triggerRef}
           >
-            <div className="flex flex-wrap items-center px-3 gap-2">
+            <div className="flex flex-wrap items-center gap-2 px-3">
               {!selectedValues.length && !allowAdditions && !search && (
-                <div className="pl-1 gap-x-1 block truncate text-gray-500 dark:text-gray-400">
+                <div className="block gap-x-1 truncate pl-1 text-gray-500 dark:text-gray-400">
                   {placeHolder ?? label}
                 </div>
               )}
@@ -275,14 +275,14 @@ function DropDownInput<T, R = any>({
                   key={key}
                   className={classNames({
                     'text-gray-500': !selectedValues,
-                    'flex items-center py-1 pl-2 rounded bg-gray-200 dark:bg-gray-800 text-sm':
+                    'flex items-center rounded bg-gray-200 py-1 pl-2 text-sm dark:bg-gray-800':
                       multiple,
                   })}
                 >
                   {text}
                   {multiple && (
                     <XIcon
-                      className="h-4 w-4 mx-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700"
+                      className="mx-1 h-4 w-4 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700"
                       onClick={unselectValue(key)}
                     />
                   )}
@@ -292,7 +292,7 @@ function DropDownInput<T, R = any>({
                 <input
                   type="text"
                   ref={inputRef}
-                  className="max-w-full focus:outline-none focus:ring-0 border-none p-0 bg-transparent dark:placeholder-gray-400"
+                  className="max-w-full border-none bg-transparent p-0 focus:outline-none focus:ring-0 dark:placeholder-gray-400"
                   placeholder={allowAdditions ? 'Add option...' : 'Search option...'}
                   onChange={onInputChange}
                   onKeyDown={addOptionAndSelect}
@@ -302,23 +302,23 @@ function DropDownInput<T, R = any>({
             </div>
             {hasErrors && (
               <div className="absolute inset-y-0 right-5 flex items-center px-3">
-                <ExclamationCircleIcon className="text-red-600 h-6 w-6" />
+                <ExclamationCircleIcon className="h-6 w-6 text-red-600" />
               </div>
             )}
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-              <SelectorIcon className="w-5 h-5 text-gray-400" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+              <SelectorIcon className="h-5 w-5 text-gray-400" />
             </div>
           </Listbox.Button>
           <Listbox.Options
-            className="z-20 absolute w-full mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700"
+            className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700"
             ref={optionsRef}
           >
             {!filteredOptions.length && (
               <Listbox.Option
-                className="text-gray-500 cursor-default select-none relative p-2 pl-3 dark:text-gray-200"
+                className="relative cursor-default select-none p-2 pl-3 text-gray-500 dark:text-gray-200"
                 value="-1"
               >
-                <span className="font-normal block truncate">No options</span>
+                <span className="block truncate font-normal">No options</span>
               </Listbox.Option>
             )}
             {filteredOptions.map(({ key, text }) => {
@@ -329,15 +329,15 @@ function DropDownInput<T, R = any>({
                   <Listbox.Option
                     key={key}
                     className={classNames(
-                      'text-gray-900 cursor-default select-none relative p-2 pl-3 dark:text-gray-200',
+                      'relative cursor-default select-none p-2 pl-3 text-gray-900 dark:text-gray-200',
                       {
                         'bg-gray-200 dark:bg-gray-500': optionSelected,
                         'hover:bg-gray-100 dark:hover:bg-gray-600': !optionSelected,
-                      }
+                      },
                     )}
                     value={key}
                   >
-                    <span className="font-normal block truncate">{text}</span>
+                    <span className="block truncate font-normal">{text}</span>
                   </Listbox.Option>
                 )
               );

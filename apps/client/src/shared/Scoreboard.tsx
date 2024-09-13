@@ -68,7 +68,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
           : Math.floor(
               (submissions - 1) * 20 +
                 (new Date(solveTime).getTime() - new Date(contest.startTime || '').getTime()) /
-                  60000
+                  60000,
             );
         if (correct) {
           cache[team.id].solvedProblems++;
@@ -83,7 +83,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
             (new Date(isUserJury ? restrictedSolveTime : solveTime).getTime() -
               new Date(contest.startTime).getTime()) /
               1000,
-            false
+            false,
           ),
           numberOfAttempts: isUserJury ? restrictedSubmissions : submissions,
         });
@@ -95,12 +95,12 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
               ? a.totalScore === b.totalScore
                 ? a.teamName.localeCompare(b.teamName)
                 : a.totalScore - b.totalScore
-              : b.solvedProblems - a.solvedProblems
+              : b.solvedProblems - a.solvedProblems,
           )
           .map((row) => {
             row.problemsScores.sort((a, b) => a.problemName.localeCompare(b.problemName));
             return row;
-          })
+          }),
       );
     }
   }, [scoreCaches, isUserJury]);
@@ -108,15 +108,15 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
   return !contest ? (
     <NoActiveContest />
   ) : (
-    <div className={classNames(className, 'flex justify-center dark:text-white p-8 max-w-full')}>
-      <div className="max-w-full p-8 bg-white rounded-xl border shadow select-none dark:bg-gray-800 dark:border-gray-700">
+    <div className={classNames(className, 'flex max-w-full justify-center p-8 dark:text-white')}>
+      <div className="max-w-full select-none rounded-xl border bg-white p-8 shadow dark:border-gray-700 dark:bg-gray-800">
         {!compact && (
-          <div className="flex items-center justify-center text-3xl mb-8 font-medium gap-x-1">
+          <div className="mb-8 flex items-center justify-center gap-x-1 text-3xl font-medium">
             Scoreboard of {contest.name}
             {isUserJury && (
               <Tooltip content="Refresh" position="right">
                 <div
-                  className="p-2 hover:bg-gray-300 rounded-full cursor-pointer dark:hover:bg-gray-700"
+                  className="cursor-pointer rounded-full p-2 hover:bg-gray-300 dark:hover:bg-gray-700"
                   onClick={() => refreshScoreboardCache(contest.id)}
                 >
                   <RefreshIcon className="h-8 w-8" />
@@ -130,18 +130,18 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
             <thead>
               <tr>
                 <th className="p-1">
-                  <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">#</div>
+                  <div className="rounded-xl bg-gray-100 p-3 shadow dark:bg-gray-700">#</div>
                 </th>
                 <th className="p-1">
-                  <div className="w-52 p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl text-left">
+                  <div className="w-52 rounded-xl bg-gray-100 p-3 text-left shadow dark:bg-gray-700">
                     Team
                   </div>
                 </th>
                 <th className="p-1">
-                  <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">=</div>
+                  <div className="rounded-xl bg-gray-100 p-3 shadow dark:bg-gray-700">=</div>
                 </th>
                 <th className="p-1">
-                  <div className="p-3 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">Score</div>
+                  <div className="rounded-xl bg-gray-100 p-3 shadow dark:bg-gray-700">Score</div>
                 </th>
                 {contest.problems
                   .slice()
@@ -153,7 +153,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
                         position="top"
                       >
                         <div
-                          className={classNames('p-3 shadow rounded-xl truncate w-20', {
+                          className={classNames('w-20 truncate rounded-xl p-3 shadow', {
                             'text-white': getRGBColorContrast(problem.color) < 0.5,
                             'text-black': getRGBColorContrast(problem.color) > 0.5,
                           })}
@@ -169,7 +169,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
             <tbody>
               {!standing.length ? (
                 <tr>
-                  <td className="text-center p-4 text-gray-500" colSpan={100}>
+                  <td className="p-4 text-center text-gray-500" colSpan={100}>
                     No teams
                   </td>
                 </tr>
@@ -180,7 +180,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
                       (!compact || teamId === profile?.team?.id) && (
                         <tr key={`team-${teamId}`}>
                           <td className="p-1">
-                            <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
+                            <div className="flex h-14 items-center justify-center rounded-xl bg-gray-100 p-3 shadow dark:bg-gray-700">
                               {index > 0 &&
                               standing[index - 1].totalScore === totalScore &&
                               standing[index - 1].solvedProblems === solvedProblems
@@ -190,19 +190,19 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
                           </td>
                           <td className="p-1">
                             <div
-                              className="flex items-center p-3 h-14 w-52 bg-gray-100 dark:bg-gray-700 shadow rounded-xl truncate"
+                              className="flex h-14 w-52 items-center truncate rounded-xl bg-gray-100 p-3 shadow dark:bg-gray-700"
                               title={teamName}
                             >
                               {teamName}
                             </div>
                           </td>
                           <td className="p-1">
-                            <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
+                            <div className="flex h-14 items-center justify-center rounded-xl bg-gray-100 p-3 shadow dark:bg-gray-700">
                               {solvedProblems}
                             </div>
                           </td>
                           <td className="p-1">
-                            <div className="flex items-center justify-center p-3 h-14 bg-gray-100 dark:bg-gray-700 shadow rounded-xl">
+                            <div className="flex h-14 items-center justify-center rounded-xl bg-gray-100 p-3 shadow dark:bg-gray-700">
                               {totalScore}
                             </div>
                           </td>
@@ -210,7 +210,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
                             <td key={`score-${teamId}-${problemScore.problemName}`} className="p-1">
                               <div
                                 className={classNames(
-                                  'flex flex-col items-center justify-center p-1 h-14 text-gray-100 shadow rounded-xl',
+                                  'flex h-14 flex-col items-center justify-center rounded-xl p-1 text-gray-100 shadow',
                                   {
                                     'bg-green-800':
                                       getScoreboardCellColor(problemScore) === 'green-dark',
@@ -221,7 +221,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
                                     'bg-red-600': getScoreboardCellColor(problemScore) === 'red',
                                     'bg-gray-100 dark:bg-gray-700':
                                       getScoreboardCellColor(problemScore) === 'white',
-                                  }
+                                  },
                                 )}
                               >
                                 {problemScore.numberOfAttempts ? (
@@ -241,7 +241,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
                         </tr>
                       )
                     );
-                  }
+                  },
                 )
               )}
             </tbody>
@@ -255,7 +255,7 @@ const Scoreboard: React.FC<Props> = observer(({ compact, className }) => {
 export default Scoreboard;
 
 function getScoreboardCellColor(
-  problemScore: TeamProblemScore
+  problemScore: TeamProblemScore,
 ): 'white' | 'green-dark' | 'green' | 'yellow' | 'red' {
   if (problemScore.firstToSolve) return 'green-dark';
   if (problemScore.correct) return 'green';

@@ -1,0 +1,18 @@
+{
+  "name": "Float Power 2",
+  "timeLimit": 1,
+  "memoryLimit": 2097152,
+  "outputLimit": 8192,
+  "statementFile": "problems/float-power-2/FloatPower2.pdf",
+  "runScript": "Default Runner",
+  "checkScript": "Float Checker",
+  "testcases": [
+    {
+      "rank": 0,
+      "sample": true,
+      "description": "Sample test",
+      "inputFile": "problems/float-power-2/testcases/test.0.in",
+      "outputFile": "problems/float-power-2/testcases/test.0.ans"
+    }
+  ]
+}

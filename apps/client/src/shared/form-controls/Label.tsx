@@ -18,7 +18,7 @@ const Label: React.FC<Props> = ({ label, description, required, hasErrors }) => 
         'flex items-center gap-1 font-medium text-gray-700 dark:text-gray-100',
         {
           'text-red-900 dark:text-red-500': hasErrors,
-        }
+        },
       )}
     >
       <span>

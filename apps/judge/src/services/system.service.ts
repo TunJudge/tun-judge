@@ -24,14 +24,14 @@ export class SystemService {
   updateJudging(judging: Judging): Promise<void> {
     return http.put(
       `api/judge-hosts/${judging.judgeHost.hostname}/update-judging/${judging.id}`,
-      judging
+      judging,
     );
   }
 
   addJudgingRun(judging: Judging, judgingRun: Partial<JudgingRun>): Promise<void> {
     return http.post(
       `api/judge-hosts/${judging.judgeHost.hostname}/add-judging-run/${judging.id}`,
-      judgingRun
+      judgingRun,
     );
   }
 }

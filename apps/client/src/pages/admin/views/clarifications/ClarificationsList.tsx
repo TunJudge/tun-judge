@@ -6,7 +6,6 @@ import { ClarificationsStore } from '@core/stores/ClarificationsStore';
 import { PublicStore } from '@core/stores/PublicStore';
 import { RootStore } from '@core/stores/RootStore';
 import { useStore } from '@core/stores/useStore';
-
 import HeaderActionBar from '@shared/HeaderActionBar';
 import { NoActiveContest } from '@shared/NoActiveContest';
 import ChatBox from '@shared/chat-box/ChatBox';
@@ -27,7 +26,7 @@ const ClarificationsList: React.FC = observer(() => {
   return !currentContest ? (
     <NoActiveContest />
   ) : (
-    <div className="flex flex-col dark:text-white h-full overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden dark:text-white">
       <div className="p-4 pb-0">
         <HeaderActionBar
           header="Clarifications"
@@ -40,9 +39,9 @@ const ClarificationsList: React.FC = observer(() => {
           ]}
         />
       </div>
-      <div className="flex h-full p-4 gap-4 overflow-hidden">
+      <div className="flex h-full gap-4 overflow-hidden p-4">
         <ClarificationsSidebar />
-        <div className="w-full p-4 bg-white shadow-md rounded-md dark:bg-gray-800">
+        <div className="w-full rounded-md bg-white p-4 shadow-md dark:bg-gray-800">
           <ChatBox item={item} isOpen onClose={() => false} onSubmit={() => false} />
         </div>
       </div>

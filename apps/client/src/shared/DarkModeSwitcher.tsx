@@ -15,24 +15,24 @@ export const DarkModeSwitcher: React.FC<{ className?: string }> = observer(({ cl
       onChange={setDarkMode}
       className={classNames(
         className,
-        'flex items-center p-1 w-14 h-8 rounded-full border dark:border-blue-700',
+        'flex h-8 w-14 items-center rounded-full border p-1 dark:border-blue-700',
         {
           'bg-blue-700': appLocalCache.darkMode,
           'bg-gray-100': !appLocalCache.darkMode,
-        }
+        },
       )}
       test-id="dark-mode-switch"
     >
       <div
-        className={classNames('flex transform transition ease-in-out duration-200', {
+        className={classNames('flex transform transition duration-200 ease-in-out', {
           'translate-x-6': appLocalCache.darkMode,
           'translate-x-0': !appLocalCache.darkMode,
         })}
       >
         {appLocalCache.darkMode ? (
-          <MoonIcon className="text-white p-1 h-6 w-6 rounded-full bg-gray-800" />
+          <MoonIcon className="h-6 w-6 rounded-full bg-gray-800 p-1 text-white" />
         ) : (
-          <SunIcon className="text-black p-1 h-6 w-6 rounded-full bg-gray-300" />
+          <SunIcon className="h-6 w-6 rounded-full bg-gray-300 p-1 text-black" />
         )}
       </div>
     </Switch>

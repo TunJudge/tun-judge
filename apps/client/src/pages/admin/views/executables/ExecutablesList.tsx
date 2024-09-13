@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 
 import { Executable, ExecutableType } from '@core/models';
 import { ExecutablesStore, RootStore, useStore } from '@core/stores';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 import { CodeEditorDialog } from '@shared/dialogs';
 
@@ -36,7 +35,7 @@ const ExecutablesList: React.FC = observer(() => {
       field: 'sourceFile',
       render: (executable) => (
         <div
-          className="text-blue-700 cursor-pointer"
+          className="cursor-pointer text-blue-700"
           onClick={() =>
             setScriptData({
               executable,
@@ -54,7 +53,7 @@ const ExecutablesList: React.FC = observer(() => {
       render: (executable) =>
         executable.buildScript ? (
           <div
-            className="text-blue-700 cursor-pointer"
+            className="cursor-pointer text-blue-700"
             onClick={() =>
               setScriptData({
                 executable,

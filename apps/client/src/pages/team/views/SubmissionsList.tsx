@@ -4,7 +4,6 @@ import React from 'react';
 import { contestStartedAndNotOver, dateComparator, formatRestTime } from '@core/helpers';
 import { Judging, Submission } from '@core/models';
 import { PublicStore, RootStore, TeamStore, useStore } from '@core/stores';
-
 import SubmissionResult from '@shared/SubmissionResult';
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
@@ -22,7 +21,7 @@ const SubmissionsList: React.FC = observer(() => {
         formatRestTime(
           (new Date(submission.submitTime).getTime() -
             new Date(currentContest?.startTime ?? 0).getTime()) /
-            1000
+            1000,
         ),
     },
     {

@@ -1,5 +1,5 @@
 import { action, autorun, computed, observable } from 'mobx';
-import { io, Socket } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 
 import { ToastsStore } from '@core/stores/ToastsStore';
 import { TooltipStore } from '@core/stores/TooltipStore';
@@ -17,7 +17,7 @@ const updateEvents = [
   'judgeRuns',
   'clarifications',
 ] as const;
-type UpdateEvents = typeof updateEvents[number];
+type UpdateEvents = (typeof updateEvents)[number];
 
 type AppLocalCache = {
   connected?: number;
@@ -62,7 +62,7 @@ export class RootStore {
     autorun(
       () =>
         this.connected && http.get<User>(`api/current`).then(this.setProfile).catch(this.logout),
-      { delay: 10 }
+      { delay: 10 },
     );
 
     autorun(() => localStorage.setItem('settings', JSON.stringify(this.appLocalCache)));

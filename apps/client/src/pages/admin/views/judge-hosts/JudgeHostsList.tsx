@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { getDisplayDate } from '@core/helpers';
 import { JudgeHost } from '@core/models';
 import { JudgeHostsStore, RootStore, useStore } from '@core/stores';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import JudgeHostLogsViewer from './JudgeHostLogsViewer';
@@ -47,9 +46,9 @@ const JudgeHostsList: React.FC = observer(() => {
       textAlign: 'center',
       render: (judgeHost) =>
         isUserAdmin ? (
-          <div className="flex justify-center select-none">
+          <div className="flex select-none justify-center">
             <div
-              className={classNames('text-white px-3 py-2 rounded cursor-pointer', {
+              className={classNames('cursor-pointer rounded px-3 py-2 text-white', {
                 'bg-red-600': judgeHost.active,
                 'bg-green-600': !judgeHost.active,
               })}
@@ -69,9 +68,9 @@ const JudgeHostsList: React.FC = observer(() => {
       field: 'id',
       textAlign: 'center',
       render: (judgeHost) => (
-        <div className="flex justify-center select-none">
+        <div className="flex select-none justify-center">
           <div
-            className={classNames('bg-blue-600 text-white px-3 py-2 rounded cursor-pointer w-min', {
+            className={classNames('w-min cursor-pointer rounded bg-blue-600 px-3 py-2 text-white', {
               disabled: !judgeHost.active,
             })}
             onClick={() => setHostname(judgeHost.hostname)}

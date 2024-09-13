@@ -10,15 +10,14 @@ import {
   LanguagesStore,
   ProblemsStore,
   PublicStore,
-  rootStore,
   SubmissionsStore,
   TeamCategoriesStore,
-  TeamsStore,
   TeamStore,
+  TeamsStore,
   TestcasesStore,
   UsersStore,
+  rootStore,
 } from '@core/stores';
-
 import Spinner from '@shared/Spinner';
 
 import Root from './Root';
@@ -51,5 +50,5 @@ ReactDOM.render(
       <Root />
     </Provider>
   </Suspense>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

@@ -16,7 +16,7 @@ const ClarificationsSidebar: React.FC = observer(() => {
   useEffect(() => {
     if (currentContest) {
       currentContest.problems.forEach((cp) =>
-        setTabStatus((tabStatus) => ({ ...tabStatus, [cp.problem.id]: false }))
+        setTabStatus((tabStatus) => ({ ...tabStatus, [cp.problem.id]: false })),
       );
     }
   }, [currentContest]);
@@ -25,10 +25,10 @@ const ClarificationsSidebar: React.FC = observer(() => {
     setTabStatus((tabStatus) => ({ ...tabStatus, [tab]: !tabStatus[tab] }));
 
   return (
-    <div className="w-96 p-4 bg-white shadow-md rounded-md overflow-auto dark:bg-gray-800">
-      <div className="flex flex-col gap-4 select-none">
+    <div className="w-96 overflow-auto rounded-md bg-white p-4 shadow-md dark:bg-gray-800">
+      <div className="flex select-none flex-col gap-4">
         <div
-          className="p-2 rounded-lg text-white bg-blue-600 text-center cursor-pointer"
+          className="cursor-pointer rounded-lg bg-blue-600 p-2 text-center text-white"
           onClick={() =>
             setItem({
               general: true,
@@ -48,7 +48,7 @@ const ClarificationsSidebar: React.FC = observer(() => {
         />
         {currentContest!.problems.map((contestProblem) => {
           const filteredClarifications = data.filter(
-            (clarification) => clarification.problem?.id === contestProblem.problem.id
+            (clarification) => clarification.problem?.id === contestProblem.problem.id,
           );
 
           if (!filteredClarifications.length) return undefined;

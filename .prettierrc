@@ -1,6 +1,0 @@
-{
-  "printWidth": 100,
-  "singleQuote": true,
-  "importOrder": ["^ace-builds/(.*)$","^@core/(.*)$", "^@shared/(.*)$", "^[./]"],
-  "importOrderSeparation": true
-}

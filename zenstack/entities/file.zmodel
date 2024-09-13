@@ -19,8 +19,8 @@ model File {
   md5Sum                      String
   kind                        FileKind    @default(FILE)
   createdAt                   DateTime    @default(now())
-  createdById                 Int
-  createdBy                   User        @relation(fields: [createdById], references: [id])
+  createdById                 Int?
+  createdBy                   User?       @relation(fields: [createdById], references: [id])
   parentDirectoryName         String?
   parentDirectory             File?       @relation("FileParentDirectory", fields: [parentDirectoryName], references: [name])
   children                    File[]      @relation("FileParentDirectory")

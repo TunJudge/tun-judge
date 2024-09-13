@@ -1,0 +1,7 @@
+{
+  "name": "Default Runner",
+  "description": "Default Runner",
+  "default": true,
+  "type": "RUNNER",
+  "sourceFile": "executables/default-runner/runner.sh"
+}

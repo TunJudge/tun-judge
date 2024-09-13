@@ -165,7 +165,7 @@ function DateTimeInput<T>({
   const hasErrors = useMemo(
     () => touched && errors?.[field],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [touched, errors, field, errors?.[field]]
+    [touched, errors, field, errors?.[field]],
   );
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -416,24 +416,24 @@ function DateTimeInput<T>({
           onBlur={() => setTouched(true)}
           onClick={() => setIsOpen(!isOpen)}
           className={classNames(
-            'w-full border border-gray-300 rounded-md shadow-sm dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400',
+            'w-full rounded-md border border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',
             {
               'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
                 hasErrors,
-            }
+            },
           )}
           placeholder={placeHolder ?? label ?? 'Select date'}
         />
 
         {hasErrors ? (
           <div className="absolute inset-y-0 right-0 flex items-center px-3">
-            <ExclamationCircleIcon className="text-red-600 h-6 w-6" />
+            <ExclamationCircleIcon className="h-6 w-6 text-red-600" />
           </div>
         ) : (
           clearable &&
           displayDate && (
             <div
-              className="absolute inset-y-0 right-0 flex items-center px-3 cursor-pointer"
+              className="absolute inset-y-0 right-0 flex cursor-pointer items-center px-3"
               onClick={clearDate}
             >
               <XIcon className="h-6 w-6 text-gray-500" />
@@ -444,13 +444,13 @@ function DateTimeInput<T>({
         {isOpen && (
           <div className="relative z-10 dark:text-white">
             <div
-              className="flex flex-col duration-200 mt-1 bg-white border rounded-md shadow absolute origin-top-left dark:bg-gray-800 dark:border-gray-700"
+              className="absolute mt-1 flex origin-top-left flex-col rounded-md border bg-white shadow duration-200 dark:border-gray-700 dark:bg-gray-800"
               ref={calendarRef}
             >
               <div className="select-none">
-                <div className="flex pt-2 px-3">
+                <div className="flex px-3 pt-2">
                   <div
-                    className="flex items-center transition ease-in-out duration-100 cursor-pointer rounded-full px-2 py-1 -ml-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    className="-ml-1 flex cursor-pointer items-center rounded-full px-2 py-1 transition duration-100 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-700"
                     onClick={nextCalendarView}
                   >
                     {calendarView === 'years' && (
@@ -469,13 +469,13 @@ function DateTimeInput<T>({
                     )}
                   </div>
                   <div
-                    className="transition ease-in-out duration-100 cursor-pointer rounded-full p-1 ml-auto hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="ml-auto cursor-pointer rounded-full p-1 transition duration-100 ease-in-out hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-gray-700"
                     onClick={editCalendarViewPage('subtract')}
                   >
                     <ChevronLeftIcon className="h-6 w-6 text-gray-400" />
                   </div>
                   <div
-                    className="transition ease-in-out duration-100 cursor-pointer rounded-full p-1 -mr-1 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="-mr-1 cursor-pointer rounded-full p-1 transition duration-100 ease-in-out hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-gray-700"
                     onClick={editCalendarViewPage('add')}
                   >
                     <ChevronRightIcon className="h-6 w-6 text-gray-400" />
@@ -487,7 +487,7 @@ function DateTimeInput<T>({
                       {days.map((day, index) => (
                         <span
                           key={index}
-                          className="uppercase text-xs text-gray-500 dark:text-gray-400 w-8 h-8 flex items-center justify-center"
+                          className="flex h-8 w-8 items-center justify-center text-xs uppercase text-gray-500 dark:text-gray-400"
                         >
                           {day}
                         </span>
@@ -495,7 +495,7 @@ function DateTimeInput<T>({
                     </div>
                     <div className="grid grid-cols-7">
                       {blankDaysArr.map((day) => (
-                        <div key={day} className="w-full h-8 flex items-center" />
+                        <div key={day} className="flex h-8 w-full items-center" />
                       ))}
                       {daysInMonthArr.map((dayNumber, index) => {
                         const dayDate = new Date(year, month, dayNumber);
@@ -511,7 +511,7 @@ function DateTimeInput<T>({
                           <div
                             key={index}
                             className={classNames(
-                              'flex items-center justify-center text-sm rounded-full w-8 h-8 mx-auto',
+                              'mx-auto flex h-8 w-8 items-center justify-center rounded-full text-sm',
                               {
                                 'border border-blue-500': isEqualToday,
                                 'bg-blue-500 text-white': isEqualSelectedDate,
@@ -519,7 +519,7 @@ function DateTimeInput<T>({
                                 'hover:bg-blue-100 dark:hover:bg-blue-900':
                                   isDaySelectable && !isEqualSelectedDate,
                                 'text-gray-400 dark:text-gray-500': !isDaySelectable,
-                              }
+                              },
                             )}
                             onClick={isDaySelectable ? setDayNumber(dayNumber) : undefined}
                           >
@@ -530,7 +530,7 @@ function DateTimeInput<T>({
                     </div>
                   </div>
                 ) : calendarView === 'months' ? (
-                  <div className="px-3 py-2 grid grid-cols-4">
+                  <div className="grid grid-cols-4 px-3 py-2">
                     {Object.values(yearMonths).map(({ shortName }, index) => {
                       const today = new Date();
                       const isEqualThisMonth =
@@ -542,7 +542,7 @@ function DateTimeInput<T>({
                         index,
                         date.getDate(),
                         date.getHours(),
-                        date.getMinutes()
+                        date.getMinutes(),
                       );
                       const isMonthSelectable =
                         (!minDate || !isLessThanDate(monthDate, new Date(minDate), 'day')) &&
@@ -552,7 +552,7 @@ function DateTimeInput<T>({
                         <div
                           key={index}
                           className={classNames(
-                            'flex items-center justify-center w-14 py-3 text-sm rounded mx-auto border',
+                            'mx-auto flex w-14 items-center justify-center rounded border py-3 text-sm',
                             {
                               'border-blue-500': isEqualThisMonth,
                               'border-transparent': !isEqualThisMonth,
@@ -561,7 +561,7 @@ function DateTimeInput<T>({
                               'hover:bg-blue-100 dark:hover:bg-blue-900':
                                 isMonthSelectable && !isEqualSelectedMonth,
                               'text-gray-400 dark:text-gray-500': !isMonthSelectable,
-                            }
+                            },
                           )}
                           onClick={setMonthView(index)}
                         >
@@ -571,7 +571,7 @@ function DateTimeInput<T>({
                     })}
                   </div>
                 ) : (
-                  <div className="px-3 py-2 grid grid-cols-4">
+                  <div className="grid grid-cols-4 px-3 py-2">
                     {yearsRange.map((yearNumber) => {
                       const today = new Date();
                       const isEqualThisYear = yearNumber === today.getFullYear();
@@ -582,7 +582,7 @@ function DateTimeInput<T>({
                         date.getMonth(),
                         date.getDate(),
                         date.getHours(),
-                        date.getMinutes()
+                        date.getMinutes(),
                       );
                       const isYearSelectable =
                         (!minDate || !isLessThanDate(yearDate, new Date(minDate), 'day')) &&
@@ -592,7 +592,7 @@ function DateTimeInput<T>({
                         <div
                           key={yearNumber}
                           className={classNames(
-                            'flex items-center justify-center w-14 py-3 text-sm rounded mx-auto border',
+                            'mx-auto flex w-14 items-center justify-center rounded border py-3 text-sm',
                             {
                               'border-blue-500': isEqualThisYear,
                               'border-transparent': !isEqualThisYear,
@@ -601,7 +601,7 @@ function DateTimeInput<T>({
                               'hover:bg-blue-100 dark:hover:bg-blue-900':
                                 isYearSelectable && !isEqualSelectedYear,
                               'text-gray-400 dark:text-gray-500': !isYearSelectable,
-                            }
+                            },
                           )}
                           onClick={setYearView(yearNumber)}
                         >
@@ -613,9 +613,9 @@ function DateTimeInput<T>({
                 )}
               </div>
               {calendarView === 'days' && (
-                <div className="flex items-center justify-between px-3 py-2 select-none">
+                <div className="flex select-none items-center justify-between px-3 py-2">
                   <label className="text-sm text-gray-700 dark:text-gray-300">Time</label>
-                  <div className="flex justify-center flex-grow gap-2">
+                  <div className="flex flex-grow justify-center gap-2">
                     <div className="flex flex-col items-center justify-center gap-1">
                       <ChevronUpIcon
                         className="h-4 w-4 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -628,19 +628,19 @@ function DateTimeInput<T>({
                         {...decreaseHours}
                       />
                     </div>
-                    <div className="max-w-min bg-gray-100 rounded-md w-full text-right flex items-center border border-gray-100 dark:bg-gray-700 dark:border-gray-700">
+                    <div className="flex w-full max-w-min items-center rounded-md border border-gray-100 bg-gray-100 text-right dark:border-gray-700 dark:bg-gray-700">
                       <input
                         disabled
                         type="number"
                         value={date.getHours().toString().padStart(2, '0')}
-                        className="text-center p-0 w-8 h-8 bg-transparent text-sm border border-transparent"
+                        className="h-8 w-8 border border-transparent bg-transparent p-0 text-center text-sm"
                       />
                       <span className="">:</span>
                       <input
                         disabled
                         type="number"
                         value={date.getMinutes().toString().padStart(2, '0')}
-                        className="text-center p-0 w-8 h-8 bg-transparent text-sm border border-transparent"
+                        className="h-8 w-8 border border-transparent bg-transparent p-0 text-center text-sm"
                       />
                     </div>
                     <div className="flex flex-col items-center justify-center gap-1">
@@ -657,7 +657,7 @@ function DateTimeInput<T>({
                     </div>
                   </div>
                   <div
-                    className="p-1 text-blue-600 dark:text-blue-500 text-sm uppercase font-bold transition duration-100 ease-in-out border border-transparent rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+                    className="cursor-pointer rounded border border-transparent p-1 text-sm font-bold uppercase text-blue-600 transition duration-100 ease-in-out hover:bg-gray-200 dark:text-blue-500 dark:hover:bg-gray-700"
                     onClick={() => setIsOpen(false)}
                   >
                     OK

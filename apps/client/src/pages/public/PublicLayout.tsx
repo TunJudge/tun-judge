@@ -4,7 +4,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { updateLeftTimeToContest } from '@core/helpers';
 import { PublicStore, useStore } from '@core/stores';
-
 import ContestCountdown from '@shared/ContestCountdown';
 import Login from '@shared/Login';
 import ProblemSet from '@shared/ProblemSet';
@@ -20,7 +19,7 @@ const PublicLayout: React.FC = observer(() => {
   updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <PublicNavbar />
       <div className="h-full">
         {leftToContest && !window.location.pathname.startsWith('/login') ? (

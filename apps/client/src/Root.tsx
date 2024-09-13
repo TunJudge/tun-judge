@@ -5,7 +5,6 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { Role } from '@core/models';
 import { RootStore, useStore } from '@core/stores';
-
 import Logout from '@shared/Logout';
 import Spinner from '@shared/Spinner';
 import ToastContainer from '@shared/ToastContainer';

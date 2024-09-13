@@ -45,10 +45,10 @@ const Login: React.FC = observer(() => {
 
   return (
     <div className="flex h-full items-center justify-center dark:text-white">
-      <div className="flex flex-col items-center w-full mx-4 sm:w-96 sm:mx-0">
+      <div className="mx-4 flex w-full flex-col items-center sm:mx-0 sm:w-96">
         <div className="mb-4 text-4xl text-gray-900 dark:text-white">Sign-in</div>
         <form
-          className="grid gap-3 p-4 rounded-lg border bg-white w-full dark:bg-gray-800 dark:border-gray-700"
+          className="grid w-full gap-3 rounded-lg border bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
           onSubmit={login}
         >
           <TextInput<Credentials>
@@ -73,14 +73,14 @@ const Login: React.FC = observer(() => {
             setErrors={setErrors}
           />
           <button
-            className="p-2 rounded-md text-white bg-blue-500 w-1/4 mx-auto"
+            className="mx-auto w-1/4 rounded-md bg-blue-500 p-2 text-white"
             test-id="login-btn"
             type="submit"
           >
             Login
           </button>
         </form>
-        <div className="text-sm mt-2">TunJudge v{process.env.REACT_APP_VERSION}</div>
+        <div className="mt-2 text-sm">TunJudge v{process.env.REACT_APP_VERSION}</div>
       </div>
     </div>
   );

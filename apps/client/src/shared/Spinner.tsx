@@ -7,14 +7,14 @@ const Spinner: React.FC<Props> = ({ className, fullScreen }) => (
   <div
     className={classNames(
       className,
-      'flex items-center justify-center h-full w-full bg-white dark:bg-gray-800',
+      'flex h-full w-full items-center justify-center bg-white dark:bg-gray-800',
       {
         'h-screen': fullScreen,
-      }
+      },
     )}
   >
     <svg
-      className="animate-spin h-8 w-8 text-black dark:text-white"
+      className="h-8 w-8 animate-spin text-black dark:text-white"
       fill="none"
       viewBox="0 0 24 24"
     >

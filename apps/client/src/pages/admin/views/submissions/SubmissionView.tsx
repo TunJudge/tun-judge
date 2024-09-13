@@ -6,7 +6,6 @@ import { dateComparator } from '@core/helpers';
 import { Judging } from '@core/models';
 import { RootStore, SubmissionsStore, useStore } from '@core/stores';
 import { languageMap } from '@core/types';
-
 import CodeEditor from '@shared/CodeEditor';
 import Spinner from '@shared/Spinner';
 
@@ -31,7 +30,7 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
         submission.judgings
           .slice()
           .filter((j) => j.valid)
-          .sort(dateComparator<Judging>('startTime', true))[0]
+          .sort(dateComparator<Judging>('startTime', true))[0],
       );
     }
   }, [submission]);
@@ -39,15 +38,15 @@ const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(
   return !submission ? (
     <Spinner />
   ) : (
-    <div className="p-4 overflow-auto flex flex-col gap-y-4 text-black dark:text-white">
+    <div className="flex flex-col gap-y-4 overflow-auto p-4 text-black dark:text-white">
       <SubmissionViewHeader submission={submission} />
       <SubmissionViewDetails
         submission={submission}
         highlightedJudging={highlightedJudging}
         setHighlightedJudging={setHighlightedJudging}
       />
-      <div className="flex flex-col bg-white divide-y shadow rounded-md dark:bg-gray-800 dark:divide-gray-700">
-        <div className="text-lg font-medium p-3">Code Source</div>
+      <div className="flex flex-col divide-y rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
+        <div className="p-3 text-lg font-medium">Code Source</div>
         <div className="p-3">
           <CodeEditor
             readOnly

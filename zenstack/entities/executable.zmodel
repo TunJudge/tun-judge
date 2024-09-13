@@ -15,8 +15,8 @@ model Executable {
   type                ExecutableType
   sourceFileName      String         @unique
   sourceFile          File           @relation("ExecutableSourceFile", fields: [sourceFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
-  buildScriptName     String         @unique
-  buildScript         File           @relation("ExecutableBuildScript", fields: [buildScriptName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  buildScriptName     String?        @unique
+  buildScript         File?          @relation("ExecutableBuildScript", fields: [buildScriptName], references: [name], onDelete: Restrict, onUpdate: Restrict)
   problemsRunScript   Problem[]      @relation("ProblemRunScript")
   problemsCheckScript Problem[]      @relation("ProblemCheckScript")
 }

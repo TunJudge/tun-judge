@@ -106,7 +106,7 @@ let interval: NodeJS.Timeout | undefined = undefined;
 
 export function updateLeftTimeToContest(
   contest?: Contest,
-  setLeftToContest?: (value: number) => void
+  setLeftToContest?: (value: number) => void,
 ): void {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
@@ -140,7 +140,7 @@ export function getRandomHexColor(): string {
 
 export function getJudgingRunColor(
   testcase: Testcase,
-  judging?: Judging
+  judging?: Judging,
 ): 'gray' | 'green' | 'red' {
   if (!judging) return 'gray';
   const judgeRun = judging.runs.find((r) => r.testcase.id === testcase.id);
@@ -149,7 +149,7 @@ export function getJudgingRunColor(
 
 export function useLongPress(
   callback: () => void,
-  ms = 100
+  ms = 100,
 ): {
   onMouseDown: () => void;
   onMouseUp: () => void;
@@ -199,7 +199,7 @@ export function countUnseenMessages(clarification: Clarification, currentUser: U
   return clarification.messages.filter(
     (message) =>
       !compareRoles(currentUser, message.sentBy) &&
-      !message.seenBy.some((u) => u.id === currentUser.id)
+      !message.seenBy.some((u) => u.id === currentUser.id),
   ).length;
 }
 

@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 
 import { LanguagesStore, PublicStore, useStore } from '@core/stores';
 import { Filters } from '@core/stores/SubmissionsStore';
-
 import DropDownInput from '@shared/form-controls/DropDownInput';
 
 const SubmissionsFilters: React.FC<{
@@ -18,7 +17,7 @@ const SubmissionsFilters: React.FC<{
   }, [fetchAllLanguages]);
 
   return (
-    <div className="grid sm:grid-cols-4 gap-4 p-4 bg-white rounded shadow dark:bg-gray-800">
+    <div className="grid gap-4 rounded bg-white p-4 shadow sm:grid-cols-4 dark:bg-gray-800">
       <DropDownInput<Filters>
         entity={filters}
         field="problems"

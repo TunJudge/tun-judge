@@ -1,0 +1,8 @@
+{
+  "name": "Java",
+  "dockerImage": "ghcr.io/tunjudge/lang/java:8",
+  "extensions": ["java"],
+  "allowSubmit": true,
+  "allowJudge": true,
+  "buildScript": "languages/java/build.sh"
+}

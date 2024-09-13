@@ -22,17 +22,17 @@ const ChatBoxInput: React.FC<{ clarification: Clarification }> = observer(({ cla
   return (
     <form className="flex gap-2" onSubmit={onSubmit}>
       <textarea
-        className="p-2 border border-gray-200 rounded-lg w-full dark:bg-gray-800 dark:border-gray-700"
+        className="w-full rounded-lg border border-gray-200 p-2 dark:border-gray-700 dark:bg-gray-800"
         value={message}
         placeholder="Write a reply..."
         onChange={({ target: { value } }) => setMessage(value)}
       />
       <button
         type="submit"
-        className="p-2 px-6 bg-blue-600 rounded-lg hover:bg-blue-400 dark:hover:bg-blue-900 disabled:opacity-50 disabled:cursor-default"
+        className="rounded-lg bg-blue-600 p-2 px-6 hover:bg-blue-400 disabled:cursor-default disabled:opacity-50 dark:hover:bg-blue-900"
         disabled={(!clarification.general && !clarification.problem) || !message}
       >
-        <PaperAirplaneIcon className="text-white h-8 w-8" />
+        <PaperAirplaneIcon className="h-8 w-8 text-white" />
       </button>
     </form>
   );

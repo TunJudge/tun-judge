@@ -13,7 +13,7 @@ const ChatBoxMessageList: React.FC<Props> = observer(({ clarification }) => {
   const { profile } = useStore<RootStore>('rootStore');
 
   return (
-    <div className="flex flex-col gap-1 p-3 h-full overflow-y-auto border border-gray-200 rounded-lg dark:border-gray-700">
+    <div className="flex h-full flex-col gap-1 overflow-y-auto rounded-lg border border-gray-200 p-3 dark:border-gray-700">
       {clarification.messages.map((message, index) => (
         <div key={index}>
           <div
@@ -23,7 +23,7 @@ const ChatBoxMessageList: React.FC<Props> = observer(({ clarification }) => {
             })}
           >
             <div
-              className={classNames('p-3 px-4 rounded-2xl max-w-max', {
+              className={classNames('max-w-max rounded-2xl p-3 px-4', {
                 'bg-gray-100 dark:bg-gray-900': compareRoles(profile!, message.sentBy),
                 'bg-gray-300 dark:bg-gray-700': !compareRoles(profile!, message.sentBy),
               })}

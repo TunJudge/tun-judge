@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 
 import { Language } from '@core/models';
 import { LanguagesStore, RootStore, useStore } from '@core/stores';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 import { CodeEditorDialog } from '@shared/dialogs';
 
@@ -31,7 +30,7 @@ const LanguagesList: React.FC = observer(() => {
       header: 'Build Script',
       field: 'buildScript',
       render: (language) => (
-        <div className="text-blue-700 cursor-pointer" onClick={() => setScriptData(language)}>
+        <div className="cursor-pointer text-blue-700" onClick={() => setScriptData(language)}>
           {language.buildScript.name}
         </div>
       ),

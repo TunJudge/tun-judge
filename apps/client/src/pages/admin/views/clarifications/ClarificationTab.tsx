@@ -19,10 +19,10 @@ const ClarificationTab: React.FC<Props> = ({ clarification, active, onClick }) =
   return (
     <div
       className={classNames(
-        'ml-5 p-2 shadow rounded-lg cursor-pointer border dark:border-gray-600 dark:hover:bg-gray-700 truncate',
+        'ml-5 cursor-pointer truncate rounded-lg border p-2 shadow dark:border-gray-600 dark:hover:bg-gray-700',
         {
           'bg-gray-200 dark:bg-gray-700': active,
-        }
+        },
       )}
       title={clarification.team?.name ?? 'Broadcast'}
       onClick={() => onClick(clarification)}
@@ -30,7 +30,7 @@ const ClarificationTab: React.FC<Props> = ({ clarification, active, onClick }) =
       <span className="text-gray-500">({clarification.id}) </span>
       {clarification.team?.name ?? 'Broadcast'}
       {unseenMessagesCount > 0 && (
-        <div className="text-sm text-white px-2 py-0.5 rounded-md bg-green-500 float-right">
+        <div className="float-right rounded-md bg-green-500 px-2 py-0.5 text-sm text-white">
           {unseenMessagesCount}
         </div>
       )}

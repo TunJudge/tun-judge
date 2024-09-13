@@ -4,7 +4,6 @@ import React from 'react';
 import { getDisplayDate } from '@core/helpers';
 import { User } from '@core/models';
 import { RootStore, UsersStore, useStore } from '@core/stores';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import UserForm from './UserForm';

@@ -1,0 +1,9 @@
+{
+  "name": "Float Checker",
+  "description": "Float Checker",
+  "default": false,
+  "dockerImage": "ghcr.io/tunjudge/lang/cpp:7.3.0",
+  "type": "CHECKER",
+  "sourceFile": "executables/float-checker/checker.cpp",
+  "buildScript": "executables/float-checker/build.sh"
+}

@@ -4,7 +4,7 @@ import { existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 
 import { Spinner, SubmissionHelper } from '../helpers';
-import { getOnLog, JudgeLogger } from '../logger';
+import { JudgeLogger, getOnLog } from '../logger';
 import { Executable, File, Judging } from '../models';
 import { DockerService, ExecResult, SocketService, SystemService } from '../services';
 
@@ -19,7 +19,7 @@ export class Compiler {
     private readonly dockerService: DockerService,
     private readonly socketService: SocketService,
     private readonly systemService: SystemService,
-    private readonly submissionHelper: SubmissionHelper
+    private readonly submissionHelper: SubmissionHelper,
   ) {
     this.logger = new JudgeLogger(Compiler.name, getOnLog(this.socketService));
   }
@@ -77,14 +77,14 @@ export class Compiler {
     // Executing the compile command inside the submission compile container
     const compileSubmissionResult = await this.dockerService.execCmdInDocker(
       submissionCompilerContainer,
-      this.submissionHelper.compileCmd()
+      this.submissionHelper.compileCmd(),
     );
 
     // Compile the guard code inside the language container to assure the compatibility with the linux kernel
     await this.dockerService.execCmdInDocker(
       submissionCompilerContainer,
       ['g++', '--std=c++11', '-pthread', '-o', 'guard', 'guard.cpp'],
-      this.submissionHelper.assetsDir()
+      this.submissionHelper.assetsDir(),
     );
 
     // Report the result of the submission file compilation
@@ -101,7 +101,7 @@ export class Compiler {
     // Check if we already built the check script or not to prevent the double work
     const checkerBinPath = this.submissionHelper.executableBinPath(
       checkScript.id,
-      checkScript.sourceFile
+      checkScript.sourceFile,
     );
     if (existsSync(checkerBinPath)) return undefined;
 
@@ -121,7 +121,7 @@ export class Compiler {
     // Make the checker build script executable
     await fs.chmod(
       this.submissionHelper.executableFilePath(checkScript.id, checkScript.buildScript),
-      '0775'
+      '0775',
     );
 
     // Copy the testlib.h to the compiling directory to support the Codeforces checkers
@@ -129,14 +129,14 @@ export class Compiler {
       this.submissionHelper.testLibPath,
       join(
         this.submissionHelper.executableFileDir(checkScript.id, checkScript.sourceFile),
-        'testlib.h'
-      )
+        'testlib.h',
+      ),
     );
 
     // Executing the compile command inside the checker compile container
     const compileCheckerResult = await this.dockerService.execCmdInDocker(
       checkerContainer,
-      this.submissionHelper.checkerCompileCmd()
+      this.submissionHelper.checkerCompileCmd(),
     );
 
     await this.dockerService.pruneContainer(checkerContainer);
@@ -148,7 +148,7 @@ export class Compiler {
 
   private async setJudgingCompileOutput(
     judging: Judging,
-    compileSubmissionResult: ExecResult
+    compileSubmissionResult: ExecResult,
   ): Promise<void> {
     const payload = Buffer.from(compileSubmissionResult.stdout.trim()).toString('base64');
     judging.compileOutput = {

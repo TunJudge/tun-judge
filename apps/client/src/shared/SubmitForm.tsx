@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { isEmpty } from '@core/helpers';
 import { Language, Problem, Submission } from '@core/models';
 import { LanguagesStore, PublicStore, useStore } from '@core/stores';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import DropDownInput from '@shared/form-controls/DropDownInput';
@@ -82,7 +81,7 @@ const SubmitForm: DataTableItemForm<Submission> = observer(
         />
       </FormModal>
     );
-  }
+  },
 );
 
 export default SubmitForm;

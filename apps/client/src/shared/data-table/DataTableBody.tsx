@@ -71,7 +71,7 @@ function DataTableBody<T extends { id: number | string }>({
             .sort((a, b) =>
               direction === 'ascending'
                 ? generalComparator()(a[column], b[column])
-                : generalComparator()(b[column], a[column])
+                : generalComparator()(b[column], a[column]),
             ),
         };
       }
@@ -100,7 +100,7 @@ function DataTableBody<T extends { id: number | string }>({
     <div className="flex overflow-auto rounded-md shadow">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
         <thead
-          className="sticky top-0 z-10 text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700"
+          className="sticky top-0 z-10 bg-gray-50 text-center text-gray-700 dark:bg-gray-700 dark:text-gray-300"
           test-id="data-table-header"
         >
           <tr className="divide-x dark:divide-gray-800">
@@ -140,7 +140,7 @@ function DataTableBody<T extends { id: number | string }>({
           </tr>
         </thead>
         <tbody
-          className="relative bg-white divide-y divide-y-200 dark:bg-gray-800 dark:divide-gray-700"
+          className="divide-y-200 relative divide-y bg-white dark:divide-gray-700 dark:bg-gray-800"
           test-id="data-table-body"
         >
           {loading && (
@@ -153,7 +153,7 @@ function DataTableBody<T extends { id: number | string }>({
           {sortState.data.length === 0 ? (
             <tr>
               <td className="px-6 py-4 text-center dark:bg-gray-800" colSpan={20}>
-                {loading ? <Spinner /> : emptyMessage ?? 'No data'}
+                {loading ? <Spinner /> : (emptyMessage ?? 'No data')}
               </td>
             </tr>
           ) : (
@@ -195,16 +195,16 @@ function DataTableBody<T extends { id: number | string }>({
                   ))}
                   {!withoutActions && (
                     <td>
-                      <div className="flex items-center justify-center h-full gap-2 px-4 py-1">
+                      <div className="flex h-full items-center justify-center gap-2 px-4 py-1">
                         {canEdit?.(item) && (
                           <EditIcon
-                            className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-900"
+                            className="h-9 w-9 cursor-pointer rounded-full bg-gray-100 p-2 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-900"
                             onClick={() => onEdit?.(item)}
                           />
                         )}
                         {(!canDelete || canDelete(item)) && (
                           <TrashIcon
-                            className="p-2 w-9 h-9 cursor-pointer rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-red-700 dark:hover:bg-gray-900"
+                            className="h-9 w-9 cursor-pointer rounded-full bg-gray-100 p-2 text-red-700 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-900"
                             onClick={() => onDelete?.(item.id as number)}
                           />
                         )}
@@ -218,7 +218,7 @@ function DataTableBody<T extends { id: number | string }>({
         </tbody>
         {pagination && (
           <tfoot
-            className="sticky bottom-0 z-10 border-t bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700"
+            className="sticky bottom-0 z-10 border-t bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
             test-id="data-table-footer"
           >
             {pagination}

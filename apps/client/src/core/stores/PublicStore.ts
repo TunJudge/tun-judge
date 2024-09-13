@@ -14,15 +14,15 @@ export class PublicStore {
     autorun(() => rootStore.updatesCount.contests && this.fetchContests());
     reaction(
       () => [this.currentContest, rootStore.updatesCount.scoreboard],
-      () => this.currentContest && this.fetchScoreCaches(this.currentContest.id)
+      () => this.currentContest && this.fetchScoreCaches(this.currentContest.id),
     );
     reaction(
       () => [this.currentContest, rootStore.connected],
-      () => this.currentContest && this.fetchProblems(this.currentContest.id)
+      () => this.currentContest && this.fetchProblems(this.currentContest.id),
     );
     reaction(
       () => rootStore.connected,
-      () => this.currentContest && this.fetchScoreCaches(this.currentContest.id)
+      () => this.currentContest && this.fetchScoreCaches(this.currentContest.id),
     );
   }
 
@@ -41,7 +41,7 @@ export class PublicStore {
   @action
   fetchProblems = async (contestId: number): Promise<ContestProblem[]> => {
     return (this.problems = await http.get<ContestProblem[]>(
-      `api/public/contest/${contestId}/problems`
+      `api/public/contest/${contestId}/problems`,
     ));
   };
 
@@ -62,7 +62,7 @@ export class PublicStore {
   get totalSubmissions(): number {
     return this.scoreCaches.reduce<number>(
       (acc, scoreCache) => acc + scoreCache.restrictedSubmissions + scoreCache.restrictedPending,
-      0
+      0,
     );
   }
 

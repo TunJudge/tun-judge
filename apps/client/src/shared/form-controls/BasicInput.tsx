@@ -92,17 +92,17 @@ const BasicInput: React.FC<FullInputProps> = ({
       <div
         className={classNames('relative', {
           'mt-1': !!label,
-          'flex items-center h-8': type === 'checkbox',
+          'flex h-8 items-center': type === 'checkbox',
         })}
       >
         {textarea ? (
           <textarea
             className={classNames(
-              '-mb-2 w-full border border-gray-300 rounded-md shadow-sm dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400',
+              '-mb-2 w-full rounded-md border border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',
               {
                 'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
                   touched && hasErrors,
-              }
+              },
             )}
             test-id={testId}
             required={required}
@@ -116,7 +116,7 @@ const BasicInput: React.FC<FullInputProps> = ({
           />
         ) : type === 'checkbox' ? (
           <input
-            className="h-5 w-5 text-blue-600 border-gray-300 rounded"
+            className="h-5 w-5 rounded border-gray-300 text-blue-600"
             type="checkbox"
             test-id={testId}
             required={required}
@@ -128,11 +128,11 @@ const BasicInput: React.FC<FullInputProps> = ({
         ) : (
           <input
             className={classNames(
-              'h-11 w-full border border-gray-300 rounded-md shadow-sm dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400',
+              'h-11 w-full rounded-md border border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',
               {
                 'border-red-600 placeholder-red-900 opacity-70 dark:border-red-500 dark:placeholder-red-500':
                   touched && hasErrors,
-              }
+              },
             )}
             test-id={testId}
             required={required}
@@ -162,9 +162,9 @@ const BasicInput: React.FC<FullInputProps> = ({
           </div>
         )}
         {type !== 'checkbox' && (
-          <div className="absolute inset-y-0 right-0 flex items-center px-3 gap-x-1">
+          <div className="absolute inset-y-0 right-0 flex items-center gap-x-1 px-3">
             {touched && hasErrors && (
-              <ExclamationCircleIcon className="text-red-600 dark:text-red-500 h-6 w-6" />
+              <ExclamationCircleIcon className="h-6 w-6 text-red-600 dark:text-red-500" />
             )}
             {ExtraIcon && <ExtraIcon className="h-6 w-6 text-gray-400" />}
           </div>

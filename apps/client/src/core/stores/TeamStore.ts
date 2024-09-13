@@ -12,7 +12,7 @@ export class TeamStore {
   sendSubmission = async (
     contestId: number,
     teamId: number,
-    submission: Submission
+    submission: Submission,
   ): Promise<void> => {
     await http.post(`api/contests/${contestId}/team/${teamId}/submit`, submission);
   };

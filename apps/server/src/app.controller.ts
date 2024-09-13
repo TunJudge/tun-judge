@@ -1,17 +1,19 @@
 import { Controller, Get, Session, UseGuards } from '@nestjs/common';
 import { ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
-import { LogClass } from './core/log.decorator';
-import { User } from './entities';
-import { UsersService } from './features/users/users.service';
+import { User } from '@prisma/client';
+
+import { PrismaService } from './db';
 import { AuthenticatedGuard } from './guards';
+import { LogClass } from './logger';
+import { cleanUser } from './utils';
 
 @LogClass
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @Controller()
 @UseGuards(AuthenticatedGuard)
 export class AppController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   @ApiOkResponse({ description: 'Returns the logged in user' })
   @Get('current')
@@ -21,10 +23,8 @@ export class AppController {
       passport: {
         user: { id },
       },
-    }
+    },
   ): Promise<User> {
-    const user = await this.usersService.getById(id, ['team']);
-    delete user.password;
-    return user;
+    return cleanUser(await this.prisma.user.findUnique({ where: { id }, include: { team: true } }));
   }
 }

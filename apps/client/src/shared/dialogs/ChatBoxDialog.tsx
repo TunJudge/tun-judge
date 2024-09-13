@@ -14,5 +14,5 @@ export const ChatBoxDialog: DataTableItemForm<Clarification> = observer(
         <ChatBox item={item} isOpen={isOpen} onClose={onClose} onSubmit={onSubmit} />
       </SimpleDialog>
     );
-  }
+  },
 );

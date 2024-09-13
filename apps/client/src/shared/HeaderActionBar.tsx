@@ -17,7 +17,7 @@ type Props = {
 const HeaderActionBar: React.FC<Props> = ({ header, actions }) => {
   return (
     <div
-      className="flex items-center shadow rounded-md w-full justify-between px-4 py-2 bg-white dark:bg-gray-800"
+      className="flex w-full items-center justify-between rounded-md bg-white px-4 py-2 shadow dark:bg-gray-800"
       test-id="data-table-action-bar"
     >
       <div className="text-xl font-medium">{header}</div>
@@ -27,13 +27,13 @@ const HeaderActionBar: React.FC<Props> = ({ header, actions }) => {
             visible && (
               <Tooltip key={label} content={label}>
                 <div
-                  className="hover:bg-gray-200 rounded-md p-2 cursor-pointer dark:hover:bg-gray-700"
+                  className="cursor-pointer rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
                   onClick={onClick}
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="h-6 w-6" />
                 </div>
               </Tooltip>
-            )
+            ),
         )}
       </div>
     </div>

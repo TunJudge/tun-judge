@@ -13,7 +13,6 @@ import React from 'react';
 import { getDisplayDate } from '@core/helpers';
 import { Contest } from '@core/models';
 import { ContestsStore, PublicStore, useStore } from '@core/stores';
-
 import { NoActiveContest } from '@shared/NoActiveContest';
 
 const Dashboard: React.FC = observer(() => {
@@ -89,56 +88,56 @@ const Dashboard: React.FC = observer(() => {
   return !currentContest ? (
     <NoActiveContest />
   ) : (
-    <div className="p-4 xl:container mx-auto space-y-4 dark:text-white overflow-auto">
-      <div className="flex items-center justify-center p-2 bg-white rounded-md shadow dark:bg-gray-800">
+    <div className="mx-auto space-y-4 overflow-auto p-4 xl:container dark:text-white">
+      <div className="flex items-center justify-center rounded-md bg-white p-2 shadow dark:bg-gray-800">
         <div className="text-4xl font-medium">
           {currentContest ? currentContest.name : 'No Active Contest'}
         </div>
       </div>
-      <div className="divide-y rounded-md bg-white shadow dark:bg-gray-800 dark:divide-gray-700">
+      <div className="divide-y rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
         <div className="flex items-center justify-center p-2">
           <div className="text-2xl">Submissions Statistics</div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 text-center">
+        <div className="grid grid-cols-2 text-center sm:grid-cols-4">
           <div className="flex flex-col space-y-1 py-4">
             <div className="text-6xl font-medium">{totalSubmissions}</div>
-            <div className="text-md uppercase font-medium">Total</div>
+            <div className="text-md font-medium uppercase">Total</div>
           </div>
           <div className="flex flex-col space-y-1 py-4">
             <div className="text-6xl font-medium text-yellow-600">{totalPendingSubmissions}</div>
-            <div className="text-md uppercase font-medium">Pending</div>
+            <div className="text-md font-medium uppercase">Pending</div>
           </div>
           <div className="flex flex-col space-y-1 py-4">
             <div className="text-6xl font-medium text-red-600">{totalWrongSubmissions}</div>
-            <div className="text-md uppercase font-medium">Wrong</div>
+            <div className="text-md font-medium uppercase">Wrong</div>
           </div>
           <div className="flex flex-col space-y-1 py-4">
             <div className="text-6xl font-medium text-green-600">{totalCorrectSubmissions}</div>
-            <div className="text-md uppercase font-medium">Correct</div>
+            <div className="text-md font-medium uppercase">Correct</div>
           </div>
         </div>
       </div>
-      <div className="divide-y rounded-md bg-white shadow dark:bg-gray-800 dark:divide-gray-700 overflow-hidden">
+      <div className="divide-y overflow-hidden rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
         <div className="flex items-center justify-center p-2">
           <div className="text-2xl">Control Contest</div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-5 text-center divide-x dark:divide-gray-700">
+        <div className="grid grid-cols-2 divide-x text-center sm:grid-cols-5 dark:divide-gray-700">
           {controlActions.map(({ Icon, action, time, onClick, disabled, completed }, index) => (
             <div
               key={index}
-              className={classNames('flex items-center sm:col-auto select-none p-4', {
+              className={classNames('flex select-none items-center p-4 sm:col-auto', {
                 'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700': !disabled,
-                'text-gray-400 bg-gray-50 dark:bg-gray-600': disabled,
+                'bg-gray-50 text-gray-400 dark:bg-gray-600': disabled,
                 'col-span-2': index === controlActions.length - 1,
               })}
               onClick={disabled || completed ? undefined : onClick(currentContest)}
             >
               {completed ? (
-                <CheckCircleIcon className="h-16 w-16 ml-4 mr-2 text-green-600" />
+                <CheckCircleIcon className="ml-4 mr-2 h-16 w-16 text-green-600" />
               ) : (
-                <Icon className="h-16 w-16 ml-4 mr-2" />
+                <Icon className="ml-4 mr-2 h-16 w-16" />
               )}
-              <div className="flex flex-col space-y-1 w-full">
+              <div className="flex w-full flex-col space-y-1">
                 <div className="text-lg font-medium">{action}</div>
                 <div>{getDisplayDate(time(currentContest))}</div>
               </div>

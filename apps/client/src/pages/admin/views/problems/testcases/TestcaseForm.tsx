@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 
 import { isEmpty } from '@core/helpers';
 import { File, Testcase } from '@core/models';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import FileInput from '@shared/form-controls/FileInput';
@@ -29,7 +28,7 @@ const TestcaseForm: DataTableItemForm<Testcase> = observer(
         onSubmit={() => onSubmit(testcase)}
         submitDisabled={Object.values(errors).some((e) => e)}
       >
-        <div className="grid sm:grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <FileInput<Testcase>
             entity={testcase}
             field="input"
@@ -47,7 +46,7 @@ const TestcaseForm: DataTableItemForm<Testcase> = observer(
             readOnly
           />
         </div>
-        <div className="grid sm:grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <FileInput<Testcase>
             entity={testcase}
             field="output"
@@ -68,7 +67,7 @@ const TestcaseForm: DataTableItemForm<Testcase> = observer(
         <TextInput<Testcase> entity={testcase} field="description" label="Description" />
       </FormModal>
     );
-  }
+  },
 );
 
 export default TestcaseForm;

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Participants",
+    "color": "#ffffff",
+    "visible": true,
+    "rank": 0
+  },
+  {
+    "name": "Juries",
+    "color": "#ffa500",
+    "visible": false,
+    "rank": 1
+  }
+]

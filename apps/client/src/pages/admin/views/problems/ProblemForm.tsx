@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { isEmpty } from '@core/helpers';
 import { Executable, Problem } from '@core/models';
 import { ExecutablesStore, useStore } from '@core/stores';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import DropDownInput from '@shared/form-controls/DropDownInput';
@@ -57,7 +56,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
         onSubmit={() => onSubmit(problem)}
         submitDisabled={Object.values(errors).some((e) => e)}
       >
-        <div className="grid sm:grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <TextInput<Problem>
             entity={problem}
             field="name"
@@ -76,7 +75,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="grid sm:grid-cols-3 gap-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           <NumberInput<Problem>
             entity={problem}
             field="timeLimit"
@@ -111,7 +110,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="grid sm:grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <DropDownInput<Problem, Executable>
             entity={problem}
             field="runScript"
@@ -137,7 +136,7 @@ const ProblemForm: DataTableItemForm<Problem> = observer(
         </div>
       </FormModal>
     );
-  }
+  },
 );
 
 export default ProblemForm;

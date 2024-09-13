@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Demo Team",
+    "enabled": true,
+    "penalty": 0,
+    "comments": "This is an awesome team!",
+    "room": "Big hall",
+    "category": "Participants",
+    "users": ["team"]
+  }
+]

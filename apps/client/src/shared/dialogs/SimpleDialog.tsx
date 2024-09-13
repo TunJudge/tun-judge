@@ -59,7 +59,7 @@ export const SimpleDialog: React.FC<React.PropsWithChildren<Props>> = ({
           >
             <div
               className={classNames(
-                'inline-grid w-full p-6 my-8 gap-y-4 text-left align-middle transition-all transform bg-white shadow-xl rounded-xl dark:bg-gray-800',
+                'my-8 inline-grid w-full transform gap-y-4 rounded-xl bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-gray-800',
                 {
                   'max-w-xs': size === 'xs',
                   'max-w-sm': size === 'sm',
@@ -73,11 +73,11 @@ export const SimpleDialog: React.FC<React.PropsWithChildren<Props>> = ({
                   'max-w-6xl': size === '6xl',
                   'max-w-7xl': size === '7xl',
                   'max-w-full': size === 'full',
-                }
+                },
               )}
             >
               {title && (
-                <div className="text-xl py-1 font-medium leading-6 text-gray-900 dark:text-gray-100">
+                <div className="py-1 text-xl font-medium leading-6 text-gray-900 dark:text-gray-100">
                   {title}
                 </div>
               )}
@@ -86,7 +86,7 @@ export const SimpleDialog: React.FC<React.PropsWithChildren<Props>> = ({
                 <div className="flex justify-end">
                   <button
                     type="button"
-                    className="px-4 py-2 text-sm font-medium text-red-900 bg-red-100 border border-transparent rounded-md hover:bg-red-200"
+                    className="rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200"
                     onClick={onClose}
                   >
                     Close

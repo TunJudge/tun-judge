@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import Docker, { Container, ContainerCreateOptions } from 'dockerode';
 
 import { SubmissionHelper } from '../helpers';
-import { getOnLog, JudgeLogger } from '../logger';
+import { JudgeLogger, getOnLog } from '../logger';
 import { SocketService } from './socket.service';
 
 export type ExecResult = {
@@ -18,12 +18,9 @@ export class DockerService {
 
   constructor(
     private readonly socketService: SocketService,
-    private readonly submissionHelper: SubmissionHelper
+    private readonly submissionHelper: SubmissionHelper,
   ) {
-    this.logger = new JudgeLogger(
-      DockerService.name,
-      getOnLog(this.socketService)
-    );
+    this.logger = new JudgeLogger(DockerService.name, getOnLog(this.socketService));
     this.connection = new Docker({ socketPath: '/var/run/docker.sock' });
   }
 
@@ -40,8 +37,7 @@ export class DockerService {
           this.connection.modem.followProgress(
             stream,
             (error: Error | null) => (error ? reject(error) : resolve()),
-            ({ status }: { status: string }) =>
-              this.logger.debug(`${tag}: ${status}`)
+            ({ status }: { status: string }) => this.logger.debug(`${tag}: ${status}`),
           );
         });
       });
@@ -67,7 +63,7 @@ export class DockerService {
   async execCmdInDocker(
     container: Container,
     cmd: string[],
-    workDir?: string
+    workDir?: string,
   ): Promise<ExecResult> {
     const result: ExecResult = {
       exitCode: 0,
@@ -90,7 +86,7 @@ export class DockerService {
         resolve({
           ...result,
           exitCode: (await exec.inspect()).ExitCode ?? 1,
-        })
+        }),
       );
     });
   }

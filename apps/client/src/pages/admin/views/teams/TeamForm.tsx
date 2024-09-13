@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { isEmpty } from '@core/helpers';
 import { Contest, Team, TeamCategory, User } from '@core/models';
 import { ContestsStore, TeamCategoriesStore, UsersStore, useStore } from '@core/stores';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
@@ -42,7 +41,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
       onSubmit={() => onSubmit(team)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
-      <div className="grid sm:grid-cols-2 gap-2">
+      <div className="grid gap-2 sm:grid-cols-2">
         <TextInput<Team>
           entity={team}
           field="name"
@@ -71,7 +70,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
         required
         options={users.filter(
           (user) =>
-            !user.team || team.users?.some((t) => t.id === user.id) || user.team.id === team.id
+            !user.team || team.users?.some((t) => t.id === user.id) || user.team.id === team.id,
         )}
         optionsTextField="name"
         errors={errors}
@@ -81,7 +80,7 @@ const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClos
           if (user) user.team = undefined;
         }}
       />
-      <div className="grid sm:grid-cols-2 gap-2">
+      <div className="grid gap-2 sm:grid-cols-2">
         <NumberInput<Team> entity={team} field="penalty" label="Penalty Time" defaultValue={0} />
         <TextInput<Team> entity={team} field="room" label="Room" />
       </div>

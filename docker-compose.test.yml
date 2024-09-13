@@ -14,7 +14,7 @@ services:
       SESSION_SECRET: secret
       REDIS_URL: 'redis://redis:6379'
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - db
       - redis

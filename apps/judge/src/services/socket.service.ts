@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { io, Socket } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 
 import config from '../config';
 import http from '../http/http.client';

@@ -12,11 +12,11 @@ code {
 }
 
 ::-webkit-scrollbar {
-  @apply rounded-lg h-4 w-4 bg-gray-200 dark:bg-gray-900;
+  @apply h-4 w-4 rounded-lg bg-gray-200 dark:bg-gray-900;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply border-4 border-solid rounded-lg bg-gray-400 border-gray-200 hover:bg-gray-500 dark:border-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600;
+  @apply rounded-lg border-4 border-solid border-gray-200 bg-gray-400 hover:bg-gray-500 dark:border-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600;
 }
 
 /* Chrome, Safari, Edge, Opera */

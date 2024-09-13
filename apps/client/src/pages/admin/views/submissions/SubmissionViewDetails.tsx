@@ -4,7 +4,6 @@ import React from 'react';
 import { dateComparator, formatBytes, formatRestTime } from '@core/helpers';
 import { Judging, Submission } from '@core/models';
 import { resultMap } from '@core/types';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 const SubmissionViewDetails: React.FC<{
@@ -54,7 +53,7 @@ const SubmissionViewDetails: React.FC<{
       textAlign: 'center',
       render: (judging) =>
         `${Math.floor(
-          judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runTime), 0) * 1000
+          judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runTime), 0) * 1000,
         )} ms`,
     },
     {
@@ -63,7 +62,7 @@ const SubmissionViewDetails: React.FC<{
       textAlign: 'center',
       render: (judging) =>
         formatBytes(
-          judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runMemory), 0) * 1024
+          judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runMemory), 0) * 1024,
         ),
     },
     {
@@ -74,7 +73,7 @@ const SubmissionViewDetails: React.FC<{
         formatRestTime(
           (new Date(submission.submitTime).getTime() -
             new Date(submission.contest.startTime).getTime()) /
-            1000
+            1000,
         ),
     },
     {
@@ -85,7 +84,7 @@ const SubmissionViewDetails: React.FC<{
         formatRestTime(
           (new Date(judging.startTime).getTime() -
             new Date(submission.contest.startTime).getTime()) /
-            1000
+            1000,
         ),
     },
   ];
@@ -98,7 +97,7 @@ const SubmissionViewDetails: React.FC<{
             submission.judgings
               .slice()
               .filter((j) => j.valid)
-              .sort(dateComparator<Judging>('startTime', true))
+              .sort(dateComparator<Judging>('startTime', true)),
           )
         }
         dataDependencies={[submission]}

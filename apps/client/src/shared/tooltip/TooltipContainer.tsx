@@ -25,14 +25,14 @@ const TooltipContainer: React.FC = observer(() => {
         >
           <div
             className={classNames(
-              'absolute text-base font-normal z-50',
+              'absolute z-50 text-base font-normal',
               {
-                'transform -translate-x-1/2 left-1/2 bottom-full': tooltip.position === 'top',
-                'transform -translate-y-1/2 top-1/2 right-full': tooltip.position === 'left',
-                'transform -translate-x-1/2 left-1/2 top-full': tooltip.position === 'bottom',
-                'transform -translate-y-1/2 top-1/2 left-full': tooltip.position === 'right',
+                'bottom-full left-1/2 -translate-x-1/2 transform': tooltip.position === 'top',
+                'right-full top-1/2 -translate-y-1/2 transform': tooltip.position === 'left',
+                'left-1/2 top-full -translate-x-1/2 transform': tooltip.position === 'bottom',
+                'left-full top-1/2 -translate-y-1/2 transform': tooltip.position === 'right',
               },
-              tooltip.className
+              tooltip.className,
             )}
           >
             <div
@@ -44,11 +44,11 @@ const TooltipContainer: React.FC = observer(() => {
               })}
             >
               <svg
-                className={classNames('transform h-4 w-4 z-10 text-white dark:text-gray-900', {
-                  '-rotate-90 -mt-px': tooltip.position === 'top',
-                  'rotate-180 -ml-px': tooltip.position === 'left',
-                  'rotate-90 -mb-px': tooltip.position === 'bottom',
-                  'rotate-0 -mr-px': tooltip.position === 'right',
+                className={classNames('z-10 h-4 w-4 transform text-white dark:text-gray-900', {
+                  '-mt-px -rotate-90': tooltip.position === 'top',
+                  '-ml-px rotate-180': tooltip.position === 'left',
+                  '-mb-px rotate-90': tooltip.position === 'bottom',
+                  '-mr-px rotate-0': tooltip.position === 'right',
                 })}
                 viewBox="0 0 100 100"
                 stroke={appLocalCache.darkMode ? '#374151' : '#E5E7EB'}
@@ -61,7 +61,7 @@ const TooltipContainer: React.FC = observer(() => {
                   fill="currentColor"
                 />
               </svg>
-              <div className="min-w-max px-4 py-2 border shadow rounded-md bg-white dark:bg-gray-900 dark:border-gray-700 dark:text-white">
+              <div className="min-w-max rounded-md border bg-white px-4 py-2 shadow dark:border-gray-700 dark:bg-gray-900 dark:text-white">
                 {tooltip.content}
               </div>
             </div>

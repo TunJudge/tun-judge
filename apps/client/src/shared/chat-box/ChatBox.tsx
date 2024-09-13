@@ -32,9 +32,9 @@ const ChatBox: DataTableItemForm<Clarification> = observer(({ item: clarificatio
             return true;
           }
           return false;
-        })
+        }),
       ).then<any>(
-        (res) => res.some(Boolean) && isUserJury && fetchAllForContest(currentContest.id)
+        (res) => res.some(Boolean) && isUserJury && fetchAllForContest(currentContest.id),
       );
     }
   }, [
@@ -48,7 +48,7 @@ const ChatBox: DataTableItemForm<Clarification> = observer(({ item: clarificatio
   ]);
 
   return (
-    <div className="flex flex-col h-full gap-y-3 dark:text-white">
+    <div className="flex h-full flex-col gap-y-3 dark:text-white">
       <ChatBoxHeader clarification={item} />
       <ChatBoxMessageList clarification={item} />
       {(item.team || isUserJury) && <ChatBoxInput clarification={item} />}

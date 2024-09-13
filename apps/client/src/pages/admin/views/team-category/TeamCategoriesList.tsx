@@ -6,7 +6,6 @@ import React from 'react';
 import { getRGBColorContrast } from '@core/helpers';
 import { TeamCategory } from '@core/models';
 import { RootStore, TeamCategoriesStore, useStore } from '@core/stores';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import TeamCategoryForm from './TeamCategoryForm';
@@ -36,7 +35,7 @@ const TeamCategoriesList: React.FC = observer(() => {
         <div className="flex items-center justify-center gap-1">
           {isUserAdmin && (
             <ChevronDownIcon
-              className={classNames('cursor-pointer h-4 w-4', {
+              className={classNames('h-4 w-4 cursor-pointer', {
                 'opacity-0': category.sortOrder + 1 >= teamCategories.length,
               })}
               onClick={() => move(category.id, 'down')}
@@ -45,7 +44,7 @@ const TeamCategoriesList: React.FC = observer(() => {
           {category.sortOrder}
           {isUserAdmin && (
             <ChevronUpIcon
-              className={classNames('cursor-pointer h-4 w-4', {
+              className={classNames('h-4 w-4 cursor-pointer', {
                 'opacity-0': category.sortOrder === 0,
               })}
               onClick={() => (category.sortOrder > 0 ? move(category.id, 'up') : undefined)}
@@ -60,7 +59,7 @@ const TeamCategoriesList: React.FC = observer(() => {
       textAlign: 'center',
       render: (category) => (
         <div
-          className={classNames('px-2 rounded-md', {
+          className={classNames('rounded-md px-2', {
             'text-white': getRGBColorContrast(category.color) <= 0.5,
             'text-black': getRGBColorContrast(category.color) > 0.5,
           })}

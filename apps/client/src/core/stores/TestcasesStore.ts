@@ -16,7 +16,7 @@ export class TestcasesStore {
         this.problemId && this.fetchAll();
         !this.problemId && (this.data = []);
       },
-      { delay: 10 }
+      { delay: 10 },
     );
   }
 

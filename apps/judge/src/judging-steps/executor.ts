@@ -3,8 +3,8 @@ import { MD5 } from 'crypto-js';
 import { chmodSync, existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 
-import { getResult, GuardOutput, Spinner, SubmissionHelper } from '../helpers';
-import { getOnLog, JudgeLogger } from '../logger';
+import { GuardOutput, Spinner, SubmissionHelper, getResult } from '../helpers';
+import { JudgeLogger, getOnLog } from '../logger';
 import { File, Judging, JudgingRun, JudgingRunResult, Testcase } from '../models';
 import { DockerService, SocketService, SystemService } from '../services';
 
@@ -20,7 +20,7 @@ export class Executor {
     private readonly dockerService: DockerService,
     private readonly socketService: SocketService,
     private readonly systemService: SystemService,
-    private readonly submissionHelper: SubmissionHelper
+    private readonly submissionHelper: SubmissionHelper,
   ) {
     this.logger = new JudgeLogger(Executor.name, getOnLog(this.socketService));
   }
@@ -58,7 +58,7 @@ export class Executor {
       // Executing the run command inside the runner container
       await this.dockerService.execCmdInDocker(
         runnerContainer,
-        this.submissionHelper.runCmd(testcase)
+        this.submissionHelper.runCmd(testcase),
       );
 
       // Read the guard result that contains the used time/memory and the exit code
@@ -83,7 +83,7 @@ export class Executor {
       // Executing the checking command inside the checker container
       const checkingResult = await this.dockerService.execCmdInDocker(
         checkerContainer,
-        this.submissionHelper.checkerRunCmd(testcase)
+        this.submissionHelper.checkerRunCmd(testcase),
       );
 
       spinner.stop();
@@ -108,9 +108,9 @@ export class Executor {
         ['test.out', 'test.err', 'checker.out', 'guard.json'].map((file) =>
           fs.rename(
             this.submissionHelper.extraFilesPath(file),
-            join(this.submissionHelper.runTestcaseDir(testcase.rank), file)
-          )
-        )
+            join(this.submissionHelper.runTestcaseDir(testcase.rank), file),
+          ),
+        ),
       );
     }
 
@@ -126,7 +126,7 @@ export class Executor {
     judging: Judging,
     testcase: Testcase,
     guardOutput: GuardOutput,
-    result: JudgingRunResult
+    result: JudgingRunResult,
   ): Promise<void> {
     const judgingRun: Partial<JudgingRun> = {
       result: result,

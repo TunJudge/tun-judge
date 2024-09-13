@@ -28,20 +28,20 @@ const ToastContainer: React.FC = observer(() => {
   const { toasts } = useStore<RootStore>('rootStore').toastsStore;
 
   return (
-    <div className="fixed bottom-8 right-8 z-50 w-80 flex flex-col gap-2">
+    <div className="fixed bottom-8 right-8 z-50 flex w-80 flex-col gap-2">
       {toasts.map(({ type, message, testId }, index) => {
         const Icon = icons[type];
         return (
           <div
             key={index}
             className={classNames(
-              `grid grid-cols-6 gap-x-4 rounded-xl border shadow-lg bg-white p-4 dark:bg-gray-800 dark:text-white`,
+              `grid grid-cols-6 gap-x-4 rounded-xl border bg-white p-4 shadow-lg dark:bg-gray-800 dark:text-white`,
               {
                 'border-gray-500': colors[type] === 'gray',
                 'border-green-500': colors[type] === 'green',
                 'border-yellow-500': colors[type] === 'yellow',
                 'border-red-500': colors[type] === 'red',
-              }
+              },
             )}
             test-id={testId}
           >

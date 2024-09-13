@@ -34,11 +34,11 @@ export class ClarificationsStore {
   @action
   sendClarification = async (
     contestId: number,
-    clarification: Clarification
+    clarification: Clarification,
   ): Promise<Clarification> => {
     return (this.item = await http.post<Clarification>(
       `api/contests/${contestId}/clarifications`,
-      clarification
+      clarification,
     ));
   };
 
@@ -46,10 +46,10 @@ export class ClarificationsStore {
   setClarificationMessageAsSeen = async (
     contestId: number,
     clarificationId: number,
-    messageId: number
+    messageId: number,
   ): Promise<void> => {
     await http.patch<Clarification>(
-      `api/contests/${contestId}/clarifications/${clarificationId}/message/${messageId}/set-as-seen`
+      `api/contests/${contestId}/clarifications/${clarificationId}/message/${messageId}/set-as-seen`,
     );
   };
 }

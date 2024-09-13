@@ -54,7 +54,6 @@ model User {
   name          String
   username      String                 @unique()
   /// @password
-  /// @omit
   password      String
   email         String?
   lastLogin     DateTime?
@@ -183,8 +182,8 @@ model File {
   md5Sum                      String
   kind                        FileKind    @default(FILE)
   createdAt                   DateTime    @default(now())
-  createdById                 Int
-  createdBy                   User        @relation(fields: [createdById], references: [id])
+  createdById                 Int?
+  createdBy                   User?       @relation(fields: [createdById], references: [id])
   parentDirectoryName         String?
   parentDirectory             File?       @relation("FileParentDirectory", fields: [parentDirectoryName], references: [name])
   children                    File[]      @relation("FileParentDirectory")
@@ -210,8 +209,8 @@ model Executable {
   type                ExecutableType
   sourceFileName      String         @unique()
   sourceFile          File           @relation("ExecutableSourceFile", fields: [sourceFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
-  buildScriptName     String         @unique()
-  buildScript         File           @relation("ExecutableBuildScript", fields: [buildScriptName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  buildScriptName     String?        @unique()
+  buildScript         File?          @relation("ExecutableBuildScript", fields: [buildScriptName], references: [name], onDelete: Restrict, onUpdate: Restrict)
   problemsRunScript   Problem[]      @relation("ProblemRunScript")
   problemsCheckScript Problem[]      @relation("ProblemCheckScript")
 }

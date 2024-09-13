@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 import { isEmpty } from '@core/helpers';
 import { Language } from '@core/models';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
@@ -36,7 +35,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
       onSubmit={() => onSubmit(language)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
-      <div className="grid sm:grid-cols-3 gap-2">
+      <div className="grid gap-2 sm:grid-cols-3">
         <TextInput<Language>
           entity={language}
           field="name"
@@ -76,7 +75,7 @@ const LanguageForm: DataTableItemForm<Language> = ({
         errors={errors}
         setErrors={setErrors}
       />
-      <div className="grid sm:grid-cols-2 gap-2">
+      <div className="grid gap-2 sm:grid-cols-2">
         <CheckBoxInput<Language>
           entity={language}
           field="allowJudge"

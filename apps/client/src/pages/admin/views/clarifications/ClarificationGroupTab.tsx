@@ -28,25 +28,25 @@ const ClarificationGroupTab: React.FC<Props> = ({
 
   const unseenMessagesCount = clarifications.reduce(
     (prev, curr) => prev + countUnseenMessages(curr, profile!),
-    0
+    0,
   );
 
   return (
     <div className="flex flex-col gap-3">
       <div
-        className="flex justify-between cursor-pointer"
+        className="flex cursor-pointer justify-between"
         onClick={() => onTabClick(problem?.problem.id ?? 'general')}
       >
         <div className="flex items-center gap-2">
           {open ? (
-            <ChevronDownIcon className="w-4 h-4" />
+            <ChevronDownIcon className="h-4 w-4" />
           ) : (
-            <ChevronRightIcon className="w-4 h-4" />
+            <ChevronRightIcon className="h-4 w-4" />
           )}
           {problem ? `${problem.shortName} - ${problem.problem.name}` : 'General'}
         </div>
         {unseenMessagesCount > 0 && (
-          <div className="text-sm text-white px-2 py-0.5 rounded-md bg-purple-500 float-right">
+          <div className="float-right rounded-md bg-purple-500 px-2 py-0.5 text-sm text-white">
             {unseenMessagesCount}
           </div>
         )}

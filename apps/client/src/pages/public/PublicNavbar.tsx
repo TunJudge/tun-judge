@@ -22,7 +22,7 @@ const PublicNavbar: React.FC = observer(() => {
   return (
     <NavBar
       logo={
-        <div className="text-white text-lg cursor-pointer" onClick={() => onLinkClick('')}>
+        <div className="cursor-pointer text-lg text-white" onClick={() => onLinkClick('')}>
           TunJudge
         </div>
       }

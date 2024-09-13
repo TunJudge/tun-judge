@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom';
 
 import { Problem } from '@core/models';
 import { ProblemsStore, RootStore, useStore } from '@core/stores';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import ProblemForm from './ProblemForm';

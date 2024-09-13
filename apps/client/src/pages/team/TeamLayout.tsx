@@ -4,7 +4,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { updateLeftTimeToContest } from '@core/helpers';
 import { LanguagesStore, PublicStore, useStore } from '@core/stores';
-
 import ContestCountdown from '@shared/ContestCountdown';
 import { NoActiveContest } from '@shared/NoActiveContest';
 import ProblemSet from '@shared/ProblemSet';
@@ -26,7 +25,7 @@ const TeamLayout: React.FC = observer(() => {
   updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <TeamNavbar />
       <div className="h-full">
         {!currentContest ? (

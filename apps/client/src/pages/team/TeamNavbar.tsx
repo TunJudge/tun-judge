@@ -7,7 +7,6 @@ import { useHistory } from 'react-router-dom';
 import { contestStartedAndNotOver } from '@core/helpers';
 import { Submission } from '@core/models';
 import { PublicStore, RootStore, TeamStore, useStore } from '@core/stores';
-
 import ActiveContestSelector from '@shared/ActiveContestSelector';
 import { DarkModeSwitcher } from '@shared/DarkModeSwitcher';
 import NavBar from '@shared/NavBar';
@@ -36,7 +35,7 @@ const TeamNavbar: React.FC = observer(() => {
       <NavBar
         logo={
           <div
-            className="text-white text-xl font-medium cursor-pointer"
+            className="cursor-pointer text-xl font-medium text-white"
             onClick={() => onLinkClick('')}
           >
             TunJudge
@@ -65,7 +64,7 @@ const TeamNavbar: React.FC = observer(() => {
                 {
                   content: (
                     <div className="flex items-center gap-2">
-                      <UploadIcon className="w-5 h-5" />
+                      <UploadIcon className="h-5 w-5" />
                       Submit
                     </div>
                   ),
@@ -81,16 +80,16 @@ const TeamNavbar: React.FC = observer(() => {
               <Menu as="div" className="relative">
                 <Menu.Button
                   as="div"
-                  className="flex items-center justify-center gap-1 rounded-md cursor-pointer hover:bg-gray-700"
+                  className="flex cursor-pointer items-center justify-center gap-1 rounded-md hover:bg-gray-700"
                   test-id="navbar-user"
                 >
                   <UserIcon className="h-4 w-4" />
                   {profile?.name ?? '-'}
                 </Menu.Button>
-                <Menu.Items className="absolute transform text-black -translate-x-1/2 left-1/2 w-36 mt-4 p-2 gap-2 border bg-white rounded-md shadow-lg outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-white">
+                <Menu.Items className="absolute left-1/2 mt-4 w-36 -translate-x-1/2 transform gap-2 rounded-md border bg-white p-2 text-black shadow-lg outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                   <Menu.Item onClick={() => history.push('/logout')}>
                     <div
-                      className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+                      className="flex cursor-pointer items-center gap-1 rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
                       test-id="logout-btn"
                     >
                       <LogoutIcon className="h-4 w-4" />

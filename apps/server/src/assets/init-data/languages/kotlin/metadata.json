@@ -1,0 +1,8 @@
+{
+  "name": "Kotlin",
+  "dockerImage": "ghcr.io/tunjudge/lang/kotlin:1.4.20",
+  "extensions": ["kt"],
+  "allowSubmit": true,
+  "allowJudge": true,
+  "buildScript": "languages/kotlin/build.sh"
+}

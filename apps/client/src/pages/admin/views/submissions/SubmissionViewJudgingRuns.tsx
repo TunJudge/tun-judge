@@ -7,7 +7,6 @@ import { formatBytes } from '@core/helpers';
 import { Judging, JudgingRun, Testcase } from '@core/models';
 import { SubmissionsStore, TestcasesStore, useStore } from '@core/stores';
 import { resultMap } from '@core/types';
-
 import {
   DiffValues,
   DiffViewerDialog,
@@ -51,9 +50,9 @@ const SubmissionsViewJudgingRuns: React.FC<{ judging?: Judging }> = observer(({ 
       {judging?.runs?.map((run) => (
         <div
           key={`run-${run.id}`}
-          className="flex flex-col bg-white divide-y shadow rounded-md dark:bg-gray-800 dark:divide-gray-700"
+          className="flex flex-col divide-y rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800"
         >
-          <div className="flex p-3 items-center justify-between">
+          <div className="flex items-center justify-between p-3">
             <div className="flex items-center gap-x-8">
               <div className="text-lg font-medium">Testcase {run.testcase.id}</div>
               <div>
@@ -72,37 +71,37 @@ const SubmissionsViewJudgingRuns: React.FC<{ judging?: Judging }> = observer(({ 
             </div>
             <div className="flex select-none gap-2">
               <div
-                className="flex gap-x-1 p-2 text-green-600 border border-green-600 rounded-md cursor-pointer hover:bg-green-50 dark:hover:bg-green-900"
+                className="flex cursor-pointer gap-x-1 rounded-md border border-green-600 p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900"
                 onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'input' })}
               >
-                <EyeIcon className="w-6 h-6" />
+                <EyeIcon className="h-6 w-6" />
                 Input
               </div>
               <div
                 className={classNames(
-                  'flex gap-x-1 p-2 text-red-600 border border-red-600 rounded-md',
+                  'flex gap-x-1 rounded-md border border-red-600 p-2 text-red-600',
                   {
                     'opacity-50': !run.runOutput.size,
                     'cursor-pointer hover:bg-red-50 dark:hover:bg-red-900': run.runOutput.size,
-                  }
+                  },
                 )}
                 onClick={() => (run.runOutput.size ? setRunViewData(run) : undefined)}
               >
-                <EyeIcon className="w-6 h-6" />
+                <EyeIcon className="h-6 w-6" />
                 Team Output
               </div>
               <div
-                className="flex gap-x-1 p-2 text-yellow-600 border border-yellow-600 rounded-md cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900"
+                className="flex cursor-pointer gap-x-1 rounded-md border border-yellow-600 p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900"
                 onClick={() => loadOutputFileAndShowDiff(run)}
               >
-                <EyeIcon className="w-6 h-6" />
+                <EyeIcon className="h-6 w-6" />
                 Difference
               </div>
               <div
-                className="flex gap-x-1 p-2 text-blue-600 border border-blue-600 rounded-md cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900"
+                className="flex cursor-pointer gap-x-1 rounded-md border border-blue-600 p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900"
                 onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'output' })}
               >
-                <EyeIcon className="w-6 h-6" />
+                <EyeIcon className="h-6 w-6" />
                 Reference Output
               </div>
             </div>
@@ -153,7 +152,7 @@ const OutputSection: React.FC<{
   <div className="flex flex-col gap-y-1">
     <b>{title}</b>
     <pre
-      className={classNames('p-2 mt-1 border border-gray-500 rounded-md max-h-20 overflow-auto', {
+      className={classNames('mt-1 max-h-20 overflow-auto rounded-md border border-gray-500 p-2', {
         'text-black dark:text-white': color === 'black',
         'text-gray-600 dark:text-gray-400': color === 'gray',
       })}

@@ -18,7 +18,7 @@ const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ pr
 
   return (
     <div onClick={() => fileInputRef.current?.click()}>
-      <CloudUploadIcon className="w-10 h-10 p-2 bg-green-500 hover:bg-green-400 rounded-md cursor-pointer" />
+      <CloudUploadIcon className="h-10 w-10 cursor-pointer rounded-md bg-green-500 p-2 hover:bg-green-400" />
       <input
         ref={(ref) => (fileInputRef.current = ref)}
         type="file"
@@ -48,7 +48,7 @@ const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ pr
                 if (
                   data.some(
                     ({ input, output }) =>
-                      input.md5Sum === inputMD5Sum && output.md5Sum === outputMD5Sum
+                      input.md5Sum === inputMD5Sum && output.md5Sum === outputMD5Sum,
                   )
                 )
                   continue;

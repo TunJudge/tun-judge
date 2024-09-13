@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 import { isEmpty } from '@core/helpers';
 import { TeamCategory } from '@core/models';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
@@ -31,7 +30,7 @@ const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
       onSubmit={() => onSubmit(teamCategory)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
-      <div className="grid sm:grid-cols-5 gap-2">
+      <div className="grid gap-2 sm:grid-cols-5">
         <TextInput<TeamCategory>
           entity={teamCategory}
           field="name"

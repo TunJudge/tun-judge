@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const NoActiveContest: React.FC = () => (
-  <div className="flex items-center justify-center text-3xl text-gray-400 py-4 font-medium h-full w-full">
+  <div className="flex h-full w-full items-center justify-center py-4 text-3xl font-medium text-gray-400">
     No Active Contest
   </div>
 );

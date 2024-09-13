@@ -6,7 +6,6 @@ import React from 'react';
 import { countUnseenMessages, generalComparator } from '@core/helpers';
 import { Clarification } from '@core/models';
 import { ClarificationsStore, PublicStore, RootStore, useStore } from '@core/stores';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 import { ChatBoxDialog } from '@shared/dialogs';
 
@@ -22,16 +21,16 @@ const ClarificationsList: React.FC = observer(() => {
       render: (clarification) => {
         const unseenMessagesCount = countUnseenMessages(clarification, profile!);
         return (
-          <div className="flex justify-between w-full">
+          <div className="flex w-full justify-between">
             {clarification.general || !clarification.problem
               ? 'General'
               : `Problem ${
                   currentContest?.problems?.find(
-                    (problem) => problem.problem.id === clarification.problem?.id
+                    (problem) => problem.problem.id === clarification.problem?.id,
                   )?.shortName ?? '-'
                 }`}
             {unseenMessagesCount > 0 && (
-              <div className="text-sm text-white px-2 py-0.5 rounded-md bg-green-500 float-right">
+              <div className="float-right rounded-md bg-green-500 px-2 py-0.5 text-sm text-white">
                 {unseenMessagesCount}
               </div>
             )}
@@ -44,7 +43,7 @@ const ClarificationsList: React.FC = observer(() => {
   const fetchAll = () =>
     currentContest && profile?.team
       ? fetchAllForTeam(currentContest.id, profile.team.id).then((result) =>
-          result.sort(generalComparator(true))
+          result.sort(generalComparator(true)),
         )
       : Promise.resolve([]);
 

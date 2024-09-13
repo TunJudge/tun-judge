@@ -26,7 +26,7 @@ const ChatBoxHeader: React.FC<{ clarification: Clarification }> = observer(({ cl
   return (
     <div>
       {clarification.id ? (
-        <div className="text-2xl font-medium mb-2">
+        <div className="mb-2 text-2xl font-medium">
           {clarification.general
             ? 'General'
             : `${

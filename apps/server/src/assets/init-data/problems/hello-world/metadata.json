@@ -1,0 +1,18 @@
+{
+  "name": "Hello World",
+  "timeLimit": 1,
+  "memoryLimit": 2097152,
+  "outputLimit": 8192,
+  "statementFile": "problems/hello-world/HelloWorld.pdf",
+  "runScript": "Default Runner",
+  "checkScript": "Default Checker",
+  "testcases": [
+    {
+      "rank": 0,
+      "sample": true,
+      "description": "Sample test",
+      "inputFile": "problems/hello-world/testcases/test.0.in",
+      "outputFile": "problems/hello-world/testcases/test.0.ans"
+    }
+  ]
+}

@@ -14,27 +14,15 @@ export class HttpClient {
     return this.request<T>(path, 'GET', options);
   }
 
-  post<T>(
-    path: string,
-    body?: unknown,
-    options?: AxiosRequestConfig
-  ): Promise<T> {
+  post<T>(path: string, body?: unknown, options?: AxiosRequestConfig): Promise<T> {
     return this.request<T>(path, 'POST', { data: body, ...options });
   }
 
-  put<T>(
-    path: string,
-    body?: unknown,
-    options?: AxiosRequestConfig
-  ): Promise<T> {
+  put<T>(path: string, body?: unknown, options?: AxiosRequestConfig): Promise<T> {
     return this.request<T>(path, 'PUT', { data: body, ...options });
   }
 
-  async request<T>(
-    path: string,
-    method: Method = 'GET',
-    options?: AxiosRequestConfig
-  ): Promise<T> {
+  async request<T>(path: string, method: Method = 'GET', options?: AxiosRequestConfig): Promise<T> {
     return (
       await axios.request<T>({
         url: `${this.url}/${path}`,

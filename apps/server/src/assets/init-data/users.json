@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Super Admin",
+    "email": "admin@tunjudge",
+    "username": "admin",
+    "password": "admin",
+    "roleName": "admin",
+    "enabled": true
+  },
+  {
+    "name": "Jury",
+    "email": "jury@tunjudge",
+    "username": "jury",
+    "password": "jury",
+    "roleName": "jury",
+    "enabled": true
+  },
+  {
+    "name": "JudgeHost",
+    "email": "judge-host@tunjudge",
+    "username": "judge-host",
+    "password": "judge-host",
+    "roleName": "judge-host",
+    "enabled": true
+  },
+  {
+    "name": "Team Member",
+    "email": "team@tunjudge",
+    "username": "team",
+    "password": "team",
+    "roleName": "team",
+    "enabled": true
+  }
+]

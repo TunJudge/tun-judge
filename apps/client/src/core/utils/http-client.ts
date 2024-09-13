@@ -27,7 +27,7 @@ export class HttpClient {
 export async function request<T>(
   path: string,
   method: Method = 'GET',
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<T> {
   try {
     return (

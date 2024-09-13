@@ -3,7 +3,6 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { RootStore, useStore } from '@core/stores';
-
 import Scoreboard from '@shared/Scoreboard';
 
 import AdminNavbar from './AdminNavbar';
@@ -28,7 +27,7 @@ const AdminLayout: React.FC = observer(() => {
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900" test-id="admin-page">
       <AdminSideBar visible={!appLocalCache.menuCollapsed} />
-      <div className="flex flex-col w-full overflow-hidden">
+      <div className="flex w-full flex-col overflow-hidden">
         <AdminNavbar
           toggleSidebar={() => (appLocalCache.menuCollapsed = !appLocalCache.menuCollapsed)}
         />

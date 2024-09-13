@@ -38,7 +38,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
           shift?.team.id === profile?.team?.id && shift?.problem.id === problem.id;
         const nbrBalloons = sc?.correct ? (veryFirstToSolve ? 3 : sc.firstToSolve ? 2 : 1) : 0;
         return (
-          <div className="flex justify-between w-full">
+          <div className="flex w-full justify-between">
             <div className="flex gap-1">
               {problem.name}
               <div className="text-gray-500 dark:text-gray-400">
@@ -76,7 +76,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
   const fetchAll = () =>
     currentContest
       ? fetchProblems(currentContest.id).then((problems) =>
-          problems.map((problem) => ({ ...problem, id: problem.shortName as string }))
+          problems.map((problem) => ({ ...problem, id: problem.shortName as string })),
         )
       : Promise.resolve([]);
 
@@ -96,17 +96,17 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
         <NoActiveContest />
       ) : (
         <div className="p-8">
-          <div className="max-w-6xl mx-auto p-8 bg-white rounded-xl border shadow dark:text-white dark:bg-gray-800 dark:border-gray-700">
-            <div className="text-3xl text-center font-medium pb-8">Contest Problems</div>
+          <div className="mx-auto max-w-6xl rounded-xl border bg-white p-8 shadow dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+            <div className="pb-8 text-center text-3xl font-medium">Contest Problems</div>
             <div className="flex flex-wrap justify-center">
               {problems.map((problem) => {
                 const color = getProblemColor(problem);
 
                 return (
                   <div key={problem.shortName} className="w-1/3 p-2">
-                    <div className="h-full flex flex-col bg-white rounded-md shadow border border-gray-200 divide-y dark:bg-gray-800 dark:border-gray-700 dark:divide-gray-700">
+                    <div className="flex h-full flex-col divide-y rounded-md border border-gray-200 bg-white shadow dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-800">
                       <div
-                        className={classNames('relative h-full py-2 px-3 rounded-t-md', {
+                        className={classNames('relative h-full rounded-t-md px-3 py-2', {
                           'bg-green-200 dark:bg-green-800': color === 'green',
                           'bg-yellow-200 dark:bg-yellow-800': color === 'yellow',
                           'bg-red-200 dark:bg-red-800': color === 'red',
@@ -114,7 +114,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
                         })}
                       >
                         <div
-                          className={`h-6 w-6 absolute top-3 right-3 rounded-full`}
+                          className={`absolute right-3 top-3 h-6 w-6 rounded-full`}
                           style={{ backgroundColor: problem.color }}
                         />
                         <div className="text-2xl">
@@ -125,10 +125,10 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
                           {formatBytes(problem.problem.memoryLimit * 1024)}
                         </div>
                       </div>
-                      <div className="flex p-2 gap-1">
+                      <div className="flex gap-1 p-2">
                         {profile?.team && contestStartedAndNotOver(currentContest) && (
                           <button
-                            className="w-full p-2 text-green-600 border border-green-600 rounded-md hover:bg-green-100 dark:hover:bg-green-900"
+                            className="w-full rounded-md border border-green-600 p-2 text-green-600 hover:bg-green-100 dark:hover:bg-green-900"
                             onClick={() =>
                               setSubmission({ problem: problem.problem } as Submission)
                             }
@@ -137,7 +137,7 @@ const ProblemSet: React.FC<{ listMode?: boolean }> = observer(({ listMode }) => 
                           </button>
                         )}
                         <button
-                          className="w-full p-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900"
+                          className="w-full rounded-md border border-blue-600 p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900"
                           onClick={() => setPdfData(problem.problem.file.content.payload)}
                         >
                           PDF

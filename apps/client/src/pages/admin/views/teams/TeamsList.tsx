@@ -3,7 +3,6 @@ import React from 'react';
 
 import { Team } from '@core/models';
 import { RootStore, TeamsStore, useStore } from '@core/stores';
-
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import TeamForm from './TeamForm';

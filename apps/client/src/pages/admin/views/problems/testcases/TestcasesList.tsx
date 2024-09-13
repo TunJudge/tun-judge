@@ -12,7 +12,6 @@ import React, { useState } from 'react';
 import { formatBytes } from '@core/helpers';
 import { Problem, Testcase } from '@core/models';
 import { RootStore, TestcasesStore, useStore } from '@core/stores';
-
 import { TestcaseContentDialog } from '@shared/dialogs';
 import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
 import Tooltip from '@shared/tooltip/Tooltip';
@@ -44,24 +43,24 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white divide-y shadow rounded-md overflow-hidden dark:bg-gray-800 dark:divide-gray-700">
-      <div className="flex p-3 items-center justify-between">
+    <div className="flex h-full flex-col divide-y overflow-hidden rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
+      <div className="flex items-center justify-between p-3">
         <div className="text-lg font-medium">Testcases</div>
         {isUserAdmin && (
-          <div className="flex items-center text-white gap-2">
+          <div className="flex items-center gap-2 text-white">
             <TestcaseBulkUploader problem={problem} />
 
             <PlusIcon
-              className="w-10 h-10 p-1 bg-blue-500 hover:bg-blue-400 rounded-md cursor-pointer"
+              className="h-10 w-10 cursor-pointer rounded-md bg-blue-500 p-1 hover:bg-blue-400"
               onClick={() => setFormOpen(true)}
             />
           </div>
         )}
       </div>
-      <div className="flex p-4 overflow-hidden">
-        <div className="flex w-full border rounded-md overflow-auto dark:border-gray-700">
+      <div className="flex overflow-hidden p-4">
+        <div className="flex w-full overflow-auto rounded-md border dark:border-gray-700">
           <table className="min-w-full divide-y dark:divide-gray-800">
-            <thead className="sticky top-0 z-10 text-center bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+            <thead className="sticky top-0 z-10 bg-gray-50 text-center text-gray-700 dark:bg-gray-700 dark:text-gray-300">
               <tr className="divide-x dark:divide-gray-800">
                 <th className="p-2 font-medium">#</th>
                 <th className="p-2 font-medium">Content</th>
@@ -74,7 +73,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
               {data.length === 0 ? (
                 <tr>
                   <td colSpan={10}>
-                    <div className="w-full p-3 flex items-center justify-center">No data</div>
+                    <div className="flex w-full items-center justify-center p-3">No data</div>
                   </td>
                 </tr>
               ) : (
@@ -84,14 +83,14 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                       <div className="flex flex-col items-center justify-center">
                         {testcase.rank > 0 && (
                           <ChevronUpIcon
-                            className="w-4 h-4 cursor-pointer"
+                            className="h-4 w-4 cursor-pointer"
                             onClick={() => move(testcase.id, 'up')}
                           />
                         )}
                         {testcase.rank}
                         {testcase.rank < data.length - 1 && (
                           <ChevronDownIcon
-                            className="w-4 h-4 cursor-pointer"
+                            className="h-4 w-4 cursor-pointer"
                             onClick={() => move(testcase.id, 'down')}
                           />
                         )}
@@ -99,14 +98,14 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                     </td>
                     <td>
                       <div className="divide-y dark:divide-gray-700">
-                        <div className="flex items-center p-2 gap-x-1">
+                        <div className="flex items-center gap-x-1 p-2">
                           <Tooltip
                             className="ml-1"
                             content={testcase.input.md5Sum}
                             position="right"
                           >
                             <div
-                              className="text-blue-500 cursor-pointer"
+                              className="cursor-pointer text-blue-500"
                               onClick={() => setContentViewData({ testcase, field: 'input' })}
                             >
                               {`test.${testcase.rank}.in`}
@@ -114,14 +113,14 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                           </Tooltip>
                           {formatBytes(testcase.input.size)}
                         </div>
-                        <div className="flex items-center p-2 gap-x-1">
+                        <div className="flex items-center gap-x-1 p-2">
                           <Tooltip
                             className="ml-1"
                             content={testcase.output.md5Sum}
                             position="right"
                           >
                             <div
-                              className="text-blue-500 cursor-pointer"
+                              className="cursor-pointer text-blue-500"
                               onClick={() => setContentViewData({ testcase, field: 'output' })}
                             >
                               {`test.${testcase.rank}.out`}
@@ -145,16 +144,16 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                     </td>
                     {isUserAdmin && (
                       <td>
-                        <div className="flex flex-col items-center justify-center gap-1 h-full select-none">
+                        <div className="flex h-full select-none flex-col items-center justify-center gap-1">
                           <PencilAltIcon
-                            className="p-1 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                            className="h-8 w-8 cursor-pointer rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
                             onClick={() => {
                               setFormTestcase(testcase);
                               setFormOpen(true);
                             }}
                           />
                           <TrashIcon
-                            className="p-1 w-8 h-8 cursor-pointer rounded-full hover:bg-gray-200 text-red-700 dark:hover:bg-gray-700"
+                            className="h-8 w-8 cursor-pointer rounded-full p-1 text-red-700 hover:bg-gray-200 dark:hover:bg-gray-700"
                             onClick={() => remove(testcase.id)}
                           />
                         </div>
@@ -178,7 +177,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
           } else if (
             data.some(
               ({ input, output }) =>
-                input.md5Sum === testcase.input.md5Sum && output.md5Sum === testcase.output.md5Sum
+                input.md5Sum === testcase.input.md5Sum && output.md5Sum === testcase.output.md5Sum,
             )
           ) {
             toastsStore.error('This is a duplicate testcase, select different files');

@@ -42,7 +42,7 @@ export class SubmissionsStore {
   fetchAll = async (): Promise<Submission[]> => {
     this.filters.contest = this.publicStore.currentContest?.id ?? -1;
     [this.data, this.totalItems] = await http.get<[Submission[], number]>(
-      `api/submissions?page=${this.currentPage}&${buildSearchQuery(this.filters)}`
+      `api/submissions?page=${this.currentPage}&${buildSearchQuery(this.filters)}`,
     );
     return this.data;
   };
@@ -81,7 +81,7 @@ export class SubmissionsStore {
 }
 
 function buildSearchQuery(
-  filters: Record<string, string | boolean | number | string[] | boolean[] | number[]>
+  filters: Record<string, string | boolean | number | string[] | boolean[] | number[]>,
 ): string {
   return Object.entries(filters)
     .filter(([, value]) => !isEmpty(value))

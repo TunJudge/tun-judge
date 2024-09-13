@@ -20,7 +20,6 @@ import { useHistory } from 'react-router-dom';
 import { PublicStore } from '@core/stores/PublicStore';
 import { useStore } from '@core/stores/useStore';
 import { Tabs } from '@core/types';
-
 import Tooltip from '@shared/tooltip/Tooltip';
 
 const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
@@ -88,7 +87,7 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
       icon: PaperAirplaneIcon,
       label:
         totalPendingSubmissions > 0 ? (
-          <div className="text-white px-2 py-0.5 rounded-md bg-yellow-500">
+          <div className="rounded-md bg-yellow-500 px-2 py-0.5 text-white">
             {totalPendingSubmissions}
           </div>
         ) : undefined,
@@ -108,15 +107,15 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
   return (
     <nav className="p-4 pr-0 text-black dark:text-white">
       <div
-        className={classNames('flex-col h-full transition-all duration-200 ease-in-out', {
+        className={classNames('h-full flex-col transition-all duration-200 ease-in-out', {
           'w-72': visible,
           'w-16': !visible,
         })}
         test-id="admin-sidebar"
       >
-        <div className="bg-white h-full rounded-lg p-2 shadow-md dark:bg-gray-800">
+        <div className="h-full rounded-lg bg-white p-2 shadow-md dark:bg-gray-800">
           <div
-            className="text-2xl text-center p-2 py-4 mb-2 cursor-pointer"
+            className="mb-2 cursor-pointer p-2 py-4 text-center text-2xl"
             onClick={() => onLinkClick('')}
           >
             {visible ? 'TUN-JUDGE' : 'TJ'}
@@ -132,13 +131,13 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
               >
                 <div
                   className={classNames(
-                    'flex items-center w-full p-2 gap-2 rounded-md font-medium cursor-pointer',
+                    'flex w-full cursor-pointer items-center gap-2 rounded-md p-2 font-medium',
                     {
                       'bg-gray-800 text-white dark:bg-gray-900': currentTab === key,
                       'text-gray-500 hover:bg-gray-500 hover:text-white dark:text-gray-400 dark:hover:bg-gray-700':
                         currentTab !== key,
                       'justify-center': !visible,
-                    }
+                    },
                   )}
                   onClick={() => onLinkClick(key)}
                   test-id={`admin-sidebar-item-${key}`}
@@ -147,7 +146,7 @@ const AdminSidebar: React.FC<{ visible: boolean }> = observer(({ visible }) => {
                   {visible && (
                     <div test-id="admin-sidebar-item-title">
                       {title}
-                      <div className="flex items-center space-x-2 ml-auto">{label}</div>
+                      <div className="ml-auto flex items-center space-x-2">{label}</div>
                     </div>
                   )}
                 </div>

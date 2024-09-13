@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { existsSync, writeFileSync } from 'fs';
 
 import { SubmissionHelper } from '../helpers';
-import { getOnLog, JudgeLogger } from '../logger';
+import { JudgeLogger, getOnLog } from '../logger';
 import { Executable, Judging, Language, Problem, Submission } from '../models';
 import { DockerService, SocketService, SystemService } from '../services';
 
@@ -23,7 +23,7 @@ export class Initializer {
     private readonly dockerService: DockerService,
     private readonly socketService: SocketService,
     private readonly systemService: SystemService,
-    private readonly submissionHelper: SubmissionHelper
+    private readonly submissionHelper: SubmissionHelper,
   ) {
     this.logger = new JudgeLogger(Initializer.name, getOnLog(this.socketService));
   }
@@ -57,7 +57,7 @@ export class Initializer {
         if (!existsSync(filePath)) {
           testcase[type].content = await this.systemService.getTestcaseFileContent(
             testcase.id,
-            type
+            type,
           );
           writeFileSync(filePath, testcase[type].content.payload, 'base64');
           this.logger.debug(`Testcase file ${testcase[type].name} written!`);

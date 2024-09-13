@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { isEmpty } from '@core/helpers';
 import { Role, User } from '@core/models';
 import { UsersStore, useStore } from '@core/stores';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
@@ -37,7 +36,7 @@ const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClos
       onSubmit={() => onSubmit(user)}
       submitDisabled={Object.values(errors).some((e) => e)}
     >
-      <div className="grid sm:grid-cols-2 gap-2">
+      <div className="grid gap-2 sm:grid-cols-2">
         <TextInput<User>
           entity={user}
           field="name"
@@ -48,7 +47,7 @@ const UserForm: DataTableItemForm<User> = observer(({ item: user, isOpen, onClos
         />
         <TextInput<User> entity={user} field="email" type="email" label="Email" />
       </div>
-      <div className="grid sm:grid-cols-3 gap-2">
+      <div className="grid gap-2 sm:grid-cols-3">
         <TextInput<User>
           entity={user}
           field="username"

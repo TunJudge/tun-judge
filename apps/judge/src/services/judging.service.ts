@@ -1,9 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 
 import { SubmissionHelper } from '../helpers';
 import { Compiler, Executor, Initializer } from '../judging-steps';
-import { getOnLog, JudgeLogger } from '../logger';
+import { JudgeLogger, getOnLog } from '../logger';
 import { Judging } from '../models';
 import { SocketService } from './socket.service';
 import { SystemService } from './system.service';
@@ -22,7 +22,7 @@ export class JudgingService {
     @Inject(forwardRef(() => Compiler))
     private readonly compiler: Compiler,
     @Inject(forwardRef(() => Executor))
-    private readonly executor: Executor
+    private readonly executor: Executor,
   ) {
     this.logger = new JudgeLogger(JudgingService.name, getOnLog(this.socketService));
     this.run();
@@ -47,7 +47,7 @@ export class JudgingService {
   async runJudging(judging: Judging): Promise<void> {
     try {
       this.logger.log(
-        `Judging '${judging.id}' for problem '${judging.submission.problem.name}' and language '${judging.submission.language.name}' received!`
+        `Judging '${judging.id}' for problem '${judging.submission.problem.name}' and language '${judging.submission.language.name}' received!`,
       );
       this.submissionHelper.setSubmission(judging.submission);
       await this.initializer.run(judging);

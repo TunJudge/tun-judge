@@ -20,15 +20,15 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
   return (
     <Menu as="div" className="relative select-none" test-id="active-contest-selector">
       <Menu.Button
-        className={classNames('flex items-center justify-center gap-1 cursor-pointer', className)}
+        className={classNames('flex cursor-pointer items-center justify-center gap-1', className)}
       >
         {currentContest?.shortName ?? 'No Active Contests'}
-        <ChevronDownIcon className="w-4 h-4" />
+        <ChevronDownIcon className="h-4 w-4" />
         {currentContest && <ContestLeftTime contest={currentContest} />}
       </Menu.Button>
-      <Menu.Items className="absolute z-50 transform left-1/2 -translate-x-1/2 w-36 mt-4 font-normal text-black bg-white border rounded-md shadow-lg outline-none dark:text-white dark:bg-gray-800 dark:border-gray-700">
+      <Menu.Items className="absolute left-1/2 z-50 mt-4 w-36 -translate-x-1/2 transform rounded-md border bg-white font-normal text-black shadow-lg outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
         <Menu.Item>
-          <div className="flex items-center px-3 py-2 cursor-none bg-gray-300 rounded-t-md dark:bg-gray-700">
+          <div className="flex cursor-none items-center rounded-t-md bg-gray-300 px-3 py-2 dark:bg-gray-700">
             Change Contest
           </div>
         </Menu.Item>
@@ -36,10 +36,10 @@ const ActiveContestSelector: React.FC<Props> = observer(({ className }) => {
           <Menu.Item key={contest.id}>
             <div
               className={classNames(
-                'flex items-center px-3 py-2 cursor-pointer rounded-md m-1 hover:bg-gray-200 dark:hover:bg-gray-700',
+                'm-1 flex cursor-pointer items-center rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700',
                 {
                   'bg-gray-200 dark:bg-gray-700': contest.id === currentContest?.id,
-                }
+                },
               )}
               onClick={() => setCurrentContest(contest.id)}
             >
@@ -80,7 +80,7 @@ const ContestLeftTime: React.FC<{ contest: Contest }> = ({ contest }) => {
 
   return (
     <div
-      className="ml-2 px-2 p-1 rounded-md"
+      className="ml-2 rounded-md p-1 px-2"
       style={{
         background: `linear-gradient(to right, ${color} ${contestTimeProgress}%, rgba(33, 133, 208, .2) ${contestTimeProgress}%)`,
       }}

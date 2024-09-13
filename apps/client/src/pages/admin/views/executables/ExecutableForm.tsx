@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 
 import { isEmpty } from '@core/helpers';
 import { Executable, ExecutableType } from '@core/models';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
@@ -79,7 +78,7 @@ const ExecutableForm: DataTableItemForm<Executable> = ({
           />
         )}
       </div>
-      <div className="grid sm:grid-cols-3 gap-2">
+      <div className="grid gap-2 sm:grid-cols-3">
         <DropDownInput<Executable, ExecutableType>
           entity={executable}
           field="type"

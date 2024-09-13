@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { getRandomHexColor, isEmpty } from '@core/helpers';
 import { Contest, ContestProblem, Problem } from '@core/models';
 import { ProblemsStore, useStore } from '@core/stores';
-
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
@@ -26,7 +25,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
       contest.problems.map((p) => ({
         problem: isEmpty(p.problem),
         shortName: isEmpty(p.shortName),
-      }))
+      })),
     );
 
     useEffect(() => {
@@ -49,14 +48,14 @@ const ContestForm: DataTableItemForm<Contest> = observer(
           problem:
             isEmpty(cp.problem) ||
             contest.problems.filter(
-              (p) => p.problem && cp.problem && p.problem.id === cp.problem.id
+              (p) => p.problem && cp.problem && p.problem.id === cp.problem.id,
             ).length > 1,
           shortName:
             isEmpty(cp.shortName) ||
             contest.problems.filter(
-              (p) => p.shortName && cp.shortName && p.shortName.trim() === cp.shortName.trim()
+              (p) => p.shortName && cp.shortName && p.shortName.trim() === cp.shortName.trim(),
             ).length > 1,
-        }))
+        })),
       );
     }, [contest.problems]);
 
@@ -76,7 +75,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
           Object.values(errors).some((e) => e)
         }
       >
-        <div className="grid sm:grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <TextInput<Contest>
             entity={contest}
             field="name"
@@ -94,7 +93,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="grid sm:grid-cols-3 gap-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           <DateTimeInput<Contest>
             entity={contest}
             field="activateTime"
@@ -126,7 +125,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="grid sm:grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <DateTimeInput<Contest>
             entity={contest}
             field="freezeTime"
@@ -149,7 +148,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="grid sm:grid-cols-3 gap-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           <CheckBoxInput<Contest>
             entity={contest}
             field="enabled"
@@ -196,9 +195,9 @@ const ContestForm: DataTableItemForm<Contest> = observer(
             setErrors={setErrors}
           />
         </div>
-        <div className="mt-2 shadow border border-gray-200 rounded-md dark:border-gray-700 dark:text-white">
+        <div className="mt-2 rounded-md border border-gray-200 shadow dark:border-gray-700 dark:text-white">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-            <thead className="text-center uppercase bg-gray-50 text-gray-700 dark:text-gray-300 dark:bg-gray-700">
+            <thead className="bg-gray-50 text-center uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-300">
               <tr className="divide-x dark:divide-gray-800">
                 <th className="w-1/4 p-3 font-medium tracking-wider">Problem</th>
                 <th className="w-1/6 p-3 font-medium tracking-wider">Short Name</th>
@@ -209,11 +208,11 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                 <th className="p-3 font-medium tracking-wider" />
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-y-200 dark:bg-gray-800 dark:divide-gray-700">
+            <tbody className="divide-y-200 divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
               {!contest.problems.length && (
                 <tr>
                   <td
-                    className="p-3 text-center bg-gray-50 opacity-50  dark:bg-gray-700"
+                    className="bg-gray-50 p-3 text-center opacity-50 dark:bg-gray-700"
                     colSpan={7}
                   >
                     Add problems
@@ -223,7 +222,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
               {contest.problems.map((problem, index) => (
                 <tr
                   key={`${contest.id}-${index}`}
-                  className="divide-x divide-x-200 dark:divide-gray-700"
+                  className="divide-x-200 divide-x dark:divide-gray-700"
                 >
                   <td className="p-3">
                     <DropDownInput<ContestProblem, Problem>
@@ -244,8 +243,8 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                             (problemsErrors[index].problem =
                               isEmpty(problemsErrors[index].problem) ||
                               contest.problems.filter(
-                                (p) => p.problem && cp.problem && p.problem.id === cp.problem.id
-                              ).length > 1)
+                                (p) => p.problem && cp.problem && p.problem.id === cp.problem.id,
+                              ).length > 1),
                         );
                         setProblemsErrors(problemsErrors);
                       }}
@@ -266,7 +265,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                               (p) =>
                                 p.shortName &&
                                 cp.shortName &&
-                                p.shortName.trim() === cp.shortName.trim()
+                                p.shortName.trim() === cp.shortName.trim(),
                             ).length > 1;
                         });
                         setProblemsErrors(problemsErrors);
@@ -313,20 +312,20 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                     </div>
                   </td>
                   <td
-                    className="p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900"
+                    className="cursor-pointer p-3 hover:bg-red-50 dark:hover:bg-red-900"
                     onClick={() =>
                       (contest.problems = contest.problems.filter((_, i) => i !== index))
                     }
                   >
                     <div className="flex items-center justify-center">
-                      <TrashIcon className="text-red-600 w-6 h-6" />
+                      <TrashIcon className="h-6 w-6 text-red-600" />
                     </div>
                   </td>
                 </tr>
               ))}
               <tr>
                 <td
-                  className="p-2 cursor-pointer bg-gray-50 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                  className="cursor-pointer bg-gray-50 p-2 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
                   colSpan={7}
                   onClick={() =>
                     (contest.problems = [
@@ -336,7 +335,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
                   }
                 >
                   <div className="flex items-center justify-center">
-                    <PlusIcon className="w-8 h-8" />
+                    <PlusIcon className="h-8 w-8" />
                   </div>
                 </td>
               </tr>
@@ -345,7 +344,7 @@ const ContestForm: DataTableItemForm<Contest> = observer(
         </div>
       </FormModal>
     );
-  }
+  },
 );
 
 export default ContestForm;

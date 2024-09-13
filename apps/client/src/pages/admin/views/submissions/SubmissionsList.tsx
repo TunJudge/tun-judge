@@ -6,7 +6,6 @@ import { useHistory } from 'react-router-dom';
 import { dateComparator, formatRestTime, getJudgingRunColor } from '@core/helpers';
 import { Judging, Submission } from '@core/models';
 import { PublicStore, RootStore, SubmissionsStore, useStore } from '@core/stores';
-
 import SubmissionResult from '@shared/SubmissionResult';
 import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
@@ -28,13 +27,13 @@ const SubmissionsList: React.FC = observer(() => {
       textAlign: 'center',
       render: (submission) => (
         <div
-          className="text-blue-700 cursor-pointer"
+          className="cursor-pointer text-blue-700"
           onClick={() => history.push(`/submissions/${submission.id}`)}
         >
           {formatRestTime(
             (new Date(submission.submitTime).getTime() -
               new Date(currentContest?.startTime ?? 0).getTime()) /
-              1000
+              1000,
           )}
         </div>
       ),
@@ -52,7 +51,7 @@ const SubmissionsList: React.FC = observer(() => {
       disabled: (submission) => !submission.valid,
       render: ({ problem }) => (
         <a
-          className="text-blue-700 cursor-pointer"
+          className="cursor-pointer text-blue-700"
           href={`/problems/${problem.id}`}
           target="_blank"
           rel="noreferrer"
@@ -91,7 +90,7 @@ const SubmissionsList: React.FC = observer(() => {
           ) : judging.juryMember ? (
             judging.juryMember.username === profile?.username ? (
               <div
-                className="text-center font-medium text-gray-600 bg-gray-200 hover:bg-grey-100 rounded-md p-2 cursor-pointer"
+                className="hover:bg-grey-100 cursor-pointer rounded-md bg-gray-200 p-2 text-center font-medium text-gray-600"
                 onClick={async () => {
                   await unClaim(submission.id);
                   await fetchAll();
@@ -104,7 +103,7 @@ const SubmissionsList: React.FC = observer(() => {
             )
           ) : (
             <div
-              className="text-center font-medium text-gray-600 bg-gray-200 hover:bg-grey-100 rounded-md p-2 cursor-pointer"
+              className="hover:bg-grey-100 cursor-pointer rounded-md bg-gray-200 p-2 text-center font-medium text-gray-600"
               onClick={async () => {
                 await claim(submission.id);
                 history.push(`/submissions/${submission.id}`);
@@ -138,17 +137,17 @@ const SubmissionsList: React.FC = observer(() => {
                 return color === 'gray' ? (
                   <MinusCircleIcon
                     key={`${submission.id}-${testcase.id}`}
-                    className="w-6 h-6 text-gray-600"
+                    className="h-6 w-6 text-gray-600"
                   />
                 ) : color === 'red' ? (
                   <XCircleIcon
                     key={`${submission.id}-${testcase.id}`}
-                    className="w-6 h-6 text-red-600"
+                    className="h-6 w-6 text-red-600"
                   />
                 ) : (
                   <CheckCircleIcon
                     key={`${submission.id}-${testcase.id}`}
-                    className="w-6 h-6 text-green-600"
+                    className="h-6 w-6 text-green-600"
                   />
                 );
               })}
