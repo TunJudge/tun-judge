@@ -4,6 +4,12 @@
   "license": "MIT",
   "private": true,
   "packageManager": "yarn@4.4.1",
+  "scripts": {
+    "compose:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "prisma:generate": "zenstack generate --schema zenstack/schema.zmodel",
+    "prisma:migrate:dev": "yarn prisma:generate && prisma migrate dev --schema zenstack/prisma/schema.prisma",
+    "prisma:migrate:deploy": "yarn prisma:generate && prisma migrate deploy --schema zenstack/prisma/schema.prisma"
+  },
   "dependencies": {
     "@nestjs/common": "^10.0.2",
     "@nestjs/config": "^3.2.3",
