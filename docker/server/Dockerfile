@@ -1,32 +1,23 @@
-FROM node:14.21.3-alpine as build-stage
+ARG DEPENDENCIES_TAG
 
-WORKDIR /client
-COPY projects/client .
-RUN yarn
-RUN yarn build
+FROM ghcr.io/tunjudge/dependencies:$DEPENDENCIES_TAG
 
-WORKDIR /docs
-COPY docs .
-RUN yarn
-RUN FOR_SERVER=true yarn build
+WORKDIR /usr/src/app
 
-WORKDIR /server
-COPY projects/server .
-RUN yarn
-RUN yarn build
-RUN yarn --prod
+COPY --chown=node:node docker/server/start.sh ./start.sh
+COPY --chown=node:node apps/server/package.json ./package.json
+COPY --chown=node:node zenstack ./zenstack
+COPY --chown=node:node dist/apps/server ./server
+COPY --chown=node:node dist/apps/client ./client
 
-FROM node:14.21.3-alpine as final-stage
+RUN yarn zenstack generate --schema=./zenstack/schema.zmodel
 
-WORKDIR /server
-COPY --from=build-stage /server/node_modules ./node_modules
-COPY --from=build-stage /server/nest-cli.json ./nest-cli.json
-COPY --from=build-stage /server/package.json ./package.json
-COPY --from=build-stage /server/init-data ./init-data
-COPY --from=build-stage /client/build ./client
-COPY --from=build-stage /docs/build ./docs
-COPY --from=build-stage /server/dist ./dist
+ENV ENVIRONMENT=production
 
 EXPOSE 3000
 
-CMD yarn start:prod
+USER node
+
+ENTRYPOINT ["/usr/src/app/start.sh"]
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD curl -f http://localhost:3000/status || exit 1

@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   db:
     image: postgres:13
@@ -11,13 +9,15 @@ services:
     volumes:
       - /opt/tun-judge/db-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - 5432:5432
 
   adminer:
     image: adminer
     restart: always
+    environment:
+      ADMINER_DESIGN: lucas-sandery
     ports:
-      - "8080:8080"
+      - 8080:8080
 
   redis:
     image: bitnami/redis:6.0
@@ -27,7 +27,7 @@ services:
     volumes:
       - redis-data:/bitnami/redis/data
     ports:
-      - "6379:6379"
+      - 6379:6379
 
 volumes:
   redis-data:

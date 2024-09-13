@@ -1,18 +1,18 @@
-version: '3'
-
 services:
   server:
-    image: tunjudge/server
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+      args:
+        DEPENDENCIES_TAG: ${DEPENDENCIES_TAG}
     restart: always
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      DATABASE_HOSTNAME: db
-      DATABASE_PORT: 5432
-      DATABASE_NAME: tun-judge
-      DATABASE_USERNAME: tun-judge
-      DATABASE_PASSWORD: tun-judge
+      ENVIRONMENT: test
+      LOG_LEVEL: debug
+      DATABASE_URL: 'postgresql://tun-judge:tun-judge@db:5432/tun-judge?schema=public'
+      DATABASE_DIRECT_URL: 'postgresql://tun-judge:tun-judge@db:5432/tun-judge'
       SESSION_SECRET: secret
+      REDIS_URL: 'redis://redis:6379'
     ports:
       - "3000:3000"
     depends_on:
@@ -20,9 +20,14 @@ services:
       - redis
 
   judge:
-    image: tunjudge/judge
+    build:
+      context: .
+      dockerfile: docker/judge/Dockerfile
+      args:
+        DEPENDENCIES_TAG: ${DEPENDENCIES_TAG}
     restart: always
     environment:
+      ENVIRONMENT: test
       HOSTNAME: judgehost
       TUN_JUDGE_URL: http://server:3000
       TUN_JUDGE_USERNAME: judge-host

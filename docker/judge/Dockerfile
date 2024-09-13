@@ -1,20 +1,20 @@
-FROM node:14.21.3-alpine as build-stage
+ARG DEPENDENCIES_TAG
 
-RUN apk add python3 gcc g++ make cmake
+FROM ghcr.io/tunjudge/dependencies:$DEPENDENCIES_TAG
 
-WORKDIR /judge
-COPY projects/judge .
-RUN yarn
-RUN yarn build
-RUN yarn --prod
+WORKDIR /usr/src/app
 
-FROM node:14.21.3-alpine as final-stage
+COPY --chown=node:node docker/judge/start.sh ./start.sh
+COPY --chown=node:node apps/judge/package.json ./package.json
+COPY --chown=node:node zenstack/prisma ./prisma
+COPY --chown=node:node dist/apps/judge ./judge
 
-WORKDIR /judge
-COPY --from=build-stage /judge/node_modules ./node_modules
-COPY --from=build-stage /judge/nest-cli.json ./nest-cli.json
-COPY --from=build-stage /judge/package.json ./package.json
-COPY --from=build-stage /judge/assets ./assets
-COPY --from=build-stage /judge/dist ./dist
+ENV ENVIRONMENT=production
 
-CMD yarn start:prod
+EXPOSE 3000
+
+USER node
+
+ENTRYPOINT ["/usr/src/app/start.sh"]
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD curl -f http://localhost:3000/status || exit 1
