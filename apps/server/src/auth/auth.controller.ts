@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Inject,
   NotFoundException,
   Post,
   Req,
@@ -8,6 +9,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
+import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
 import { Request, Response } from 'express';
 
 import { User } from '@prisma/client';
@@ -20,7 +22,7 @@ import { throwError } from '../utils';
 
 @Controller('api/auth')
 export class AuthController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(ENHANCED_PRISMA) private readonly prisma: PrismaService) {}
 
   @Post('login')
   @UseGuards(LoginGuard)

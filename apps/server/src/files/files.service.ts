@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
+import { ClsService } from 'nestjs-cls';
 
-import { File, User } from '@prisma/client';
+import { File } from '@prisma/client';
 
 import { PrismaService } from '../db';
 import { LogClass, LogParam } from '../logger';
@@ -9,50 +11,43 @@ import { logPrismaOperation, throwError } from '../utils';
 @LogClass
 @Injectable()
 export class FilesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(ENHANCED_PRISMA) private readonly prisma: PrismaService,
+    private readonly cls: ClsService,
+  ) {}
 
-  getAll(user?: User): Promise<File[]> {
-    const prisma = this.prisma.getEnhanced(user);
-    return logPrismaOperation(prisma, 'file', 'findMany')({});
+  getAll(): Promise<File[]> {
+    return logPrismaOperation(this.prisma, 'file', 'findMany')({});
   }
 
-  async exists(@LogParam('name') name: string, user?: User): Promise<boolean> {
-    const allFiles = await this.getAll(user);
+  async exists(@LogParam('name') name: string): Promise<boolean> {
+    const allFiles = await this.getAll();
 
     return allFiles.some((file) => file.name === name);
   }
 
-  async getFileByName(@LogParam('name') name: string, user?: User): Promise<File> {
-    const allFiles = await this.getAll(user);
+  async getFileByName(@LogParam('name') name: string): Promise<File> {
+    const allFiles = await this.getAll();
 
     return allFiles.find((file) => file.name === name) ?? throwError(new NotFoundException());
   }
 
-  async getFileByNamePrefix(
-    @LogParam('namePrefix') namePrefix: string,
-    user?: User,
-  ): Promise<File[]> {
-    const allFiles = await this.getAll(user);
-
-    return allFiles.filter((file) => file.name.startsWith(namePrefix));
+  async getFileByNamePrefix(@LogParam('namePrefix') namePrefix: string): Promise<File[]> {
+    return (await this.getAll()).filter((file) => file.name.startsWith(namePrefix));
   }
 
-  async update(@LogParam('name') name: string, file: Partial<File>, user?: User): Promise<void> {
-    const prisma = this.prisma.getEnhanced(user);
-    await logPrismaOperation(prisma, 'file', 'update')({ data: file, where: { name } });
+  async update(@LogParam('name') name: string, file: Partial<File>): Promise<void> {
+    await logPrismaOperation(this.prisma, 'file', 'update')({ data: file, where: { name } });
   }
 
-  async saveFile(file: File, user?: User) {
-    const prisma = this.prisma.getEnhanced(user);
-
+  async saveFile(file: File) {
     file.createdAt ??= new Date();
-    file.createdById ??= user?.id ?? null;
+    file.createdById ??= this.cls.get('auth')?.id;
 
-    return logPrismaOperation(prisma, 'file', 'create')({ data: file });
+    return logPrismaOperation(this.prisma, 'file', 'create')({ data: file });
   }
 
-  async delete(@LogParam('name') name: string, user?: User) {
-    const prisma = this.prisma.getEnhanced(user);
-    await logPrismaOperation(prisma, 'file', 'delete')({ where: { name } });
+  async delete(@LogParam('name') name: string) {
+    await logPrismaOperation(this.prisma, 'file', 'delete')({ where: { name } });
   }
 }

@@ -45,6 +45,7 @@
     "multer": "^1.4.5-lts.1",
     "multistream": "^4.1.0",
     "nest-winston": "1.9.7",
+    "nestjs-cls": "^4.4.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "prisma": "^5.19.1",

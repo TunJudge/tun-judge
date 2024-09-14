@@ -4931,6 +4931,7 @@ __metadata:
     multer: "npm:^1.4.5-lts.1"
     multistream: "npm:^4.1.0"
     nest-winston: "npm:1.9.7"
+    nestjs-cls: "npm:^4.4.1"
     nx: "npm:19.7.2"
     passport: "npm:^0.7.0"
     passport-local: "npm:^1.0.0"
@@ -14421,6 +14422,18 @@ __metadata:
     "@nestjs/common": ^5.0.0 || ^6.6.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
     winston: ^3.0.0
   checksum: 10c0/8d1da46a9baf6028c703db1e6b3ede5848ec56c92bfa26799ca4176807223dfd63831ecaf0aa77c427daee56f8d99112272f801f476a99461eebc8057bbe11d7
+  languageName: node
+  linkType: hard
+
+"nestjs-cls@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "nestjs-cls@npm:4.4.1"
+  peerDependencies:
+    "@nestjs/common": "> 7.0.0 < 11"
+    "@nestjs/core": "> 7.0.0 < 11"
+    reflect-metadata: "*"
+    rxjs: ">= 7"
+  checksum: 10c0/0a7036ae1bd507ed1b68d4355b0cb393a4fd0299cbe72e9b2486478ccc7a9b13ea1a1c97c76ffebe5e99b9b30b221479202249eb4f667b100f958e18de993222
   languageName: node
   linkType: hard
 

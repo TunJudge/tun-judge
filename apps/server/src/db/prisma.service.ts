@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { enhance } from '@zenstackhq/runtime';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class PrismaService extends PrismaClient {
-  getEnhanced(user?: User) {
-    return enhance(this, { user }) as PrismaClient;
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  async onModuleInit() {
+    await this.$connect();
   }
 }

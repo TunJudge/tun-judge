@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
 
 import { User } from '@prisma/client';
 
@@ -9,7 +10,7 @@ import { checkPassword, cleanUser, throwError } from '../utils';
 @LogClass
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(ENHANCED_PRISMA) private readonly prisma: PrismaService) {}
 
   async validateUser(
     @LogParam('username') username: string,

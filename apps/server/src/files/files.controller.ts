@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   HttpStatus,
+  Inject,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -12,18 +13,19 @@ import {
   Query,
   Req,
   Res,
-  Session,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
 import { createHash } from 'crypto';
 import { Request, Response } from 'express';
 import { createReadStream } from 'fs';
 import { unlink } from 'fs/promises';
 import multer from 'multer';
 import MultiStream from 'multistream';
+import { ClsService } from 'nestjs-cls';
 import { parse } from 'path';
 
 import { File, FileKind } from '@prisma/client';
@@ -47,12 +49,11 @@ export class PublicFilesController {
   async serveFiles(
     @Req() request: Request,
     @Res() response: Response,
-    @Session() { passport },
     @LogParam('name') @Param('name') name: string,
     @LogParam('height') @Query('height') height?: string,
     @LogParam('width') @Query('width') width?: string,
   ) {
-    const file = await this.filesService.getFileByName(name, passport?.user);
+    const file = await this.filesService.getFileByName(name);
 
     const options: { start?: number; end?: number } = {};
     if (request.headers.range) {
@@ -118,27 +119,22 @@ export class FilesController {
   constructor(
     private readonly filesService: FilesService,
     private readonly filesStorage: FilesStorage,
-    private readonly prisma: PrismaService,
+    private readonly cls: ClsService,
+    @Inject(ENHANCED_PRISMA) private readonly prisma: PrismaService,
   ) {}
 
   @Get()
-  getAll(@Session() { passport }: any): Promise<File[]> {
-    return this.filesService.getAll(passport?.user);
+  getAll(): Promise<File[]> {
+    return this.filesService.getAll();
   }
 
   @Get('exists/:name')
-  exists(
-    @LogParam('name') @Param('name') name: string,
-    @Session() { passport }: any,
-  ): Promise<boolean> {
-    return this.filesService.exists(name, passport?.user);
+  exists(@LogParam('name') @Param('name') name: string): Promise<boolean> {
+    return this.filesService.exists(name);
   }
 
   @Post('directory/:name')
-  async createDirectory(
-    @LogParam('name') @Param('name') name: string,
-    @Session() { passport }: any,
-  ): Promise<File | void> {
+  async createDirectory(@LogParam('name') @Param('name') name: string): Promise<File | void> {
     let number = 1;
     let finalName = name;
     while (await this.filesStorage.exists(finalName)) {
@@ -147,23 +143,20 @@ export class FilesController {
 
     const parsedName = parse(finalName);
 
-    if (parsedName.dir && !(await this.filesService.exists(parsedName.dir, passport?.user))) {
+    if (parsedName.dir && !(await this.filesService.exists(parsedName.dir))) {
       throw new NotFoundException('Parent directory does not exists!');
     }
 
-    await this.filesService.saveFile(
-      {
-        name: finalName,
-        type: 'directory',
-        size: 0,
-        md5Sum: '',
-        kind: FileKind.DIRECTORY,
-        createdAt: new Date(),
-        createdById: passport?.user?.id,
-        parentDirectoryName: parsedName.dir || null,
-      },
-      passport?.user,
-    );
+    await this.filesService.saveFile({
+      name: finalName,
+      type: 'directory',
+      size: 0,
+      md5Sum: '',
+      kind: FileKind.DIRECTORY,
+      createdAt: new Date(),
+      createdById: this.cls.get('auth')?.id,
+      parentDirectoryName: parsedName.dir || null,
+    });
 
     await this.filesStorage.createDirectory(finalName);
   }
@@ -172,27 +165,25 @@ export class FilesController {
   async moveFile(
     @LogParam('oldPath') @Body('oldPath') oldPath: string,
     @LogParam('newPath') @Body('newPath') newPath: string,
-    @Session() { passport }: any,
   ): Promise<File | void> {
-    if (!(await this.filesService.exists(oldPath, passport?.user))) {
+    if (!(await this.filesService.exists(oldPath))) {
       throw new NotFoundException('Old path does not exists!');
     }
 
     const parsedNewPath = parse(newPath);
 
-    if (parsedNewPath.dir && !(await this.filesService.exists(parsedNewPath.dir, passport?.user))) {
+    if (parsedNewPath.dir && !(await this.filesService.exists(parsedNewPath.dir))) {
       throw new NotFoundException('New path dir does not exists!');
     }
 
-    const file = await this.filesService.getFileByName(oldPath, passport?.user);
-    const allSubFiles = await this.filesService.getFileByNamePrefix(`${oldPath}/`, passport?.user);
+    const file = await this.filesService.getFileByName(oldPath);
+    const allSubFiles = await this.filesService.getFileByNamePrefix(`${oldPath}/`);
 
     try {
-      await this.filesService.update(
-        file.name,
-        { name: newPath, parentDirectoryName: parsedNewPath.dir || null },
-        passport?.user,
-      );
+      await this.filesService.update(file.name, {
+        name: newPath,
+        parentDirectoryName: parsedNewPath.dir || null,
+      });
     } catch (e) {
       if (file.kind === FileKind.FILE) {
         throw e;
@@ -209,22 +200,15 @@ export class FilesController {
 
     await Promise.all(
       allSubFiles.map((subFile) =>
-        this.filesService.update(
-          subFile.name,
-          {
-            name: subFile.name.replace(`${oldPath}/`, `${newPath}/`),
-            parentDirectoryName: newPath || null,
-          },
-          passport?.user,
-        ),
+        this.filesService.update(subFile.name, {
+          name: subFile.name.replace(`${oldPath}/`, `${newPath}/`),
+          parentDirectoryName: newPath || null,
+        }),
       ),
     );
 
-    if (
-      file.kind === FileKind.DIRECTORY &&
-      (await this.filesService.exists(oldPath, passport?.user))
-    ) {
-      await this.filesService.delete(oldPath, passport?.user);
+    if (file.kind === FileKind.DIRECTORY && (await this.filesService.exists(oldPath))) {
+      await this.filesService.delete(oldPath);
     }
   }
 
@@ -235,7 +219,6 @@ export class FilesController {
     }),
   )
   async uploadFile(
-    @Session() { passport }: any,
     @Body('metadata') metadata: string,
     @LogParam('fileName') @Body('fileName') _: string,
     @LogParam('chunkNumber') @Body('chunkNumber', ParseIntPipe) chunkNumber: number,
@@ -260,7 +243,7 @@ export class FilesController {
     }
     fileMetadata.name = finalName;
 
-    await this.filesService.saveFile(fileMetadata, passport?.user);
+    await this.filesService.saveFile(fileMetadata);
 
     await new Promise((resolve, reject) =>
       new MultiStream(this.chunksCache[originalName].map((path) => createReadStream(path)))
@@ -282,13 +265,9 @@ export class FilesController {
   }
 
   @Delete(':name')
-  async delete(
-    @Param('name') name: string,
-    @Req() request: Request,
-    @Session() { passport }: any,
-  ): Promise<void> {
+  async delete(@Param('name') name: string): Promise<void> {
     try {
-      await this.filesService.delete(name, passport?.user);
+      await this.filesService.delete(name);
     } catch {
       throw new BadRequestException('The file cannot be removed because it is already in use!');
     }

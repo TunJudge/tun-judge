@@ -18,7 +18,6 @@ async function bootstrap() {
       credentials: true,
     });
   }
-  app.setGlobalPrefix('api');
   app.use(compression());
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
