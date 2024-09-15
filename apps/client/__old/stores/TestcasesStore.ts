@@ -1,9 +1,8 @@
 import { action, autorun, observable } from 'mobx';
 
-import { ProblemsStore } from '@core/stores/ProblemsStore';
-
 import { FileContent, Testcase } from '../models';
 import http from '../utils/http-client';
+import { ProblemsStore } from './ProblemsStore';
 
 export class TestcasesStore {
   @observable data: Testcase[] = [];

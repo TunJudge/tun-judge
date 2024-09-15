@@ -9,7 +9,7 @@ import { LogClass } from './logger';
 
 @LogClass
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-@Controller()
+@Controller('api')
 @UseGuards(AuthenticatedGuard)
 export class AppController {
   constructor(private readonly cls: ClsService) {}

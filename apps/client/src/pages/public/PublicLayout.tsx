@@ -1,36 +1,33 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { updateLeftTimeToContest } from '@core/helpers';
-import { PublicStore, useStore } from '@core/stores';
-import ContestCountdown from '@shared/ContestCountdown';
-import Login from '@shared/Login';
-import ProblemSet from '@shared/ProblemSet';
-
+import { Login } from '../../core';
 import PublicNavbar from './PublicNavbar';
 import HomeView from './views/HomeView';
 
 const PublicLayout: React.FC = observer(() => {
-  const { currentContest } = useStore<PublicStore>('publicStore');
-
   const [leftToContest, setLeftToContest] = useState<number>(0);
 
-  updateLeftTimeToContest(currentContest, setLeftToContest);
+  // updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
     <div className="flex h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <PublicNavbar />
       <div className="h-full">
         {leftToContest && !window.location.pathname.startsWith('/login') ? (
-          <ContestCountdown leftTime={leftToContest} />
+          <div>Contest Countdown</div>
         ) : (
-          <Switch>
-            <Route exact path="/" component={HomeView} />
-            <Route exact path="/problems" component={ProblemSet} />
-            <Route exact path="/login" component={Login} />
-            <Route render={() => <Redirect to={`/login?returnUrl=${location.pathname}`} />} />
-          </Switch>
+          // <ContestCountdown leftTime={leftToContest} />
+          <Routes>
+            <Route path="/" element={<HomeView />} />
+            {/* <Route  path="/problems" component={ProblemSet} /> */}
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="*"
+              element={<Navigate to={`/login?returnUrl=${window.location.pathname}`} replace />}
+            />
+          </Routes>
         )}
       </div>
     </div>

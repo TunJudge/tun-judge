@@ -1,22 +1,23 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { ThemeSwitcher } from 'tw-react-components';
 
-import ActiveContestSelector from '@shared/ActiveContestSelector';
-import { DarkModeSwitcher } from '@shared/DarkModeSwitcher';
-import NavBar from '@shared/NavBar';
+import { NavBar } from '../../core';
 
 type Tabs = '' | 'problems' | 'login';
 
 const PublicNavbar: React.FC = observer(() => {
-  const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  history.listen(() => setCurrentTab(location.pathname.replace(/\/?/g, '')));
+  const [currentTab, setCurrentTab] = useState(window.location.pathname.replace(/\/?/g, ''));
+
+  // history.listen(() => setCurrentTab(window.location.pathname.replace(/\/?/g, '')));
 
   const onLinkClick = (tab: Tabs) => {
     setCurrentTab(tab);
-    history.push(`/${tab}`);
+    navigate(tab);
+    // history.push(`/${tab}`);
   };
 
   return (
@@ -41,8 +42,8 @@ const PublicNavbar: React.FC = observer(() => {
           testId: 'navbar-login-btn',
           onClick: () => onLinkClick('login'),
         },
-        { content: <ActiveContestSelector className="text-white" /> },
-        { content: <DarkModeSwitcher /> },
+        // { content: <ActiveContestSelector className="text-white" /> },
+        { content: <ThemeSwitcher /> },
       ]}
     />
   );

@@ -19,9 +19,15 @@ import 'entities/score-cache'
 
 datasource db {
     provider = 'postgresql'
-    url = env("DATABASE_URL")
+    url = env('DATABASE_URL')
 }
 
 generator client {
-    provider = "prisma-client-js"
+    provider = 'prisma-client-js'
+}
+
+plugin hooks {
+    provider = '@zenstackhq/tanstack-query'
+    output = '../apps/client/src/hooks'
+    target = 'react'
 }

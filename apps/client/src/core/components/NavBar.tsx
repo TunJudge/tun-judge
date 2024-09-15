@@ -1,5 +1,5 @@
-import classNames from 'classnames';
 import React, { useState } from 'react';
+import { cn } from 'tw-react-components';
 
 type NavItem = {
   content: React.ReactNode;
@@ -15,30 +15,27 @@ type Props = {
   rightItems?: NavItem[];
 };
 
-const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
+export const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
   const [visibleMenu, setVisibleMenu] = useState(false);
 
-  const MenuItems = ({ items }: { items?: NavItem[] }) => (
-    <>
-      {items?.map(({ content, className, testId, active, onClick }, index) => (
-        <div
-          key={`item-${index}`}
-          className={classNames(
-            className,
-            'flex cursor-pointer items-center rounded-md px-3 py-2 font-medium lg:justify-center lg:text-center',
-            {
-              'bg-gray-900 text-white': active,
-              'text-gray-300 hover:bg-gray-700 hover:text-white': !active,
-            },
-          )}
-          test-id={testId}
-          onClick={onClick}
-        >
-          {content}
-        </div>
-      ))}
-    </>
-  );
+  const MenuItems = ({ items }: { items?: NavItem[] }) =>
+    items?.map(({ content, className, testId, active, onClick }, index) => (
+      <div
+        key={`item-${index}`}
+        className={cn(
+          'flex cursor-pointer items-center rounded-md px-3 py-2 font-medium lg:justify-center lg:text-center',
+          {
+            'bg-gray-900 text-white': active,
+            'text-gray-300 hover:bg-gray-700 hover:text-white': !active,
+          },
+          className,
+        )}
+        test-id={testId}
+        onClick={onClick}
+      >
+        {content}
+      </div>
+    ));
 
   return (
     <nav className="bg-gray-800">
@@ -92,5 +89,3 @@ const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
     </nav>
   );
 };
-
-export default NavBar;

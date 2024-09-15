@@ -1,11 +1,10 @@
 import { action, autorun, computed, observable } from 'mobx';
 import { Socket, io } from 'socket.io-client';
 
-import { ToastsStore } from '@core/stores/ToastsStore';
-import { TooltipStore } from '@core/stores/TooltipStore';
-
 import { User } from '../models';
 import http from '../utils/http-client';
+import { ToastsStore } from './ToastsStore';
+import { TooltipStore } from './TooltipStore';
 
 const SESSION_LENGTH = 24 * 60 * 60 * 1000;
 

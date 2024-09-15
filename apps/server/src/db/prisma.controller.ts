@@ -27,6 +27,7 @@ export class PrismaController {
             new Proxy({} as PrismaClient[PrismaEntity], {
               get: (_, operation: PrismaOperation) =>
                 async function (params: unknown) {
+                  console.log(entity, operation, params);
                   return logPrismaOperation(prisma, entity, operation)(params);
                 },
             }),

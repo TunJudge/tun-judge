@@ -12,7 +12,7 @@ export default defineConfig({
     port: 4200,
     host: 'localhost',
     proxy: {
-      '^/api/**': {
+      '^/api.*': {
         target: 'http://0.0.0.0:3000',
         changeOrigin: true,
         secure: false,
@@ -27,13 +27,6 @@ export default defineConfig({
   preview: {
     port: 4300,
     host: 'localhost',
-  },
-
-  resolve: {
-    alias: {
-      '@core': './src/core',
-      '@shared': './src/shared',
-    },
   },
 
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],

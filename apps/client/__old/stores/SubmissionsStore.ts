@@ -1,10 +1,9 @@
 import { action, observable } from 'mobx';
 
-import { PublicStore } from '@core/stores/PublicStore';
-
 import { isEmpty } from '../helpers';
 import { FileContent, Submission } from '../models';
 import http from '../utils/http-client';
+import { PublicStore } from './PublicStore';
 
 export type Filters = {
   contest: number;

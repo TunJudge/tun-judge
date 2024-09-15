@@ -1,27 +1,22 @@
 const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
 const { join } = require('path');
-const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     join(__dirname, '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'),
+    '../../node_modules/tw-react-components/**/*.{tsx,jsx,js,html}',
     ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {
     extend: {
-      colors: {
-        gray: colors.blueGray,
-        green: colors.green,
-        red: colors.rose,
+      transitionProperty: {
+        height: 'height',
+        width: 'width',
+        maxWidth: 'max-width',
       },
     },
   },
-  variants: {
-    extend: {
-      cursor: ['disabled'],
-      opacity: ['disabled'],
-    },
-  },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/forms'), require('tailwindcss-animate')],
 };

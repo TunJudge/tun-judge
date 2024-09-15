@@ -46,6 +46,8 @@ export function logPrismaOperation(
       throw error;
     };
 
+    console.log(params);
+
     return (prisma[entity][operation] as any)(params).then(onSuccess(time)).catch(onError(time));
   };
 }
