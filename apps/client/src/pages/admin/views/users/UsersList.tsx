@@ -1,11 +1,11 @@
-import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UsersIcon } from 'lucide-react';
+import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UserIcon } from 'lucide-react';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
 
 import { PageTemplate, User, getDisplayDate, useAuthContext, useSorting } from '../../../../core';
 import { useDeleteUser, useFindManyUser } from '../../../../hooks';
-import UserForm from './UserForm';
+import { UserForm } from './UserForm';
 
 const UsersList: React.FC = observer(() => {
   const { profile } = useAuthContext();
@@ -67,22 +67,8 @@ const UsersList: React.FC = observer(() => {
   ];
 
   return (
-    // <div className="p-4">
-    //   <DataTable<User>
-    //     header="Users"
-    //     dataFetcher={fetchAll}
-    //     dataDependencies={[updateCount]}
-    //     columns={columns}
-    //     ItemForm={isUserAdmin ? UserForm : undefined}
-    //     onDelete={remove}
-    //     withoutActions={!isUserAdmin}
-    //     canDelete={(item) => !!profile && item.username !== profile.username}
-    //     onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-    //   />
-    // </div>
-
     <PageTemplate
-      icon={UsersIcon}
+      icon={UserIcon}
       title="Users"
       actions={
         <>

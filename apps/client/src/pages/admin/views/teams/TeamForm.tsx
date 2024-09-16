@@ -1,107 +1,153 @@
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
-import { isEmpty } from '@core/helpers';
-import { Contest, Team, TeamCategory, User } from '@core/models';
-import { ContestsStore, TeamCategoriesStore, UsersStore, useStore } from '@core/stores';
-import { DataTableItemForm } from '@shared/data-table/DataTable';
-import { FormModal } from '@shared/dialogs';
-import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
-import DropDownInput from '@shared/form-controls/DropDownInput';
-import NumberInput from '@shared/form-controls/NumberInput';
-import TextInput from '@shared/form-controls/TextInput';
-import TextareaInput from '@shared/form-controls/TextareaInput';
-import { FormErrors } from '@shared/form-controls/types';
+import { useToastContext } from '../../../../core';
+import {
+  useFindManyContest,
+  useFindManyTeamCategory,
+  useFindManyUser,
+  useUpsertTeam,
+} from '../../../../hooks';
+import { Team } from './TeamsList';
 
-const TeamForm: DataTableItemForm<Team> = observer(({ item: team, isOpen, onClose, onSubmit }) => {
-  const { teamUsers: users, fetchAll: fetchAllUsers } = useStore<UsersStore>('usersStore');
-  const { data: contests, fetchAll: fetchAllContests } = useStore<ContestsStore>('contestsStore');
-  const { data: categories, fetchAll: fetchAllCategories } =
-    useStore<TeamCategoriesStore>('teamCategoriesStore');
+type Props = {
+  team?: Partial<Team>;
+  onSubmit?: (id: number) => void;
+  onClose: () => void;
+};
 
-  const [errors, setErrors] = useState<FormErrors<Team>>({});
+export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
+  const { toast } = useToastContext();
+
+  const form = useForm<Team>({ defaultValues: structuredClone(team) });
+
+  const { data: users = [] } = useFindManyUser();
+  const { data: categories = [] } = useFindManyTeamCategory();
+  const { data: contests = [] } = useFindManyContest();
+  const { mutateAsync } = useUpsertTeam();
 
   useEffect(() => {
-    Promise.all([fetchAllUsers(), fetchAllContests(), fetchAllCategories()]);
-  }, [fetchAllUsers, fetchAllContests, fetchAllCategories]);
+    form.reset(team);
+  }, [form, team]);
 
-  useEffect(() => {
-    setErrors({
-      name: isEmpty(team.name),
-      category: isEmpty(team.category),
-      users: isEmpty(team.users),
-    });
-  }, [team]);
+  // useEffect(() => {
+  //   setErrors({
+  //     name: isEmpty(team.name),
+  //     category: isEmpty(team.category),
+  //     users: isEmpty(team.users),
+  //   });
+  // }, [team]);
+
+  const handleSubmit = async ({
+    id,
+    category,
+    categoryId: _,
+    users = [],
+    contests = [],
+    ...team
+  }: Team) => {
+    try {
+      const newTeam = await mutateAsync({
+        where: { id },
+        create: {
+          ...team,
+          category: { connect: { id: category.id } },
+          users: { connect: users.map(({ id }) => ({ id })) },
+          contests: { createMany: { data: contests } },
+        },
+        update: {
+          ...team,
+          category: { connect: { id: category.id } },
+          users: { set: users.map(({ id }) => ({ id })) },
+          // contests: { set: contests },
+        },
+      });
+
+      if (!newTeam) return;
+
+      toast('success', `Team ${newTeam?.id ? 'updated' : 'created'} successfully`);
+
+      onSubmit?.(newTeam?.id);
+      onClose();
+    } catch (error: any) {
+      toast('error', `Failed to ${id ? 'update' : 'create'} team with error: ${error.message}`);
+    }
+  };
 
   return (
-    <FormModal
-      title={`${team.id ? 'Update' : 'Create'} Team`}
-      isOpen={isOpen}
+    <FormDialog
+      className="!max-w-4xl"
+      open={!!team}
+      form={form}
+      title={`${team?.id ? 'Update' : 'Create'} Team`}
+      onSubmit={handleSubmit}
       onClose={onClose}
-      onSubmit={() => onSubmit(team)}
-      submitDisabled={Object.values(errors).some((e) => e)}
     >
-      <div className="grid gap-2 sm:grid-cols-2">
-        <TextInput<Team>
-          entity={team}
-          field="name"
-          label="Name"
+      <Flex direction="column">
+        <Flex fullWidth>
+          <FormInputs.Text name="name" label="Name" placeholder="Name" required />
+          <FormInputs.Select
+            name="category"
+            label="Category"
+            placeholder="Category"
+            required
+            items={categories.map((category) => ({
+              id: category.id,
+              label: category.name,
+              value: category,
+            }))}
+            selectPredicate={(category) => category.id === team?.category?.id}
+          />
+        </Flex>
+        <FormInputs.Select
+          name="users"
+          label="Members"
+          placeholder="Members"
+          search
+          multiple
           required
-          errors={errors}
-          setErrors={setErrors}
+          items={users
+            .filter(
+              (user) =>
+                !user.teamId ||
+                team?.users?.some((t) => t.id === user.id) ||
+                user.teamId === team?.id,
+            )
+            .map((user) => ({
+              id: user.id,
+              label: user.username,
+              value: user,
+            }))}
+          selectPredicate={(user) => team?.users?.some((t) => t.id === user.id) ?? false}
         />
-        <DropDownInput<Team, TeamCategory>
-          entity={team}
-          field="category"
-          label="Category"
-          required
-          options={categories}
-          optionsTextField="name"
-          errors={errors}
-          setErrors={setErrors}
+        <Flex fullWidth>
+          <FormInputs.Number
+            name="penalty"
+            label="Penalty Time"
+            placeholder="Penalty Time"
+            defaultValue={0}
+          />
+          <FormInputs.Text name="room" label="Room" placeholder="Room" />
+        </Flex>
+        <FormInputs.Textarea name="comments" label="Comments" placeholder="Comments" />
+        <FormInputs.Select
+          name="contests"
+          label="Contests"
+          placeholder="Contests"
+          search
+          multiple
+          items={contests.map((contest) => ({
+            id: contest.id,
+            label: contest.name,
+            value: { contestId: contest.id },
+          }))}
+          selectPredicate={(contest) =>
+            team?.contests?.some((c) => c.contestId === contest.contestId) ?? false
+          }
         />
-      </div>
-      <DropDownInput<Team, User>
-        entity={team}
-        field="users"
-        label="Members"
-        search
-        multiple
-        required
-        options={users.filter(
-          (user) =>
-            !user.team || team.users?.some((t) => t.id === user.id) || user.team.id === team.id,
-        )}
-        optionsTextField="name"
-        errors={errors}
-        setErrors={setErrors}
-        onUnselect={(unselected) => {
-          const user = users.find((user) => user.id === unselected.id);
-          if (user) user.team = undefined;
-        }}
-      />
-      <div className="grid gap-2 sm:grid-cols-2">
-        <NumberInput<Team> entity={team} field="penalty" label="Penalty Time" defaultValue={0} />
-        <TextInput<Team> entity={team} field="room" label="Room" />
-      </div>
-      <TextareaInput<Team>
-        entity={team}
-        field="comments"
-        label="Comments"
-        placeHolder="Comments..."
-      />
-      <DropDownInput<Team, Contest>
-        entity={team}
-        field="contests"
-        label="Contests"
-        search
-        multiple
-        options={contests}
-        optionsTextField="name"
-      />
-      <CheckBoxInput<Team> entity={team} field="enabled" label="Enabled" defaultValue={true} />
-    </FormModal>
+        <FormInputs.Checkbox name="enabled" label="Enabled" defaultChecked={true} />
+      </Flex>
+    </FormDialog>
   );
-});
-
-export default TeamForm;
+};

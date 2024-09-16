@@ -5,6 +5,7 @@
   "private": true,
   "packageManager": "yarn@4.4.1",
   "scripts": {
+    "serve": "nx run-many --target=serve --projects=client,server",
     "lint": "nx affected:lint",
     "prettier": "nx format:check",
     "prettier:fix": "nx format:write",

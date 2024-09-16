@@ -35,8 +35,7 @@ import { RequestLoggerMiddleware } from './logger';
     ZenStackModule.registerAsync({
       global: true,
       useFactory: (prisma: PrismaService, cls: ClsService) => ({
-        getEnhancedPrisma: () =>
-          enhance(prisma, { user: cls.get('auth') }, { logPrismaQuery: true }),
+        getEnhancedPrisma: () => enhance(prisma, { user: cls.get('auth') }),
       }),
       inject: [PrismaService, ClsService],
       extraProviders: [PrismaService],

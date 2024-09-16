@@ -27,4 +27,6 @@ model Contest {
   clarifications       Clarification[]
 
   @@index([id, enabled])
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

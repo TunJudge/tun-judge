@@ -1,4 +1,4 @@
-import { LogOutIcon, MoonIcon, SunIcon, UserIcon } from 'lucide-react';
+import { LogOutIcon, MoonIcon, SunIcon, UserIcon, UsersIcon } from 'lucide-react';
 import { observer } from 'mobx-react';
 import React, { useMemo } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
@@ -12,6 +12,7 @@ import {
 } from 'tw-react-components';
 
 import { useAuthContext } from '../../core';
+import TeamsList from './views/teams/TeamsList';
 import UsersList from './views/users/UsersList';
 
 const AdminLayout: React.FC = observer(() => {
@@ -54,11 +55,11 @@ const AdminLayout: React.FC = observer(() => {
         title: 'Users',
         Icon: UserIcon,
       },
-      // {
-      //   pathname: 'teams',
-      //   title: 'Teams',
-      //   Icon: UsersIcon,
-      // },
+      {
+        pathname: 'teams',
+        title: 'Teams',
+        Icon: UsersIcon,
+      },
       // {
       //   pathname: 'team-categories',
       //   title: 'Team Categories',
@@ -151,8 +152,8 @@ const AdminLayout: React.FC = observer(() => {
   <Route exact path="/languages" component={LanguagesList} />
   <Route exact path="/executables" component={ExecutablesList} />*/}
         <Route path="/users" element={<UsersList />} />
-        {/*<Route exact path="/teams" component={TeamsList} />
-  <Route exact path="/team-categories" component={TeamCategoriesList} />
+        <Route path="/teams" element={<TeamsList />} />
+        {/*<Route exact path="/team-categories" component={TeamCategoriesList} />
   <Route exact path="/judge-hosts" component={JudgeHostsList} />
   <Route exact path="/submissions" component={SubmissionsList} />
   <Route path="/submissions/:id" component={SubmissionsView} />

@@ -101,5 +101,3 @@ export const UserForm: FC<Props> = ({ user, onClose, onSubmit }) => {
     </FormDialog>
   );
 };
-
-export default UserForm;

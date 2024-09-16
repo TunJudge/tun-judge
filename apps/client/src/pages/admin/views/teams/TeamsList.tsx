@@ -1,17 +1,40 @@
+import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UsersIcon } from 'lucide-react';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useState } from 'react';
+import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
 
-import { Team } from '@core/models';
-import { RootStore, TeamsStore, useStore } from '@core/stores';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+import { Prisma } from '@prisma/client';
 
-import TeamForm from './TeamForm';
+import { PageTemplate, useAuthContext, useSorting } from '../../../../core';
+import { useDeleteTeam, useFindManyTeam } from '../../../../hooks';
+import { TeamForm } from './TeamForm';
+
+export type Team = Prisma.TeamGetPayload<{
+  include: { category: true; users: true; contests: true };
+}>;
 
 const TeamsList: React.FC = observer(() => {
-  const { isUserAdmin } = useStore<RootStore>('rootStore');
-  const { fetchAll, updateCount, create, update, remove } = useStore<TeamsStore>('teamsStore');
+  const { profile } = useAuthContext();
+  const isUserAdmin = profile?.role.name === 'admin';
 
-  const columns: ListPageTableColumn<Team>[] = [
+  const [team, setTeam] = useState<Partial<Team>>();
+  const [deleteDialogState, setDeleteDialogState] = useState<{
+    open: boolean;
+    onConfirm: () => void;
+  }>();
+  const { sorting, setSorting } = useSorting<Team>();
+
+  const {
+    data: teams = [],
+    isLoading,
+    refetch,
+  } = useFindManyTeam({
+    include: { category: true, users: true, contests: true },
+    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
+  });
+  const { mutate: deleteTeam } = useDeleteTeam();
+
+  const columns: DataTableColumn<Team>[] = [
     {
       header: 'Name',
       field: 'name',
@@ -42,19 +65,55 @@ const TeamsList: React.FC = observer(() => {
   ];
 
   return (
-    <div className="p-4">
-      <DataTable<Team>
-        header="Teams"
-        dataFetcher={fetchAll}
-        dataDependencies={[updateCount]}
+    <PageTemplate
+      icon={UsersIcon}
+      title="Users"
+      actions={
+        <>
+          <Button prefixIcon={RefreshCcw} onClick={() => refetch()} />
+          <Button prefixIcon={PlusIcon} onClick={() => setTeam({})} />
+        </>
+      }
+      fullWidth
+    >
+      <DataTable
+        rows={teams}
         columns={columns}
-        ItemForm={isUserAdmin ? TeamForm : undefined}
-        onDelete={remove}
-        withoutActions={!isUserAdmin}
-        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-        rowBackgroundColor={(item) => (!item.users.length ? 'red' : 'white')}
+        isLoading={isLoading}
+        sorting={{ sorting, onSortingChange: setSorting }}
+        rowClassName={(team) => (!team.users.length ? 'bg-red-100' : '')}
+        actions={[
+          {
+            icon: EditIcon,
+            hide: !isUserAdmin,
+            onClick: setTeam,
+          },
+          {
+            color: 'red',
+            icon: Trash2Icon,
+            hide: !isUserAdmin,
+            onClick: (item) =>
+              setDeleteDialogState({
+                open: true,
+                onConfirm: () => deleteTeam({ where: { id: item.id } }),
+              }),
+          },
+        ]}
       />
-    </div>
+      <ConfirmDialog
+        open={deleteDialogState?.open ?? false}
+        title="Delete Team"
+        onConfirm={deleteDialogState?.onConfirm ?? (() => undefined)}
+        onClose={() => setDeleteDialogState(undefined)}
+      >
+        Are you sure you want to delete this team?
+      </ConfirmDialog>
+      <TeamForm
+        team={team}
+        onSubmit={() => setTeam(undefined)}
+        onClose={() => setTeam(undefined)}
+      />
+    </PageTemplate>
   );
 });
 
