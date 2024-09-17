@@ -1,10 +1,10 @@
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 import classNames from 'classnames';
 import React from 'react';
 
 import { dateComparator, formatBytes, formatRestTime } from '@core/helpers';
 import { Judging, Submission } from '@core/models';
 import { resultMap } from '@core/types';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 const SubmissionViewDetails: React.FC<{
   submission: Submission;

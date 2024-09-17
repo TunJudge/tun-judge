@@ -5,6 +5,9 @@ import {
   PlusIcon,
   TrashIcon,
 } from '@heroicons/react/outline';
+import { TestcaseContentDialog } from '@shared/dialogs';
+import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
+import Tooltip from '@shared/tooltip/Tooltip';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
@@ -12,9 +15,6 @@ import React, { useState } from 'react';
 import { formatBytes } from '@core/helpers';
 import { Problem, Testcase } from '@core/models';
 import { RootStore, TestcasesStore, useStore } from '@core/stores';
-import { TestcaseContentDialog } from '@shared/dialogs';
-import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
-import Tooltip from '@shared/tooltip/Tooltip';
 
 import TestcaseBulkUploader from './TestcaseBulkUploader';
 import TestcaseForm from './TestcaseForm';

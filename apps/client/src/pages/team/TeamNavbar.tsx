@@ -1,5 +1,9 @@
 import { Menu } from '@headlessui/react';
 import { LogoutIcon, UploadIcon, UserIcon } from '@heroicons/react/outline';
+import ActiveContestSelector from '@shared/ActiveContestSelector';
+import { DarkModeSwitcher } from '@shared/DarkModeSwitcher';
+import NavBar from '@shared/NavBar';
+import SubmitForm from '@shared/SubmitForm';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -7,10 +11,6 @@ import { useHistory } from 'react-router-dom';
 import { contestStartedAndNotOver } from '@core/helpers';
 import { Submission } from '@core/models';
 import { PublicStore, RootStore, TeamStore, useStore } from '@core/stores';
-import ActiveContestSelector from '@shared/ActiveContestSelector';
-import { DarkModeSwitcher } from '@shared/DarkModeSwitcher';
-import NavBar from '@shared/NavBar';
-import SubmitForm from '@shared/SubmitForm';
 
 type Tabs = '' | 'problems' | 'scoreboard';
 

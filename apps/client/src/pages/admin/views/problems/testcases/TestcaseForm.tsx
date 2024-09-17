@@ -1,13 +1,13 @@
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
-
-import { isEmpty } from '@core/helpers';
-import { File, Testcase } from '@core/models';
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import FileInput from '@shared/form-controls/FileInput';
 import TextInput from '@shared/form-controls/TextInput';
 import { FormErrors } from '@shared/form-controls/types';
+import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
+
+import { isEmpty } from '@core/helpers';
+import { File, Testcase } from '@core/models';
 
 const TestcaseForm: DataTableItemForm<Testcase> = observer(
   ({ item: testcase, isOpen, onClose, onSubmit }) => {

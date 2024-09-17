@@ -2,7 +2,8 @@ import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { Login } from '../../core';
+import { Login } from '@core/components';
+
 import PublicNavbar from './PublicNavbar';
 import HomeView from './views/HomeView';
 

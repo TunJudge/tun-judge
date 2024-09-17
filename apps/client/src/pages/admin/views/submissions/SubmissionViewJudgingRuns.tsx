@@ -1,4 +1,10 @@
 import { EyeIcon } from '@heroicons/react/outline';
+import {
+  DiffValues,
+  DiffViewerDialog,
+  RunContentDialog,
+  TestcaseContentDialog,
+} from '@shared/dialogs';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
@@ -7,12 +13,6 @@ import { formatBytes } from '@core/helpers';
 import { Judging, JudgingRun, Testcase } from '@core/models';
 import { SubmissionsStore, TestcasesStore, useStore } from '@core/stores';
 import { resultMap } from '@core/types';
-import {
-  DiffValues,
-  DiffViewerDialog,
-  RunContentDialog,
-  TestcaseContentDialog,
-} from '@shared/dialogs';
 
 const SubmissionsViewJudgingRuns: React.FC<{ judging?: Judging }> = observer(({ judging }) => {
   const submissionsStore = useStore<SubmissionsStore>('submissionsStore');

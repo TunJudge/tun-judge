@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ThemeSwitcher } from 'tw-react-components';
 
-import { NavBar } from '../../core';
+import { NavBar } from '@core/components';
 
 type Tabs = '' | 'problems' | 'login';
 

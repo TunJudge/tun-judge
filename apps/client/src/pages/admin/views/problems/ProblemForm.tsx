@@ -1,9 +1,3 @@
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
-
-import { isEmpty } from '@core/helpers';
-import { Executable, Problem } from '@core/models';
-import { ExecutablesStore, useStore } from '@core/stores';
 import { DataTableItemForm } from '@shared/data-table/DataTable';
 import { FormModal } from '@shared/dialogs';
 import DropDownInput from '@shared/form-controls/DropDownInput';
@@ -11,6 +5,12 @@ import FileInput from '@shared/form-controls/FileInput';
 import NumberInput from '@shared/form-controls/NumberInput';
 import TextInput from '@shared/form-controls/TextInput';
 import { FormErrors } from '@shared/form-controls/types';
+import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
+
+import { isEmpty } from '@core/helpers';
+import { Executable, Problem } from '@core/models';
+import { ExecutablesStore, useStore } from '@core/stores';
 
 const ProblemForm: DataTableItemForm<Problem> = observer(
   ({ item: problem, isOpen, onClose, onSubmit }) => {

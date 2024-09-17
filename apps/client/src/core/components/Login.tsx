@@ -1,9 +1,9 @@
-import { MoonIcon, SunIcon } from 'lucide-react';
 import { FC } from 'react';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Card, Flex, FormInputs, useLayoutContext } from 'tw-react-components';
+import { Button, Card, Flex, FormInputs } from 'tw-react-components';
 
+import { version } from '../../../package.json';
 import { useAuthContext } from '../contexts';
 import { request } from '../utils';
 
@@ -65,7 +65,7 @@ export const Login: FC<{ logo?: string; basePath?: string }> = ({ logo, basePath
             </form>
           </Card>
         </FormProvider>
-        {/* <div className="mt-2 text-sm">TunJudge v{version}</div> */}
+        <div className="mt-2 text-sm">TunJudge v{version}</div>
       </Flex>
     </Flex>
   );

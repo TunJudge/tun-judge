@@ -1,10 +1,10 @@
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Problem } from '@core/models';
 import { ProblemsStore, RootStore, useStore } from '@core/stores';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import ProblemForm from './ProblemForm';
 

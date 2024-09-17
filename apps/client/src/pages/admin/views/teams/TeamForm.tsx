@@ -2,13 +2,14 @@ import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
-import { useToastContext } from '../../../../core';
+import { useToastContext } from '@core/contexts';
 import {
   useFindManyContest,
   useFindManyTeamCategory,
   useFindManyUser,
   useUpsertTeam,
-} from '../../../../hooks';
+} from '@models';
+
 import { Team } from './TeamsList';
 
 type Props = {

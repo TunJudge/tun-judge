@@ -1,4 +1,7 @@
 import { RefreshIcon } from '@heroicons/react/outline';
+import HeaderActionBar from '@shared/HeaderActionBar';
+import { NoActiveContest } from '@shared/NoActiveContest';
+import ChatBox from '@shared/chat-box/ChatBox';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 
@@ -6,9 +9,6 @@ import { ClarificationsStore } from '@core/stores/ClarificationsStore';
 import { PublicStore } from '@core/stores/PublicStore';
 import { RootStore } from '@core/stores/RootStore';
 import { useStore } from '@core/stores/useStore';
-import HeaderActionBar from '@shared/HeaderActionBar';
-import { NoActiveContest } from '@shared/NoActiveContest';
-import ChatBox from '@shared/chat-box/ChatBox';
 
 import ClarificationsSidebar from './ClarificationsSidebar';
 

@@ -1,4 +1,11 @@
-import { LogOutIcon, MoonIcon, SunIcon, UserIcon, UsersIcon } from 'lucide-react';
+import {
+  LogOutIcon,
+  MoonIcon,
+  SunIcon,
+  TagsIcon,
+  UserRoundIcon,
+  UsersRoundIcon,
+} from 'lucide-react';
 import { observer } from 'mobx-react';
 import React, { useMemo } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
@@ -11,7 +18,10 @@ import {
   useLayoutContext,
 } from 'tw-react-components';
 
-import { useAuthContext } from '../../core';
+import { useAuthContext } from '@core/contexts';
+
+import { version } from '../../../package.json';
+import TeamCategoriesList from './views/team-category/TeamCategoriesList';
 import TeamsList from './views/teams/TeamsList';
 import UsersList from './views/users/UsersList';
 
@@ -53,18 +63,18 @@ const AdminLayout: React.FC = observer(() => {
       {
         pathname: 'users',
         title: 'Users',
-        Icon: UserIcon,
+        Icon: UserRoundIcon,
       },
       {
         pathname: 'teams',
         title: 'Teams',
-        Icon: UsersIcon,
+        Icon: UsersRoundIcon,
       },
-      // {
-      //   pathname: 'team-categories',
-      //   title: 'Team Categories',
-      //   Icon: TagIcon,
-      // },
+      {
+        pathname: 'team-categories',
+        title: 'Team Categories',
+        Icon: TagsIcon,
+      },
       // {
       //   pathname: 'judge-hosts',
       //   title: 'Judge Hosts',
@@ -97,6 +107,7 @@ const AdminLayout: React.FC = observer(() => {
 
   return (
     <Layout
+      className="p-0"
       sidebarProps={{
         items,
         smallLogo: 'TJ',
@@ -135,9 +146,9 @@ const AdminLayout: React.FC = observer(() => {
                   </DropdownMenu.Item>
                 </Link>
                 <DropdownMenu.Separator />
-                {/* <DropdownMenu.Item className="py-0.5 text-sm font-semibold" disabled>
+                <DropdownMenu.Item className="py-0.5 text-sm font-semibold" disabled>
                   v{version}
-                </DropdownMenu.Item> */}
+                </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
           </Flex>
@@ -153,8 +164,8 @@ const AdminLayout: React.FC = observer(() => {
   <Route exact path="/executables" component={ExecutablesList} />*/}
         <Route path="/users" element={<UsersList />} />
         <Route path="/teams" element={<TeamsList />} />
-        {/*<Route exact path="/team-categories" component={TeamCategoriesList} />
-  <Route exact path="/judge-hosts" component={JudgeHostsList} />
+        <Route path="/team-categories" element={<TeamCategoriesList />} />
+        {/*<Route exact path="/judge-hosts" component={JudgeHostsList} />
   <Route exact path="/submissions" component={SubmissionsList} />
   <Route path="/submissions/:id" component={SubmissionsView} />
   <Route exact path="/clarifications" component={ClarificationsList} />

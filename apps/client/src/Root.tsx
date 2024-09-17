@@ -5,7 +5,9 @@ import { Spinner } from 'tw-react-components';
 
 import { Role } from '@prisma/client';
 
-import { Logout, useAuthContext } from './core';
+import { Logout } from '@core/components';
+import { useAuthContext } from '@core/contexts';
+
 import AdminLayout from './pages/admin/AdminLayout';
 import PublicLayout from './pages/public/PublicLayout';
 

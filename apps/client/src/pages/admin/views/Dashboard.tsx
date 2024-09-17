@@ -6,6 +6,7 @@ import {
   PlayIcon,
   StopIcon,
 } from '@heroicons/react/outline';
+import { NoActiveContest } from '@shared/NoActiveContest';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -13,7 +14,6 @@ import React from 'react';
 import { getDisplayDate } from '@core/helpers';
 import { Contest } from '@core/models';
 import { ContestsStore, PublicStore, useStore } from '@core/stores';
-import { NoActiveContest } from '@shared/NoActiveContest';
 
 const Dashboard: React.FC = observer(() => {
   const { update } = useStore<ContestsStore>('contestsStore');

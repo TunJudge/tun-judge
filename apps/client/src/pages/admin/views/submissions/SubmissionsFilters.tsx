@@ -1,9 +1,9 @@
+import DropDownInput from '@shared/form-controls/DropDownInput';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 
 import { LanguagesStore, PublicStore, useStore } from '@core/stores';
 import { Filters } from '@core/stores/SubmissionsStore';
-import DropDownInput from '@shared/form-controls/DropDownInput';
 
 const SubmissionsFilters: React.FC<{
   filters: Partial<Filters>;

@@ -1,10 +1,14 @@
-import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UserIcon } from 'lucide-react';
+import { useDeleteUser, useFindManyUser } from '@models';
+import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UserRoundIcon } from 'lucide-react';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
 
-import { PageTemplate, User, getDisplayDate, useAuthContext, useSorting } from '../../../../core';
-import { useDeleteUser, useFindManyUser } from '../../../../hooks';
+import { PageTemplate } from '@core/components';
+import { User, useAuthContext } from '@core/contexts';
+import { useSorting } from '@core/hooks';
+import { getDisplayDate } from '@core/utils';
+
 import { UserForm } from './UserForm';
 
 const UsersList: React.FC = observer(() => {
@@ -68,7 +72,7 @@ const UsersList: React.FC = observer(() => {
 
   return (
     <PageTemplate
-      icon={UserIcon}
+      icon={UserRoundIcon}
       title="Users"
       actions={
         <>

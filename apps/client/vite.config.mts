@@ -29,6 +29,16 @@ export default defineConfig({
     host: 'localhost',
   },
 
+  resolve: {
+    alias: {
+      '@core/components': '/src/core/components',
+      '@core/contexts': '/src/core/contexts/index.ts',
+      '@core/hooks': '/src/core/hooks',
+      '@core/utils': '/src/core/utils',
+      '@models': '/src/models',
+    },
+  },
+
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
 
   // Uncomment this if you are using workers.

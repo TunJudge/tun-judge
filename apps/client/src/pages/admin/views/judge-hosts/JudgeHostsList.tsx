@@ -1,3 +1,4 @@
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
@@ -5,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import { getDisplayDate } from '@core/helpers';
 import { JudgeHost } from '@core/models';
 import { JudgeHostsStore, RootStore, useStore } from '@core/stores';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import JudgeHostLogsViewer from './JudgeHostLogsViewer';
 

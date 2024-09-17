@@ -1,28 +1,52 @@
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
-import classNames from 'classnames';
+import { useDeleteTeamCategory, useFindManyTeamCategory } from '@models';
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  EditIcon,
+  PlusIcon,
+  RefreshCcw,
+  TagsIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useState } from 'react';
+import { Button, ConfirmDialog, DataTable, DataTableColumn, cn } from 'tw-react-components';
 
-import { getRGBColorContrast } from '@core/helpers';
-import { TeamCategory } from '@core/models';
-import { RootStore, TeamCategoriesStore, useStore } from '@core/stores';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+import { Prisma } from '@prisma/client';
 
-import TeamCategoryForm from './TeamCategoryForm';
+import { PageTemplate } from '@core/components';
+import { useAuthContext } from '@core/contexts';
+import { useSorting } from '@core/hooks';
+import { getRGBColorContrast } from '@core/utils';
+
+import { TeamCategoryForm } from './TeamCategoryForm';
+
+export type TeamCategory = Prisma.TeamCategoryGetPayload<{
+  include: { teams: true };
+}>;
 
 const TeamCategoriesList: React.FC = observer(() => {
-  const { isUserAdmin } = useStore<RootStore>('rootStore');
-  const {
-    data: teamCategories,
-    updateCount,
-    fetchAll,
-    create,
-    update,
-    move,
-    remove,
-  } = useStore<TeamCategoriesStore>('teamCategoriesStore');
+  const { profile } = useAuthContext();
+  const isUserAdmin = profile?.role.name === 'admin';
 
-  const columns: ListPageTableColumn<TeamCategory>[] = [
+  const [teamCategory, setTeamCategory] = useState<Partial<TeamCategory>>();
+  const [deleteDialogState, setDeleteDialogState] = useState<{
+    open: boolean;
+    onConfirm: () => void;
+  }>();
+  const { sorting, setSorting } = useSorting<TeamCategory>();
+
+  const {
+    data: teamCategories = [],
+    isLoading,
+    refetch,
+  } = useFindManyTeamCategory({
+    include: { teams: true },
+    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
+  });
+  const { mutate: deleteTeamCategory } = useDeleteTeamCategory();
+
+  const columns: DataTableColumn<TeamCategory>[] = [
     {
       header: 'Name',
       field: 'name',
@@ -30,24 +54,24 @@ const TeamCategoriesList: React.FC = observer(() => {
     },
     {
       header: 'Sort Order',
-      field: 'sortOrder',
+      field: 'rank',
       render: (category) => (
         <div className="flex items-center justify-center gap-1">
           {isUserAdmin && (
             <ChevronDownIcon
-              className={classNames('h-4 w-4 cursor-pointer', {
-                'opacity-0': category.sortOrder + 1 >= teamCategories.length,
+              className={cn('h-4 w-4 cursor-pointer', {
+                'opacity-0': category.rank + 1 >= teamCategories.length,
               })}
-              onClick={() => move(category.id, 'down')}
+              // onClick={() => move(category.id, 'down')}
             />
           )}
-          {category.sortOrder}
+          {category.rank}
           {isUserAdmin && (
             <ChevronUpIcon
-              className={classNames('h-4 w-4 cursor-pointer', {
-                'opacity-0': category.sortOrder === 0,
+              className={cn('h-4 w-4 cursor-pointer', {
+                'opacity-0': category.rank === 0,
               })}
-              onClick={() => (category.sortOrder > 0 ? move(category.id, 'up') : undefined)}
+              // onClick={() => (category.rank > 0 ? move(category.id, 'up') : undefined)}
             />
           )}
         </div>
@@ -56,10 +80,10 @@ const TeamCategoriesList: React.FC = observer(() => {
     {
       header: 'Color',
       field: 'color',
-      textAlign: 'center',
+      align: 'center',
       render: (category) => (
         <div
-          className={classNames('rounded-md px-2', {
+          className={cn('rounded-md px-2', {
             'text-white': getRGBColorContrast(category.color) <= 0.5,
             'text-black': getRGBColorContrast(category.color) > 0.5,
           })}
@@ -82,18 +106,54 @@ const TeamCategoriesList: React.FC = observer(() => {
   ];
 
   return (
-    <div className="p-4">
-      <DataTable<TeamCategory>
-        header="Team Categories"
-        dataFetcher={fetchAll}
-        dataDependencies={[updateCount]}
+    <PageTemplate
+      icon={TagsIcon}
+      title="Teams"
+      actions={
+        <>
+          <Button prefixIcon={RefreshCcw} onClick={() => refetch()} />
+          <Button prefixIcon={PlusIcon} onClick={() => setTeamCategory({})} />
+        </>
+      }
+      fullWidth
+    >
+      <DataTable
+        rows={teamCategories}
         columns={columns}
-        ItemForm={isUserAdmin ? TeamCategoryForm : undefined}
-        onDelete={remove}
-        withoutActions={!isUserAdmin}
-        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
+        isLoading={isLoading}
+        sorting={{ sorting, onSortingChange: setSorting }}
+        actions={[
+          {
+            icon: EditIcon,
+            hide: !isUserAdmin,
+            onClick: setTeamCategory,
+          },
+          {
+            color: 'red',
+            icon: Trash2Icon,
+            hide: !isUserAdmin,
+            onClick: (item) =>
+              setDeleteDialogState({
+                open: true,
+                onConfirm: () => deleteTeamCategory({ where: { id: item.id } }),
+              }),
+          },
+        ]}
       />
-    </div>
+      <ConfirmDialog
+        open={deleteDialogState?.open ?? false}
+        title="Delete Team"
+        onConfirm={deleteDialogState?.onConfirm ?? (() => undefined)}
+        onClose={() => setDeleteDialogState(undefined)}
+      >
+        Are you sure you want to delete this team?
+      </ConfirmDialog>
+      <TeamCategoryForm
+        teamCategory={teamCategory}
+        onSubmit={() => setTeamCategory(undefined)}
+        onClose={() => setTeamCategory(undefined)}
+      />
+    </PageTemplate>
   );
 });
 

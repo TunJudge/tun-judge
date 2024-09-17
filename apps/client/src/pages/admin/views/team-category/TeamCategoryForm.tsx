@@ -1,65 +1,85 @@
-import React, { useEffect, useState } from 'react';
+import { useUpsertTeamCategory } from '@models';
+import { FC, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
-import { isEmpty } from '@core/helpers';
-import { TeamCategory } from '@core/models';
-import { DataTableItemForm } from '@shared/data-table/DataTable';
-import { FormModal } from '@shared/dialogs';
-import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
-import TextInput from '@shared/form-controls/TextInput';
-import { FormErrors } from '@shared/form-controls/types';
+import { useToastContext } from '@core/contexts';
 
-const TeamCategoryForm: DataTableItemForm<TeamCategory> = ({
-  item: teamCategory,
-  isOpen,
-  onClose,
-  onSubmit,
-}) => {
-  const [errors, setErrors] = useState<FormErrors<TeamCategory>>({});
+import { TeamCategory } from './TeamCategoriesList';
+
+type Props = {
+  teamCategory?: Partial<TeamCategory>;
+  onSubmit?: (id: number) => void;
+  onClose: () => void;
+};
+
+export const TeamCategoryForm: FC<Props> = ({ teamCategory, onClose, onSubmit }) => {
+  const { toast } = useToastContext();
+
+  const form = useForm<TeamCategory>({ defaultValues: structuredClone(teamCategory) });
+
+  const { mutateAsync } = useUpsertTeamCategory();
 
   useEffect(() => {
-    setErrors({
-      name: isEmpty(teamCategory.name),
-    });
-  }, [teamCategory]);
+    form.reset(teamCategory);
+  }, [form, teamCategory]);
+
+  // useEffect(() => {
+  //   setErrors({
+  //     name: isEmpty(teamCategory.name),
+  //   });
+  // }, [teamCategory]);
+
+  const handleSubmit = async ({ id, teams: _, ...teamCategory }: TeamCategory) => {
+    try {
+      const newTeamCategory = await mutateAsync({
+        where: { id },
+        create: teamCategory,
+        update: teamCategory,
+      });
+
+      if (!newTeamCategory) return;
+
+      toast('success', `Team category ${newTeamCategory?.id ? 'updated' : 'created'} successfully`);
+
+      onSubmit?.(newTeamCategory?.id);
+      onClose();
+    } catch (error: any) {
+      toast(
+        'error',
+        `Failed to ${id ? 'update' : 'create'} team category with error: ${error.message}`,
+      );
+    }
+  };
 
   return (
-    <FormModal
-      title={`${teamCategory.id ? 'Update' : 'Create'} Team Category`}
-      isOpen={isOpen}
+    <FormDialog
+      className="!max-w-4xl"
+      open={!!teamCategory}
+      form={form}
+      title={`${teamCategory?.id ? 'Update' : 'Create'} Team Category`}
+      onSubmit={handleSubmit}
       onClose={onClose}
-      onSubmit={() => onSubmit(teamCategory)}
-      submitDisabled={Object.values(errors).some((e) => e)}
     >
-      <div className="grid gap-2 sm:grid-cols-5">
-        <TextInput<TeamCategory>
-          entity={teamCategory}
-          field="name"
-          label="Name"
-          required
-          width="3"
-          errors={errors}
-          setErrors={setErrors}
+      <Flex direction="column">
+        <Flex fullWidth>
+          <FormInputs.Text name="name" label="Name" placeholder="Name" required width="3" />
+          <FormInputs.Text
+            name="color"
+            label="Color"
+            placeholder="#000000"
+            width="2"
+            required
+            pattern={/(#[0-9a-fA-F]{6})*/}
+          />
+        </Flex>
+        <FormInputs.Checkbox
+          name="visible"
+          label="Visible"
+          description="Whether the teams under this category will be visible in the public scoreboard?"
+          defaultChecked={true}
         />
-        <TextInput<TeamCategory>
-          entity={teamCategory}
-          field="color"
-          label="Color"
-          width="2"
-          required
-          placeHolder="#666666"
-          pattern="(#[0-9a-fA-F]{6})*"
-          errors={errors}
-          setErrors={setErrors}
-        />
-      </div>
-      <CheckBoxInput<TeamCategory>
-        entity={teamCategory}
-        field="visible"
-        label="Visible"
-        description="Whether the teams under this category will be visible in the public scoreboard?"
-        defaultValue={true}
-      />
-    </FormModal>
+      </Flex>
+    </FormDialog>
   );
 };
-export default TeamCategoryForm;

@@ -1,4 +1,6 @@
 import { EyeIcon } from '@heroicons/react/outline';
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+import { ChatBoxDialog } from '@shared/dialogs';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -6,8 +8,6 @@ import React from 'react';
 import { countUnseenMessages, generalComparator } from '@core/helpers';
 import { Clarification } from '@core/models';
 import { ClarificationsStore, PublicStore, RootStore, useStore } from '@core/stores';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
-import { ChatBoxDialog } from '@shared/dialogs';
 
 const ClarificationsList: React.FC = observer(() => {
   const { profile, updatesCount } = useStore<RootStore>('rootStore');

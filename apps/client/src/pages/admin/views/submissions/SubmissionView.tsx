@@ -1,3 +1,5 @@
+import CodeEditor from '@shared/CodeEditor';
+import Spinner from '@shared/Spinner';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
@@ -6,8 +8,6 @@ import { dateComparator } from '@core/helpers';
 import { Judging } from '@core/models';
 import { RootStore, SubmissionsStore, useStore } from '@core/stores';
 import { languageMap } from '@core/types';
-import CodeEditor from '@shared/CodeEditor';
-import Spinner from '@shared/Spinner';
 
 import SubmissionViewDetails from './SubmissionViewDetails';
 import SubmissionViewHeader from './SubmissionViewHeader';

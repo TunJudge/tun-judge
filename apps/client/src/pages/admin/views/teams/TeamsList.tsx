@@ -1,12 +1,15 @@
-import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UsersIcon } from 'lucide-react';
+import { useDeleteTeam, useFindManyTeam } from '@models';
+import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UsersRoundIcon } from 'lucide-react';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
 
 import { Prisma } from '@prisma/client';
 
-import { PageTemplate, useAuthContext, useSorting } from '../../../../core';
-import { useDeleteTeam, useFindManyTeam } from '../../../../hooks';
+import { PageTemplate } from '@core/components';
+import { useAuthContext } from '@core/contexts';
+import { useSorting } from '@core/hooks';
+
 import { TeamForm } from './TeamForm';
 
 export type Team = Prisma.TeamGetPayload<{
@@ -46,7 +49,7 @@ const TeamsList: React.FC = observer(() => {
       render: (team) => team.category.name,
     },
     {
-      header: 'User',
+      header: 'Users',
       field: 'users',
       render: (team) =>
         team.users.map((user) => `${user.username} (${user.lastIpAddress ?? '-'})`).join(', ') ||
@@ -66,8 +69,8 @@ const TeamsList: React.FC = observer(() => {
 
   return (
     <PageTemplate
-      icon={UsersIcon}
-      title="Users"
+      icon={UsersRoundIcon}
+      title="Teams"
       actions={
         <>
           <Button prefixIcon={RefreshCcw} onClick={() => refetch()} />

@@ -1,10 +1,10 @@
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+import { CodeEditorDialog } from '@shared/dialogs';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 
 import { Executable, ExecutableType } from '@core/models';
 import { ExecutablesStore, RootStore, useStore } from '@core/stores';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
-import { CodeEditorDialog } from '@shared/dialogs';
 
 import ExecutableForm from './ExecutableForm';
 

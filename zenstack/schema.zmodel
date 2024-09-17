@@ -28,6 +28,6 @@ generator client {
 
 plugin hooks {
     provider = '@zenstackhq/tanstack-query'
-    output = '../apps/client/src/hooks'
+    output = '../apps/client/src/models'
     target = 'react'
 }

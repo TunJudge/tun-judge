@@ -1,4 +1,5 @@
 import { RefreshIcon } from '@heroicons/react/outline';
+import Tooltip from '@shared/tooltip/Tooltip';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -6,7 +7,6 @@ import { useHistory } from 'react-router-dom';
 import { dateComparator, isSubmissionClaimedByMe } from '@core/helpers';
 import { Judging, Submission } from '@core/models';
 import { RootStore, SubmissionsStore, useStore } from '@core/stores';
-import Tooltip from '@shared/tooltip/Tooltip';
 
 const SubmissionViewHeader: React.FC<{ submission: Submission }> = observer(({ submission }) => {
   const { profile } = useStore<RootStore>('rootStore');

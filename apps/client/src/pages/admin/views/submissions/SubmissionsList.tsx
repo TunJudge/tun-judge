@@ -1,4 +1,6 @@
 import { CheckCircleIcon, MinusCircleIcon, XCircleIcon } from '@heroicons/react/outline';
+import SubmissionResult from '@shared/SubmissionResult';
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -6,8 +8,6 @@ import { useHistory } from 'react-router-dom';
 import { dateComparator, formatRestTime, getJudgingRunColor } from '@core/helpers';
 import { Judging, Submission } from '@core/models';
 import { PublicStore, RootStore, SubmissionsStore, useStore } from '@core/stores';
-import SubmissionResult from '@shared/SubmissionResult';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import SubmissionsFilters from './SubmissionsFilters';
 import SubmissionsListPagination from './SubmissionsListPagination';

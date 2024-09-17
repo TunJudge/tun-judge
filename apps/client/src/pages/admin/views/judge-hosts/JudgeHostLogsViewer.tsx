@@ -1,8 +1,8 @@
+import { SimpleDialog } from '@shared/dialogs';
 import Ansi from 'ansi-to-react';
 import React, { useEffect, useState } from 'react';
 
 import { RootStore, useStore } from '@core/stores';
-import { SimpleDialog } from '@shared/dialogs';
 
 type JudgeHostLogsViewerProps = { hostname?: string; dismiss: () => void };
 

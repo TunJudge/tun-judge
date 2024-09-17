@@ -4,9 +4,10 @@ import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { LayoutContextProvider, Spinner } from 'tw-react-components';
 
+import { AuthContextProvider, ToastContextProvider } from '@core/contexts';
+import { Provider as ZenStackHooksProvider } from '@models';
+
 import Root from './Root';
-import { AuthContextProvider, ToastContextProvider } from './core';
-import { Provider as ZenStackHooksProvider } from './hooks';
 import './index.scss';
 
 const queryClient = new QueryClient();

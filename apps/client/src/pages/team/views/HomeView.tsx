@@ -1,7 +1,6 @@
-import React from 'react';
-
 import ProblemSet from '@shared/ProblemSet';
 import Scoreboard from '@shared/Scoreboard';
+import React from 'react';
 
 import ClarificationsList from './ClarificationsList';
 import SubmissionsList from './SubmissionsList';

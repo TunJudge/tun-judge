@@ -1,3 +1,4 @@
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -5,7 +6,6 @@ import React from 'react';
 import { getDisplayDate } from '@core/helpers';
 import { Contest } from '@core/models';
 import { ContestsStore, RootStore, useStore } from '@core/stores';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
 
 import ContestForm from './ContestForm';
 

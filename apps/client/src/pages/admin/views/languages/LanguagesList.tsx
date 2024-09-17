@@ -1,10 +1,10 @@
+import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
+import { CodeEditorDialog } from '@shared/dialogs';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 
 import { Language } from '@core/models';
 import { LanguagesStore, RootStore, useStore } from '@core/stores';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
-import { CodeEditorDialog } from '@shared/dialogs';
 
 import LanguageForm from './LanguageForm';
 

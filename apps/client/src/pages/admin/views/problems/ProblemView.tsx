@@ -1,10 +1,10 @@
+import Spinner from '@shared/Spinner';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
 import { Problem } from '@core/models';
 import { ProblemsStore, useStore } from '@core/stores';
-import Spinner from '@shared/Spinner';
 
 import TestcasesList from './testcases/TestcasesList';
 
