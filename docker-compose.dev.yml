@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: tun-judge
       POSTGRES_PASSWORD: tun-judge
     volumes:
-      - /opt/tun-judge/db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
 
@@ -30,5 +30,7 @@ services:
       - 6379:6379
 
 volumes:
+  db-data:
+    driver: local
   redis-data:
     driver: local

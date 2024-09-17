@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
-  "packageManager": "yarn@4.4.1",
+  "packageManager": "yarn@4.5.0",
   "scripts": {
     "serve": "nx run-many --target=serve --projects=client,server",
     "lint": "nx affected:lint",
     "prettier": "nx format:check",
     "prettier:fix": "nx format:write",
-    "compose:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "compose": "docker compose -f docker-compose.dev.yml",
+    "compose-up": "docker compose -f docker-compose.dev.yml up -d",
     "prisma:generate": "zenstack generate --schema zenstack/schema.zmodel",
     "prisma:migrate:dev": "yarn prisma:generate && prisma migrate dev --schema zenstack/prisma/schema.prisma",
     "prisma:migrate:deploy": "yarn prisma:generate && prisma migrate deploy --schema zenstack/prisma/schema.prisma"
@@ -157,6 +158,6 @@
   },
   "volta": {
     "node": "22.8.0",
-    "yarn": "4.4.1"
+    "yarn": "4.5.0"
   }
 }
