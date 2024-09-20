@@ -97,6 +97,8 @@ model Team {
   scores         ScoreCache[]
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model TeamContest {
   teamId    Int
   team      Team    @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)

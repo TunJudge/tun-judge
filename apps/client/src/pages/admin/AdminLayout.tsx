@@ -31,7 +31,6 @@ const AdminLayout: React.FC = observer(() => {
 
   const darkMode = theme === 'dark';
   const totalPendingSubmissions = 0;
-  console.log('AdminLayout');
 
   const items: SidebarItem[] = useMemo(
     () => [

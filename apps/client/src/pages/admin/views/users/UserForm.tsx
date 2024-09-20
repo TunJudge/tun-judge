@@ -20,11 +20,13 @@ export const UserForm: FC<Props> = ({ user, onClose, onSubmit }) => {
   const { mutateAsync } = useUpsertUser();
 
   useEffect(() => {
-    form.reset(user);
+    form.reset(structuredClone(user));
   }, [form, user]);
 
   const handleSubmit = async ({ id, role, ...user }: Partial<User>) => {
     try {
+      if (!user.password) delete user.password;
+
       const newUser = await mutateAsync({
         where: { username: user.username },
         create: user as Omit<User, 'role'>,

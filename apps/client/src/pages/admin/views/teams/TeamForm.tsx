@@ -23,13 +23,13 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
 
   const form = useForm<Team>({ defaultValues: structuredClone(team) });
 
-  const { data: users = [] } = useFindManyUser();
+  const { data: users = [] } = useFindManyUser({ include: { team: true } });
   const { data: categories = [] } = useFindManyTeamCategory();
   const { data: contests = [] } = useFindManyContest();
   const { mutateAsync } = useUpsertTeam();
 
   useEffect(() => {
-    form.reset(team);
+    form.reset(structuredClone(team));
   }, [form, team]);
 
   // useEffect(() => {
@@ -41,7 +41,7 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
   // }, [team]);
 
   const handleSubmit = async ({
-    id,
+    id = -1,
     category,
     categoryId: _,
     users = [],
@@ -98,7 +98,7 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
               label: category.name,
               value: category,
             }))}
-            selectPredicate={(category) => category.id === team?.category?.id}
+            selectPredicate={(category) => category.id === form.getValues('category.id')}
           />
         </Flex>
         <FormInputs.Select
@@ -112,23 +112,18 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
             .filter(
               (user) =>
                 !user.teamId ||
-                team?.users?.some((t) => t.id === user.id) ||
-                user.teamId === team?.id,
+                user.teamId === team?.id ||
+                form.getValues('users')?.some((t) => t.id === user.id),
             )
             .map((user) => ({
               id: user.id,
               label: user.username,
               value: user,
             }))}
-          selectPredicate={(user) => team?.users?.some((t) => t.id === user.id) ?? false}
+          selectPredicate={(a, b) => a.id === b.id}
         />
         <Flex fullWidth>
-          <FormInputs.Number
-            name="penalty"
-            label="Penalty Time"
-            placeholder="Penalty Time"
-            defaultValue={0}
-          />
+          <FormInputs.Number name="penalty" label="Penalty Time" placeholder="Penalty Time" />
           <FormInputs.Text name="room" label="Room" placeholder="Room" />
         </Flex>
         <FormInputs.Textarea name="comments" label="Comments" placeholder="Comments" />
@@ -143,11 +138,9 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
             label: contest.name,
             value: { contestId: contest.id },
           }))}
-          selectPredicate={(contest) =>
-            team?.contests?.some((c) => c.contestId === contest.contestId) ?? false
-          }
+          selectPredicate={(a, b) => a.contestId === b.contestId}
         />
-        <FormInputs.Checkbox name="enabled" label="Enabled" defaultChecked={true} />
+        <FormInputs.Checkbox name="enabled" label="Enabled" />
       </Flex>
     </FormDialog>
   );

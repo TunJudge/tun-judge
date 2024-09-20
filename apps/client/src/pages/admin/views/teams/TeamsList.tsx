@@ -1,4 +1,3 @@
-import { useDeleteTeam, useFindManyTeam } from '@models';
 import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UsersRoundIcon } from 'lucide-react';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
@@ -9,6 +8,7 @@ import { Prisma } from '@prisma/client';
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { useDeleteTeam, useFindManyTeam } from '@models';
 
 import { TeamForm } from './TeamForm';
 
@@ -39,14 +39,16 @@ const TeamsList: React.FC = observer(() => {
 
   const columns: DataTableColumn<Team>[] = [
     {
+      header: '#',
+      field: 'id',
+    },
+    {
       header: 'Name',
       field: 'name',
-      render: (team) => team.name,
     },
     {
       header: 'Category',
-      field: 'category',
-      render: (team) => team.category.name,
+      field: 'category.name',
     },
     {
       header: 'Users',
@@ -74,7 +76,7 @@ const TeamsList: React.FC = observer(() => {
       actions={
         <>
           <Button prefixIcon={RefreshCcw} onClick={() => refetch()} />
-          <Button prefixIcon={PlusIcon} onClick={() => setTeam({})} />
+          <Button prefixIcon={PlusIcon} onClick={() => setTeam({ penalty: 0, enabled: true })} />
         </>
       }
       fullWidth

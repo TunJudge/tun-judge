@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Inject,
   NotFoundException,
   Post,
   Req,
@@ -9,7 +8,6 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
 import { Request, Response } from 'express';
 
 import { User } from '@prisma/client';
@@ -22,8 +20,6 @@ import { throwError } from '../utils';
 
 @Controller('api/auth')
 export class AuthController {
-  constructor(@Inject(ENHANCED_PRISMA) private readonly prisma: PrismaService) {}
-
   @Post('login')
   @UseGuards(LoginGuard)
   async login(
@@ -37,15 +33,17 @@ export class AuthController {
   ) {
     if (config.nodeEnv === 'development') return;
 
+    const prisma = new PrismaService();
+
     const user =
-      (await this.prisma.user.findUnique({
+      (await prisma.user.findUnique({
         where: { id: userId },
         include: { role: true },
       })) ?? throwError<User>(new NotFoundException());
 
     if (user.sessionId) store.destroy(user.sessionId);
 
-    await this.prisma.user.update({
+    await prisma.user.update({
       where: { id: user.id },
       data: {
         lastLogin: new Date(),
@@ -60,7 +58,9 @@ export class AuthController {
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
   async logout(@Req() req: Request, @Res() res: Response): Promise<void> {
-    await this.prisma.user.update({
+    const prisma = new PrismaService();
+
+    await prisma.user.update({
       where: { id: (req.session as any).passport?.user?.id ?? -1 },
       data: { sessionId: null },
     });

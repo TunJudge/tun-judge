@@ -30,5 +30,8 @@ model TeamContest {
   contestId Int
   contest   Contest @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
+
   @@unique([teamId, contestId])
 }
