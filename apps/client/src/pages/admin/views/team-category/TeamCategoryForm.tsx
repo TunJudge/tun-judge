@@ -1,9 +1,9 @@
-import { useUpsertTeamCategory } from '@models';
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
 import { useToastContext } from '@core/contexts';
+import { useUpsertTeamCategory } from '@models';
 
 import { TeamCategory } from './TeamCategoriesList';
 
@@ -23,12 +23,6 @@ export const TeamCategoryForm: FC<Props> = ({ teamCategory, onClose, onSubmit })
   useEffect(() => {
     form.reset(teamCategory);
   }, [form, teamCategory]);
-
-  // useEffect(() => {
-  //   setErrors({
-  //     name: isEmpty(teamCategory.name),
-  //   });
-  // }, [teamCategory]);
 
   const handleSubmit = async ({ id, teams: _, ...teamCategory }: TeamCategory) => {
     try {

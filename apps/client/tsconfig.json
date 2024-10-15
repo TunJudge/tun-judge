@@ -7,6 +7,7 @@
     "strict": true,
     "types": ["vite/client"],
     "paths": {
+      "tw-react-components": ["./libs/tw-react-components/libs/tw-react-components/src/index.ts"],
       "@core/components": ["apps/client/src/core/components/index.ts"],
       "@core/contexts": ["apps/client/src/core/contexts/index.ts"],
       "@core/hooks": ["apps/client/src/core/hooks/index.ts"],

@@ -1,6 +1,5 @@
-import React from 'react';
-
 import { CodeEditorLanguages } from '@shared/CodeEditor';
+import React from 'react';
 
 import { JudgingResult } from './models';
 

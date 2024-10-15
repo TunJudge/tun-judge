@@ -44,16 +44,6 @@ export const UserForm: FC<Props> = ({ user, onClose, onSubmit }) => {
     }
   };
 
-  // const [errors, setErrors] = useState<FormErrors<User>>({});
-
-  // useEffect(() => {
-  //   setErrors({
-  //     name: isEmpty(user?.name),
-  //     username: isEmpty(user?.username),
-  //     role: isEmpty(user?.role),
-  //   });
-  // }, [user]);
-
   return (
     <FormDialog
       className="!max-w-4xl"

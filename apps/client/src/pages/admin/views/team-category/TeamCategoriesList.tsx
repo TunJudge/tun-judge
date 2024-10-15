@@ -1,4 +1,3 @@
-import { useDeleteTeamCategory, useFindManyTeamCategory } from '@models';
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -18,6 +17,7 @@ import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
 import { getRGBColorContrast } from '@core/utils';
+import { useDeleteTeamCategory, useFindManyTeamCategory } from '@models';
 
 import { TeamCategoryForm } from './TeamCategoryForm';
 

@@ -32,14 +32,6 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
     form.reset(structuredClone(team));
   }, [form, team]);
 
-  // useEffect(() => {
-  //   setErrors({
-  //     name: isEmpty(team.name),
-  //     category: isEmpty(team.category),
-  //     users: isEmpty(team.users),
-  //   });
-  // }, [team]);
-
   const handleSubmit = async ({
     id = -1,
     category,

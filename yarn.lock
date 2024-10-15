@@ -5446,6 +5446,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-devtools@npm:5.58.0":
+  version: 5.58.0
+  resolution: "@tanstack/query-devtools@npm:5.58.0"
+  checksum: 10c0/3b0ad21503682f6c452f5f78f5cc9007e902f455c70fd7d537ca2c3b13f41607ab4ad612c0ca19abc24aa2a9fa9bf019101dfeb43abfa53f04782322558f19f6
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^5.59.15":
+  version: 5.59.15
+  resolution: "@tanstack/react-query-devtools@npm:5.59.15"
+  dependencies:
+    "@tanstack/query-devtools": "npm:5.58.0"
+  peerDependencies:
+    "@tanstack/react-query": ^5.59.15
+    react: ^18 || ^19
+  checksum: 10c0/2b83e6ccd971eb01c65d25723f58a95a549ea76802ef17fa66f796268f030ca8fa2dda847df3694900232e3853ae0d8a356997d660d6c0da021ad12d5f08d313
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-query@npm:^5.56.2":
   version: 5.56.2
   resolution: "@tanstack/react-query@npm:5.56.2"
@@ -5641,6 +5660,7 @@ __metadata:
     "@swc/helpers": "npm:~0.5.11"
     "@tailwindcss/forms": "npm:^0.5.9"
     "@tanstack/react-query": "npm:^5.56.2"
+    "@tanstack/react-query-devtools": "npm:^5.59.15"
     "@testing-library/react": "npm:15.0.6"
     "@trivago/prettier-plugin-sort-imports": "npm:^4.3.0"
     "@types/bcrypt": "npm:^5.0.2"
@@ -5724,7 +5744,6 @@ __metadata:
     ts-jest: "npm:^29.1.0"
     ts-node: "npm:10.9.1"
     tslib: "npm:^2.3.0"
-    tw-react-components: "npm:^0.0.135"
     typeorm: "npm:^0.3.20"
     typescript: "npm:~5.5.2"
     vite: "npm:^5.0.0"
@@ -19766,13 +19785,6 @@ __metadata:
   dependencies:
     safe-buffer: "npm:^5.0.1"
   checksum: 10c0/4c7a1b813e7beae66fdbf567a65ec6d46313643753d0beefb3c7973d66fcec3a1e7f39759f0a0b4465883499c6dc8b0750ab8b287399af2e583823e40410a17a
-  languageName: node
-  linkType: hard
-
-"tw-react-components@npm:^0.0.135":
-  version: 0.0.135
-  resolution: "tw-react-components@npm:0.0.135"
-  checksum: 10c0/0ba52c1aad3cf9e24c00b2125ca1f4e8dfbde99892dd530057744e3649e667dc3194f41e0aded17101db195b82cfa7bcff3f9a645329d4af84e6ab7b2d78e8b8
   languageName: node
   linkType: hard
 

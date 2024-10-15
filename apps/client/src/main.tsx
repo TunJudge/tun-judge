@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { FetchFn } from '@zenstackhq/tanstack-query/runtime-v5';
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -25,6 +26,7 @@ root.render(
   <StrictMode>
     <Suspense fallback={<Spinner fullScreen />}>
       <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools />
         <ZenStackHooksProvider value={{ endpoint: '/api/rpc', fetch: myFetch }}>
           <LayoutContextProvider>
             <AuthContextProvider>

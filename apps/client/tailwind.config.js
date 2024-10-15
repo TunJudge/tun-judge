@@ -6,7 +6,7 @@ module.exports = {
   darkMode: 'class',
   content: [
     join(__dirname, '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'),
-    '../../node_modules/tw-react-components/**/*.{tsx,jsx,js,html}',
+    '../../libs/tw-react-components/libs/tw-react-components/**/*.{tsx,jsx,js,html}',
     ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {

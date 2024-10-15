@@ -1,4 +1,3 @@
-import { useDeleteUser, useFindManyUser } from '@models';
 import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UserRoundIcon } from 'lucide-react';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
@@ -8,6 +7,7 @@ import { PageTemplate } from '@core/components';
 import { User, useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
 import { getDisplayDate } from '@core/utils';
+import { useDeleteUser, useFindManyUser } from '@models';
 
 import { UserForm } from './UserForm';
 
