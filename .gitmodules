@@ -1,0 +1,3 @@
+[submodule "libs/tw-react-components"]
+	path = libs/tw-react-components
+	url = git@github.com:bacali95/tw-react-components.git
