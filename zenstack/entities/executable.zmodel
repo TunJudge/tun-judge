@@ -19,4 +19,7 @@ model Executable {
   buildScript         File?          @relation("ExecutableBuildScript", fields: [buildScriptName], references: [name], onDelete: Restrict, onUpdate: Restrict)
   problemsRunScript   Problem[]      @relation("ProblemRunScript")
   problemsCheckScript Problem[]      @relation("ProblemCheckScript")
+
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

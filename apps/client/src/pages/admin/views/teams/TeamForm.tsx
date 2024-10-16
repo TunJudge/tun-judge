@@ -80,7 +80,7 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
       onSubmit={handleSubmit}
       onClose={onClose}
     >
-      <Flex direction="column">
+      <Flex direction="column" fullWidth>
         <Flex fullWidth>
           <FormInputs.Text name="name" label="Name" placeholder="Name" required />
           <FormInputs.Select

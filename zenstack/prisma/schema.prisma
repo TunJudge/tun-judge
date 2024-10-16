@@ -208,6 +208,8 @@ model File {
   judgingRunCheckerOutputFile JudgingRun? @relation("JudgingRunCheckerOutputFile")
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Executable {
   id                  Int            @id() @default(autoincrement())
   name                String
@@ -223,6 +225,8 @@ model Executable {
   problemsCheckScript Problem[]      @relation("ProblemCheckScript")
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Testcase {
   id             Int          @id() @default(autoincrement())
   description    String?

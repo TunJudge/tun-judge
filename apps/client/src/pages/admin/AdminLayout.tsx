@@ -1,4 +1,5 @@
 import {
+  ClipboardListIcon,
   GraduationCapIcon,
   LogOutIcon,
   MoonIcon,
@@ -23,6 +24,7 @@ import { useAuthContext } from '@core/contexts';
 
 import { version } from '../../../package.json';
 import { ContestsList } from './views/contests/ContestsList';
+import { ProblemsList } from './views/problems/ProblemsList';
 import { TeamCategoriesList } from './views/team-category/TeamCategoriesList';
 import { TeamsList } from './views/teams/TeamsList';
 import { UsersList } from './views/users/UsersList';
@@ -46,11 +48,11 @@ const AdminLayout: React.FC = observer(() => {
         title: 'Contests',
         Icon: GraduationCapIcon,
       },
-      // {
-      //   pathname: 'problems',
-      //   title: 'Problems',
-      //   Icon: ClipboardListIcon,
-      // },
+      {
+        pathname: 'problems',
+        title: 'Problems',
+        Icon: ClipboardListIcon,
+      },
       // {
       //   pathname: 'languages',
       //   title: 'Languages',
@@ -159,8 +161,8 @@ const AdminLayout: React.FC = observer(() => {
       <Routes>
         {/* <Route exact path="/" component={Dashboard} />*/}
         <Route path="/contests" element={<ContestsList />} />
-        {/* <Route exact path="/problems" component={ProblemsList} />
-  <Route path="/problems/:id" component={ProblemView} />
+        <Route path="/problems" element={<ProblemsList />} />
+        {/*<Route path="/problems/:id" component={ProblemView} />
   <Route exact path="/languages" component={LanguagesList} />
   <Route exact path="/executables" component={ExecutablesList} />*/}
         <Route path="/users" element={<UsersList />} />

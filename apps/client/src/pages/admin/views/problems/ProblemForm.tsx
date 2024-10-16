@@ -1,142 +1,141 @@
-import { DataTableItemForm } from '@shared/data-table/DataTable';
-import { FormModal } from '@shared/dialogs';
-import DropDownInput from '@shared/form-controls/DropDownInput';
-import FileInput from '@shared/form-controls/FileInput';
-import NumberInput from '@shared/form-controls/NumberInput';
-import TextInput from '@shared/form-controls/TextInput';
-import { FormErrors } from '@shared/form-controls/types';
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
-import { isEmpty } from '@core/helpers';
-import { Executable, Problem } from '@core/models';
-import { ExecutablesStore, useStore } from '@core/stores';
+import { useToastContext } from '@core/contexts';
+import { useFindManyExecutable, useUpsertProblem } from '@models';
 
-const ProblemForm: DataTableItemForm<Problem> = observer(
-  ({ item: problem, isOpen, onClose, onSubmit }) => {
-    const { runners, checkers, fetchAll } = useStore<ExecutablesStore>('executablesStore');
+import { Problem } from './ProblemsList';
 
-    const [errors, setErrors] = useState<FormErrors<Problem>>({});
+type Props = {
+  problem?: Partial<Problem>;
+  onSubmit?: (id: number) => void;
+  onClose: () => void;
+};
 
-    useEffect(() => {
-      setErrors({
-        name: isEmpty(problem.name),
-        timeLimit: isEmpty(problem.timeLimit),
-        file: isEmpty(problem.file),
-        runScript: isEmpty(problem.runScript),
-        checkScript: isEmpty(problem.checkScript),
+export const ProblemForm: FC<Props> = ({ problem, onClose, onSubmit }) => {
+  const { toast } = useToastContext();
+
+  const form = useForm<Problem>({ defaultValues: structuredClone(problem) });
+
+  const { data: executables = [] } = useFindManyExecutable();
+  const { mutateAsync } = useUpsertProblem();
+
+  const runners = executables.filter((e) => e.type === 'RUNNER');
+  const checkers = executables.filter((e) => e.type === 'CHECKER');
+
+  useEffect(() => {
+    form.reset(structuredClone(problem));
+  }, [form, problem]);
+
+  useEffect(() => {
+    if (!form.getValues('runScriptId')) {
+      const defaultRunner = runners.find((e) => e.default);
+      if (defaultRunner) form.setValue('runScriptId', defaultRunner.id);
+    }
+
+    if (!form.getValues('checkScriptId')) {
+      const defaultChecker = checkers.find((e) => e.default);
+      if (defaultChecker) form.setValue('checkScriptId', defaultChecker.id);
+    }
+  }, [problem, runners, checkers, form]);
+
+  const handleSubmit = async ({ id = -1, _count: _, ...problem }: Problem) => {
+    try {
+      const newProblem = await mutateAsync({
+        where: { id },
+        create: problem,
+        update: problem,
       });
-    }, [problem]);
 
-    useEffect(() => {
-      fetchAll();
-    }, [fetchAll]);
+      if (!newProblem) return;
 
-    useEffect(() => {
-      if (!problem.runScript) {
-        const defaultRunner = runners.find((e) => e.default);
-        if (defaultRunner) problem.runScript = defaultRunner;
-        setErrors((errors) => ({ ...errors, runScript: false }));
-      }
+      toast('success', `Problem ${newProblem?.id ? 'updated' : 'created'} successfully`);
 
-      if (!problem.checkScript) {
-        const defaultChecker = checkers.find((e) => e.default);
-        if (defaultChecker) {
-          problem.checkScript = defaultChecker;
-          setErrors((errors) => ({ ...errors, checkScript: false }));
-        }
-      }
-    }, [problem, runners, checkers]);
+      onSubmit?.(newProblem?.id);
+      onClose();
+    } catch (error: unknown) {
+      toast(
+        'error',
+        `Failed to ${id ? 'update' : 'create'} problem with error: ${(error as Error).message}`,
+      );
+    }
+  };
 
-    return (
-      <FormModal
-        title={`${problem.id ? 'Update' : 'Create'} Problem`}
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={() => onSubmit(problem)}
-        submitDisabled={Object.values(errors).some((e) => e)}
-      >
-        <div className="grid gap-2 sm:grid-cols-2">
-          <TextInput<Problem>
-            entity={problem}
-            field="name"
-            label="Name"
-            required
-            errors={errors}
-            setErrors={setErrors}
-          />
-          <FileInput<Problem>
-            entity={problem}
-            field="file"
-            label="Problem File"
-            accept="application/pdf, text/html"
-            required
-            errors={errors}
-            setErrors={setErrors}
-          />
-        </div>
-        <div className="grid gap-2 sm:grid-cols-3">
-          <NumberInput<Problem>
-            entity={problem}
-            field="timeLimit"
+  return (
+    <FormDialog
+      className="!max-w-4xl"
+      open={!!problem}
+      form={form}
+      title={`${problem?.id ? 'Update' : 'Create'} Problem`}
+      onSubmit={handleSubmit}
+      onClose={onClose}
+    >
+      <Flex direction="column" fullWidth>
+        <Flex fullWidth>
+          <FormInputs.Text name="name" label="Name" placeholder="Name" required />
+          {/* <FileInput
+          entity={problem}
+          field="file"
+          label="Problem File"
+          accept="application/pdf, text/html"
+          required
+          errors={errors}
+          setErrors={setErrors}
+        /> */}
+        </Flex>
+        <Flex fullWidth>
+          <FormInputs.Number
+            name="timeLimit"
             label="Time Limit (Seconds)"
+            placeholder="Time Limit"
             required
             unit="S"
             min={0}
             step={0.1}
-            errors={errors}
-            setErrors={setErrors}
           />
-          <NumberInput<Problem>
-            entity={problem}
-            field="memoryLimit"
+          <FormInputs.Number
+            name="memoryLimit"
             label="Memory Limit (Kb)"
-            placeHolder="Memory Limit"
-            defaultValue={2097152}
+            placeholder="Memory Limit (Kb)"
             unit="Kb"
             min={0}
-            errors={errors}
-            setErrors={setErrors}
           />
-          <NumberInput<Problem>
-            entity={problem}
-            field="outputLimit"
+          <FormInputs.Number
+            name="outputLimit"
             label="Output Limit (Kb)"
-            placeHolder="Output Limit"
-            defaultValue={8192}
+            placeholder="Output Limit (Kb)"
             unit="Kb"
             min={0}
-            errors={errors}
-            setErrors={setErrors}
           />
-        </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <DropDownInput<Problem, Executable>
-            entity={problem}
-            field="runScript"
+        </Flex>
+        <Flex fullWidth>
+          <FormInputs.Select
+            name="runScriptId"
             label="Run Script"
+            placeholder="Run Script"
             description="Submissions runner"
+            items={runners.map((runner) => ({
+              id: runner.id,
+              label: runner.name,
+              value: runner.id,
+            }))}
             required
-            options={runners}
-            optionsTextField="name"
-            errors={errors}
-            setErrors={setErrors}
           />
-          <DropDownInput<Problem, Executable>
-            entity={problem}
-            field="checkScript"
+          <FormInputs.Select
+            name="checkScriptId"
             label="Check Script"
+            placeholder="Check Script"
             description="Submissions output checker"
+            items={checkers.map((runner) => ({
+              id: runner.id,
+              label: runner.name,
+              value: runner.id,
+            }))}
             required
-            options={checkers}
-            optionsTextField="name"
-            errors={errors}
-            setErrors={setErrors}
           />
-        </div>
-      </FormModal>
-    );
-  },
-);
-
-export default ProblemForm;
+        </Flex>
+      </Flex>
+    </FormDialog>
+  );
+};
