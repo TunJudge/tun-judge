@@ -16,7 +16,7 @@ export type Team = Prisma.TeamGetPayload<{
   include: { category: true; users: true; contests: true };
 }>;
 
-const TeamsList: React.FC = observer(() => {
+export const TeamsList: React.FC = observer(() => {
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
 
@@ -121,5 +121,3 @@ const TeamsList: React.FC = observer(() => {
     </PageTemplate>
   );
 });
-
-export default TeamsList;

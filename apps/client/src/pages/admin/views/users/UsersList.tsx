@@ -11,7 +11,7 @@ import { useDeleteUser, useFindManyUser } from '@models';
 
 import { UserForm } from './UserForm';
 
-const UsersList: React.FC = observer(() => {
+export const UsersList: React.FC = observer(() => {
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
 
@@ -121,5 +121,3 @@ const UsersList: React.FC = observer(() => {
     </PageTemplate>
   );
 });
-
-export default UsersList;

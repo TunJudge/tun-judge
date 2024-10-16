@@ -63,8 +63,11 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
 
       onSubmit?.(newTeam?.id);
       onClose();
-    } catch (error: any) {
-      toast('error', `Failed to ${id ? 'update' : 'create'} team with error: ${error.message}`);
+    } catch (error: unknown) {
+      toast(
+        'error',
+        `Failed to ${id ? 'update' : 'create'} team with error: ${(error as Error).message}`,
+      );
     }
   };
 

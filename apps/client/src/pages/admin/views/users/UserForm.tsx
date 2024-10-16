@@ -39,8 +39,11 @@ export const UserForm: FC<Props> = ({ user, onClose, onSubmit }) => {
 
       onSubmit?.(newUser?.id);
       onClose();
-    } catch (error: any) {
-      toast('error', `Failed to ${id ? 'update' : 'create'} user with error: ${error.message}`);
+    } catch (error: unknown) {
+      toast(
+        'error',
+        `Failed to ${id ? 'update' : 'create'} user with error: ${(error as Error).message}`,
+      );
     }
   };
 

@@ -145,6 +145,8 @@ model Contest {
   @@index([id, enabled])
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Problem {
   id                Int              @id() @default(autoincrement())
   name              String
@@ -164,6 +166,8 @@ model Problem {
   scores            ScoreCache[]
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model ContestProblem {
   contestId   Int
   contest     Contest @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)

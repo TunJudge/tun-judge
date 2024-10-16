@@ -1,350 +1,270 @@
-import { PlusIcon, TrashIcon } from '@heroicons/react/solid';
-import { DataTableItemForm } from '@shared/data-table/DataTable';
-import { FormModal } from '@shared/dialogs';
-import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
-import DateTimeInput from '@shared/form-controls/DateTimeInput';
-import DropDownInput from '@shared/form-controls/DropDownInput';
-import NumberInput from '@shared/form-controls/NumberInput';
-import TextInput from '@shared/form-controls/TextInput';
-import { FormErrors } from '@shared/form-controls/types';
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import { PlusIcon, Trash2Icon } from 'lucide-react';
+import { FC, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { Block, Button, DataTable, Flex, FormDialog, FormInputs, Label } from 'tw-react-components';
 
-import { getRandomHexColor, isEmpty } from '@core/helpers';
-import { Contest, ContestProblem, Problem } from '@core/models';
-import { ProblemsStore, useStore } from '@core/stores';
+import { ContestProblem } from '@prisma/client';
 
-const ContestForm: DataTableItemForm<Contest> = observer(
-  ({ item: contest, isOpen, onClose, onSubmit }) => {
-    const [errors, setErrors] = useState<FormErrors<Contest>>({});
-    const { data: problems, fetchAll } = useStore<ProblemsStore>('problemsStore');
+import { useToastContext } from '@core/contexts';
+import { getRandomHexColor } from '@core/utils';
+import { useFindManyProblem, useUpsertContest } from '@models';
 
-    const [problemsErrors, setProblemsErrors] = useState<{
-      [index: number]: FormErrors<ContestProblem>;
-    }>(
-      contest.problems.map((p) => ({
-        problem: isEmpty(p.problem),
-        shortName: isEmpty(p.shortName),
-      })),
-    );
+import { Contest } from './ContestsList';
 
-    useEffect(() => {
-      setErrors({
-        name: isEmpty(contest.name),
-        shortName: isEmpty(contest.shortName),
-        activateTime: isEmpty(contest.activateTime),
-        startTime: isEmpty(contest.startTime),
-        endTime: isEmpty(contest.endTime),
+type Props = {
+  contest?: Partial<Contest>;
+  onSubmit?: (id: number) => void;
+  onClose: () => void;
+};
+
+export const ContestForm: FC<Props> = ({ contest, onClose, onSubmit }) => {
+  const { toast } = useToastContext();
+
+  const form = useForm<Contest>({ defaultValues: structuredClone(contest) });
+
+  const { data: problems = [] } = useFindManyProblem();
+  const { mutateAsync } = useUpsertContest();
+
+  useEffect(() => {
+    form.reset(structuredClone(contest));
+  }, [form, contest]);
+
+  const handleSubmit = async ({ id = -1, _count: _, problems, ...contest }: Contest) => {
+    try {
+      const newContest = await mutateAsync({
+        where: { id },
+        create: {
+          ...contest,
+          problems: { create: fixPoints(problems) },
+        },
+        update: {
+          ...contest,
+          problems: {
+            deleteMany: {
+              contestId: id,
+              problemId: { notIn: problems.map(({ problemId }) => problemId) },
+            },
+            upsert: fixPoints(problems).map(({ contestId, ...problem }) => ({
+              where: { contestId_shortName: { contestId: id, shortName: problem.shortName } },
+              create: problem,
+              update: problem,
+            })),
+          },
+        },
       });
-    }, [contest]);
 
-    useEffect(() => {
-      fetchAll();
-    }, [fetchAll]);
+      if (!newContest) return;
 
-    useEffect(() => {
-      setProblemsErrors(
-        contest.problems.map((cp) => ({
-          problem:
-            isEmpty(cp.problem) ||
-            contest.problems.filter(
-              (p) => p.problem && cp.problem && p.problem.id === cp.problem.id,
-            ).length > 1,
-          shortName:
-            isEmpty(cp.shortName) ||
-            contest.problems.filter(
-              (p) => p.shortName && cp.shortName && p.shortName.trim() === cp.shortName.trim(),
-            ).length > 1,
-        })),
+      toast('success', `Contest ${newContest?.id ? 'updated' : 'created'} successfully`);
+
+      onSubmit?.(newContest?.id);
+      onClose();
+    } catch (error: unknown) {
+      toast(
+        'error',
+        `Failed to ${id ? 'update' : 'create'} contest with error: ${(error as Error).message}`,
       );
-    }, [contest.problems]);
+    }
+  };
 
-    const setProblemsErrorsByIndex = (index: number) => (errors: FormErrors<ContestProblem>) => {
-      setProblemsErrors({ ...problemsErrors, [index]: errors });
-    };
-
-    return (
-      <FormModal
-        title={`${contest.id ? 'Update' : 'Create'} Contest`}
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={() => onSubmit(contest)}
-        submitDisabled={
-          (problemsErrors &&
-            Object.values(problemsErrors).some((errors) => Object.values(errors).some((e) => e))) ||
-          Object.values(errors).some((e) => e)
-        }
-      >
-        <div className="grid gap-2 sm:grid-cols-2">
-          <TextInput<Contest>
-            entity={contest}
-            field="name"
-            label="Name"
-            required
-            errors={errors}
-            setErrors={setErrors}
-          />
-          <TextInput<Contest>
-            entity={contest}
-            field="shortName"
-            label="Short Name"
-            required
-            errors={errors}
-            setErrors={setErrors}
-          />
-        </div>
-        <div className="grid gap-2 sm:grid-cols-3">
-          <DateTimeInput<Contest>
-            entity={contest}
-            field="activateTime"
+  return (
+    <FormDialog
+      className="!max-w-7xl"
+      open={!!contest}
+      form={form}
+      title={`${contest?.id ? 'Update' : 'Create'} Contest`}
+      onSubmit={handleSubmit}
+      onClose={onClose}
+    >
+      <Flex direction="column">
+        <Flex fullWidth>
+          <FormInputs.Text name="name" label="Name" placeholder="Name" required />
+          <FormInputs.Text name="shortName" label="Short Name" placeholder="Short Name" required />
+        </Flex>
+        <Flex fullWidth>
+          <FormInputs.DateTime
+            name="activateTime"
             label="Activate Time"
+            placeholder="Activate Time"
             required
-            maxDate={contest.startTime}
-            errors={errors}
-            setErrors={setErrors}
+            maxDate={form.watch('startTime')}
           />
-          <DateTimeInput<Contest>
-            entity={contest}
-            field="startTime"
+          <FormInputs.DateTime
+            name="startTime"
             label="Start Time"
+            placeholder="Start Time"
             required
-            disabled={!contest.activateTime}
-            minDate={contest.activateTime}
-            maxDate={contest.endTime}
-            errors={errors}
-            setErrors={setErrors}
+            disabled={!form.watch('activateTime')}
+            minDate={form.watch('activateTime')}
+            maxDate={form.watch('endTime')}
           />
-          <DateTimeInput<Contest>
-            entity={contest}
-            field="endTime"
+          <FormInputs.DateTime
+            name="endTime"
             label="End Time"
+            placeholder="End Time"
             required
-            disabled={!contest.startTime}
-            minDate={contest.startTime}
-            errors={errors}
-            setErrors={setErrors}
+            disabled={!form.watch('startTime')}
+            minDate={form.watch('startTime')}
           />
-        </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <DateTimeInput<Contest>
-            entity={contest}
-            field="freezeTime"
+        </Flex>
+        <Flex fullWidth>
+          <FormInputs.DateTime
+            name="freezeTime"
             label="Freeze Time"
+            placeholder="Freeze Time"
             clearable
-            disabled={!contest.startTime}
-            minDate={contest.startTime}
-            maxDate={contest.endTime}
-            errors={errors}
-            setErrors={setErrors}
+            disabled={!form.watch('startTime')}
+            minDate={form.watch('startTime')}
+            maxDate={form.watch('endTime')}
           />
-          <DateTimeInput<Contest>
-            entity={contest}
-            field="unfreezeTime"
+          <FormInputs.DateTime
+            name="unfreezeTime"
             label="Unfreeze Time"
+            placeholder="Unfreeze Time"
             clearable
-            disabled={!contest.freezeTime}
-            minDate={contest.endTime}
-            errors={errors}
-            setErrors={setErrors}
+            disabled={!form.watch('freezeTime')}
+            minDate={form.watch('endTime')}
           />
-        </div>
-        <div className="grid gap-2 sm:grid-cols-3">
-          <CheckBoxInput<Contest>
-            entity={contest}
-            field="enabled"
+        </Flex>
+        <Block className="grid gap-2 sm:grid-cols-3" fullWidth>
+          <FormInputs.Checkbox
+            name="enabled"
             label="Enabled"
             description="Whether the contest is ready or not?"
-            defaultValue={true}
-            errors={errors}
-            setErrors={setErrors}
           />
-          <CheckBoxInput<Contest>
-            entity={contest}
-            field="public"
+          <FormInputs.Checkbox
+            name="public"
             label="Visible on public scoreboard"
             description="Whether the contest is visible for anonymous users?"
-            defaultValue={true}
-            errors={errors}
-            setErrors={setErrors}
           />
-          <CheckBoxInput<Contest>
-            entity={contest}
-            field="openToAllTeams"
+          <FormInputs.Checkbox
+            name="openToAllTeams"
             label="Open to all teams"
             description="Whether the contest is open for any logged in team or only the registered ones?"
-            defaultValue={false}
-            errors={errors}
-            setErrors={setErrors}
           />
-          <CheckBoxInput<Contest>
-            entity={contest}
-            field="verificationRequired"
+          <FormInputs.Checkbox
+            name="verificationRequired"
             label="Verification required"
             description="Whether the Jury have to verify the submission before the team see the result?"
-            defaultValue={false}
-            errors={errors}
-            setErrors={setErrors}
           />
-          <CheckBoxInput<Contest>
-            entity={contest}
-            field="processBalloons"
+          <FormInputs.Checkbox
+            name="processBalloons"
             label="Process balloons"
             description="Whether the balloons should be processed or not?"
-            defaultValue={true}
-            errors={errors}
-            setErrors={setErrors}
           />
-        </div>
-        <div className="mt-2 rounded-md border border-gray-200 shadow dark:border-gray-700 dark:text-white">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-            <thead className="bg-gray-50 text-center uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-              <tr className="divide-x dark:divide-gray-800">
-                <th className="w-1/4 p-3 font-medium tracking-wider">Problem</th>
-                <th className="w-1/6 p-3 font-medium tracking-wider">Short Name</th>
-                <th className="w-24 p-3 font-medium tracking-wider">Points</th>
-                <th className="w-32 p-3 font-medium tracking-wider">Allow Submit</th>
-                <th className="w-32 p-3 font-medium tracking-wider">Allow Judge</th>
-                <th className="w-36 p-3 font-medium tracking-wider">Color</th>
-                <th className="p-3 font-medium tracking-wider" />
-              </tr>
-            </thead>
-            <tbody className="divide-y-200 divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
-              {!contest.problems.length && (
-                <tr>
-                  <td
-                    className="bg-gray-50 p-3 text-center opacity-50 dark:bg-gray-700"
-                    colSpan={7}
-                  >
-                    Add problems
-                  </td>
-                </tr>
-              )}
-              {contest.problems.map((problem, index) => (
-                <tr
-                  key={`${contest.id}-${index}`}
-                  className="divide-x-200 divide-x dark:divide-gray-700"
-                >
-                  <td className="p-3">
-                    <DropDownInput<ContestProblem, Problem>
-                      entity={problem}
-                      field="problem"
-                      placeHolder="Select Problem"
-                      required
-                      defaultTouched
-                      options={problems}
-                      optionsIdField="id"
-                      optionsTextField="name"
-                      errors={problemsErrors[index]}
-                      setErrors={setProblemsErrorsByIndex(index)}
-                      onChange={(value) => {
-                        problem.problem = problems.find((p) => p.id === value.id)!;
-                        contest.problems.forEach(
-                          (cp, index) =>
-                            (problemsErrors[index].problem =
-                              isEmpty(problemsErrors[index].problem) ||
-                              contest.problems.filter(
-                                (p) => p.problem && cp.problem && p.problem.id === cp.problem.id,
-                              ).length > 1),
-                        );
-                        setProblemsErrors(problemsErrors);
-                      }}
-                    />
-                  </td>
-                  <td className="p-3">
-                    <TextInput<ContestProblem>
-                      entity={problem}
-                      field="shortName"
-                      required
-                      defaultTouched
-                      errors={problemsErrors[index]}
-                      onChange={() => {
-                        contest.problems.forEach((cp, index) => {
-                          problemsErrors[index].shortName =
-                            isEmpty(cp.shortName) ||
-                            contest.problems.filter(
-                              (p) =>
-                                p.shortName &&
-                                cp.shortName &&
-                                p.shortName.trim() === cp.shortName.trim(),
-                            ).length > 1;
-                        });
-                        setProblemsErrors(problemsErrors);
-                      }}
-                      setErrors={(errors) => {
-                        problemsErrors[index] = errors;
-                        setProblemsErrors(problemsErrors);
-                      }}
-                    />
-                  </td>
-                  <td className="p-3">
-                    <NumberInput<ContestProblem>
-                      entity={problem}
-                      field="points"
-                      min={1}
-                      defaultValue={1}
-                    />
-                  </td>
-                  <td className="p-3">
-                    <div className="flex items-center justify-center">
-                      <CheckBoxInput<ContestProblem>
-                        entity={problem}
-                        field="allowSubmit"
-                        defaultValue={true}
-                      />
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex items-center justify-center">
-                      <CheckBoxInput<ContestProblem>
-                        entity={problem}
-                        field="allowJudge"
-                        defaultValue={true}
-                      />
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex items-center justify-center">
-                      <input
-                        type="color"
-                        value={problem.color ?? ''}
-                        onChange={({ target: { value } }) => (problem.color = value)}
-                      />
-                    </div>
-                  </td>
-                  <td
-                    className="cursor-pointer p-3 hover:bg-red-50 dark:hover:bg-red-900"
-                    onClick={() =>
-                      (contest.problems = contest.problems.filter((_, i) => i !== index))
+        </Block>
+        <Flex direction="column" fullWidth>
+          <Flex align="center" justify="between" fullWidth>
+            <Label>Problems</Label>
+            <Button
+              size="small"
+              prefixIcon={PlusIcon}
+              onClick={() =>
+                form.setValue('problems', [
+                  ...form.getValues('problems'),
+                  {
+                    allowSubmit: true,
+                    allowJudge: true,
+                    points: 1,
+                    color: getRandomHexColor(),
+                  } as ContestProblem,
+                ])
+              }
+            />
+          </Flex>
+          <DataTable
+            rows={form.watch('problems') ?? []}
+            columns={[
+              {
+                header: 'Problem',
+                field: 'problemId',
+                render: (_, index) => (
+                  <FormInputs.Select
+                    name={`problems.${index}.problemId`}
+                    placeholder="Select Problem"
+                    items={problems.map((problem) => ({
+                      id: problem.id,
+                      label: problem.name,
+                      value: problem.id,
+                    }))}
+                    required
+                    validate={(value) =>
+                      form.getValues('problems').filter((p) => p.problemId === value).length > 1
+                        ? 'Problem already selected'
+                        : undefined
                     }
-                  >
-                    <div className="flex items-center justify-center">
-                      <TrashIcon className="h-6 w-6 text-red-600" />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              <tr>
-                <td
-                  className="cursor-pointer bg-gray-50 p-2 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-                  colSpan={7}
-                  onClick={() =>
-                    (contest.problems = [
-                      ...contest.problems,
-                      { color: getRandomHexColor() } as ContestProblem,
-                    ])
-                  }
-                >
-                  <div className="flex items-center justify-center">
-                    <PlusIcon className="h-8 w-8" />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </FormModal>
-    );
-  },
-);
+                  />
+                ),
+              },
+              {
+                header: 'Short Name',
+                field: 'shortName',
+                render: (_, index) => (
+                  <FormInputs.Text
+                    name={`problems.${index}.shortName`}
+                    placeholder="Short Name"
+                    required
+                    validate={(value) =>
+                      form.getValues('problems').filter((p) => p.shortName === value).length > 1
+                        ? 'Short Name already selected'
+                        : undefined
+                    }
+                  />
+                ),
+              },
+              {
+                header: 'Points',
+                field: 'points',
+                render: (_, index) => (
+                  <FormInputs.Number name={`problems.${index}.points`} min={1} />
+                ),
+              },
+              {
+                header: 'Allow Submit',
+                field: 'allowSubmit',
+                align: 'center',
+                render: (_, index) => (
+                  <FormInputs.Checkbox name={`problems.${index}.allowSubmit`} />
+                ),
+              },
+              {
+                header: 'Allow Judge',
+                field: 'allowJudge',
+                align: 'center',
+                render: (_, index) => <FormInputs.Checkbox name={`problems.${index}.allowJudge`} />,
+              },
+              {
+                header: 'Color',
+                field: 'color',
+                align: 'center',
+                render: (_, index) => (
+                  <input
+                    type="color"
+                    value={form.watch(`problems.${index}.color`) ?? ''}
+                    onChange={({ target: { value } }) =>
+                      form.setValue(`problems.${index}.color`, value)
+                    }
+                  />
+                ),
+              },
+            ]}
+            actions={[
+              {
+                icon: Trash2Icon,
+                onClick: (_, index) =>
+                  form.setValue(
+                    'problems',
+                    form.getValues('problems').filter((_, i) => i !== index),
+                  ),
+              },
+            ]}
+          />
+        </Flex>
+      </Flex>
+    </FormDialog>
+  );
+};
 
-export default ContestForm;
+function fixPoints(problems: ContestProblem[]): ContestProblem[] {
+  return problems.map((problem) => ({ ...problem, points: Number(problem.points) }));
+}
