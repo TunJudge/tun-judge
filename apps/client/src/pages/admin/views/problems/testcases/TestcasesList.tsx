@@ -1,46 +1,29 @@
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  PencilAltIcon,
-  PlusIcon,
-  TrashIcon,
-} from '@heroicons/react/outline';
-import { TestcaseContentDialog } from '@shared/dialogs';
-import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
-import Tooltip from '@shared/tooltip/Tooltip';
-import classNames from 'classnames';
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import { ChevronDownIcon, ChevronUpIcon, EditIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { FC, useState } from 'react';
+import { CheckboxInput, Tooltip } from 'tw-react-components';
 
-import { formatBytes } from '@core/helpers';
-import { Problem, Testcase } from '@core/models';
-import { RootStore, TestcasesStore, useStore } from '@core/stores';
+import { useAuthContext } from '@core/contexts';
+import { formatBytes } from '@core/utils';
 
-import TestcaseBulkUploader from './TestcaseBulkUploader';
-import TestcaseForm from './TestcaseForm';
+import { Problem } from '../ProblemView';
+import { TestcaseBulkUploader } from './TestcaseBulkUploader';
+import { TestcaseForm } from './TestcaseForm';
 
-type TestcasesListProps = {
+export type Testcase = Problem['testcases'][number];
+
+type Props = {
   problem: Problem;
 };
 
-const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
-  const [formOpen, setFormOpen] = useState<boolean>(false);
-  const [formTestcase, setFormTestcase] = useState<Partial<Testcase>>({
-    problem: problem,
-  });
+export const TestcasesList: FC<Props> = ({ problem }) => {
+  const { profile } = useAuthContext();
+  const isUserAdmin = profile?.role.name === 'admin';
+
+  const [testcase, setTestcase] = useState<Partial<Testcase>>();
   const [contentViewData, setContentViewData] = useState<{
     testcase: Testcase | undefined;
     field: 'input' | 'output';
   }>({ testcase: undefined, field: 'input' });
-  const { isUserAdmin, toastsStore } = useStore<RootStore>('rootStore');
-  const { data, fetchAll, create, update, remove, move } =
-    useStore<TestcasesStore>('testcasesStore');
-
-  const dismissForm = async () => {
-    setFormTestcase({ problem: problem });
-    setFormOpen(false);
-    await fetchAll();
-  };
 
   return (
     <div className="flex h-full flex-col divide-y overflow-hidden rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
@@ -52,7 +35,7 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
 
             <PlusIcon
               className="h-10 w-10 cursor-pointer rounded-md bg-blue-500 p-1 hover:bg-blue-400"
-              onClick={() => setFormOpen(true)}
+              onClick={() => setTestcase({ problemId: problem.id })}
             />
           </div>
         )}
@@ -65,33 +48,33 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                 <th className="p-2 font-medium">#</th>
                 <th className="p-2 font-medium">Content</th>
                 <th className="p-2 font-medium">Sample</th>
-                <th className={classNames('p-2 font-medium')}>Description</th>
+                <th className="p-2 font-medium">Description</th>
                 {isUserAdmin && <th />}
               </tr>
             </thead>
             <tbody className="w-full divide-y dark:divide-gray-700">
-              {data.length === 0 ? (
+              {problem.testcases.length === 0 ? (
                 <tr>
                   <td colSpan={10}>
                     <div className="flex w-full items-center justify-center p-3">No data</div>
                   </td>
                 </tr>
               ) : (
-                data.map((testcase) => (
+                problem.testcases.map((testcase) => (
                   <tr key={`${testcase.id}-in`} className="divide-x dark:divide-gray-700">
                     <td>
                       <div className="flex flex-col items-center justify-center">
                         {testcase.rank > 0 && (
                           <ChevronUpIcon
                             className="h-4 w-4 cursor-pointer"
-                            onClick={() => move(testcase.id, 'up')}
+                            // onClick={() => move(testcase.id, 'up')}
                           />
                         )}
                         {testcase.rank}
-                        {testcase.rank < data.length - 1 && (
+                        {testcase.rank < problem.testcases.length - 1 && (
                           <ChevronDownIcon
                             className="h-4 w-4 cursor-pointer"
-                            onClick={() => move(testcase.id, 'down')}
+                            // onClick={() => move(testcase.id, 'down')}
                           />
                         )}
                       </div>
@@ -101,8 +84,8 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                         <div className="flex items-center gap-x-1 p-2">
                           <Tooltip
                             className="ml-1"
-                            content={testcase.input.md5Sum}
-                            position="right"
+                            content={testcase.inputFile.md5Sum}
+                            placement="right"
                           >
                             <div
                               className="cursor-pointer text-blue-500"
@@ -111,13 +94,13 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                               {`test.${testcase.rank}.in`}
                             </div>
                           </Tooltip>
-                          {formatBytes(testcase.input.size)}
+                          {formatBytes(testcase.inputFile.size)}
                         </div>
                         <div className="flex items-center gap-x-1 p-2">
                           <Tooltip
                             className="ml-1"
-                            content={testcase.output.md5Sum}
-                            position="right"
+                            content={testcase.outputFile.md5Sum}
+                            placement="right"
                           >
                             <div
                               className="cursor-pointer text-blue-500"
@@ -126,16 +109,15 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                               {`test.${testcase.rank}.out`}
                             </div>
                           </Tooltip>
-                          {formatBytes(testcase.output.size)}
+                          {formatBytes(testcase.outputFile.size)}
                         </div>
                       </div>
                     </td>
                     <td>
                       <div className="flex items-center justify-center">
-                        <CheckBoxInput<Testcase>
-                          entity={testcase}
-                          field="sample"
-                          onChange={() => update(testcase)}
+                        <CheckboxInput
+                          checked={testcase.sample}
+                          // onChange={() => update(testcase)}
                         />
                       </div>
                     </td>
@@ -145,16 +127,13 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
                     {isUserAdmin && (
                       <td>
                         <div className="flex h-full select-none flex-col items-center justify-center gap-1">
-                          <PencilAltIcon
+                          <EditIcon
                             className="h-8 w-8 cursor-pointer rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
-                            onClick={() => {
-                              setFormTestcase(testcase);
-                              setFormOpen(true);
-                            }}
+                            onClick={() => setTestcase(testcase)}
                           />
-                          <TrashIcon
+                          <Trash2Icon
                             className="h-8 w-8 cursor-pointer rounded-full p-1 text-red-700 hover:bg-gray-200 dark:hover:bg-gray-700"
-                            onClick={() => remove(testcase.id)}
+                            // onClick={() => remove(testcase.id)}
                           />
                         </div>
                       </td>
@@ -167,33 +146,16 @@ const TestcasesList: React.FC<TestcasesListProps> = observer(({ problem }) => {
         </div>
       </div>
       <TestcaseForm
-        isOpen={formOpen}
-        item={formTestcase as Testcase}
-        onClose={dismissForm}
-        onSubmit={async (testcase) => {
-          if (testcase.id) {
-            await update(testcase);
-            await dismissForm();
-          } else if (
-            data.some(
-              ({ input, output }) =>
-                input.md5Sum === testcase.input.md5Sum && output.md5Sum === testcase.output.md5Sum,
-            )
-          ) {
-            toastsStore.error('This is a duplicate testcase, select different files');
-          } else {
-            await create(testcase);
-            await dismissForm();
-          }
-        }}
+        problem={problem}
+        testcase={testcase}
+        onSubmit={() => setTestcase(undefined)}
+        onClose={() => setTestcase(undefined)}
       />
-      <TestcaseContentDialog
+      {/* <TestcaseContentDialog
         testcase={contentViewData.testcase}
         field={contentViewData.field}
         onClose={() => setContentViewData({ testcase: undefined, field: 'input' })}
-      />
+      /> */}
     </div>
   );
-});
-
-export default TestcasesList;
+};

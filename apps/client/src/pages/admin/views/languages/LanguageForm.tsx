@@ -1,8 +1,11 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
+import { FileKind } from '@prisma/client';
+
 import { useToastContext } from '@core/contexts';
+import { uploadFile } from '@core/utils';
 import { useUpsertLanguage } from '@models';
 
 import { Language } from './LanguagesList';
@@ -16,6 +19,8 @@ type Props = {
 export const LanguageForm: FC<Props> = ({ language, onClose, onSubmit }) => {
   const { toast } = useToastContext();
 
+  const [buildScriptFile, setBuildScriptFile] = useState<File>();
+
   const form = useForm<Language>({ defaultValues: structuredClone(language) });
 
   const { mutateAsync } = useUpsertLanguage();
@@ -24,8 +29,21 @@ export const LanguageForm: FC<Props> = ({ language, onClose, onSubmit }) => {
     form.reset(structuredClone(language));
   }, [form, language]);
 
-  const handleSubmit = async ({ id = -1, buildScript, ...language }: Language) => {
+  const handleSubmit = async ({ id = -1, buildScript: _, ...language }: Language) => {
     try {
+      if (buildScriptFile) {
+        const buildScript = await uploadFile(buildScriptFile, {
+          name: `Languages/${language.name}/${buildScriptFile.name}`,
+          type: buildScriptFile.type,
+          size: buildScriptFile.size,
+          md5Sum: '',
+          kind: FileKind.FILE,
+          parentDirectoryName: `Languages/${language.name}`,
+        });
+
+        language.buildScriptName = buildScript.name;
+      }
+
       const newLanguage = await mutateAsync({
         where: { id },
         create: language,
@@ -65,15 +83,14 @@ export const LanguageForm: FC<Props> = ({ language, onClose, onSubmit }) => {
             description="Docker image to process any submission sent with this language"
             required
           />
-          {/* <FileInput
-            entity={language}
-            field="buildScript"
+          <FormInputs.File
+            name="buildScriptName"
             label="Build Script"
+            placeholder="Build Script"
             description="The script responsible for build a code source of this language"
+            onFileChange={setBuildScriptFile}
             required
-            errors={errors}
-            setErrors={setErrors}
-          /> */}
+          />
         </Flex>
         <FormInputs.Select
           name="extensions"
@@ -87,10 +104,13 @@ export const LanguageForm: FC<Props> = ({ language, onClose, onSubmit }) => {
               value: extension,
             })) ?? []
           }
+          allowAddition
+          onNewItemAdded={(newExtension) =>
+            form.setValue('extensions', [...(form.watch('extensions') ?? []), newExtension])
+          }
           search
           multiple
           required
-          allowAddition
         />
         <Flex fullWidth>
           <FormInputs.Checkbox

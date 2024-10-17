@@ -1,20 +1,21 @@
-import { CloudUploadIcon } from '@heroicons/react/outline';
-import { MD5 } from 'crypto-js';
-import { observer } from 'mobx-react';
-import React, { useRef } from 'react';
+import { CloudUploadIcon } from 'lucide-react';
+import { FC, useRef } from 'react';
 
-import { fileToBase64 } from '@core/helpers';
-import { File as DbFile, FileContent, Problem } from '@core/models';
-import { TestcasesStore, useStore } from '@core/stores';
+import { FileKind } from '@prisma/client';
 
-type TestcaseBulkUploaderProps = {
+import { uploadFile } from '@core/utils';
+import { useCreateTestcase } from '@models';
+
+import { Problem } from '../ProblemView';
+
+type Props = {
   problem: Problem;
 };
 
-const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ problem }) => {
-  const { create, data } = useStore<TestcasesStore>('testcasesStore');
-
+export const TestcaseBulkUploader: FC<Props> = ({ problem }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const { mutateAsync } = useCreateTestcase();
 
   return (
     <div onClick={() => fileInputRef.current?.click()}>
@@ -41,38 +42,35 @@ const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ pr
             for (const key in testcases) {
               const files = testcases[key];
               if (files.in && files.ans) {
-                const inputPayload = await fileToBase64(files.in);
-                const outputPayload = await fileToBase64(files.ans);
-                const inputMD5Sum = MD5(inputPayload).toString();
-                const outputMD5Sum = MD5(outputPayload).toString();
+                const uploadTestcaseFile = (file: File) =>
+                  uploadFile(file, {
+                    name: `Problems/${problem.name}/Testcases/${file.name}`,
+                    type: file.type,
+                    size: file.size,
+                    md5Sum: '',
+                    kind: FileKind.FILE,
+                    parentDirectoryName: `Problems/${problem.name}/Testcases`,
+                  });
+
+                const inputFile = await uploadTestcaseFile(files.in);
+                const outputFile = await uploadTestcaseFile(files.ans);
+
                 if (
-                  data.some(
-                    ({ input, output }) =>
-                      input.md5Sum === inputMD5Sum && output.md5Sum === outputMD5Sum,
+                  problem.testcases.some(
+                    (testcase) =>
+                      testcase.inputFile.md5Sum === inputFile.md5Sum &&
+                      testcase.outputFile.md5Sum === outputFile.md5Sum,
                   )
                 )
                   continue;
-                await create({
-                  input: {
-                    name: files.in.name,
-                    type: files.in.type,
-                    size: files.in.size,
-                    md5Sum: inputMD5Sum,
-                    content: {
-                      payload: inputPayload,
-                    } as FileContent,
-                  } as DbFile,
-                  output: {
-                    name: files.ans.name,
-                    type: files.ans.type,
-                    size: files.ans.size,
-                    md5Sum: outputMD5Sum,
-                    content: {
-                      payload: outputPayload,
-                    } as FileContent,
-                  } as DbFile,
-                  description: '-',
-                  problem: problem,
+                await mutateAsync({
+                  data: {
+                    problemId: problem.id,
+                    description: '-',
+                    rank: problem.testcases.length,
+                    inputFileName: inputFile.name,
+                    outputFileName: outputFile.name,
+                  },
                 });
               }
             }
@@ -81,6 +79,4 @@ const TestcaseBulkUploader: React.FC<TestcaseBulkUploaderProps> = observer(({ pr
       />
     </div>
   );
-});
-
-export default TestcaseBulkUploader;
+};

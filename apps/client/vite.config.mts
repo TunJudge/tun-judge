@@ -13,7 +13,7 @@ export default defineConfig({
     port: 4200,
     host: 'localhost',
     proxy: {
-      '^/api.*': {
+      '^/(api|status|files|images|videos).*': {
         target: 'http://0.0.0.0:3000',
         changeOrigin: true,
         secure: false,

@@ -1,8 +1,11 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
+import { FileKind } from '@prisma/client';
+
 import { useToastContext } from '@core/contexts';
+import { uploadFile } from '@core/utils';
 import { useFindManyExecutable, useUpsertProblem } from '@models';
 
 import { Problem } from './ProblemsList';
@@ -15,6 +18,8 @@ type Props = {
 
 export const ProblemForm: FC<Props> = ({ problem, onClose, onSubmit }) => {
   const { toast } = useToastContext();
+
+  const [statementFile, setStatementFile] = useState<File>();
 
   const form = useForm<Problem>({ defaultValues: structuredClone(problem) });
 
@@ -42,6 +47,19 @@ export const ProblemForm: FC<Props> = ({ problem, onClose, onSubmit }) => {
 
   const handleSubmit = async ({ id = -1, _count: _, ...problem }: Problem) => {
     try {
+      if (statementFile) {
+        const statement = await uploadFile(statementFile, {
+          name: `Problems/${problem.name}/${statementFile.name}`,
+          type: statementFile.type,
+          size: statementFile.size,
+          md5Sum: '',
+          kind: FileKind.FILE,
+          parentDirectoryName: `Problems/${problem.name}`,
+        });
+
+        problem.statementFileName = statement.name;
+      }
+
       const newProblem = await mutateAsync({
         where: { id },
         create: problem,
@@ -74,15 +92,14 @@ export const ProblemForm: FC<Props> = ({ problem, onClose, onSubmit }) => {
       <Flex direction="column" fullWidth>
         <Flex fullWidth>
           <FormInputs.Text name="name" label="Name" placeholder="Name" required />
-          {/* <FileInput
-          entity={problem}
-          field="file"
-          label="Problem File"
-          accept="application/pdf, text/html"
-          required
-          errors={errors}
-          setErrors={setErrors}
-        /> */}
+          <FormInputs.File
+            name="statementFileName"
+            label="Problem Statement File"
+            placeholder="Problem Statement File"
+            accept="application/pdf, text/html"
+            onFileChange={setStatementFile}
+            required
+          />
         </Flex>
         <Flex fullWidth>
           <FormInputs.Number

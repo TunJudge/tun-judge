@@ -25,6 +25,7 @@ import { useAuthContext } from '@core/contexts';
 import { version } from '../../../package.json';
 import { ContestsList } from './views/contests/ContestsList';
 import { LanguagesList } from './views/languages/LanguagesList';
+import { ProblemView } from './views/problems/ProblemView';
 import { ProblemsList } from './views/problems/ProblemsList';
 import { TeamCategoriesList } from './views/team-category/TeamCategoriesList';
 import { TeamsList } from './views/teams/TeamsList';
@@ -163,7 +164,7 @@ export const AdminLayout: FC = () => {
         {/* <Route exact path="/" component={Dashboard} />*/}
         <Route path="/contests" element={<ContestsList />} />
         <Route path="/problems" element={<ProblemsList />} />
-        {/* <Route path="/problems/:id" component={ProblemView} /> */}
+        <Route path="/problems/:id" element={<ProblemView />} />
         <Route path="/languages" element={<LanguagesList />} />
         {/*<Route exact path="/executables" component={ExecutablesList} />*/}
         <Route path="/users" element={<UsersList />} />

@@ -1,73 +1,120 @@
-import { DataTableItemForm } from '@shared/data-table/DataTable';
-import { FormModal } from '@shared/dialogs';
-import FileInput from '@shared/form-controls/FileInput';
-import TextInput from '@shared/form-controls/TextInput';
-import { FormErrors } from '@shared/form-controls/types';
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
-import { isEmpty } from '@core/helpers';
-import { File, Testcase } from '@core/models';
+import { FileKind } from '@prisma/client';
 
-const TestcaseForm: DataTableItemForm<Testcase> = observer(
-  ({ item: testcase, isOpen, onClose, onSubmit }) => {
-    const [errors, setErrors] = useState<FormErrors<Testcase>>({});
+import { useToastContext } from '@core/contexts';
+import { uploadFile } from '@core/utils';
+import { useUpsertTestcase } from '@models';
 
-    useEffect(() => {
-      setErrors({
-        input: isEmpty(testcase.id) && isEmpty(testcase.input),
-        output: isEmpty(testcase.id) && isEmpty(testcase.output),
+import { Problem } from '../ProblemView';
+import { Testcase } from './TestcasesList';
+
+type Props = {
+  problem: Problem;
+  testcase?: Partial<Testcase>;
+  onSubmit?: (id: number) => void;
+  onClose: () => void;
+};
+
+export const TestcaseForm: FC<Props> = ({ problem, testcase, onSubmit, onClose }) => {
+  const { toast } = useToastContext();
+
+  const [inputFile, setInputFile] = useState<File>();
+  const [outputFile, setOutputFile] = useState<File>();
+
+  const form = useForm<Testcase>({ defaultValues: structuredClone(testcase) });
+
+  const { mutateAsync } = useUpsertTestcase();
+
+  useEffect(() => {
+    form.reset(structuredClone(testcase));
+  }, [form, testcase]);
+
+  const handleSubmit = async ({ id = -1, inputFile: _, outputFile: __, ...testcase }: Testcase) => {
+    try {
+      if (inputFile) {
+        const input = await uploadFile(inputFile, {
+          name: `Problems/${problem.name}/Testcases/${inputFile.name}`,
+          type: inputFile.type,
+          size: inputFile.size,
+          md5Sum: '',
+          kind: FileKind.FILE,
+          parentDirectoryName: `Problems/${problem.name}/Testcases`,
+        });
+
+        testcase.inputFileName = input.name;
+      }
+
+      if (outputFile) {
+        const output = await uploadFile(outputFile, {
+          name: `Problems/${problem.name}/Testcases/${outputFile.name}`,
+          type: outputFile.type,
+          size: outputFile.size,
+          md5Sum: '',
+          kind: FileKind.FILE,
+          parentDirectoryName: `Problems/${problem.name}/Testcases`,
+        });
+
+        testcase.outputFileName = output.name;
+      }
+
+      const newTestcase = await mutateAsync({
+        where: { id },
+        create: testcase,
+        update: testcase,
       });
-    }, [testcase]);
 
-    return (
-      <FormModal
-        title={`${testcase.id ? 'Update' : 'Create'} Testcase`}
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={() => onSubmit(testcase)}
-        submitDisabled={Object.values(errors).some((e) => e)}
-      >
-        <div className="grid gap-2 sm:grid-cols-2">
-          <FileInput<Testcase>
-            entity={testcase}
-            field="input"
+      if (!newTestcase) return;
+
+      toast('success', `Testcase ${newTestcase?.id ? 'updated' : 'created'} successfully`);
+
+      onSubmit?.(newTestcase?.id);
+      onClose();
+    } catch (error: unknown) {
+      toast(
+        'error',
+        `Failed to ${id ? 'update' : 'create'} testcase with error: ${(error as Error).message}`,
+      );
+    }
+  };
+
+  return (
+    <FormDialog
+      className="!max-w-4xl"
+      open={!!testcase}
+      form={form}
+      title={`${testcase?.id ? 'Update' : 'Create'} Testcase`}
+      onSubmit={handleSubmit}
+      onClose={onClose}
+    >
+      <Flex direction="column" fullWidth>
+        <Flex fullWidth>
+          <FormInputs.File
+            name="inputFileName"
             label="Input File"
-            placeHolder="*.in"
+            placeholder="*.in"
             accept=".in"
+            onFileChange={setInputFile}
             required
-            errors={errors}
-            setErrors={setErrors}
           />
-          <TextInput<File>
-            entity={testcase.input ?? {}}
-            field="md5Sum"
-            label="Input File MD5"
-            readOnly
-          />
-        </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <FileInput<Testcase>
-            entity={testcase}
-            field="output"
-            label="Output File"
-            placeHolder="*.ans"
-            accept=".ans"
-            required
-            errors={errors}
-            setErrors={setErrors}
-          />
-          <TextInput<File>
-            entity={testcase.output ?? {}}
-            field="md5Sum"
-            label="Output File MD5"
-            readOnly
-          />
-        </div>
-        <TextInput<Testcase> entity={testcase} field="description" label="Description" />
-      </FormModal>
-    );
-  },
-);
+          <FormInputs.Text name="inputFile.md5Sum" label="Input File MD5" readOnly />
+        </Flex>
 
-export default TestcaseForm;
+        <Flex fullWidth>
+          <FormInputs.File
+            name="outputFileName"
+            label="Output File"
+            placeholder="*.ans"
+            accept=".ans"
+            onFileChange={setOutputFile}
+            required
+          />
+          <FormInputs.Text name="outputFile.md5Sum" label="Output File MD5" readOnly />
+        </Flex>
+        <FormInputs.Text name="description" label="Description" placeholder="Description" />
+      </Flex>
+    </FormDialog>
+  );
+};
