@@ -1,5 +1,4 @@
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { Login } from '@core/components';
@@ -7,7 +6,7 @@ import { Login } from '@core/components';
 import PublicNavbar from './PublicNavbar';
 import HomeView from './views/HomeView';
 
-const PublicLayout: React.FC = observer(() => {
+export const PublicLayout: FC = () => {
   const [leftToContest, setLeftToContest] = useState<number>(0);
 
   // updateLeftTimeToContest(currentContest, setLeftToContest);
@@ -33,6 +32,4 @@ const PublicLayout: React.FC = observer(() => {
       </div>
     </div>
   );
-});
-
-export default PublicLayout;
+};

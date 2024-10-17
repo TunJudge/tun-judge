@@ -1,102 +1,110 @@
-import { DataTableItemForm } from '@shared/data-table/DataTable';
-import { FormModal } from '@shared/dialogs';
-import CheckBoxInput from '@shared/form-controls/CheckBoxInput';
-import DropDownInput from '@shared/form-controls/DropDownInput';
-import FileInput from '@shared/form-controls/FileInput';
-import TextInput from '@shared/form-controls/TextInput';
-import { FormErrors } from '@shared/form-controls/types';
-import React, { useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { Flex, FormDialog, FormInputs } from 'tw-react-components';
 
-import { isEmpty } from '@core/helpers';
-import { Language } from '@core/models';
+import { useToastContext } from '@core/contexts';
+import { useUpsertLanguage } from '@models';
 
-const LanguageForm: DataTableItemForm<Language> = ({
-  item: language,
-  isOpen,
-  onClose,
-  onSubmit,
-}) => {
-  const [errors, setErrors] = useState<FormErrors<Language>>({});
+import { Language } from './LanguagesList';
 
-  useEffect(() => {
-    setErrors({
-      name: isEmpty(language.name),
-      dockerImage: isEmpty(language.dockerImage),
-      buildScript: isEmpty(language.buildScript),
-      extensions: isEmpty(language.extensions),
-    });
-  }, [language]);
-
-  return (
-    <FormModal
-      title={`${language.id ? 'Update' : 'Create'} Language`}
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={() => onSubmit(language)}
-      submitDisabled={Object.values(errors).some((e) => e)}
-    >
-      <div className="grid gap-2 sm:grid-cols-3">
-        <TextInput<Language>
-          entity={language}
-          field="name"
-          label="Name"
-          required
-          errors={errors}
-          setErrors={setErrors}
-        />
-        <TextInput<Language>
-          entity={language}
-          field="dockerImage"
-          label="Docker Image"
-          description="Docker image to process any submission sent with this language"
-          required
-          errors={errors}
-          setErrors={setErrors}
-        />
-        <FileInput<Language>
-          entity={language}
-          field="buildScript"
-          label="Build Script"
-          description="The script responsible for build a code source of this language"
-          required
-          errors={errors}
-          setErrors={setErrors}
-        />
-      </div>
-      <DropDownInput<Language, string>
-        entity={language}
-        field="extensions"
-        label="File Extensions"
-        description="Possible file extensions for this language"
-        search
-        multiple
-        required
-        allowAdditions
-        errors={errors}
-        setErrors={setErrors}
-      />
-      <div className="grid gap-2 sm:grid-cols-2">
-        <CheckBoxInput<Language>
-          entity={language}
-          field="allowJudge"
-          label="Allow Judge"
-          description="Whether to allow judges hosts to pull any submission sent with this language"
-          defaultValue={true}
-          errors={errors}
-          setErrors={setErrors}
-        />
-        <CheckBoxInput<Language>
-          entity={language}
-          field="allowSubmit"
-          label="Allow Submit"
-          description="Whether to allow teams submit with this language"
-          defaultValue={true}
-          errors={errors}
-          setErrors={setErrors}
-        />
-      </div>
-    </FormModal>
-  );
+type Props = {
+  language?: Partial<Language>;
+  onSubmit?: (id: number) => void;
+  onClose: () => void;
 };
 
-export default LanguageForm;
+export const LanguageForm: FC<Props> = ({ language, onClose, onSubmit }) => {
+  const { toast } = useToastContext();
+
+  const form = useForm<Language>({ defaultValues: structuredClone(language) });
+
+  const { mutateAsync } = useUpsertLanguage();
+
+  useEffect(() => {
+    form.reset(structuredClone(language));
+  }, [form, language]);
+
+  const handleSubmit = async ({ id = -1, buildScript, ...language }: Language) => {
+    try {
+      const newLanguage = await mutateAsync({
+        where: { id },
+        create: language,
+        update: language,
+      });
+
+      if (!newLanguage) return;
+
+      toast('success', `Language ${newLanguage?.id ? 'updated' : 'created'} successfully`);
+
+      onSubmit?.(newLanguage?.id);
+      onClose();
+    } catch (error: unknown) {
+      toast(
+        'error',
+        `Failed to ${id ? 'update' : 'create'} language with error: ${(error as Error).message}`,
+      );
+    }
+  };
+
+  return (
+    <FormDialog
+      className="!max-w-7xl"
+      open={!!language}
+      form={form}
+      title={`${language?.id ? 'Update' : 'Create'} Language`}
+      onSubmit={handleSubmit}
+      onClose={onClose}
+    >
+      <Flex direction="column" fullWidth>
+        <Flex fullWidth>
+          <FormInputs.Text name="name" label="Name" placeholder="Name" required />
+          <FormInputs.Text
+            name="dockerImage"
+            label="Docker Image"
+            placeholder="Docker Image"
+            description="Docker image to process any submission sent with this language"
+            required
+          />
+          {/* <FileInput
+            entity={language}
+            field="buildScript"
+            label="Build Script"
+            description="The script responsible for build a code source of this language"
+            required
+            errors={errors}
+            setErrors={setErrors}
+          /> */}
+        </Flex>
+        <FormInputs.Select
+          name="extensions"
+          label="File Extensions"
+          placeholder="File Extensions"
+          description="Possible file extensions for this language"
+          items={
+            form.watch('extensions')?.map((extension) => ({
+              id: extension,
+              label: extension,
+              value: extension,
+            })) ?? []
+          }
+          search
+          multiple
+          required
+          allowAddition
+        />
+        <Flex fullWidth>
+          <FormInputs.Checkbox
+            name="allowJudge"
+            label="Allow Judge"
+            description="Whether to allow judges hosts to pull any submission sent with this language"
+          />
+          <FormInputs.Checkbox
+            name="allowSubmit"
+            label="Allow Submit"
+            description="Whether to allow teams submit with this language"
+          />
+        </Flex>
+      </Flex>
+    </FormDialog>
+  );
+};

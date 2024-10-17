@@ -76,7 +76,7 @@ export const ContestForm: FC<Props> = ({ contest, onClose, onSubmit }) => {
       onSubmit={handleSubmit}
       onClose={onClose}
     >
-      <Flex direction="column">
+      <Flex direction="column" fullWidth>
         <Flex fullWidth>
           <FormInputs.Text name="name" label="Name" placeholder="Name" required />
           <FormInputs.Text name="shortName" label="Short Name" placeholder="Short Name" required />

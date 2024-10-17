@@ -8,8 +8,8 @@ import { Role } from '@prisma/client';
 import { Logout } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 
-import AdminLayout from './pages/admin/AdminLayout';
-import PublicLayout from './pages/public/PublicLayout';
+import { AdminLayout } from './pages/admin/AdminLayout';
+import { PublicLayout } from './pages/public/PublicLayout';
 
 function renderLayout(role?: Role): React.ReactNode {
   if (!role) return <Spinner fullScreen />;

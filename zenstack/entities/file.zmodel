@@ -36,4 +36,7 @@ model File {
   judgingRunOutputFile        JudgingRun? @relation("JudgingRunOutputFile")
   judgingRunErrorOutputFile   JudgingRun? @relation("JudgingRunErrorOutputFile")
   judgingRunCheckerOutputFile JudgingRun? @relation("JudgingRunCheckerOutputFile")
+
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

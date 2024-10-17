@@ -11,4 +11,7 @@ model Language {
   buildScriptName String       @unique
   buildScript     File         @relation(fields: [buildScriptName], references: [name], onDelete: Restrict, onUpdate: Restrict)
   submissions     Submission[]
+
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

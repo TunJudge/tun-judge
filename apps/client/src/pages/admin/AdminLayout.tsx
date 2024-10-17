@@ -1,4 +1,5 @@
 import {
+  BracesIcon,
   ClipboardListIcon,
   GraduationCapIcon,
   LogOutIcon,
@@ -8,8 +9,7 @@ import {
   UserRoundIcon,
   UsersRoundIcon,
 } from 'lucide-react';
-import { observer } from 'mobx-react';
-import React, { useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import {
   Button,
@@ -24,12 +24,13 @@ import { useAuthContext } from '@core/contexts';
 
 import { version } from '../../../package.json';
 import { ContestsList } from './views/contests/ContestsList';
+import { LanguagesList } from './views/languages/LanguagesList';
 import { ProblemsList } from './views/problems/ProblemsList';
 import { TeamCategoriesList } from './views/team-category/TeamCategoriesList';
 import { TeamsList } from './views/teams/TeamsList';
 import { UsersList } from './views/users/UsersList';
 
-const AdminLayout: React.FC = observer(() => {
+export const AdminLayout: FC = () => {
   const { profile } = useAuthContext();
   const { theme, toggleTheme } = useLayoutContext();
 
@@ -53,11 +54,11 @@ const AdminLayout: React.FC = observer(() => {
         title: 'Problems',
         Icon: ClipboardListIcon,
       },
-      // {
-      //   pathname: 'languages',
-      //   title: 'Languages',
-      //   Icon: CodeIcon,
-      // },
+      {
+        pathname: 'languages',
+        title: 'Languages',
+        Icon: BracesIcon,
+      },
       // {
       //   pathname: 'executables',
       //   title: 'Executables',
@@ -162,9 +163,9 @@ const AdminLayout: React.FC = observer(() => {
         {/* <Route exact path="/" component={Dashboard} />*/}
         <Route path="/contests" element={<ContestsList />} />
         <Route path="/problems" element={<ProblemsList />} />
-        {/*<Route path="/problems/:id" component={ProblemView} />
-  <Route exact path="/languages" component={LanguagesList} />
-  <Route exact path="/executables" component={ExecutablesList} />*/}
+        {/* <Route path="/problems/:id" component={ProblemView} /> */}
+        <Route path="/languages" element={<LanguagesList />} />
+        {/*<Route exact path="/executables" component={ExecutablesList} />*/}
         <Route path="/users" element={<UsersList />} />
         <Route path="/teams" element={<TeamsList />} />
         <Route path="/team-categories" element={<TeamCategoriesList />} />
@@ -177,6 +178,4 @@ const AdminLayout: React.FC = observer(() => {
       </Routes>
     </Layout>
   );
-});
-
-export default AdminLayout;
+};

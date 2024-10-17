@@ -183,6 +183,8 @@ model ContestProblem {
   @@index([contestId, problemId])
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model File {
   name                        String      @id()
   type                        String
@@ -326,6 +328,8 @@ model Submission {
   @@index([submitTime])
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Language {
   id              Int          @id() @default(autoincrement())
   name            String       @unique()
