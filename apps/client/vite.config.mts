@@ -32,10 +32,6 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      'tw-react-components': path.join(
-        __dirname,
-        '../../libs/tw-react-components/libs/tw-react-components/src/index.ts',
-      ),
       '@core/components': '/src/core/components',
       '@core/contexts': '/src/core/contexts/index.ts',
       '@core/hooks': '/src/core/hooks',

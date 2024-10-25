@@ -3,7 +3,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { FetchFn } from '@zenstackhq/tanstack-query/runtime-v5';
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import { LayoutContextProvider, Spinner } from 'tw-react-components';
+import { LayoutContextProvider, SidebarContextProvider, Spinner } from 'tw-react-components';
+import 'tw-react-components/css';
 
 import { AuthContextProvider, ToastContextProvider } from '@core/contexts';
 import { Provider as ZenStackHooksProvider } from '@models';
@@ -29,11 +30,13 @@ root.render(
         <ReactQueryDevtools />
         <ZenStackHooksProvider value={{ endpoint: '/api/rpc', fetch: myFetch }}>
           <LayoutContextProvider>
-            <AuthContextProvider>
-              <ToastContextProvider>
-                <Root />
-              </ToastContextProvider>
-            </AuthContextProvider>
+            <SidebarContextProvider>
+              <AuthContextProvider>
+                <ToastContextProvider>
+                  <Root />
+                </ToastContextProvider>
+              </AuthContextProvider>
+            </SidebarContextProvider>
           </LayoutContextProvider>
         </ZenStackHooksProvider>
       </QueryClientProvider>

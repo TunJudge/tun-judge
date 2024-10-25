@@ -16,7 +16,7 @@ import {
   DropdownMenu,
   Flex,
   Layout,
-  SidebarItem,
+  SidebarProps,
   useLayoutContext,
 } from 'tw-react-components';
 
@@ -35,97 +35,106 @@ export const AdminLayout: FC = () => {
   const { profile } = useAuthContext();
   const { theme, toggleTheme } = useLayoutContext();
 
-  const darkMode = theme === 'dark';
-  const totalPendingSubmissions = 0;
-
-  const items: SidebarItem[] = useMemo(
-    () => [
-      // {
-      //   pathname: '',
-      //   title: 'Home',
-      //   Icon: HomeIcon,
-      // },
-      {
-        pathname: 'contests',
-        title: 'Contests',
-        Icon: GraduationCapIcon,
-      },
-      {
-        pathname: 'problems',
-        title: 'Problems',
-        Icon: ClipboardListIcon,
-      },
-      {
-        pathname: 'languages',
-        title: 'Languages',
-        Icon: BracesIcon,
-      },
-      // {
-      //   pathname: 'executables',
-      //   title: 'Executables',
-      //   Icon: CogIcon,
-      // },
-      {
-        pathname: 'users',
-        title: 'Users',
-        Icon: UserRoundIcon,
-      },
-      {
-        pathname: 'teams',
-        title: 'Teams',
-        Icon: UsersRoundIcon,
-      },
-      {
-        pathname: 'team-categories',
-        title: 'Team Categories',
-        Icon: TagsIcon,
-      },
-      // {
-      //   pathname: 'judge-hosts',
-      //   title: 'Judge Hosts',
-      //   Icon: ServerIcon,
-      // },
-      // {
-      //   pathname: 'submissions',
-      //   title: 'Submissions',
-      //   Icon: PaperAirplaneIcon,
-      //   label:
-      //     totalPendingSubmissions > 0 ? (
-      //       <div className="rounded-md bg-yellow-500 px-2 py-0.5 text-white">
-      //         {totalPendingSubmissions}
-      //       </div>
-      //     ) : undefined,
-      // },
-      // {
-      //   pathname: 'clarifications',
-      //   title: 'Clarifications',
-      //   Icon: ChatIcon,
-      // },
-      // {
-      //   pathname: 'scoreboard',
-      //   title: 'Scoreboard',
-      //   Icon: ChartBarIcon,
-      // },
-    ],
-    [totalPendingSubmissions],
+  const sidebarProps: SidebarProps = useMemo(
+    () => ({
+      smallLogo: 'TJ',
+      fullLogo: 'TunJudge',
+      items: [
+        {
+          type: 'group',
+          items: [
+            // {
+            //   pathname: '',
+            //   title: 'Home',
+            //   Icon: HomeIcon,
+            // },
+            {
+              type: 'item',
+              pathname: 'contests',
+              title: 'Contests',
+              Icon: GraduationCapIcon,
+            },
+            {
+              type: 'item',
+              pathname: 'problems',
+              title: 'Problems',
+              Icon: ClipboardListIcon,
+            },
+            {
+              type: 'item',
+              pathname: 'languages',
+              title: 'Languages',
+              Icon: BracesIcon,
+            },
+            // {
+            //   pathname: 'executables',
+            //   title: 'Executables',
+            //   Icon: CogIcon,
+            // },
+            {
+              type: 'item',
+              pathname: 'users',
+              title: 'Users',
+              Icon: UserRoundIcon,
+            },
+            {
+              type: 'item',
+              pathname: 'teams',
+              title: 'Teams',
+              Icon: UsersRoundIcon,
+            },
+            {
+              type: 'item',
+              pathname: 'team-categories',
+              title: 'Team Categories',
+              Icon: TagsIcon,
+            },
+            // {
+            //   pathname: 'judge-hosts',
+            //   title: 'Judge Hosts',
+            //   Icon: ServerIcon,
+            // },
+            // {
+            //   pathname: 'submissions',
+            //   title: 'Submissions',
+            //   Icon: PaperAirplaneIcon,
+            //   label:
+            //     totalPendingSubmissions > 0 ? (
+            //       <div className="rounded-md bg-yellow-500 px-2 py-0.5 text-white">
+            //         {totalPendingSubmissions}
+            //       </div>
+            //     ) : undefined,
+            // },
+            // {
+            //   pathname: 'clarifications',
+            //   title: 'Clarifications',
+            //   Icon: ChatIcon,
+            // },
+            // {
+            //   pathname: 'scoreboard',
+            //   title: 'Scoreboard',
+            //   Icon: ChartBarIcon,
+            // },
+          ],
+        },
+      ],
+    }),
+    [],
   );
 
   return (
     <Layout
       className="p-0"
-      sidebarProps={{
-        items,
-        smallLogo: 'TJ',
-        fullLogo: 'TunJudge',
-      }}
+      sidebarProps={sidebarProps}
       navbarProps={{
+        className: 'py-1',
         rightSlot: (
           // <ActiveContestSelector className="rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700" />
 
-          <Flex className="gap-2 pr-2" align="center">
+          <Flex className="gap-2" align="center">
             <Button
               variant="text"
-              prefixIcon={darkMode ? MoonIcon : SunIcon}
+              prefixIcon={theme === 'dark' ? MoonIcon : SunIcon}
               onClick={toggleTheme}
             />
             <DropdownMenu>

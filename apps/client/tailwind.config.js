@@ -6,7 +6,7 @@ module.exports = {
   darkMode: 'class',
   content: [
     join(__dirname, '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'),
-    '../../libs/tw-react-components/libs/tw-react-components/**/*.{tsx,jsx,js,html}',
+    '../../node_modules/tw-react-components/**/*.{tsx,jsx,js,html}',
     ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {
@@ -18,5 +18,9 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/forms'), require('tailwindcss-animate')],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('tailwindcss-animate'),
+    require('tw-react-components/config'),
+  ],
 };
