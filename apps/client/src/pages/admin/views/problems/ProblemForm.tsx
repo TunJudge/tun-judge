@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Flex, FormDialog, FormInputs } from 'tw-react-components';
+import { FormDialog, FormInputs } from 'tw-react-components';
 
 import { FileKind } from '@prisma/client';
 
@@ -82,77 +82,69 @@ export const ProblemForm: FC<Props> = ({ problem, onClose, onSubmit }) => {
 
   return (
     <FormDialog
-      className="!max-w-4xl"
+      className="!max-w-xl"
       open={!!problem}
       form={form}
       title={`${problem?.id ? 'Update' : 'Create'} Problem`}
       onSubmit={handleSubmit}
       onClose={onClose}
     >
-      <Flex direction="column" fullWidth>
-        <Flex fullWidth>
-          <FormInputs.Text name="name" label="Name" placeholder="Name" required />
-          <FormInputs.File
-            name="statementFileName"
-            label="Problem Statement File"
-            placeholder="Problem Statement File"
-            accept="application/pdf, text/html"
-            onFileChange={setStatementFile}
-            required
-          />
-        </Flex>
-        <Flex fullWidth>
-          <FormInputs.Number
-            name="timeLimit"
-            label="Time Limit (Seconds)"
-            placeholder="Time Limit"
-            required
-            unit="S"
-            min={0}
-            step={0.1}
-          />
-          <FormInputs.Number
-            name="memoryLimit"
-            label="Memory Limit (Kb)"
-            placeholder="Memory Limit (Kb)"
-            unit="Kb"
-            min={0}
-          />
-          <FormInputs.Number
-            name="outputLimit"
-            label="Output Limit (Kb)"
-            placeholder="Output Limit (Kb)"
-            unit="Kb"
-            min={0}
-          />
-        </Flex>
-        <Flex fullWidth>
-          <FormInputs.Select
-            name="runScriptId"
-            label="Run Script"
-            placeholder="Run Script"
-            description="Submissions runner"
-            items={runners.map((runner) => ({
-              id: runner.id,
-              label: runner.name,
-              value: runner.id,
-            }))}
-            required
-          />
-          <FormInputs.Select
-            name="checkScriptId"
-            label="Check Script"
-            placeholder="Check Script"
-            description="Submissions output checker"
-            items={checkers.map((runner) => ({
-              id: runner.id,
-              label: runner.name,
-              value: runner.id,
-            }))}
-            required
-          />
-        </Flex>
-      </Flex>
+      <FormInputs.Text name="name" label="Name" placeholder="Name" autoComplete="off" required />
+      <FormInputs.File
+        name="statementFileName"
+        label="Problem Statement File"
+        placeholder="Problem Statement File"
+        accept="application/pdf, text/html"
+        onFileChange={setStatementFile}
+        required
+      />
+      <FormInputs.Number
+        name="timeLimit"
+        label="Time Limit (Seconds)"
+        placeholder="Time Limit"
+        required
+        unit="S"
+        min={0}
+        step={0.1}
+      />
+      <FormInputs.Number
+        name="memoryLimit"
+        label="Memory Limit (Kb)"
+        placeholder="Memory Limit (Kb)"
+        unit="Kb"
+        min={0}
+      />
+      <FormInputs.Number
+        name="outputLimit"
+        label="Output Limit (Kb)"
+        placeholder="Output Limit (Kb)"
+        unit="Kb"
+        min={0}
+      />
+      <FormInputs.Select
+        name="runScriptId"
+        label="Run Script"
+        placeholder="Run Script"
+        description="Submissions runner"
+        items={runners.map((runner) => ({
+          id: runner.id,
+          label: runner.name,
+          value: runner.id,
+        }))}
+        required
+      />
+      <FormInputs.Select
+        name="checkScriptId"
+        label="Check Script"
+        placeholder="Check Script"
+        description="Submissions output checker"
+        items={checkers.map((runner) => ({
+          id: runner.id,
+          label: runner.name,
+          value: runner.id,
+        }))}
+        required
+      />
     </FormDialog>
   );
 };

@@ -11,13 +11,17 @@
   font-named-instance: Regular;
 }
 
+* {
+  @apply border-border;
+}
+
 html {
   scroll-behavior: smooth;
   font-family: 'Inter var', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 
-  @apply text-[12px] 2xl:text-[14px];
+  @apply text-foreground bg-background text-[12px] 2xl:text-[14px];
 
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;

@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Flex, FormDialog, FormInputs } from 'tw-react-components';
+import { FormDialog, FormInputs } from 'tw-react-components';
 
 import { FileKind } from '@prisma/client';
 
@@ -66,65 +66,59 @@ export const LanguageForm: FC<Props> = ({ language, onClose, onSubmit }) => {
 
   return (
     <FormDialog
-      className="!max-w-7xl"
+      className="!max-w-xl"
       open={!!language}
       form={form}
       title={`${language?.id ? 'Update' : 'Create'} Language`}
       onSubmit={handleSubmit}
       onClose={onClose}
     >
-      <Flex direction="column" fullWidth>
-        <Flex fullWidth>
-          <FormInputs.Text name="name" label="Name" placeholder="Name" required />
-          <FormInputs.Text
-            name="dockerImage"
-            label="Docker Image"
-            placeholder="Docker Image"
-            description="Docker image to process any submission sent with this language"
-            required
-          />
-          <FormInputs.File
-            name="buildScriptName"
-            label="Build Script"
-            placeholder="Build Script"
-            description="The script responsible for build a code source of this language"
-            onFileChange={setBuildScriptFile}
-            required
-          />
-        </Flex>
-        <FormInputs.Select
-          name="extensions"
-          label="File Extensions"
-          placeholder="File Extensions"
-          description="Possible file extensions for this language"
-          items={
-            form.watch('extensions')?.map((extension) => ({
-              id: extension,
-              label: extension,
-              value: extension,
-            })) ?? []
-          }
-          allowAddition
-          onNewItemAdded={(newExtension) =>
-            form.setValue('extensions', [...(form.watch('extensions') ?? []), newExtension])
-          }
-          search
-          multiple
-          required
-        />
-        <Flex fullWidth>
-          <FormInputs.Checkbox
-            name="allowJudge"
-            label="Allow Judge"
-            description="Whether to allow judges hosts to pull any submission sent with this language"
-          />
-          <FormInputs.Checkbox
-            name="allowSubmit"
-            label="Allow Submit"
-            description="Whether to allow teams submit with this language"
-          />
-        </Flex>
-      </Flex>
+      <FormInputs.Text name="name" label="Name" placeholder="Name" autoComplete="off" required />
+      <FormInputs.Text
+        name="dockerImage"
+        label="Docker Image"
+        placeholder="Docker Image"
+        description="Docker image to process any submission sent with this language"
+        required
+      />
+      <FormInputs.File
+        name="buildScriptName"
+        label="Build Script"
+        placeholder="Build Script"
+        description="The script responsible for build a code source of this language"
+        onFileChange={setBuildScriptFile}
+        required
+      />
+      <FormInputs.Select
+        name="extensions"
+        label="File Extensions"
+        placeholder="File Extensions"
+        description="Possible file extensions for this language"
+        items={
+          form.watch('extensions')?.map((extension) => ({
+            id: extension,
+            label: extension,
+            value: extension,
+          })) ?? []
+        }
+        allowAddition
+        onNewItemAdded={(newExtension) =>
+          form.setValue('extensions', [...(form.watch('extensions') ?? []), newExtension])
+        }
+        search
+        multiple
+        required
+      />
+      <FormInputs.Checkbox
+        name="allowJudge"
+        label="Allow Judge"
+        description="Whether to allow judges hosts to pull any submission sent with this language"
+      />
+      <FormInputs.Checkbox
+        name="allowSubmit"
+        label="Allow Submit"
+        description="Whether to allow teams submit with this language"
+      />
     </FormDialog>
   );
 };

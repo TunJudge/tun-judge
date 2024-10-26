@@ -1,29 +1,48 @@
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
-import { CodeEditorDialog } from '@shared/dialogs';
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import { CogIcon, EditIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'lucide-react';
+import { FC, useState } from 'react';
+import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
 
-import { Executable, ExecutableType } from '@core/models';
-import { ExecutablesStore, RootStore, useStore } from '@core/stores';
+import { Executable, ExecutableType } from '@prisma/client';
 
-import ExecutableForm from './ExecutableForm';
+import { PageTemplate } from '@core/components';
+import { useAuthContext } from '@core/contexts';
+import { useSorting } from '@core/hooks';
+import { useDeleteExecutable, useFindManyExecutable } from '@models';
 
-const executableTypeText: Record<ExecutableType, string> = { RUNNER: 'Runner', CHECKER: 'Checker' };
+import { ExecutableForm } from './ExecutableForm';
 
-const ExecutablesList: React.FC = observer(() => {
-  const { isUserAdmin } = useStore<RootStore>('rootStore');
-  const { fetchAll, updateCount, create, update, remove } =
-    useStore<ExecutablesStore>('executablesStore');
+export const executableTypeText: Record<ExecutableType, string> = {
+  RUNNER: 'Runner',
+  CHECKER: 'Checker',
+};
 
+export const ExecutablesList: FC = () => {
+  const { profile } = useAuthContext();
+  const isUserAdmin = profile?.role.name === 'admin';
+
+  const [executable, setExecutable] = useState<Partial<Executable>>();
   const [scriptData, setScriptData] = useState<
     { executable: Executable; field: 'sourceFile' | 'buildScript' } | undefined
   >();
+  const [deleteDialogState, setDeleteDialogState] = useState<{
+    open: boolean;
+    onConfirm: () => void;
+  }>();
+  const { sorting, setSorting } = useSorting<Executable>();
 
-  const columns: ListPageTableColumn<Executable>[] = [
+  const {
+    data: executables = [],
+    isLoading,
+    refetch,
+  } = useFindManyExecutable({
+    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
+  });
+  const { mutate: deleteExecutable } = useDeleteExecutable();
+
+  const columns: DataTableColumn<Executable>[] = [
     {
       header: 'Name',
       field: 'name',
-      render: (executable) => executable.name,
     },
     {
       header: 'Type',
@@ -32,7 +51,7 @@ const ExecutablesList: React.FC = observer(() => {
     },
     {
       header: 'Source File',
-      field: 'sourceFile',
+      field: 'sourceFileName',
       render: (executable) => (
         <div
           className="cursor-pointer text-blue-700"
@@ -43,15 +62,15 @@ const ExecutablesList: React.FC = observer(() => {
             })
           }
         >
-          {executable.sourceFile.name}
+          {executable.sourceFileName.replace(/^([^/]*\/)+/g, '')}
         </div>
       ),
     },
     {
       header: 'Build Script',
-      field: 'buildScript',
+      field: 'buildScriptName',
       render: (executable) =>
-        executable.buildScript ? (
+        executable.buildScriptName ? (
           <div
             className="cursor-pointer text-blue-700"
             onClick={() =>
@@ -61,7 +80,7 @@ const ExecutablesList: React.FC = observer(() => {
               })
             }
           >
-            {executable.buildScript.name}
+            {executable.buildScriptName.replace(/^([^/]*\/)+/g, '')}
           </div>
         ) : (
           '-'
@@ -80,32 +99,67 @@ const ExecutablesList: React.FC = observer(() => {
   ];
 
   return (
-    <div className="p-4">
-      <DataTable<Executable>
-        header="Executables"
-        dataFetcher={fetchAll}
-        dataDependencies={[updateCount]}
-        columns={columns}
-        ItemForm={isUserAdmin ? ExecutableForm : undefined}
-        onDelete={remove}
-        withoutActions={!isUserAdmin}
-        onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-      />
-      <CodeEditorDialog
-        file={scriptData?.executable[scriptData.field]}
-        readOnly={!isUserAdmin}
-        lang={scriptData?.executable[scriptData.field].name.endsWith('.cpp') ? 'c_cpp' : 'sh'}
-        dismiss={async () => {
-          await fetchAll();
-          setScriptData(undefined);
-        }}
-        submit={async () => {
-          await update(scriptData!.executable);
-          setScriptData(undefined);
-        }}
-      />
-    </div>
-  );
-});
+    //   <CodeEditorDialog
+    //     file={scriptData?.executable[scriptData.field]}
+    //     readOnly={!isUserAdmin}
+    //     lang={scriptData?.executable[scriptData.field].name.endsWith('.cpp') ? 'c_cpp' : 'sh'}
+    //     dismiss={async () => {
+    //       await fetchAll();
+    //       setScriptData(undefined);
+    //     }}
+    //     submit={async () => {
+    //       await update(scriptData!.executable);
+    //       setScriptData(undefined);
+    //     }}
+    //   />
 
-export default ExecutablesList;
+    <PageTemplate
+      icon={CogIcon}
+      title="Executables"
+      actions={
+        <>
+          <Button prefixIcon={RefreshCcw} onClick={() => refetch()} />
+          <Button prefixIcon={PlusIcon} onClick={() => setExecutable({})} />
+        </>
+      }
+      fullWidth
+    >
+      <DataTable
+        rows={executables}
+        columns={columns}
+        isLoading={isLoading}
+        sorting={{ sorting, onSortingChange: setSorting }}
+        actions={[
+          {
+            icon: EditIcon,
+            hide: !isUserAdmin,
+            onClick: setExecutable,
+          },
+          {
+            color: 'red',
+            icon: Trash2Icon,
+            hide: !isUserAdmin,
+            onClick: (item) =>
+              setDeleteDialogState({
+                open: true,
+                onConfirm: () => deleteExecutable({ where: { id: item.id } }),
+              }),
+          },
+        ]}
+      />
+      <ConfirmDialog
+        open={deleteDialogState?.open ?? false}
+        title="Delete Executable"
+        onConfirm={deleteDialogState?.onConfirm ?? (() => undefined)}
+        onClose={() => setDeleteDialogState(undefined)}
+      >
+        Are you sure you want to delete this team?
+      </ConfirmDialog>
+      <ExecutableForm
+        executable={executable}
+        onSubmit={() => setExecutable(undefined)}
+        onClose={() => setExecutable(undefined)}
+      />
+    </PageTemplate>
+  );
+};

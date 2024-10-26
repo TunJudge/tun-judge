@@ -1,6 +1,7 @@
 import {
   BracesIcon,
   ClipboardListIcon,
+  CogIcon,
   GraduationCapIcon,
   LogOutIcon,
   MoonIcon,
@@ -24,6 +25,7 @@ import { useAuthContext } from '@core/contexts';
 
 import { version } from '../../../package.json';
 import { ContestsList } from './views/contests/ContestsList';
+import { ExecutablesList } from './views/executables/ExecutablesList';
 import { LanguagesList } from './views/languages/LanguagesList';
 import { ProblemView } from './views/problems/ProblemView';
 import { ProblemsList } from './views/problems/ProblemsList';
@@ -66,11 +68,11 @@ export const AdminLayout: FC = () => {
               title: 'Languages',
               Icon: BracesIcon,
             },
-            // {
-            //   pathname: 'executables',
-            //   title: 'Executables',
-            //   Icon: CogIcon,
-            // },
+            {
+              pathname: 'executables',
+              title: 'Executables',
+              Icon: CogIcon,
+            },
             {
               type: 'item',
               pathname: 'users',
@@ -175,7 +177,7 @@ export const AdminLayout: FC = () => {
         <Route path="/problems" element={<ProblemsList />} />
         <Route path="/problems/:id" element={<ProblemView />} />
         <Route path="/languages" element={<LanguagesList />} />
-        {/*<Route exact path="/executables" component={ExecutablesList} />*/}
+        <Route path="/executables" element={<ExecutablesList />} />
         <Route path="/users" element={<UsersList />} />
         <Route path="/teams" element={<TeamsList />} />
         <Route path="/team-categories" element={<TeamCategoriesList />} />

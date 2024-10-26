@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Flex, FormDialog, FormInputs } from 'tw-react-components';
+import { FormDialog, FormInputs } from 'tw-react-components';
 
 import { useToastContext } from '@core/contexts';
 import { useUpsertTeamCategory } from '@models';
@@ -48,32 +48,35 @@ export const TeamCategoryForm: FC<Props> = ({ teamCategory, onClose, onSubmit })
 
   return (
     <FormDialog
-      className="!max-w-4xl"
+      className="!max-w-xl"
       open={!!teamCategory}
       form={form}
       title={`${teamCategory?.id ? 'Update' : 'Create'} Team Category`}
       onSubmit={handleSubmit}
       onClose={onClose}
     >
-      <Flex direction="column">
-        <Flex fullWidth>
-          <FormInputs.Text name="name" label="Name" placeholder="Name" required width="3" />
-          <FormInputs.Text
-            name="color"
-            label="Color"
-            placeholder="#000000"
-            width="2"
-            required
-            pattern={/(#[0-9a-fA-F]{6})*/}
-          />
-        </Flex>
-        <FormInputs.Checkbox
-          name="visible"
-          label="Visible"
-          description="Whether the teams under this category will be visible in the public scoreboard?"
-          defaultChecked={true}
-        />
-      </Flex>
+      <FormInputs.Text
+        name="name"
+        label="Name"
+        placeholder="Name"
+        autoComplete="off"
+        required
+        width="3"
+      />
+      <FormInputs.Text
+        name="color"
+        label="Color"
+        placeholder="#000000"
+        width="2"
+        required
+        pattern={/(#[0-9a-fA-F]{6})*/}
+      />
+      <FormInputs.Checkbox
+        name="visible"
+        label="Visible"
+        description="Whether the teams under this category will be visible in the public scoreboard?"
+        defaultChecked={true}
+      />
     </FormDialog>
   );
 };

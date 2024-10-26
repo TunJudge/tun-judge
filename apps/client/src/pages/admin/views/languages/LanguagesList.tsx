@@ -76,17 +76,6 @@ export const LanguagesList: FC = () => {
   ];
 
   return (
-    // <div className="p-4">
-    //   <DataTable<Language>
-    //     header="Languages"
-    //     dataFetcher={fetchAll}
-    //     dataDependencies={[updateCount]}
-    //     columns={columns}
-    //     ItemForm={isUserAdmin ? LanguageForm : undefined}
-    //     onDelete={remove}
-    //     withoutActions={!isUserAdmin}
-    //     onFormSubmit={(item) => (item.id ? update(item) : create(item))}
-    //   />
     //   <CodeEditorDialog
     //     file={scriptData?.buildScript}
     //     readOnly={!isUserAdmin}
@@ -99,7 +88,6 @@ export const LanguagesList: FC = () => {
     //       setScriptData(undefined);
     //     }}
     //   />
-    // </div>
     <PageTemplate
       icon={BracesIcon}
       title="Languages"

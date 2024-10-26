@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Flex, FormDialog, FormInputs } from 'tw-react-components';
+import { FormDialog, FormInputs } from 'tw-react-components';
 
 import { useToastContext } from '@core/contexts';
 import {
@@ -73,70 +73,64 @@ export const TeamForm: FC<Props> = ({ team, onClose, onSubmit }) => {
 
   return (
     <FormDialog
-      className="!max-w-4xl"
+      className="!max-w-xl"
       open={!!team}
       form={form}
       title={`${team?.id ? 'Update' : 'Create'} Team`}
       onSubmit={handleSubmit}
       onClose={onClose}
     >
-      <Flex direction="column" fullWidth>
-        <Flex fullWidth>
-          <FormInputs.Text name="name" label="Name" placeholder="Name" required />
-          <FormInputs.Select
-            name="category"
-            label="Category"
-            placeholder="Category"
-            required
-            items={categories.map((category) => ({
-              id: category.id,
-              label: category.name,
-              value: category,
-            }))}
-            selectPredicate={(category) => category.id === form.getValues('category.id')}
-          />
-        </Flex>
-        <FormInputs.Select
-          name="users"
-          label="Members"
-          placeholder="Members"
-          search
-          multiple
-          required
-          items={users
-            .filter(
-              (user) =>
-                !user.teamId ||
-                user.teamId === team?.id ||
-                form.getValues('users')?.some((t) => t.id === user.id),
-            )
-            .map((user) => ({
-              id: user.id,
-              label: user.username,
-              value: user,
-            }))}
-          selectPredicate={(a, b) => a.id === b.id}
-        />
-        <Flex fullWidth>
-          <FormInputs.Number name="penalty" label="Penalty Time" placeholder="Penalty Time" />
-          <FormInputs.Text name="room" label="Room" placeholder="Room" />
-        </Flex>
-        <FormInputs.Textarea name="comments" label="Comments" placeholder="Comments" />
-        <FormInputs.Select
-          name="contests"
-          label="Contests"
-          placeholder="Contests"
-          search
-          multiple
-          items={contests.map((contest) => ({
-            id: contest.id,
-            label: contest.name,
-            value: { contestId: contest.id },
+      <FormInputs.Text name="name" label="Name" placeholder="Name" autoComplete="off" required />
+      <FormInputs.Select
+        name="category"
+        label="Category"
+        placeholder="Category"
+        required
+        items={categories.map((category) => ({
+          id: category.id,
+          label: category.name,
+          value: category,
+        }))}
+        selectPredicate={(category) => category.id === form.getValues('category.id')}
+      />
+      <FormInputs.Select
+        name="users"
+        label="Members"
+        placeholder="Members"
+        search
+        multiple
+        required
+        items={users
+          .filter(
+            (user) =>
+              !user.teamId ||
+              user.teamId === team?.id ||
+              form.getValues('users')?.some((t) => t.id === user.id),
+          )
+          .map((user) => ({
+            id: user.id,
+            label: user.username,
+            value: user,
           }))}
-          selectPredicate={(a, b) => a.contestId === b.contestId}
-        />
-        <FormInputs.Checkbox name="enabled" label="Enabled" />
-      </Flex>
+        selectPredicate={(a, b) => a.id === b.id}
+      />
+      <FormInputs.Number name="penalty" label="Penalty Time" placeholder="Penalty Time" />
+      <FormInputs.Text name="room" label="Room" placeholder="Room" />
+      <FormInputs.Textarea name="comments" label="Comments" placeholder="Comments" />
+      <FormInputs.Select
+        name="contests"
+        label="Contests"
+        placeholder="Contests"
+        search
+        multiple
+        items={contests.map((contest) => ({
+          id: contest.id,
+          label: contest.name,
+          value: { contestId: contest.id },
+        }))}
+        selectPredicate={(a, b) => a.contestId === b.contestId}
+      />
+      <FormInputs.Checkbox name="enabled" label="Enabled" />
     </FormDialog>
   );
 };
