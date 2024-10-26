@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ThemeSwitcher } from 'tw-react-components';
+import { ThemeSelector } from 'tw-react-components';
 
 import { NavBar } from '@core/components';
 
@@ -43,7 +43,7 @@ const PublicNavbar: React.FC = observer(() => {
           onClick: () => onLinkClick('login'),
         },
         // { content: <ActiveContestSelector className="text-white" /> },
-        { content: <ThemeSwitcher /> },
+        { content: <ThemeSelector /> },
       ]}
     />
   );

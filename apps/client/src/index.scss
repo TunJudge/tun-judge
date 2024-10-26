@@ -21,7 +21,7 @@ html {
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 
-  @apply text-foreground bg-background text-[12px] 2xl:text-[14px];
+  @apply text-foreground bg-background text-[13px] 2xl:text-base;
 
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;

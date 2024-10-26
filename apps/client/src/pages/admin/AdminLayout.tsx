@@ -3,27 +3,15 @@ import {
   ClipboardListIcon,
   CogIcon,
   GraduationCapIcon,
-  LogOutIcon,
-  MoonIcon,
-  SunIcon,
   TagsIcon,
   UserRoundIcon,
   UsersRoundIcon,
 } from 'lucide-react';
 import { FC, useMemo } from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
-import {
-  Button,
-  DropdownMenu,
-  Flex,
-  Layout,
-  SidebarProps,
-  useLayoutContext,
-} from 'tw-react-components';
+import { Route, Routes } from 'react-router-dom';
+import { Layout, Sidebar, SidebarProps } from 'tw-react-components';
 
-import { useAuthContext } from '@core/contexts';
-
-import { version } from '../../../package.json';
+import { NavUser } from './NavUser';
 import { ContestsList } from './views/contests/ContestsList';
 import { ExecutablesList } from './views/executables/ExecutablesList';
 import { LanguagesList } from './views/languages/LanguagesList';
@@ -34,13 +22,18 @@ import { TeamsList } from './views/teams/TeamsList';
 import { UsersList } from './views/users/UsersList';
 
 export const AdminLayout: FC = () => {
-  const { profile } = useAuthContext();
-  const { theme, toggleTheme } = useLayoutContext();
-
   const sidebarProps: SidebarProps = useMemo(
     () => ({
-      smallLogo: 'TJ',
-      fullLogo: 'TunJudge',
+      header: (
+        <Sidebar.MenuButton size="lg">
+          <img
+            className="h-8 w-8 rounded-lg"
+            src="https://ui-avatars.com/api/?name=Tun_Judge&background=1d4ed8&color=fff"
+            alt="TunJudge"
+          />
+          <span className="text-lg font-semibold">Tun Judge</span>
+        </Sidebar.MenuButton>
+      ),
       items: [
         {
           type: 'group',
@@ -120,6 +113,7 @@ export const AdminLayout: FC = () => {
           ],
         },
       ],
+      footer: <NavUser />,
     }),
     [],
   );
@@ -128,48 +122,7 @@ export const AdminLayout: FC = () => {
     <Layout
       className="p-0"
       sidebarProps={sidebarProps}
-      navbarProps={{
-        className: 'py-1',
-        rightSlot: (
-          // <ActiveContestSelector className="rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700" />
-
-          <Flex className="gap-2" align="center">
-            <Button
-              variant="text"
-              prefixIcon={theme === 'dark' ? MoonIcon : SunIcon}
-              onClick={toggleTheme}
-            />
-            <DropdownMenu>
-              <DropdownMenu.Trigger>
-                <img
-                  className="h-8 w-8 rounded-lg"
-                  src={`https://ui-avatars.com/api/?name=${profile?.name ?? '-'}`}
-                  alt={profile?.name}
-                />
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content className="w-48" align="end">
-                <DropdownMenu.Item className="flex-col items-start gap-1">
-                  <span>{profile?.name}</span>
-                  <span className="text-sm leading-3 text-slate-400 xl:leading-4">
-                    {profile?.role.description}
-                  </span>
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <Link className="flex w-full items-center gap-2" to="logout">
-                  <DropdownMenu.Item className="w-full cursor-pointer">
-                    <DropdownMenu.Icon icon={LogOutIcon} />
-                    Logout
-                  </DropdownMenu.Item>
-                </Link>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item className="py-0.5 text-sm font-semibold" disabled>
-                  v{version}
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu>
-          </Flex>
-        ),
-      }}
+      // <ActiveContestSelector className="rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700" />
     >
       <Routes>
         {/* <Route exact path="/" component={Dashboard} />*/}
@@ -181,12 +134,14 @@ export const AdminLayout: FC = () => {
         <Route path="/users" element={<UsersList />} />
         <Route path="/teams" element={<TeamsList />} />
         <Route path="/team-categories" element={<TeamCategoriesList />} />
-        {/*<Route exact path="/judge-hosts" component={JudgeHostsList} />
-  <Route exact path="/submissions" component={SubmissionsList} />
-  <Route path="/submissions/:id" component={SubmissionsView} />
-  <Route exact path="/clarifications" component={ClarificationsList} />
-  <Route exact path="/scoreboard" component={Scoreboard} />
-  <Route render={() => <Redirect to="/" />} /> */}
+        {/*
+        <Route exact path="/judge-hosts" component={JudgeHostsList} />
+        <Route exact path="/submissions" component={SubmissionsList} />
+        <Route path="/submissions/:id" component={SubmissionsView} />
+        <Route exact path="/clarifications" component={ClarificationsList} />
+        <Route exact path="/scoreboard" component={Scoreboard} />
+        <Route render={() => <Redirect to="/" />} />
+        */}
       </Routes>
     </Layout>
   );

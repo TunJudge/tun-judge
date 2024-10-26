@@ -12,7 +12,7 @@ export const PublicLayout: FC = () => {
   // updateLeftTimeToContest(currentContest, setLeftToContest);
 
   return (
-    <div className="flex h-screen flex-col bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen w-screen flex-col bg-gray-100 dark:bg-gray-900">
       <PublicNavbar />
       <div className="h-full">
         {leftToContest && !window.location.pathname.startsWith('/login') ? (

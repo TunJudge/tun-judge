@@ -5652,7 +5652,7 @@ __metadata:
     ts-jest: "npm:^29.1.0"
     ts-node: "npm:10.9.1"
     tslib: "npm:^2.3.0"
-    tw-react-components: "npm:^0.0.139"
+    tw-react-components: "npm:^0.0.144"
     typeorm: "npm:^0.3.20"
     typescript: "npm:~5.5.2"
     vite: "npm:^5.0.0"
@@ -19766,10 +19766,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tw-react-components@npm:^0.0.139":
-  version: 0.0.139
-  resolution: "tw-react-components@npm:0.0.139"
-  checksum: 10c0/5bac232ac596a423471e8cd5f3ffd1954af0d7ab5341ac0d9c34dad29e556092c2560314b921b0e16cb5dc315dc0c6767ae8986ad4e0195d8e642a57c0f06d7d
+"tw-react-components@npm:^0.0.144":
+  version: 0.0.144
+  resolution: "tw-react-components@npm:0.0.144"
+  checksum: 10c0/d495ef86914877ba3cac2228ed8c962465ccc3e3298dbb7ac506fdffeb7805833b4f5aa37229ced04bd6791f0d9c495dbdf788d439cc4079544ca22650429f9b
   languageName: node
   linkType: hard
 
