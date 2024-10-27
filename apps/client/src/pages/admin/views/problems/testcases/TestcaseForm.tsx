@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Flex, FormDialog, FormInputs } from 'tw-react-components';
+import { FormDialog, FormInputs } from 'tw-react-components';
 
 import { FileKind } from '@prisma/client';
 
@@ -82,39 +82,32 @@ export const TestcaseForm: FC<Props> = ({ problem, testcase, onSubmit, onClose }
 
   return (
     <FormDialog
-      className="!max-w-4xl"
+      className="!max-w-xl"
       open={!!testcase}
       form={form}
       title={`${testcase?.id ? 'Update' : 'Create'} Testcase`}
       onSubmit={handleSubmit}
       onClose={onClose}
     >
-      <Flex direction="column" fullWidth>
-        <Flex fullWidth>
-          <FormInputs.File
-            name="inputFileName"
-            label="Input File"
-            placeholder="*.in"
-            accept=".in"
-            onFileChange={setInputFile}
-            required
-          />
-          <FormInputs.Text name="inputFile.md5Sum" label="Input File MD5" readOnly />
-        </Flex>
-
-        <Flex fullWidth>
-          <FormInputs.File
-            name="outputFileName"
-            label="Output File"
-            placeholder="*.ans"
-            accept=".ans"
-            onFileChange={setOutputFile}
-            required
-          />
-          <FormInputs.Text name="outputFile.md5Sum" label="Output File MD5" readOnly />
-        </Flex>
-        <FormInputs.Text name="description" label="Description" placeholder="Description" />
-      </Flex>
+      <FormInputs.File
+        name="inputFileName"
+        label="Input File"
+        placeholder="*.in"
+        accept=".in"
+        onFileChange={setInputFile}
+        required
+      />
+      <FormInputs.Text name="inputFile.md5Sum" label="Input File MD5" disabled />
+      <FormInputs.File
+        name="outputFileName"
+        label="Output File"
+        placeholder="*.ans"
+        accept=".ans"
+        onFileChange={setOutputFile}
+        required
+      />
+      <FormInputs.Text name="outputFile.md5Sum" label="Output File MD5" disabled />
+      <FormInputs.Text name="description" label="Description" placeholder="Description" />
     </FormDialog>
   );
 };

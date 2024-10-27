@@ -1,16 +1,17 @@
 import { LucideIcon } from 'lucide-react';
 import { ReactNode, forwardRef } from 'react';
-import { Flex, FlexProps, cn } from 'tw-react-components';
+import { Flex, FlexProps, Separator, Sidebar, cn } from 'tw-react-components';
 
 import { FiltersContent, FiltersProps, FiltersTrigger } from './filters';
 
 type Props = Omit<FlexProps, 'title'> & {
   icon?: LucideIcon;
-  title: ReactNode;
+  title?: ReactNode;
   actions?: ReactNode;
   bodyClassName?: string;
   filtersProps?: FiltersProps;
   headerBottomBorder?: boolean;
+  isSubSection?: boolean;
 };
 
 export const PageTemplate = forwardRef<HTMLDivElement, Props>(
@@ -23,6 +24,7 @@ export const PageTemplate = forwardRef<HTMLDivElement, Props>(
       actions,
       filtersProps,
       headerBottomBorder,
+      isSubSection,
       children,
       ...props
     },
@@ -44,7 +46,15 @@ export const PageTemplate = forwardRef<HTMLDivElement, Props>(
           fullWidth
         >
           <Flex className="gap-2 text-xl" align="center">
-            {Icon && <Icon className="mx-1 h-6 w-6" />}
+            {!isSubSection && (
+              <>
+                <Sidebar.Trigger />
+                {(Icon || title || filtersProps) && (
+                  <Separator className="h-7" orientation="vertical" decorative />
+                )}
+              </>
+            )}
+            {Icon && <Icon className="ml-2 mr-1 h-5 w-5" />}
             {title}
             {filtersProps && <FiltersTrigger {...filtersProps} />}
           </Flex>

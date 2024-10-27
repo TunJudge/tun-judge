@@ -1,3 +1,4 @@
+export * from './downloadFile';
 export * from './createDirectory';
 export * from './uploadFile';
 

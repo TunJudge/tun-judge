@@ -1,10 +1,16 @@
 import { CogIcon, EditIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'lucide-react';
 import { FC, useState } from 'react';
-import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
+import {
+  Button,
+  ConfirmDialog,
+  DataTable,
+  DataTableColumn,
+  useLayoutContext,
+} from 'tw-react-components';
 
 import { Executable, ExecutableType } from '@prisma/client';
 
-import { PageTemplate } from '@core/components';
+import { CodeEditorSheet, PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
 import { useDeleteExecutable, useFindManyExecutable } from '@models';
@@ -17,13 +23,12 @@ export const executableTypeText: Record<ExecutableType, string> = {
 };
 
 export const ExecutablesList: FC = () => {
+  const { showIds } = useLayoutContext();
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
 
   const [executable, setExecutable] = useState<Partial<Executable>>();
-  const [scriptData, setScriptData] = useState<
-    { executable: Executable; field: 'sourceFile' | 'buildScript' } | undefined
-  >();
+  const [scriptFileName, setScriptFileName] = useState<string>();
   const [deleteDialogState, setDeleteDialogState] = useState<{
     open: boolean;
     onConfirm: () => void;
@@ -41,6 +46,11 @@ export const ExecutablesList: FC = () => {
 
   const columns: DataTableColumn<Executable>[] = [
     {
+      header: '#',
+      field: 'id',
+      hide: !showIds,
+    },
+    {
       header: 'Name',
       field: 'name',
     },
@@ -55,12 +65,7 @@ export const ExecutablesList: FC = () => {
       render: (executable) => (
         <div
           className="cursor-pointer text-blue-700"
-          onClick={() =>
-            setScriptData({
-              executable,
-              field: 'sourceFile',
-            })
-          }
+          onClick={() => setScriptFileName(executable.sourceFileName)}
         >
           {executable.sourceFileName.replace(/^([^/]*\/)+/g, '')}
         </div>
@@ -73,12 +78,7 @@ export const ExecutablesList: FC = () => {
         executable.buildScriptName ? (
           <div
             className="cursor-pointer text-blue-700"
-            onClick={() =>
-              setScriptData({
-                executable,
-                field: 'buildScript',
-              })
-            }
+            onClick={() => setScriptFileName(executable.buildScriptName ?? undefined)}
           >
             {executable.buildScriptName.replace(/^([^/]*\/)+/g, '')}
           </div>
@@ -99,20 +99,6 @@ export const ExecutablesList: FC = () => {
   ];
 
   return (
-    //   <CodeEditorDialog
-    //     file={scriptData?.executable[scriptData.field]}
-    //     readOnly={!isUserAdmin}
-    //     lang={scriptData?.executable[scriptData.field].name.endsWith('.cpp') ? 'c_cpp' : 'sh'}
-    //     dismiss={async () => {
-    //       await fetchAll();
-    //       setScriptData(undefined);
-    //     }}
-    //     submit={async () => {
-    //       await update(scriptData!.executable);
-    //       setScriptData(undefined);
-    //     }}
-    //   />
-
     <PageTemplate
       icon={CogIcon}
       title="Executables"
@@ -153,8 +139,14 @@ export const ExecutablesList: FC = () => {
         onConfirm={deleteDialogState?.onConfirm ?? (() => undefined)}
         onClose={() => setDeleteDialogState(undefined)}
       >
-        Are you sure you want to delete this team?
+        Are you sure you want to delete this executable?
       </ConfirmDialog>
+      <CodeEditorSheet
+        fileName={scriptFileName}
+        lang={scriptFileName?.endsWith('.cpp') ? 'c_cpp' : 'sh'}
+        readOnly={!isUserAdmin}
+        onClose={() => setScriptFileName(undefined)}
+      />
       <ExecutableForm
         executable={executable}
         onSubmit={() => setExecutable(undefined)}

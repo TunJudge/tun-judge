@@ -1,7 +1,13 @@
 import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UserRoundIcon } from 'lucide-react';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
+import {
+  Button,
+  ConfirmDialog,
+  DataTable,
+  DataTableColumn,
+  useLayoutContext,
+} from 'tw-react-components';
 
 import { PageTemplate } from '@core/components';
 import { User, useAuthContext } from '@core/contexts';
@@ -12,6 +18,7 @@ import { useDeleteUser, useFindManyUser } from '@models';
 import { UserForm } from './UserForm';
 
 export const UsersList: React.FC = observer(() => {
+  const { showIds } = useLayoutContext();
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
 
@@ -33,6 +40,11 @@ export const UsersList: React.FC = observer(() => {
   const { mutate: deleteUser } = useDeleteUser();
 
   const columns: DataTableColumn<User>[] = [
+    {
+      header: '#',
+      field: 'id',
+      hide: !showIds,
+    },
     {
       header: 'Name',
       field: 'name',

@@ -40,11 +40,19 @@ export class FilesService {
     await logPrismaOperation(this.prisma, 'file', 'update')({ data: file, where: { name } });
   }
 
-  async saveFile(file: File) {
-    file.createdAt ??= new Date();
-    file.createdById ??= this.cls.get('auth')?.id;
+  async saveFile(file: File, @LogParam('replace') replace = false) {
+    if (!replace) {
+      file.createdAt ??= new Date();
+      file.createdById ??= this.cls.get('auth')?.id;
+    }
 
-    return logPrismaOperation(this.prisma, 'file', 'create')({ data: file });
+    return replace
+      ? logPrismaOperation(
+          this.prisma,
+          'file',
+          'update',
+        )({ where: { name: file.name }, data: file })
+      : logPrismaOperation(this.prisma, 'file', 'create')({ data: file });
   }
 
   async delete(@LogParam('name') name: string) {

@@ -2,6 +2,7 @@ import {
   BrushIcon,
   CheckIcon,
   ChevronsUpDownIcon,
+  HashIcon,
   LogOutIcon,
   MonitorIcon,
   MoonIcon,
@@ -15,7 +16,7 @@ import { useAuthContext } from '@core/contexts';
 
 export const NavUser: FC = () => {
   const { profile } = useAuthContext();
-  const { theme, setTheme } = useLayoutContext();
+  const { theme, setTheme, showIds, toggleShowIds } = useLayoutContext();
   const { isMobile } = useSidebar();
 
   return (
@@ -79,6 +80,11 @@ export const NavUser: FC = () => {
               </DropdownMenu.SubContent>
             </DropdownMenu.Portal>
           </DropdownMenu.Sub>
+          <DropdownMenu.Item onClick={toggleShowIds}>
+            <DropdownMenu.Icon icon={HashIcon} />
+            {showIds ? 'Hide IDs Column' : 'Show IDs Column'}
+            {showIds && <DropdownMenu.Icon className="ml-auto" icon={CheckIcon} />}
+          </DropdownMenu.Item>
           <Link className="flex w-full items-center gap-2" to="logout">
             <DropdownMenu.Item className="w-full cursor-pointer">
               <DropdownMenu.Icon icon={LogOutIcon} />

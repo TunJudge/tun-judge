@@ -1,5 +1,6 @@
 import { CloudUploadIcon } from 'lucide-react';
 import { FC, useRef } from 'react';
+import { Button } from 'tw-react-components';
 
 import { FileKind } from '@prisma/client';
 
@@ -18,8 +19,11 @@ export const TestcaseBulkUploader: FC<Props> = ({ problem }) => {
   const { mutateAsync } = useCreateTestcase();
 
   return (
-    <div onClick={() => fileInputRef.current?.click()}>
-      <CloudUploadIcon className="h-10 w-10 cursor-pointer rounded-md bg-green-500 p-2 hover:bg-green-400" />
+    <Button
+      color="green"
+      prefixIcon={CloudUploadIcon}
+      onClick={() => fileInputRef.current?.click()}
+    >
       <input
         ref={(ref) => (fileInputRef.current = ref)}
         type="file"
@@ -77,6 +81,6 @@ export const TestcaseBulkUploader: FC<Props> = ({ problem }) => {
           }
         }}
       />
-    </div>
+    </Button>
   );
 };

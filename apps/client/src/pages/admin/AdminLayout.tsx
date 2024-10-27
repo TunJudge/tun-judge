@@ -3,7 +3,7 @@ import {
   ClipboardListIcon,
   CogIcon,
   GraduationCapIcon,
-  TagsIcon,
+  ServerIcon,
   UserRoundIcon,
   UsersRoundIcon,
 } from 'lucide-react';
@@ -14,6 +14,7 @@ import { Layout, Sidebar, SidebarProps } from 'tw-react-components';
 import { NavUser } from './NavUser';
 import { ContestsList } from './views/contests/ContestsList';
 import { ExecutablesList } from './views/executables/ExecutablesList';
+import { JudgeHostsList } from './views/judge-hosts/JudgeHostsList';
 import { LanguagesList } from './views/languages/LanguagesList';
 import { ProblemView } from './views/problems/ProblemView';
 import { ProblemsList } from './views/problems/ProblemsList';
@@ -37,6 +38,7 @@ export const AdminLayout: FC = () => {
       items: [
         {
           type: 'group',
+          title: 'Setup',
           items: [
             // {
             //   pathname: '',
@@ -44,19 +46,32 @@ export const AdminLayout: FC = () => {
             //   Icon: HomeIcon,
             // },
             {
-              type: 'item',
+              pathname: 'users',
+              title: 'Users',
+              Icon: UserRoundIcon,
+            },
+            {
+              pathname: 'teams',
+              title: 'Teams',
+              Icon: UsersRoundIcon,
+              items: [
+                {
+                  pathname: 'categories',
+                  title: 'Team Categories',
+                },
+              ],
+            },
+            {
               pathname: 'contests',
               title: 'Contests',
               Icon: GraduationCapIcon,
             },
             {
-              type: 'item',
               pathname: 'problems',
               title: 'Problems',
               Icon: ClipboardListIcon,
             },
             {
-              type: 'item',
               pathname: 'languages',
               title: 'Languages',
               Icon: BracesIcon,
@@ -67,28 +82,10 @@ export const AdminLayout: FC = () => {
               Icon: CogIcon,
             },
             {
-              type: 'item',
-              pathname: 'users',
-              title: 'Users',
-              Icon: UserRoundIcon,
+              pathname: 'judge-hosts',
+              title: 'Judge Hosts',
+              Icon: ServerIcon,
             },
-            {
-              type: 'item',
-              pathname: 'teams',
-              title: 'Teams',
-              Icon: UsersRoundIcon,
-            },
-            {
-              type: 'item',
-              pathname: 'team-categories',
-              title: 'Team Categories',
-              Icon: TagsIcon,
-            },
-            // {
-            //   pathname: 'judge-hosts',
-            //   title: 'Judge Hosts',
-            //   Icon: ServerIcon,
-            // },
             // {
             //   pathname: 'submissions',
             //   title: 'Submissions',
@@ -126,16 +123,16 @@ export const AdminLayout: FC = () => {
     >
       <Routes>
         {/* <Route exact path="/" component={Dashboard} />*/}
+        <Route path="/users" element={<UsersList />} />
+        <Route path="/teams" element={<TeamsList />} />
+        <Route path="/teams/categories" element={<TeamCategoriesList />} />
         <Route path="/contests" element={<ContestsList />} />
         <Route path="/problems" element={<ProblemsList />} />
         <Route path="/problems/:id" element={<ProblemView />} />
         <Route path="/languages" element={<LanguagesList />} />
         <Route path="/executables" element={<ExecutablesList />} />
-        <Route path="/users" element={<UsersList />} />
-        <Route path="/teams" element={<TeamsList />} />
-        <Route path="/team-categories" element={<TeamCategoriesList />} />
+        <Route path="/judge-hosts" element={<JudgeHostsList />} />
         {/*
-        <Route exact path="/judge-hosts" component={JudgeHostsList} />
         <Route exact path="/submissions" component={SubmissionsList} />
         <Route path="/submissions/:id" component={SubmissionsView} />
         <Route exact path="/clarifications" component={ClarificationsList} />

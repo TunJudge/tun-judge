@@ -2,7 +2,13 @@ import { ClipboardListIcon, EditIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'l
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
+import {
+  Button,
+  ConfirmDialog,
+  DataTable,
+  DataTableColumn,
+  useLayoutContext,
+} from 'tw-react-components';
 
 import { Prisma } from '@prisma/client';
 
@@ -19,6 +25,7 @@ export type Problem = Prisma.ProblemGetPayload<{
 
 export const ProblemsList: React.FC = observer(() => {
   const navigate = useNavigate();
+  const { showIds } = useLayoutContext();
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
 
@@ -40,6 +47,11 @@ export const ProblemsList: React.FC = observer(() => {
   const { mutate: deleteProblem } = useDeleteProblem();
 
   const columns: DataTableColumn<Problem>[] = [
+    {
+      header: '#',
+      field: 'id',
+      hide: !showIds,
+    },
     {
       header: 'Name',
       field: 'name',

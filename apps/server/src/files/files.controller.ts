@@ -8,6 +8,7 @@ import {
   Inject,
   NotFoundException,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Post,
   Query,
@@ -223,6 +224,7 @@ export class FilesController {
     @LogParam('fileName') @Body('fileName') _: string,
     @LogParam('chunkNumber') @Body('chunkNumber', ParseIntPipe) chunkNumber: number,
     @LogParam('totalChunks') @Body('totalChunks', ParseIntPipe) totalChunks: number,
+    @LogParam('replace') @Query('replace', ParseBoolPipe) replace: boolean,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<File | void> {
     const fileMetadata = JSON.parse(metadata);
@@ -235,15 +237,18 @@ export class FilesController {
 
     const hash = createHash('md5');
 
-    let number = 1;
     let finalName = fileMetadata.name;
-    while (await this.filesStorage.exists(finalName)) {
-      const parsedPath = parse(fileMetadata.name);
-      finalName = `${parsedPath.name}-${number++}${parsedPath.ext}`;
-    }
-    fileMetadata.name = finalName;
 
-    await this.filesService.saveFile(fileMetadata);
+    if (!replace) {
+      let number = 1;
+      while (await this.filesStorage.exists(finalName)) {
+        const parsedPath = parse(fileMetadata.name);
+        finalName = `${parsedPath.name}-${number++}${parsedPath.ext}`;
+      }
+      fileMetadata.name = finalName;
+    }
+
+    await this.filesService.saveFile(fileMetadata, replace);
 
     await new Promise((resolve, reject) =>
       new MultiStream(this.chunksCache[originalName].map((path) => createReadStream(path)))

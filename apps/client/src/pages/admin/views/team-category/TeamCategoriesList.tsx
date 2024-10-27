@@ -146,7 +146,7 @@ export const TeamCategoriesList: React.FC = observer(() => {
         onConfirm={deleteDialogState?.onConfirm ?? (() => undefined)}
         onClose={() => setDeleteDialogState(undefined)}
       >
-        Are you sure you want to delete this team?
+        Are you sure you want to delete this team category?
       </ConfirmDialog>
       <TeamCategoryForm
         teamCategory={teamCategory}

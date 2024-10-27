@@ -1,10 +1,16 @@
 import { BracesIcon, EditIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'lucide-react';
 import { FC, useState } from 'react';
-import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
+import {
+  Button,
+  ConfirmDialog,
+  DataTable,
+  DataTableColumn,
+  useLayoutContext,
+} from 'tw-react-components';
 
 import { Prisma } from '@prisma/client';
 
-import { PageTemplate } from '@core/components';
+import { CodeEditorSheet, PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
 import { useDeleteLanguage, useFindManyLanguage } from '@models';
@@ -16,6 +22,7 @@ export type Language = Prisma.LanguageGetPayload<{
 }>;
 
 export const LanguagesList: FC = () => {
+  const { showIds } = useLayoutContext();
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
 
@@ -38,6 +45,11 @@ export const LanguagesList: FC = () => {
   const { mutate: deleteLanguage } = useDeleteLanguage();
 
   const columns: DataTableColumn<Language>[] = [
+    {
+      header: '#',
+      field: 'id',
+      hide: !showIds,
+    },
     {
       header: 'Name',
       field: 'name',
@@ -131,8 +143,13 @@ export const LanguagesList: FC = () => {
         onConfirm={deleteDialogState?.onConfirm ?? (() => undefined)}
         onClose={() => setDeleteDialogState(undefined)}
       >
-        Are you sure you want to delete this team?
+        Are you sure you want to delete this language?
       </ConfirmDialog>
+      <CodeEditorSheet
+        fileName={buildScript?.buildScriptName}
+        readOnly={!isUserAdmin}
+        onClose={() => setScriptData(undefined)}
+      />
       <LanguageForm
         language={language}
         onSubmit={() => setLanguage(undefined)}

@@ -1,6 +1,12 @@
 import { EditIcon, GraduationCapIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'lucide-react';
 import { FC, useState } from 'react';
-import { Button, ConfirmDialog, DataTable, DataTableColumn } from 'tw-react-components';
+import {
+  Button,
+  ConfirmDialog,
+  DataTable,
+  DataTableColumn,
+  useLayoutContext,
+} from 'tw-react-components';
 
 import { Prisma } from '@prisma/client';
 
@@ -17,6 +23,7 @@ export type Contest = Prisma.ContestGetPayload<{
 }>;
 
 export const ContestsList: FC = () => {
+  const { showIds } = useLayoutContext();
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
 
@@ -38,6 +45,11 @@ export const ContestsList: FC = () => {
   const { mutate: deleteContest } = useDeleteContest();
 
   const columns: DataTableColumn<Contest>[] = [
+    {
+      header: '#',
+      field: 'id',
+      hide: !showIds,
+    },
     {
       header: 'Short Name',
       field: 'shortName',
@@ -133,7 +145,7 @@ export const ContestsList: FC = () => {
         onConfirm={deleteDialogState?.onConfirm ?? (() => undefined)}
         onClose={() => setDeleteDialogState(undefined)}
       >
-        Are you sure you want to delete this team?
+        Are you sure you want to delete this contest?
       </ConfirmDialog>
       <ContestForm
         contest={contest}
