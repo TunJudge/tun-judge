@@ -16,7 +16,7 @@ export class AuthService {
     const user =
       (await prisma.user.findUnique({
         where: { username },
-        include: { role: true },
+        include: { role: true, team: true },
       })) ?? throwError<User>(new NotFoundException());
 
     if (checkPassword(user, password)) return cleanUser(user);

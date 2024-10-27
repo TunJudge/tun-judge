@@ -12,7 +12,7 @@ import { Prisma } from '@prisma/client';
 
 import { request } from '../../utils';
 
-export type User = Prisma.UserGetPayload<{ include: { role: true } }>;
+export type User = Prisma.UserGetPayload<{ include: { role: true; team: true } }>;
 
 export const AuthContext = createContext<AuthContext<User>>({
   connected: false,

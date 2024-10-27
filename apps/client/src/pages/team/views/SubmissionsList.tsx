@@ -1,79 +1,84 @@
-import SubmissionResult from '@shared/SubmissionResult';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { FC } from 'react';
+import { useParams } from 'react-router-dom';
+import { DataTable, DataTableColumn } from 'tw-react-components';
 
-import { contestStartedAndNotOver, dateComparator, formatRestTime } from '@core/helpers';
-import { Judging, Submission } from '@core/models';
-import { PublicStore, RootStore, TeamStore, useStore } from '@core/stores';
+import { Judging, Prisma } from '@prisma/client';
 
-const SubmissionsList: React.FC = observer(() => {
-  const { profile, updatesCount } = useStore<RootStore>('rootStore');
-  const { currentContest } = useStore<PublicStore>('publicStore');
-  const { fetchSubmissions } = useStore<TeamStore>('teamStore');
+import { useAuthContext } from '@core/contexts';
+import { dateComparator, formatRestTime, isContestRunning } from '@core/utils';
+import { useFindFirstContest, useFindManySubmission } from '@models';
 
-  const columns: ListPageTableColumn<Submission>[] = [
+type Submission = Prisma.SubmissionGetPayload<{
+  include: { problem: true; language: true; judgings: true };
+}>;
+
+export const SubmissionsList: FC = () => {
+  const { profile } = useAuthContext();
+  const { id: contestId } = useParams();
+
+  const { data: contest } = useFindFirstContest({
+    where: { id: parseInt(contestId ?? '-1') },
+    include: { problems: { include: { problem: true } } },
+  });
+
+  const { data: submissions, isLoading } = useFindManySubmission(
+    {
+      where: { contestId: contest?.id, teamId: profile?.team?.id },
+      include: { problem: true, language: true, judgings: true },
+    },
+    {
+      enabled: isContestRunning(contest),
+    },
+  );
+
+  const columns: DataTableColumn<Submission>[] = [
     {
       header: 'Time',
       field: 'submitTime',
-      textAlign: 'center',
+      align: 'center',
       render: (submission) =>
         formatRestTime(
           (new Date(submission.submitTime).getTime() -
-            new Date(currentContest?.startTime ?? 0).getTime()) /
+            new Date(contest?.startTime ?? 0).getTime()) /
             1000,
         ),
     },
     {
       header: 'Problem',
       field: 'problem',
-      textAlign: 'center',
+      align: 'center',
       render: (submission) =>
-        currentContest?.problems?.find((p) => p.problem.id === submission.problem.id)?.shortName ??
-        '-',
+        contest?.problems?.find((p) => p.problem.id === submission.problem.id)?.shortName ?? '-',
     },
     {
       header: 'Language',
-      field: 'language',
-      textAlign: 'center',
-      render: (submission) => submission.language.name,
+      field: 'language.name',
+      align: 'center',
     },
-    {
-      header: 'Result',
-      field: 'language',
-      textAlign: 'center',
-      render: (submission) => <SubmissionResult submission={submission} />,
-    },
+    // {
+    //   header: 'Result',
+    //   field: 'language',
+    //   align: 'center',
+    //   render: (submission) => <SubmissionResult submission={submission} />,
+    // },
   ];
 
-  const fetchAll = () =>
-    currentContest && contestStartedAndNotOver(currentContest) && profile?.team
-      ? fetchSubmissions(currentContest.id, profile.team.id)
-      : Promise.all([]);
-
   return (
-    <DataTable<Submission>
-      header="Submissions"
-      emptyMessage="No Submissions"
-      dataFetcher={fetchAll}
-      dataDependencies={[currentContest, profile, updatesCount.submissions]}
+    <DataTable
+      rows={submissions ?? []}
       columns={columns}
-      withoutActions
-      rowBackgroundColor={(submission) => {
+      isLoading={isLoading}
+      rowClassName={(submission) => {
         const judging = submission.judgings
           .slice()
           .sort(dateComparator<Judging>('startTime', true))
           .shift();
-        if (
-          !judging ||
-          !judging.result ||
-          (currentContest!.verificationRequired && !judging.verified)
-        )
+        if (!judging || !judging.result || (contest?.verificationRequired && !judging.verified))
           return 'yellow';
-        return judging.result == 'AC' ? 'green' : 'red';
+        return judging.result === 'ACCEPTED'
+          ? 'bg-green-400 dark:bg-green-700'
+          : 'bg-red-400 dark:bg-red-700';
       }}
     />
   );
-});
-
-export default SubmissionsList;
+};

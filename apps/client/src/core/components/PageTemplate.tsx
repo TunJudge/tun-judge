@@ -45,7 +45,7 @@ export const PageTemplate = forwardRef<HTMLDivElement, Props>(
           justify="between"
           fullWidth
         >
-          <Flex className="gap-2 text-xl" align="center">
+          <Flex className="gap-2 text-xl" align="center" fullWidth>
             {!isSubSection && (
               <>
                 <Sidebar.Trigger />
@@ -58,11 +58,11 @@ export const PageTemplate = forwardRef<HTMLDivElement, Props>(
             {title}
             {filtersProps && <FiltersTrigger {...filtersProps} />}
           </Flex>
-          {
+          {actions && (
             <Flex className="gap-2" align="center">
               {actions}
             </Flex>
-          }
+          )}
         </Flex>
         {filtersProps && <FiltersContent {...filtersProps} />}
         <Flex

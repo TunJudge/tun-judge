@@ -1,89 +1,94 @@
-import { CheckCircleIcon, MinusCircleIcon, XCircleIcon } from '@heroicons/react/outline';
-import SubmissionResult from '@shared/SubmissionResult';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
-import { observer } from 'mobx-react';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { CheckCircleIcon, MinusCircleIcon, XCircleIcon } from 'lucide-react';
+import { FC } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { DataTable, DataTableColumn } from 'tw-react-components';
 
-import { dateComparator, formatRestTime, getJudgingRunColor } from '@core/helpers';
-import { Judging, Submission } from '@core/models';
-import { PublicStore, RootStore, SubmissionsStore, useStore } from '@core/stores';
+import { Judging, Prisma, Testcase } from '@prisma/client';
 
-import SubmissionsFilters from './SubmissionsFilters';
-import SubmissionsListPagination from './SubmissionsListPagination';
+import { SubmissionResult } from '@core/components';
+import { useAuthContext } from '@core/contexts';
+import { dateComparator, formatRestTime } from '@core/utils';
+import { useFindFirstContest, useFindManySubmission } from '@models';
 
-const SubmissionsList: React.FC = observer(() => {
-  const { profile, updatesCount } = useStore<RootStore>('rootStore');
-  const { currentContest } = useStore<PublicStore>('publicStore');
-  const { totalItems, currentPage, setCurrentPage, filters, fetchAll, claim, unClaim } =
-    useStore<SubmissionsStore>('submissionsStore');
+type Submission = Prisma.SubmissionGetPayload<{
+  include: {
+    team: true;
+    problem: { include: { testcases: true } };
+    language: true;
+    judgings: { include: { juryMember: true; runs: { include: { testcase: true } } } };
+  };
+}>;
 
-  const history = useHistory();
+export const SubmissionsList: FC = () => {
+  const { profile } = useAuthContext();
+  const { id: contestId } = useParams();
 
-  const columns: ListPageTableColumn<Submission>[] = [
+  const { data: contest } = useFindFirstContest({ where: { id: parseInt(contestId ?? '-1') } });
+
+  const { data: submissions = [], isLoading } = useFindManySubmission({
+    where: { contestId: parseInt(contestId ?? '-1') },
+    include: {
+      team: true,
+      problem: { include: { testcases: true } },
+      language: true,
+      judgings: { include: { juryMember: true, runs: { include: { testcase: true } } } },
+    },
+    orderBy: { submitTime: 'desc' },
+  });
+
+  const columns: DataTableColumn<Submission>[] = [
     {
       header: 'Time',
       field: 'submitTime',
-      textAlign: 'center',
       render: (submission) => (
-        <div
-          className="cursor-pointer text-blue-700"
-          onClick={() => history.push(`/submissions/${submission.id}`)}
-        >
+        <Link className="cursor-pointer text-blue-700" to={`submissions/${submission.id}`}>
           {formatRestTime(
             (new Date(submission.submitTime).getTime() -
-              new Date(currentContest?.startTime ?? 0).getTime()) /
+              new Date(contest?.startTime ?? 0).getTime()) /
               1000,
           )}
-        </div>
+        </Link>
       ),
     },
     {
       header: 'Team',
       field: 'team',
-      disabled: (submission) => !submission.valid,
       render: (submission) => submission.team.name,
     },
     {
       header: 'Problem',
       field: 'problem',
-      textAlign: 'center',
-      disabled: (submission) => !submission.valid,
       render: ({ problem }) => (
-        <a
+        <Link
           className="cursor-pointer text-blue-700"
-          href={`/problems/${problem.id}`}
+          to={`/problems/${problem.id}`}
           target="_blank"
           rel="noreferrer"
         >
           {problem.name}
-        </a>
+        </Link>
       ),
     },
     {
       header: 'Language',
       field: 'language',
-      textAlign: 'center',
-      disabled: (submission) => !submission.valid,
       render: (submission) => submission.language.name,
     },
     {
       header: 'Result',
-      field: 'language',
-      textAlign: 'center',
+      field: 'judgings',
       render: (submission) => <SubmissionResult submission={submission} />,
     },
     {
       header: 'Verified by',
       field: 'judgings',
-      textAlign: 'center',
-      disabled: (submission) => !submission.valid,
       render: (submission) => {
         const judging = submission.judgings
           .slice()
           .filter((j) => j.valid)
           .sort(dateComparator<Judging>('startTime', true))
           .shift();
+
         return judging?.result ? (
           judging.verified ? (
             `Yes by ${judging.juryMember.username}`
@@ -92,8 +97,8 @@ const SubmissionsList: React.FC = observer(() => {
               <div
                 className="hover:bg-grey-100 cursor-pointer rounded-md bg-gray-200 p-2 text-center font-medium text-gray-600"
                 onClick={async () => {
-                  await unClaim(submission.id);
-                  await fetchAll();
+                  // await unClaim(submission.id);
+                  // await fetchAll();
                 }}
               >
                 UnClaim
@@ -105,8 +110,8 @@ const SubmissionsList: React.FC = observer(() => {
             <div
               className="hover:bg-grey-100 cursor-pointer rounded-md bg-gray-200 p-2 text-center font-medium text-gray-600"
               onClick={async () => {
-                await claim(submission.id);
-                history.push(`/submissions/${submission.id}`);
+                // await claim(submission.id);
+                // history.push(`/submissions/${submission.id}`);
               }}
             >
               Claim
@@ -157,35 +162,16 @@ const SubmissionsList: React.FC = observer(() => {
     },
   ];
 
-  return (
-    <div className="p-4">
-      <DataTable<Submission>
-        header="Submissions"
-        dataFetcher={fetchAll}
-        dataDependencies={[
-          currentContest,
-          currentPage,
-          filters.problems,
-          filters.teams,
-          filters.languages,
-          filters.status,
-          updatesCount.judgings,
-          updatesCount.judgeRuns,
-          fetchAll,
-        ]}
-        columns={columns}
-        filters={<SubmissionsFilters filters={filters} />}
-        pagination={
-          <SubmissionsListPagination
-            totalItems={totalItems}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        }
-        withoutActions
-      />
-    </div>
-  );
-});
+  return <DataTable rows={submissions} columns={columns} isLoading={isLoading} />;
+};
 
-export default SubmissionsList;
+export function getJudgingRunColor(
+  testcase: Testcase,
+  judging?: Prisma.JudgingGetPayload<{ include: { runs: { include: { testcase: true } } } }>,
+): 'gray' | 'green' | 'red' {
+  if (!judging) return 'gray';
+
+  const judgeRun = judging.runs.find((r) => r.testcase.id === testcase.id);
+
+  return !judgeRun ? 'gray' : judgeRun.result === 'ACCEPTED' ? 'green' : 'red';
+}

@@ -6,3 +6,4 @@ export * from './Login';
 export * from './Logout';
 export * from './NavBar';
 export * from './PageTemplate';
+export * from './SubmissionResult';
