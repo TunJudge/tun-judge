@@ -13,8 +13,8 @@ import {
 
 import { CodeEditorSheet, PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
+import { useDeleteTestcase, useUpdateTestcase } from '@core/queries';
 import { formatBytes } from '@core/utils';
-import { useDeleteTestcase, useUpdateTestcase } from '@models';
 
 import { Problem } from '../ProblemView';
 import { TestcaseBulkUploader } from './TestcaseBulkUploader';

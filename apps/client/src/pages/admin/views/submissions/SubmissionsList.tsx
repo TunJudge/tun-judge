@@ -7,8 +7,8 @@ import { Judging, Prisma, Testcase } from '@prisma/client';
 
 import { SubmissionResult } from '@core/components';
 import { useAuthContext } from '@core/contexts';
+import { useFindFirstContest, useFindManySubmission } from '@core/queries';
 import { dateComparator, formatRestTime } from '@core/utils';
-import { useFindFirstContest, useFindManySubmission } from '@models';
 
 type Submission = Prisma.SubmissionGetPayload<{
   include: {

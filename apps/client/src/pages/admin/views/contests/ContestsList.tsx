@@ -13,8 +13,8 @@ import { Prisma } from '@prisma/client';
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { useDeleteContest, useFindManyContest } from '@core/queries';
 import { getDisplayDate } from '@core/utils';
-import { useDeleteContest, useFindManyContest } from '@models';
 
 import { ContestForm } from './ContestForm';
 

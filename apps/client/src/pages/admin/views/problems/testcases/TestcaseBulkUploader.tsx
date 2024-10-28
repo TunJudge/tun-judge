@@ -4,8 +4,8 @@ import { Button } from 'tw-react-components';
 
 import { FileKind } from '@prisma/client';
 
+import { useCreateTestcase } from '@core/queries';
 import { uploadFile } from '@core/utils';
-import { useCreateTestcase } from '@models';
 
 import { Problem } from '../ProblemView';
 

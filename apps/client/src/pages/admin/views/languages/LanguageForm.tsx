@@ -5,8 +5,8 @@ import { FormDialog, FormInputs } from 'tw-react-components';
 import { FileKind } from '@prisma/client';
 
 import { useToastContext } from '@core/contexts';
+import { useUpsertLanguage } from '@core/queries';
 import { uploadFile } from '@core/utils';
-import { useUpsertLanguage } from '@models';
 
 import { Language } from './LanguagesList';
 

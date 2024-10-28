@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DropdownMenu, Flex, Sidebar, useSidebar } from 'tw-react-components';
 
-import { useFindManyContest } from '@models';
+import { useFindManyContest } from '@core/queries';
 
 export const ContestsSection: FC = () => {
   const { isMobile } = useSidebar();

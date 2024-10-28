@@ -6,8 +6,8 @@ import { Block, Button, DataTable, Flex, FormDialog, FormInputs, Label } from 't
 import { ContestProblem } from '@prisma/client';
 
 import { useToastContext } from '@core/contexts';
+import { useFindManyProblem, useUpsertContest } from '@core/queries';
 import { getRandomHexColor } from '@core/utils';
-import { useFindManyProblem, useUpsertContest } from '@models';
 
 import { Contest } from './ContestsList';
 

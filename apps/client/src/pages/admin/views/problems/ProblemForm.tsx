@@ -5,8 +5,8 @@ import { FormDialog, FormInputs } from 'tw-react-components';
 import { FileKind } from '@prisma/client';
 
 import { useToastContext } from '@core/contexts';
+import { useFindManyExecutable, useUpsertProblem } from '@core/queries';
 import { uploadFile } from '@core/utils';
-import { useFindManyExecutable, useUpsertProblem } from '@models';
 
 import { Problem } from './ProblemsList';
 

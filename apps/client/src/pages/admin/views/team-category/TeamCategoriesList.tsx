@@ -16,8 +16,8 @@ import { Prisma } from '@prisma/client';
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { useDeleteTeamCategory, useFindManyTeamCategory } from '@core/queries';
 import { getRGBColorContrast } from '@core/utils';
-import { useDeleteTeamCategory, useFindManyTeamCategory } from '@models';
 
 import { TeamCategoryForm } from './TeamCategoryForm';
 

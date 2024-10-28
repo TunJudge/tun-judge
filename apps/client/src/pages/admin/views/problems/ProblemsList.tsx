@@ -15,7 +15,7 @@ import { Prisma } from '@prisma/client';
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
-import { useDeleteProblem, useFindManyProblem } from '@models';
+import { useDeleteProblem, useFindManyProblem } from '@core/queries';
 
 import { ProblemForm } from './ProblemForm';
 

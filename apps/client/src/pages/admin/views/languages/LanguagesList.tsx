@@ -13,7 +13,7 @@ import { Prisma } from '@prisma/client';
 import { CodeEditorSheet, PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
-import { useDeleteLanguage, useFindManyLanguage } from '@models';
+import { useDeleteLanguage, useFindManyLanguage } from '@core/queries';
 
 import { LanguageForm } from './LanguageForm';
 

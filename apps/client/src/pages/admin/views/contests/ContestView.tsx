@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Flex, Tabs } from 'tw-react-components';
 
 import { PageTemplate } from '@core/components';
-import { useFindFirstContest } from '@models';
+import { useFindFirstContest } from '@core/queries';
 
 export const ContestView: FC = () => {
   const location = useLocation();

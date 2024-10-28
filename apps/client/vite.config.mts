@@ -36,7 +36,7 @@ export default defineConfig({
       '@core/contexts': '/src/core/contexts/index.ts',
       '@core/hooks': '/src/core/hooks',
       '@core/utils': '/src/core/utils',
-      '@models': '/src/models',
+      '@core/queries': '/src/core/queries',
     },
   },
 

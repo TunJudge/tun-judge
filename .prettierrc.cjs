@@ -1,7 +1,7 @@
 module.exports = {
   printWidth: 100,
   singleQuote: true,
-  importOrder: ['^ace-builds/(.*)$', '^@prisma/(.*)$', '^@(core|models)/?(.*)$', '^[./]'],
+  importOrder: ['^ace-builds/(.*)$', '^@prisma/(.*)$', '^@core/(.*)$', '^[./]'],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
   importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],

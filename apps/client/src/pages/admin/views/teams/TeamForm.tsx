@@ -8,7 +8,7 @@ import {
   useFindManyTeamCategory,
   useFindManyUser,
   useUpsertTeam,
-} from '@models';
+} from '@core/queries';
 
 import { Team } from './TeamsList';
 

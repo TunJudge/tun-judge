@@ -7,7 +7,7 @@ import { LayoutContextProvider, SidebarContextProvider, Spinner } from 'tw-react
 import 'tw-react-components/css';
 
 import { AuthContextProvider, ToastContextProvider } from '@core/contexts';
-import { Provider as ZenStackHooksProvider } from '@models';
+import { Provider as ZenStackHooksProvider } from '@core/queries';
 
 import Root from './Root';
 import './index.scss';

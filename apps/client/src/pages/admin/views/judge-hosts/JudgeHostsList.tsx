@@ -15,8 +15,8 @@ import { Prisma } from '@prisma/client';
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { useDeleteJudgeHost, useFindManyJudgeHost } from '@core/queries';
 import { getDisplayDate } from '@core/utils';
-import { useDeleteJudgeHost, useFindManyJudgeHost } from '@models';
 
 type JudgeHost = Prisma.JudgeHostGetPayload<{
   include: { user: true };

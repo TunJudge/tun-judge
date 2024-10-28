@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { FormDialog, FormInputs } from 'tw-react-components';
 
 import { User, useToastContext } from '@core/contexts';
-import { useFindManyRole, useUpsertUser } from '@models';
+import { useFindManyRole, useUpsertUser } from '@core/queries';
 
 type Props = {
   user?: Partial<User>;

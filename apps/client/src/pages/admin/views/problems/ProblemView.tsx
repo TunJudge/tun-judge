@@ -6,7 +6,7 @@ import { Button, Flex, Spinner, Table } from 'tw-react-components';
 import { Prisma } from '@prisma/client';
 
 import { PageTemplate } from '@core/components';
-import { useFindFirstProblem, useUpdateManySubmission } from '@models';
+import { useFindFirstProblem, useUpdateManySubmission } from '@core/queries';
 
 import { TestcasesList } from './testcases/TestcasesList';
 

@@ -13,7 +13,7 @@ import { Executable, ExecutableType } from '@prisma/client';
 import { CodeEditorSheet, PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
-import { useDeleteExecutable, useFindManyExecutable } from '@models';
+import { useDeleteExecutable, useFindManyExecutable } from '@core/queries';
 
 import { ExecutableForm } from './ExecutableForm';
 

@@ -12,8 +12,8 @@ import {
 import { PageTemplate } from '@core/components';
 import { User, useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { useDeleteUser, useFindManyUser } from '@core/queries';
 import { getDisplayDate } from '@core/utils';
-import { useDeleteUser, useFindManyUser } from '@models';
 
 import { UserForm } from './UserForm';
 

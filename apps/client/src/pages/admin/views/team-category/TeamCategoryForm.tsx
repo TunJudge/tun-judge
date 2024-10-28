@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { FormDialog, FormInputs } from 'tw-react-components';
 
 import { useToastContext } from '@core/contexts';
-import { useUpsertTeamCategory } from '@models';
+import { useUpsertTeamCategory } from '@core/queries';
 
 import { TeamCategory } from './TeamCategoriesList';
 

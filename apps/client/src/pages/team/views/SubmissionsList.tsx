@@ -5,8 +5,8 @@ import { DataTable, DataTableColumn } from 'tw-react-components';
 import { Judging, Prisma } from '@prisma/client';
 
 import { useAuthContext } from '@core/contexts';
+import { useFindFirstContest, useFindManySubmission } from '@core/queries';
 import { dateComparator, formatRestTime, isContestRunning } from '@core/utils';
-import { useFindFirstContest, useFindManySubmission } from '@models';
 
 type Submission = Prisma.SubmissionGetPayload<{
   include: { problem: true; language: true; judgings: true };
