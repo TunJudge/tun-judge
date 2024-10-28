@@ -1,35 +1,37 @@
-import { FC, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { FC } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Block, Flex } from 'tw-react-components';
 
-import { Login } from '@core/components';
+import { ContestCountdown, Login, NoActiveContest } from '@core/components';
+import { useTimeLeftToContest } from '@core/hooks';
 
 import PublicNavbar from './PublicNavbar';
 import HomeView from './views/HomeView';
 
 export const PublicLayout: FC = () => {
-  const [leftToContest, setLeftToContest] = useState<number>(0);
-
-  // updateLeftTimeToContest(currentContest, setLeftToContest);
+  const location = useLocation();
+  const timeLeftToContest = useTimeLeftToContest();
 
   return (
-    <div className="flex h-screen w-screen flex-col bg-gray-100 dark:bg-gray-900">
+    <Flex className="h-screen gap-0" direction="column" align="center" fullWidth>
       <PublicNavbar />
-      <div className="h-full">
-        {leftToContest && !window.location.pathname.startsWith('/login') ? (
-          <div>Contest Countdown</div>
-        ) : (
-          // <ContestCountdown leftTime={leftToContest} />
-          <Routes>
-            <Route path="/" element={<HomeView />} />
-            {/* <Route  path="/problems" component={ProblemSet} /> */}
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="*"
-              element={<Navigate to={`/login?returnUrl=${window.location.pathname}`} replace />}
-            />
-          </Routes>
-        )}
-      </div>
-    </div>
+      <Block fullHeight fullWidth>
+        {location.pathname !== '/login' &&
+          (!Number.isFinite(timeLeftToContest) ? (
+            <NoActiveContest />
+          ) : (
+            timeLeftToContest && <ContestCountdown timeLeft={timeLeftToContest} />
+          ))}
+        <Routes>
+          <Route path="/" element={<HomeView />} />
+          {!timeLeftToContest && <Route path="/problems" element={'ProblemSet'} />}
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="*"
+            element={<Navigate to={`/login?returnUrl=${window.location.pathname}`} replace />}
+          />
+        </Routes>
+      </Block>
+    </Flex>
   );
 };

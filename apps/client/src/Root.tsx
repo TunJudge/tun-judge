@@ -10,14 +10,15 @@ import { useAuthContext } from '@core/contexts';
 
 import { AdminLayout } from './pages/admin/AdminLayout';
 import { PublicLayout } from './pages/public/PublicLayout';
+import { TeamLayout } from './pages/team/TeamLayout';
 
 function renderLayout(role?: Role): React.ReactNode {
   if (!role) return <Spinner fullScreen />;
 
   if (role.name === 'admin') return <AdminLayout />;
   if (role.name === 'jury') return <AdminLayout />;
+  if (role.name === 'team') return <TeamLayout />;
 
-  // if (role.name === 'team') return <TeamLayout />;
   return <PublicLayout />;
 }
 

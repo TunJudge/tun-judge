@@ -1,48 +1,38 @@
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { ThemeSelector } from 'tw-react-components';
 
 import { NavBar } from '@core/components';
+import { useTimeLeftToContest } from '@core/hooks';
 
-type Tabs = '' | 'problems' | 'login';
+import { ActiveContestSelector } from '../../core/components/ActiveContestSelector';
 
 const PublicNavbar: React.FC = observer(() => {
-  const navigate = useNavigate();
+  const location = useLocation();
+  const timeLeftToContest = useTimeLeftToContest();
 
-  const [currentTab, setCurrentTab] = useState(window.location.pathname.replace(/\/?/g, ''));
-
-  // history.listen(() => setCurrentTab(window.location.pathname.replace(/\/?/g, '')));
-
-  const onLinkClick = (tab: Tabs) => {
-    setCurrentTab(tab);
-    navigate(tab);
-    // history.push(`/${tab}`);
-  };
+  const tabs = [{ name: 'Problem Set', path: '/problems', hide: timeLeftToContest > 0 }];
 
   return (
     <NavBar
       logo={
-        <div className="cursor-pointer text-lg text-white" onClick={() => onLinkClick('')}>
+        <Link className="cursor-pointer text-xl font-medium text-white" to="/">
           TunJudge
-        </div>
+        </Link>
       }
-      leftItems={[
-        { content: 'Scoreboard', active: currentTab === '', onClick: () => onLinkClick('') },
-        {
-          content: 'Problem Set',
-          active: currentTab === 'problems',
-          onClick: () => onLinkClick('problems'),
-        },
-      ]}
+      leftItems={tabs.map((tab) => ({
+        content: <Link to={tab.path}>{tab.name}</Link>,
+        active: tab.path === location.pathname,
+        hide: tab.hide,
+      }))}
       rightItems={[
+        { content: <ActiveContestSelector className="text-white" /> },
         {
-          content: 'Login',
-          active: currentTab === 'login',
+          content: <Link to="/login">Login</Link>,
+          active: location.pathname === 'login',
           testId: 'navbar-login-btn',
-          onClick: () => onLinkClick('login'),
         },
-        // { content: <ActiveContestSelector className="text-white" /> },
         { content: <ThemeSelector /> },
       ]}
     />

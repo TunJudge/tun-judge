@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
-import { cn } from 'tw-react-components';
+import React, { Fragment, useState } from 'react';
+import { Button, cn } from 'tw-react-components';
 
-type NavItem = {
-  content: React.ReactNode;
-  className?: string;
-  testId?: string;
-  onClick?: () => void;
-  active?: boolean;
-};
+type NavItem = { hide?: boolean } & (
+  | {
+      type?: 'item';
+      content: React.ReactNode;
+      className?: string;
+      testId?: string;
+      onClick?: () => void;
+      active?: boolean;
+    }
+  | {
+      type: 'element';
+      element: React.ReactNode;
+    }
+);
 
 type Props = {
   logo?: React.ReactNode;
@@ -19,29 +26,32 @@ export const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
   const [visibleMenu, setVisibleMenu] = useState(false);
 
   const MenuItems = ({ items }: { items?: NavItem[] }) =>
-    items?.map(({ content, className, testId, active, onClick }, index) => (
-      <div
-        key={`item-${index}`}
-        className={cn(
-          'flex cursor-pointer items-center rounded-md px-3 py-2 font-medium lg:justify-center lg:text-center',
-          {
-            'bg-gray-900 text-white': active,
-            'text-gray-300 hover:bg-gray-700 hover:text-white': !active,
-          },
-          className,
-        )}
-        test-id={testId}
-        onClick={onClick}
-      >
-        {content}
-      </div>
-    ));
+    items
+      ?.filter((item) => !item.hide)
+      .map((props, index) =>
+        props.type === 'element' ? (
+          <Fragment key={`element-${index}`}>{props.element}</Fragment>
+        ) : (
+          <Button
+            key={`item-${index}`}
+            className={cn(
+              'bg-slate-800 hover:bg-slate-900 focus:bg-slate-900 active:bg-slate-900',
+              props.active && '!bg-slate-900',
+              props.className,
+            )}
+            test-id={props.testId}
+            onClick={props.onClick}
+          >
+            {props.content}
+          </Button>
+        ),
+      );
 
   return (
-    <nav className="bg-gray-800">
-      <div className="mx-auto max-w-7xl px-2 lg:px-8">
+    <nav className="w-full bg-gray-800 text-white">
+      <div className="mx-auto max-w-7xl px-2 md:px-8">
         <div className="relative flex h-16 items-center justify-between">
-          <div className="mr-2 flex items-center lg:hidden">
+          <div className="mr-2 flex items-center md:hidden">
             <div
               className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-inset focus:ring-white"
               onClick={() => setVisibleMenu(!visibleMenu)}
@@ -72,17 +82,17 @@ export const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
           </div>
           <div className="flex flex-1 items-center justify-start">
             {logo}
-            <div className="hidden gap-x-4 lg:ml-6 lg:flex">
+            <div className="hidden gap-3 md:ml-6 md:flex">
               <MenuItems items={leftItems} />
             </div>
           </div>
-          <div className="absolute inset-y-0 right-0 flex items-center gap-x-4 pr-2 lg:static lg:inset-auto lg:ml-6 lg:pr-0">
+          <div className="absolute inset-y-0 right-0 flex items-center gap-3 pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
             <MenuItems items={rightItems} />
           </div>
         </div>
       </div>
       {visibleMenu && (
-        <div className="space-y-1 px-2 pb-3 pt-2 lg:hidden">
+        <div className="space-y-1 px-2 pb-3 pt-2 md:hidden">
           <MenuItems items={leftItems} />
         </div>
       )}

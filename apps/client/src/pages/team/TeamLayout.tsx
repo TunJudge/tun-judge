@@ -1,48 +1,36 @@
-import ContestCountdown from '@shared/ContestCountdown';
-import { NoActiveContest } from '@shared/NoActiveContest';
-import ProblemSet from '@shared/ProblemSet';
-import Scoreboard from '@shared/Scoreboard';
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { FC } from 'react';
+import { Block, Flex } from 'tw-react-components';
 
-import { updateLeftTimeToContest } from '@core/helpers';
-import { LanguagesStore, PublicStore, useStore } from '@core/stores';
+import { ContestCountdown, NoActiveContest } from '@core/components';
+import { useTimeLeftToContest } from '@core/hooks';
 
-import TeamNavbar from './TeamNavbar';
-import HomeView from './views/HomeView';
+import { TeamNavbar } from './TeamNavbar';
 
-const TeamLayout: React.FC = observer(() => {
-  const { currentContest } = useStore<PublicStore>('publicStore');
-  const { fetchAll } = useStore<LanguagesStore>('languagesStore');
-
-  const [leftToContest, setLeftToContest] = useState<number>(1);
-
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
-
-  updateLeftTimeToContest(currentContest, setLeftToContest);
+export const TeamLayout: FC = () => {
+  const timeLeftToContest = useTimeLeftToContest();
 
   return (
-    <div className="flex h-screen flex-col bg-gray-100 dark:bg-gray-900">
+    <Flex className="h-screen" direction="column" fullWidth>
       <TeamNavbar />
-      <div className="h-full">
-        {!currentContest ? (
+      <Block fullHeight fullWidth>
+        {!Number.isFinite(timeLeftToContest) ? (
           <NoActiveContest />
-        ) : leftToContest ? (
-          <ContestCountdown leftTime={leftToContest} />
         ) : (
-          <Switch>
-            <Route exact path="/" component={HomeView} />
-            <Route exact path="/problems" component={ProblemSet} />
-            <Route exact path="/scoreboard" component={Scoreboard} />
-            <Route render={() => <Redirect to="/" />} />
-          </Switch>
+          timeLeftToContest && <ContestCountdown timeLeft={timeLeftToContest} />
         )}
-      </div>
-    </div>
+      </Block>
+    </Flex>
   );
-});
-
-export default TeamLayout;
+};
+// /* {!currentContest ? (
+//   <NoActiveContest />
+// ) : leftToContest ? (
+//   <ContestCountdown leftTime={leftToContest} />
+// ) : (
+//   <Switch>
+//     <Route exact path="/" component={HomeView} />
+//     <Route exact path="/problems" component={ProblemSet} />
+//     <Route exact path="/scoreboard" component={Scoreboard} />
+//     <Route render={() => <Redirect to="/" />} />
+//   </Switch>
+// )} */

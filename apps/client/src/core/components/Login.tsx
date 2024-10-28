@@ -12,7 +12,7 @@ type Credentials = {
   password: string;
 };
 
-export const Login: FC<{ logo?: string; basePath?: string }> = ({ logo, basePath = '/' }) => {
+export const Login: FC<{ basePath?: string }> = ({ basePath = '/' }) => {
   const navigate = useNavigate();
   const { connected, setLastConnectedTime } = useAuthContext();
   const loginForm = useForm<Credentials>();
@@ -31,22 +31,15 @@ export const Login: FC<{ logo?: string; basePath?: string }> = ({ logo, basePath
   }
 
   return (
-    <Flex className="relative pt-[25dvh] dark:bg-slate-900 dark:text-white">
+    <Flex align="center" fullHeight>
       <Flex className="mx-8 gap-0" direction="column" align="center" fullWidth>
-        {logo && (
-          <img
-            className="mb-12 block max-w-md dark:[filter:brightness(0)_invert(1)]"
-            src={logo}
-            alt="Logo"
-            loading="lazy"
-          />
-        )}
         <FormProvider {...loginForm}>
           <Card className="w-full bg-white sm:w-96">
             <form
               className="flex flex-col items-center gap-3"
               onSubmit={loginForm.handleSubmit(login)}
             >
+              <h1 className="my-4 text-2xl font-semibold">Login</h1>
               <FormInputs.Text
                 name="username"
                 placeholder="Username"

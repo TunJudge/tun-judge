@@ -1,109 +1,85 @@
-import { Menu } from '@headlessui/react';
-import { LogoutIcon, UploadIcon, UserIcon } from '@heroicons/react/outline';
-import ActiveContestSelector from '@shared/ActiveContestSelector';
-import { DarkModeSwitcher } from '@shared/DarkModeSwitcher';
-import NavBar from '@shared/NavBar';
-import SubmitForm from '@shared/SubmitForm';
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { LogOutIcon, UploadIcon, UserIcon } from 'lucide-react';
+import { FC } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button, DropdownMenu, ThemeSelector } from 'tw-react-components';
 
-import { contestStartedAndNotOver } from '@core/helpers';
-import { Submission } from '@core/models';
-import { PublicStore, RootStore, TeamStore, useStore } from '@core/stores';
+import { NavBar } from '@core/components';
+import { useActiveContest, useAuthContext } from '@core/contexts';
+import { useTimeLeftToContest } from '@core/hooks';
+import { contestStartedAndNotOver } from '@core/utils';
 
-type Tabs = '' | 'problems' | 'scoreboard';
+import { ActiveContestSelector } from '../../core/components/ActiveContestSelector';
 
-const TeamNavbar: React.FC = observer(() => {
-  const { profile } = useStore<RootStore>('rootStore');
-  const { currentContest } = useStore<PublicStore>('publicStore');
-  const { sendSubmission } = useStore<TeamStore>('teamsStore');
+export const TeamNavbar: FC = () => {
+  const location = useLocation();
+  const { profile } = useAuthContext();
 
-  const [submitFormOpen, setSubmitFormOpen] = useState<boolean>(false);
-  const [currentTab, setCurrentTab] = useState(location.pathname.replace(/\/?/g, ''));
-  const history = useHistory();
+  const { currentContest } = useActiveContest();
+  const timeLeftToContest = useTimeLeftToContest();
 
-  history.listen(() => setCurrentTab(location.pathname.replace(/\/?/g, '')));
+  // const [submitFormOpen, setSubmitFormOpen] = useState<boolean>(false);
 
-  const onLinkClick = (tab: Tabs) => {
-    setCurrentTab(tab);
-    history.push(`/${tab}`);
-  };
+  const tabs = [
+    { name: 'Problem Set', path: '/problems', hide: timeLeftToContest > 0 },
+    { name: 'Scoreboard', path: '/scoreboard', hide: timeLeftToContest > 0 },
+  ];
 
   return (
     <>
       <NavBar
         logo={
-          <div
-            className="cursor-pointer text-xl font-medium text-white"
-            onClick={() => onLinkClick('')}
-          >
+          <Link className="cursor-pointer text-xl font-medium text-white" to="/">
             TunJudge
-          </div>
+          </Link>
         }
-        leftItems={[
-          {
-            content: 'Home',
-            active: currentTab === '',
-            onClick: () => onLinkClick(''),
-          },
-          {
-            content: 'Problem Set',
-            active: currentTab === 'problems',
-            onClick: () => onLinkClick('problems'),
-          },
-          {
-            content: 'Scoreboard',
-            active: currentTab === 'scoreboard',
-            onClick: () => onLinkClick('scoreboard'),
-          },
-        ]}
+        leftItems={tabs.map((tab) => ({
+          content: <Link to={tab.path}>{tab.name}</Link>,
+          active: tab.path === location.pathname,
+          hide: tab.hide,
+        }))}
         rightItems={[
-          ...(contestStartedAndNotOver(currentContest)
-            ? [
-                {
-                  content: (
-                    <div className="flex items-center gap-2">
-                      <UploadIcon className="h-5 w-5" />
-                      Submit
-                    </div>
-                  ),
-                  active: true,
-                  className: 'bg-green-600 hover:bg-green-700',
-                  onClick: () => setSubmitFormOpen(true),
-                },
-              ]
-            : []),
-          { content: <ActiveContestSelector className="text-white" /> },
           {
-            content: (
-              <Menu as="div" className="relative">
-                <Menu.Button
-                  as="div"
-                  className="flex cursor-pointer items-center justify-center gap-1 rounded-md hover:bg-gray-700"
-                  test-id="navbar-user"
-                >
-                  <UserIcon className="h-4 w-4" />
-                  {profile?.name ?? '-'}
-                </Menu.Button>
-                <Menu.Items className="absolute left-1/2 mt-4 w-36 -translate-x-1/2 transform gap-2 rounded-md border bg-white p-2 text-black shadow-lg outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-                  <Menu.Item onClick={() => history.push('/logout')}>
-                    <div
-                      className="flex cursor-pointer items-center gap-1 rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      test-id="logout-btn"
-                    >
-                      <LogoutIcon className="h-4 w-4" />
-                      Logout
-                    </div>
-                  </Menu.Item>
-                </Menu.Items>
-              </Menu>
+            type: 'element',
+            hide: !contestStartedAndNotOver(currentContest),
+            element: (
+              <Button color="green" prefixIcon={UploadIcon}>
+                Submit
+              </Button>
             ),
           },
-          { content: <DarkModeSwitcher /> },
+          { type: 'element', element: <ActiveContestSelector className="text-white" /> },
+          {
+            type: 'element',
+            element: (
+              <DropdownMenu>
+                <DropdownMenu.Trigger test-id="navbar-user" asChild>
+                  <Button
+                    className="bg-slate-800 hover:bg-slate-900 focus:bg-slate-900 active:bg-slate-900"
+                    prefixIcon={UserIcon}
+                  >
+                    {profile?.name ?? '-'}
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <Link to="/logout">
+                    <DropdownMenu.Item>
+                      <DropdownMenu.Icon icon={LogOutIcon} />
+                      Logout
+                    </DropdownMenu.Item>
+                  </Link>
+                </DropdownMenu.Content>
+              </DropdownMenu>
+            ),
+          },
+          {
+            type: 'element',
+            element: (
+              <ThemeSelector className="bg-slate-800 hover:bg-slate-900 focus:bg-slate-900 active:bg-slate-900" />
+            ),
+          },
         ]}
       />
-      <SubmitForm
+      {/* <SubmitForm
         isOpen={submitFormOpen}
         item={{} as Submission}
         onClose={() => setSubmitFormOpen(false)}
@@ -111,9 +87,7 @@ const TeamNavbar: React.FC = observer(() => {
           await sendSubmission(currentContest!.id, profile!.team!.id, submission);
           setSubmitFormOpen(false);
         }}
-      />
+      /> */}
     </>
   );
-});
-
-export default TeamNavbar;
+};
