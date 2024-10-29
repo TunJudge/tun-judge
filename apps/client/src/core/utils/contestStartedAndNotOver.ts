@@ -6,6 +6,6 @@ export function contestStartedAndNotOver(contest?: Contest): boolean {
   return (
     !!contest &&
     new Date(contest.startTime).getTime() < now &&
-    now < new Date(contest.endTime ?? contest.startTime).getTime()
+    now < new Date(contest.endTime).getTime()
   );
 }

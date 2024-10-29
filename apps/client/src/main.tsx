@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { LayoutContextProvider, SidebarContextProvider, Spinner } from 'tw-react-components';
 import 'tw-react-components/css';
 
-import { AuthContextProvider, ToastContextProvider } from '@core/contexts';
+import { ActiveContestProvider, AuthContextProvider, ToastContextProvider } from '@core/contexts';
 import { Provider as ZenStackHooksProvider } from '@core/queries';
 
 import Root from './Root';
@@ -33,7 +33,9 @@ root.render(
             <SidebarContextProvider>
               <AuthContextProvider>
                 <ToastContextProvider>
-                  <Root />
+                  <ActiveContestProvider>
+                    <Root />
+                  </ActiveContestProvider>
                 </ToastContextProvider>
               </AuthContextProvider>
             </SidebarContextProvider>

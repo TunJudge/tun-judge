@@ -1,5 +1,5 @@
 export function formatRestTime(time: number, withSeconds = true): string {
-  if (time <= 0) return 'contest over';
+  if (time <= 0) return 'Over';
   const days = Math.floor(time / 86400);
   const hours = Math.floor((time % 86400) / 3600);
   const minutes = Math.floor((time % 3600) / 60);

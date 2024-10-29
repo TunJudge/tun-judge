@@ -392,20 +392,17 @@ const metadata = {
           name: 'startTime',
           type: 'DateTime',
         },
-        freezeTime: {
-          name: 'freezeTime',
-          type: 'DateTime',
-          isOptional: true,
-        },
         endTime: {
           name: 'endTime',
           type: 'DateTime',
-          isOptional: true,
+        },
+        freezeTime: {
+          name: 'freezeTime',
+          type: 'DateTime',
         },
         unfreezeTime: {
           name: 'unfreezeTime',
           type: 'DateTime',
-          isOptional: true,
         },
         enabled: {
           name: 'enabled',

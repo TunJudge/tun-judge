@@ -85,25 +85,25 @@ export const ContestForm: FC<Props> = ({ contest, onClose, onSubmit }) => {
           name="activateTime"
           label="Activate Time"
           placeholder="Activate Time"
-          required
           maxDate={form.watch('startTime')}
+          required
         />
         <FormInputs.DateTime
           name="startTime"
           label="Start Time"
           placeholder="Start Time"
-          required
           disabled={!form.watch('activateTime')}
           minDate={form.watch('activateTime')}
           maxDate={form.watch('endTime')}
+          required
         />
         <FormInputs.DateTime
           name="endTime"
           label="End Time"
           placeholder="End Time"
-          required
           disabled={!form.watch('startTime')}
           minDate={form.watch('startTime')}
+          required
         />
       </Flex>
       <Flex fullWidth>
@@ -111,18 +111,18 @@ export const ContestForm: FC<Props> = ({ contest, onClose, onSubmit }) => {
           name="freezeTime"
           label="Freeze Time"
           placeholder="Freeze Time"
-          clearable
           disabled={!form.watch('startTime')}
           minDate={form.watch('startTime')}
           maxDate={form.watch('endTime')}
+          required
         />
         <FormInputs.DateTime
           name="unfreezeTime"
           label="Unfreeze Time"
           placeholder="Unfreeze Time"
-          clearable
           disabled={!form.watch('freezeTime')}
           minDate={form.watch('endTime')}
+          required
         />
       </Flex>
       <Block className="grid gap-2 sm:grid-cols-3" fullWidth>

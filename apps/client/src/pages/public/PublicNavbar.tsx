@@ -27,13 +27,13 @@ const PublicNavbar: React.FC = observer(() => {
         hide: tab.hide,
       }))}
       rightItems={[
-        { content: <ActiveContestSelector className="text-white" /> },
+        { type: 'element', element: <ActiveContestSelector className="text-white" /> },
         {
           content: <Link to="/login">Login</Link>,
           active: location.pathname === 'login',
           testId: 'navbar-login-btn',
         },
-        { content: <ThemeSelector /> },
+        { type: 'element', element: <ThemeSelector /> },
       ]}
     />
   );

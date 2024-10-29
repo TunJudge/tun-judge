@@ -49,6 +49,10 @@ export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    setCurrentContest(contests[0]);
+  }, [contests]);
+
   return (
     <ActiveContestContext.Provider
       value={{ activeContests: contests, currentContest, setCurrentContest }}
