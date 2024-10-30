@@ -23,9 +23,8 @@ type Props = {
 };
 
 export const ChatBox: FC<Props> = ({ clarificationId }) => {
-  const { profile } = useAuthContext();
+  const { profile, isUserJury } = useAuthContext();
   const { currentContest } = useActiveContest();
-  const isUserJury = profile?.roleName === 'jury';
 
   const { data: clarification, isLoading } = useFindFirstClarification({
     where: { id: clarificationId },

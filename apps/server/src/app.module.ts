@@ -17,6 +17,7 @@ import { FilesModule } from './files';
 import { RolesGuard } from './guards';
 import { InitializersModule } from './initializers';
 import { RequestLoggerMiddleware } from './logger';
+import { ScoreboardModule } from './scoreboard';
 
 @Module({
   imports: [
@@ -35,8 +36,7 @@ import { RequestLoggerMiddleware } from './logger';
     ZenStackModule.registerAsync({
       global: true,
       useFactory: (prisma: PrismaService, cls: ClsService) => ({
-        getEnhancedPrisma: () =>
-          enhance(prisma, { user: cls.get('auth') }, { logPrismaQuery: true }),
+        getEnhancedPrisma: () => enhance(prisma, { user: cls.get('auth') }),
       }),
       inject: [PrismaService, ClsService],
       extraProviders: [PrismaService],
@@ -45,6 +45,7 @@ import { RequestLoggerMiddleware } from './logger';
     InitializersModule,
     AuthModule,
     FilesModule,
+    ScoreboardModule,
   ],
   controllers: [AppController],
   providers: [

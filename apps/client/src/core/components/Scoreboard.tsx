@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Flex, Tooltip, cn } from 'tw-react-components';
 
 import { useActiveContest, useAuthContext } from '@core/contexts';
-import { formatRestTime, getRGBColorContrast } from '@core/utils';
+import { formatRestTime, getRGBColorContrast, request } from '@core/utils';
 
 import { NoActiveContest } from './NoActiveContest';
 
@@ -31,8 +31,7 @@ type Props = {
 };
 
 export const Scoreboard: FC<Props> = ({ className, compact }) => {
-  const { profile } = useAuthContext();
-  const isUserJury = profile?.roleName === 'jury';
+  const { profile, isUserJury } = useAuthContext();
   const { id } = useParams<{ id: string }>();
 
   const { currentContest, activeContests } = useActiveContest();
@@ -140,9 +139,9 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
             <Tooltip content="Refresh" placement="right">
               <div
                 className="cursor-pointer rounded-full p-2 hover:bg-slate-300 dark:hover:bg-slate-700"
-                // onClick={() => refreshScoreboardCache(contest.id)}
+                onClick={() => request('api/scoreboard/refresh-score-cache', 'PATCH')}
               >
-                <RefreshCwIcon className="h-8 w-8" />
+                <RefreshCwIcon className="h-6 w-6" />
               </div>
             </Tooltip>
           )}
@@ -181,8 +180,8 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
           </thead>
           <tbody className="flex flex-col gap-2">
             {!standing.length ? (
-              <tr>
-                <td className="p-4 text-center text-slate-500" colSpan={100}>
+              <tr className="inline-flex justify-center">
+                <td className="p-4 text-slate-500" colSpan={100}>
                   No teams
                 </td>
               </tr>
@@ -215,7 +214,7 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
                                 getScoreboardCellColor(problemScore) === 'green-dark',
                               '!bg-green-300 dark:!bg-green-600':
                                 getScoreboardCellColor(problemScore) === 'green',
-                              '!bg-yellow-300 dark:!bg-yellow-700':
+                              '!bg-yellow-400 dark:!bg-yellow-700':
                                 getScoreboardCellColor(problemScore) === 'yellow',
                               '!bg-red-300 dark:!bg-red-900':
                                 getScoreboardCellColor(problemScore) === 'red',

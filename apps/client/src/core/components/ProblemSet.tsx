@@ -27,8 +27,7 @@ export const ProblemSet: FC<{ className?: string; listMode?: boolean }> = ({
   className,
   listMode,
 }) => {
-  const { profile } = useAuthContext();
-  const isUserJury = profile?.roleName === 'jury';
+  const { profile, isUserJury } = useAuthContext();
   const { currentContest } = useActiveContest();
 
   const [viewedProblem, setViewedProblem] = useState<Problem>();

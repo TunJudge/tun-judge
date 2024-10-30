@@ -16,6 +16,8 @@ export type User = Prisma.UserGetPayload<{ include: { role: true; team: true } }
 
 export const AuthContext = createContext<AuthContext<User>>({
   connected: false,
+  isUserAdmin: false,
+  isUserJury: false,
   setLastConnectedTime: () => undefined,
   checkUserRole: () => false,
 });
@@ -23,6 +25,8 @@ export const AuthContext = createContext<AuthContext<User>>({
 export type AuthContext<T extends User> = {
   connected: boolean;
   profile?: T;
+  isUserAdmin: boolean;
+  isUserJury: boolean;
   setLastConnectedTime: (time: number | undefined) => void;
   checkUserRole: (role: string) => boolean;
 };
@@ -67,7 +71,16 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [connected]);
 
   return (
-    <AuthContext.Provider value={{ connected, profile, setLastConnectedTime, checkUserRole }}>
+    <AuthContext.Provider
+      value={{
+        connected,
+        profile,
+        isUserAdmin: checkUserRole('admin'),
+        isUserJury: checkUserRole('jury') || checkUserRole('admin'),
+        setLastConnectedTime,
+        checkUserRole,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
