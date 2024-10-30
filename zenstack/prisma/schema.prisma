@@ -296,7 +296,8 @@ model JudgingRun {
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
-/// @@allow('read', auth() != null && auth().roleName == 'team' && submission.teamId == auth().teamId)
+/// @@allow('update', auth() != null && auth().roleName == 'jury' && (future().juryMemberId == null || future().juryMemberId == auth().id))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && submission.teamId == auth().teamId && valid == true && (contest.verificationRequired == false || verified == true))
 /// @@allow('read,create,update', auth() != null && auth().roleName == 'judge-host' && judgeHost.active && judgeHost.userId == auth().id)
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Judging {

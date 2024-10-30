@@ -1,163 +1,145 @@
-import { EyeIcon } from '@heroicons/react/outline';
-import {
-  DiffValues,
-  DiffViewerDialog,
-  RunContentDialog,
-  TestcaseContentDialog,
-} from '@shared/dialogs';
-import classNames from 'classnames';
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import { EyeIcon, FlaskConicalIcon } from 'lucide-react';
+import { FC, useState } from 'react';
+import { Button, Flex, cn } from 'tw-react-components';
 
-import { formatBytes } from '@core/helpers';
-import { Judging, JudgingRun, Testcase } from '@core/models';
-import { SubmissionsStore, TestcasesStore, useStore } from '@core/stores';
-import { resultMap } from '@core/types';
+import { JudgingRunResult } from '@prisma/client';
 
-const SubmissionsViewJudgingRuns: React.FC<{ judging?: Judging }> = observer(({ judging }) => {
-  const submissionsStore = useStore<SubmissionsStore>('submissionsStore');
-  const testcasesStore = useStore<TestcasesStore>('testcasesStore');
+import { CodeEditorSheet, DiffValues, DiffViewerSheet, PageTemplate } from '@core/components';
+import { JUDGING_RESULT_LABELS } from '@core/constants';
+import { useDownloadedFile } from '@core/hooks';
+import { downloadFile, formatBytes } from '@core/utils';
 
-  const [testcaseViewData, setTestcaseViewData] = useState<{
-    testcase: Testcase | undefined;
-    field: 'input' | 'output';
-  }>({ testcase: undefined, field: 'input' });
-  const [runViewData, setRunViewData] = useState<JudgingRun>();
+import { Judging, JudgingRun } from './SubmissionView';
+
+export const SubmissionsViewJudgingRuns: FC<{ judging?: Judging }> = ({ judging }) => {
+  const [fileNameToBeViewed, setFileNameToBeViewed] = useState<string>();
   const [diffData, setDiffData] = useState<DiffValues>();
 
   const loadOutputFileAndShowDiff = async (run: JudgingRun) => {
-    if (run.testcase.id && !run.testcase.output.content) {
-      run.testcase.output.content = await testcasesStore.fetchContent(run.testcase.id, 'output');
-    }
-    if (run.id && !run.runOutput.content) {
-      run.runOutput.content = await submissionsStore.fetchRunContent(run.id);
-    }
+    if (!run.runOutputFileName) return;
 
     setDiffData({
       left: {
         title: 'Team output',
-        value: atob(run.runOutput.content.payload),
+        value: await downloadFile(run.runOutputFileName),
       },
       right: {
         title: 'Judge output',
-        value: atob(run.testcase.output.content.payload),
+        value: await downloadFile(run.testcase.outputFileName),
       },
     });
   };
 
   return (
     <>
-      {judging?.runs?.map((run) => (
-        <div
-          key={`run-${run.id}`}
-          className="flex flex-col divide-y rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800"
-        >
-          <div className="flex items-center justify-between p-3">
-            <div className="flex items-center gap-x-8">
-              <div className="text-lg font-medium">Testcase {run.testcase.id}</div>
-              <div>
-                <b
-                  className={classNames({
-                    'text-green-600': run.result === 'AC',
-                    'text-red-600': run.result && run.result !== 'AC',
-                    'text-gray-600': !run.result,
-                  })}
-                >
-                  {resultMap[run.result ?? 'PD']}
-                </b>
-              </div>
-              <div>Time: {Math.floor(run.runTime * 1000)}ms</div>
+      {judging?.runs.map((run) => (
+        <PageTemplate
+          key={run.id}
+          className="overflow-visible rounded-lg bg-slate-200 dark:bg-gray-800 [&>div>div>button]:whitespace-nowrap"
+          icon={FlaskConicalIcon}
+          title={
+            <Flex className="gap-4 text-base" align="center">
+              <span className="text-lg font-medium">Testcase #{run.testcase.rank}</span>
+              <b
+                className={cn({
+                  'text-green-600': run.result === 'ACCEPTED',
+                  'text-red-600': run.result && run.result !== 'ACCEPTED',
+                  'text-gray-600': !run.result,
+                })}
+              >
+                {JUDGING_RESULT_LABELS[run.result ?? 'PENDING']}
+              </b>
+              <div>Time: {Math.floor(run.runTime * 1000)} ms</div>
               <div>Memory: {formatBytes(run.runMemory * 1024)}</div>
-            </div>
-            <div className="flex select-none gap-2">
-              <div
-                className="flex cursor-pointer gap-x-1 rounded-md border border-green-600 p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900"
-                onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'input' })}
+            </Flex>
+          }
+          actions={
+            <>
+              <Button
+                color="green"
+                prefixIcon={EyeIcon}
+                onClick={() => setFileNameToBeViewed(run.testcase.inputFileName)}
               >
-                <EyeIcon className="h-6 w-6" />
                 Input
-              </div>
-              <div
-                className={classNames(
-                  'flex gap-x-1 rounded-md border border-red-600 p-2 text-red-600',
-                  {
-                    'opacity-50': !run.runOutput.size,
-                    'cursor-pointer hover:bg-red-50 dark:hover:bg-red-900': run.runOutput.size,
-                  },
-                )}
-                onClick={() => (run.runOutput.size ? setRunViewData(run) : undefined)}
+              </Button>
+              <Button
+                color="red"
+                prefixIcon={EyeIcon}
+                onClick={() =>
+                  run.runOutputFileName && setFileNameToBeViewed(run.runOutputFileName)
+                }
               >
-                <EyeIcon className="h-6 w-6" />
                 Team Output
-              </div>
-              <div
-                className="flex cursor-pointer gap-x-1 rounded-md border border-yellow-600 p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900"
+              </Button>
+              <Button
+                color="yellow"
+                prefixIcon={EyeIcon}
                 onClick={() => loadOutputFileAndShowDiff(run)}
               >
-                <EyeIcon className="h-6 w-6" />
                 Difference
-              </div>
-              <div
-                className="flex cursor-pointer gap-x-1 rounded-md border border-blue-600 p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900"
-                onClick={() => setTestcaseViewData({ testcase: run.testcase, field: 'output' })}
+              </Button>
+              <Button
+                color="blue"
+                prefixIcon={EyeIcon}
+                onClick={() => setFileNameToBeViewed(run.testcase.outputFileName)}
               >
-                <EyeIcon className="h-6 w-6" />
                 Reference Output
-              </div>
-            </div>
-          </div>
-          <div className="p-3">
-            {judging.result === 'SE' && (
-              <OutputSection
-                title="System output"
-                color={!judging.systemError ? 'gray' : 'black'}
-                payload={judging.systemError}
-              />
-            )}
-            {['AC', 'WA'].includes(run.result) && (
-              <OutputSection
-                title="Checker output"
-                color={!run.checkerOutput ? 'gray' : 'black'}
-                payload={atob(run.checkerOutput.content.payload)}
-              />
-            )}
-            {['RE', 'TLE', 'MLE'].includes(run.result) && (
-              <OutputSection
-                title="Error output"
-                color={!run.errorOutput ? 'gray' : 'black'}
-                payload={atob(run.errorOutput.content.payload)}
-              />
-            )}
-          </div>
-        </div>
+              </Button>
+            </>
+          }
+          isSubSection
+          fullHeight={false}
+        >
+          {judging.result === 'SYSTEM_ERROR' && (
+            <OutputSection title="System output" payload={judging.systemError} />
+          )}
+          {runHasAnyOfResults(run, ['ACCEPTED', 'WRONG_ANSWER']) && (
+            <OutputSection title="Checker output" fileName={run.checkerOutputFileName} />
+          )}
+          {runHasAnyOfResults(run, [
+            'RUNTIME_ERROR',
+            'TIME_LIMIT_EXCEEDED',
+            'MEMORY_LIMIT_EXCEEDED',
+          ]) && <OutputSection title="Error output" fileName={run.errorOutputFileName} />}
+        </PageTemplate>
       ))}
-      <TestcaseContentDialog
-        testcase={testcaseViewData.testcase}
-        field={testcaseViewData.field}
-        onClose={() => setTestcaseViewData({ testcase: undefined, field: 'input' })}
+
+      <CodeEditorSheet
+        lang="text"
+        fileName={fileNameToBeViewed}
+        onClose={() => setFileNameToBeViewed(undefined)}
+        readOnly
       />
-      <RunContentDialog run={runViewData} onClose={() => setRunViewData(undefined)} />
-      <DiffViewerDialog values={diffData} onClose={() => setDiffData(undefined)} />
+      <DiffViewerSheet values={diffData} onClose={() => setDiffData(undefined)} />
     </>
   );
-});
+};
 
-export default SubmissionsViewJudgingRuns;
-
-const OutputSection: React.FC<{
+const OutputSection: FC<{
   title: string;
-  color: 'gray' | 'black';
-  payload?: string;
-}> = ({ title, color, payload }) => (
-  <div className="flex flex-col gap-y-1">
-    <b>{title}</b>
-    <pre
-      className={classNames('mt-1 max-h-20 overflow-auto rounded-md border border-gray-500 p-2', {
-        'text-black dark:text-white': color === 'black',
-        'text-gray-600 dark:text-gray-400': color === 'gray',
-      })}
-    >
-      <code>{payload ?? 'No Output'}</code>
-    </pre>
-  </div>
-);
+  payload?: string | null;
+  fileName?: string | null;
+}> = ({ title, payload, fileName }) => {
+  const content = useDownloadedFile(fileName ?? undefined, payload ?? undefined);
+
+  return (
+    <Flex className="gap-1" direction="column" fullWidth>
+      <b>{title}</b>
+      <pre
+        className={cn(
+          'border-border mt-1 max-h-20 min-h-20 w-full overflow-auto rounded-md border p-2',
+          {
+            'text-black dark:text-white': !!content,
+            'text-gray-600 dark:text-gray-400': !content,
+          },
+        )}
+      >
+        <code>{content ?? 'No Output'}</code>
+      </pre>
+    </Flex>
+  );
+};
+
+function runHasAnyOfResults(run: JudgingRun, results: JudgingRunResult[]) {
+  return results.includes(run.result ?? 'PENDING');
+}

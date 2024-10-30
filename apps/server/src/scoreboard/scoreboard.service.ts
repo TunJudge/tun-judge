@@ -16,7 +16,7 @@ export class ScoreboardService {
   private readonly prisma: PrismaService = new PrismaService();
   private refreshing = false;
 
-  @Interval(15 * 60 * 1000)
+  @Interval(60 * 1000)
   async refreshScores(): Promise<void> {
     if (this.refreshing) return;
 
@@ -126,8 +126,8 @@ export class ScoreboardService {
   };
 }
 
-export function getFirstJudging(submission: Submission): Judging | undefined {
-  return submission.judgings.sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0];
+export function getLatestJudging(submission: Submission): Judging | undefined {
+  return submission.judgings.sort((a, b) => a.startTime.getTime() - b.startTime.getTime()).at(-1);
 }
 
 export function submissionHasResult(
@@ -136,9 +136,10 @@ export function submissionHasResult(
   inverse = false,
 ): (submission: Submission) => boolean {
   return (submission) => {
-    const judging = getFirstJudging(submission);
+    const judging = getLatestJudging(submission);
     const answer =
       results.includes(judging?.result) && !(verificationRequired && !judging.verified);
+
     return inverse ? !answer : answer;
   };
 }
@@ -147,7 +148,8 @@ export function submissionIsPending({
   verificationRequired,
 }: Contest): (submission: Submission) => boolean {
   return (submission) => {
-    const judging = getFirstJudging(submission);
+    const judging = getLatestJudging(submission);
+
     return !judging?.result || (verificationRequired && !judging.verified);
   };
 }
@@ -160,6 +162,7 @@ export function submissionInFreezeTime({
     freezeTime = new Date(freezeTime);
     unfreezeTime = new Date(unfreezeTime);
     const now = Date.now();
+
     return (
       freezeTime !== unfreezeTime &&
       submission.submitTime.getTime() >= freezeTime.getTime() &&

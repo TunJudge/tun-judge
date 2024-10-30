@@ -1,63 +1,184 @@
-import CodeEditor from '@shared/CodeEditor';
-import Spinner from '@shared/Spinner';
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
-import { RouteChildrenProps } from 'react-router-dom';
+import { CodeIcon, RefreshCwIcon, SendIcon } from 'lucide-react';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Button, Spinner, Tooltip } from 'tw-react-components';
 
-import { dateComparator } from '@core/helpers';
-import { Judging } from '@core/models';
-import { RootStore, SubmissionsStore, useStore } from '@core/stores';
-import { languageMap } from '@core/types';
+import { Prisma, User } from '@prisma/client';
 
-import SubmissionViewDetails from './SubmissionViewDetails';
-import SubmissionViewHeader from './SubmissionViewHeader';
-import SubmissionsViewJudgingRuns from './SubmissionViewJudgingRuns';
+import { CodeEditor, PageTemplate } from '@core/components';
+import { LANGUAGES_MAP } from '@core/constants';
+import { useAuthContext } from '@core/contexts';
+import { useDownloadedFile } from '@core/hooks';
+import { useFindFirstSubmission, useUpdateJudging, useUpdateSubmission } from '@core/queries';
 
-const SubmissionsView: React.FC<RouteChildrenProps<{ id?: string }>> = observer(({ match }) => {
-  const { updatesCount } = useStore<RootStore>('rootStore');
-  const { item: submission, fetchById } = useStore<SubmissionsStore>('submissionsStore');
+import { SubmissionViewDetails } from './SubmissionViewDetails';
+import { SubmissionsViewJudgingRuns } from './SubmissionViewJudgingRuns';
 
-  const [highlightedJudging, setHighlightedJudging] = useState<Judging | undefined>();
+export type Submission = Prisma.SubmissionGetPayload<{
+  include: {
+    team: true;
+    contest: true;
+    language: true;
+    problem: { include: { problem: { include: { testcases: true } } } };
+    judgings: {
+      include: {
+        juryMember: true;
+        runs: {
+          include: {
+            testcase: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+export type Judging = Submission['judgings'][number];
+export type JudgingRun = Judging['runs'][number];
+export type Testcase = JudgingRun['testcase'];
+
+export const SubmissionsView: FC = () => {
+  const { profile } = useAuthContext();
+  const { submissionId } = useParams();
+
+  const [highlightedJudging, setHighlightedJudging] = useState<Judging>();
+
+  const {
+    data: submission,
+    isLoading,
+    refetch,
+  } = useFindFirstSubmission({
+    where: { id: parseInt(submissionId ?? '-1') },
+    include: {
+      team: true,
+      contest: true,
+      language: true,
+      problem: { include: { problem: { include: { testcases: true } } } },
+      judgings: {
+        orderBy: { startTime: 'desc' },
+        include: {
+          juryMember: true,
+          runs: { include: { testcase: true } },
+        },
+      },
+    },
+  });
+  const { mutateAsync: updateJudging } = useUpdateJudging();
+  const { mutateAsync: updateSubmission } = useUpdateSubmission();
+
+  const content = useDownloadedFile(submission?.sourceFileName);
+  const latestJudging = useMemo(
+    () => submission?.judgings.filter((j) => j.valid)[0],
+    [submission?.judgings],
+  );
+
+  const setJudgingValid = (judgingId: number, ignore: boolean) =>
+    updateJudging({ where: { id: judgingId }, data: { valid: ignore } });
+
+  const rejudge = async () => {
+    if (!submission) return;
+
+    await updateSubmission({ where: { id: submission.id }, data: { judgeHostId: null } });
+  };
+
+  const markVerified = (judgingId: number) =>
+    updateJudging({ where: { id: judgingId }, data: { verified: true } });
+
+  const claimSubmission = async (judgingId: number) => {
+    if (!profile) return;
+
+    await updateJudging({
+      where: { id: judgingId },
+      data: { juryMemberId: profile.id },
+    });
+  };
+
+  const unClaimSubmission = async (judgingId: number) => {
+    if (!profile) return;
+
+    await updateJudging({
+      where: { id: judgingId },
+      data: { juryMemberId: null },
+    });
+  };
 
   useEffect(() => {
-    fetchById(parseInt(match!.params.id!)).catch(() => location.assign('/submissions'));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchById, updatesCount.judgings]);
+    setHighlightedJudging(latestJudging);
+  }, [latestJudging]);
 
-  useEffect(() => {
-    if (submission) {
-      setHighlightedJudging(
-        submission.judgings
-          .slice()
-          .filter((j) => j.valid)
-          .sort(dateComparator<Judging>('startTime', true))[0],
-      );
-    }
-  }, [submission]);
-
-  return !submission ? (
-    <Spinner />
+  return !submission || isLoading ? (
+    <Spinner fullScreen />
   ) : (
-    <div className="flex flex-col gap-y-4 overflow-auto p-4 text-black dark:text-white">
-      <SubmissionViewHeader submission={submission} />
+    <PageTemplate
+      className="overflow-hidden p-0"
+      bodyClassName="overflow-auto"
+      icon={SendIcon}
+      title={`Submission ${submission.id}`}
+      actions={
+        <>
+          {latestJudging?.result && (
+            <Button
+              color="blue"
+              onClick={() => setJudgingValid(latestJudging.id, !latestJudging.valid)}
+            >
+              {submission.valid ? 'Ignore' : 'UnIgnore'}
+            </Button>
+          )}
+          {latestJudging?.result && latestJudging.verified && (
+            <Button color="red" onClick={rejudge}>
+              Rejudge
+            </Button>
+          )}
+          {latestJudging?.result && !latestJudging.verified && (
+            <>
+              <Button
+                color="blue"
+                onClick={async () =>
+                  isSubmissionClaimedByMe(latestJudging, profile)
+                    ? unClaimSubmission(latestJudging.id)
+                    : claimSubmission(latestJudging.id)
+                }
+              >
+                {isSubmissionClaimedByMe(latestJudging, profile) ? 'UnClaim' : 'Claim'}
+              </Button>
+              <Button
+                className="whitespace-nowrap"
+                color="green"
+                onClick={async () => markVerified(latestJudging.id)}
+              >
+                Mark Verified
+              </Button>
+            </>
+          )}
+          <Tooltip content="Refresh" asChild>
+            <Button prefixIcon={RefreshCwIcon} onClick={() => refetch()} />
+          </Tooltip>
+        </>
+      }
+      isSubSection
+      fullHeight
+    >
       <SubmissionViewDetails
         submission={submission}
         highlightedJudging={highlightedJudging}
         setHighlightedJudging={setHighlightedJudging}
       />
-      <div className="flex flex-col divide-y rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
-        <div className="p-3 text-lg font-medium">Code Source</div>
-        <div className="p-3">
-          <CodeEditor
-            readOnly
-            value={atob(submission.file.content.payload)}
-            lang={languageMap[submission.language.name]}
-          />
-        </div>
-      </div>
+      <PageTemplate
+        className="h-[300px] flex-shrink-0 overflow-visible p-0"
+        icon={CodeIcon}
+        title="Code Source"
+        isSubSection
+      >
+        <CodeEditor value={content ?? ''} lang={LANGUAGES_MAP[submission.language.name]} readOnly />
+      </PageTemplate>
       <SubmissionsViewJudgingRuns judging={highlightedJudging} />
-    </div>
+    </PageTemplate>
   );
-});
+};
 
-export default SubmissionsView;
+export function isSubmissionClaimedByMe(judging?: Judging, user?: User): boolean {
+  return (
+    !!judging?.juryMember?.username &&
+    !!user?.username &&
+    judging?.juryMember?.username === user?.username
+  );
+}

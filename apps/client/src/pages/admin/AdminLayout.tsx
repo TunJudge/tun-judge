@@ -22,6 +22,7 @@ import { JudgeHostsList } from './views/judge-hosts/JudgeHostsList';
 import { LanguagesList } from './views/languages/LanguagesList';
 import { ProblemView } from './views/problems/ProblemView';
 import { ProblemsList } from './views/problems/ProblemsList';
+import { SubmissionsView } from './views/submissions/SubmissionView';
 import { SubmissionsList } from './views/submissions/SubmissionsList';
 import { TeamCategoriesList } from './views/team-category/TeamCategoriesList';
 import { TeamsList } from './views/teams/TeamsList';
@@ -108,8 +109,9 @@ export const AdminLayout: FC = () => {
         <Route path="teams" element={<TeamsList />} />
         <Route path="teams/categories" element={<TeamCategoriesList />} />
         <Route path="contests" element={<ContestsList />} />
-        <Route path="contests/:id" element={<ContestView />}>
+        <Route path="contests/:contestId" element={<ContestView />}>
           <Route path="submissions" element={<SubmissionsList />} />
+          <Route path="submissions/:submissionId" element={<SubmissionsView />} />
           <Route path="clarifications" element={'Clarifications'} />
           <Route path="scoreboard" element={<Scoreboard />} />
           <Route path="*" element={<Navigate to="submissions" replace />} />
@@ -120,13 +122,6 @@ export const AdminLayout: FC = () => {
         <Route path="executables" element={<ExecutablesList />} />
         <Route path="judge-hosts" element={<JudgeHostsList />} />
         <Route path="*" element={<Navigate to="" replace />} />
-        {/*
-        <Route exact path="submissions" component={SubmissionsList} />
-        <Route path="submissions/:id" component={SubmissionsView} />
-        <Route exact path="clarifications" component={ClarificationsList} />
-        <Route exact path="scoreboard" component={Scoreboard} />
-        <Route render={() => <Redirect to="/" />} />
-        */}
       </Routes>
     </Layout>
   );

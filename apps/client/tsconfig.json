@@ -8,6 +8,7 @@
     "types": ["vite/client"],
     "paths": {
       "@core/components": ["apps/client/src/core/components/index.ts"],
+      "@core/constants": ["apps/client/src/core/constants.ts"],
       "@core/contexts": ["apps/client/src/core/contexts/index.ts"],
       "@core/hooks": ["apps/client/src/core/hooks/index.ts"],
       "@core/utils": ["apps/client/src/core/utils/index.ts"],

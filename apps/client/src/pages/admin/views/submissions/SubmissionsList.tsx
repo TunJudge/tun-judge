@@ -1,54 +1,70 @@
 import { CheckCircleIcon, MinusCircleIcon, XCircleIcon } from 'lucide-react';
 import { FC } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { DataTable, DataTableColumn } from 'tw-react-components';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Button, DataTable, DataTableColumn } from 'tw-react-components';
 
 import { Judging, Prisma, Testcase } from '@prisma/client';
 
 import { SubmissionResult } from '@core/components';
 import { useAuthContext } from '@core/contexts';
-import { useFindFirstContest, useFindManySubmission } from '@core/queries';
+import { useFindFirstContest, useFindManySubmission, useUpdateJudging } from '@core/queries';
 import { dateComparator, formatRestTime } from '@core/utils';
 
 type Submission = Prisma.SubmissionGetPayload<{
   include: {
     team: true;
-    problem: { include: { problem: { include: { testcases: true } } } };
     language: true;
+    problem: { include: { problem: { include: { testcases: true } } } };
     judgings: { include: { juryMember: true; runs: { include: { testcase: true } } } };
   };
 }>;
 
 export const SubmissionsList: FC = () => {
   const { profile } = useAuthContext();
-  const { id: contestId } = useParams();
+  const { contestId } = useParams();
+  const navigate = useNavigate();
 
   const { data: contest } = useFindFirstContest({ where: { id: parseInt(contestId ?? '-1') } });
-
   const { data: submissions = [], isLoading } = useFindManySubmission({
     where: { contestId: parseInt(contestId ?? '-1') },
     include: {
       team: true,
-      problem: { include: { problem: { include: { testcases: true } } } },
       language: true,
+      problem: { include: { problem: { include: { testcases: true } } } },
       judgings: { include: { juryMember: true, runs: { include: { testcase: true } } } },
     },
     orderBy: { submitTime: 'desc' },
   });
+  const { mutateAsync: updateJudging } = useUpdateJudging();
+
+  const claimSubmission = async (judgingId: number) => {
+    if (!profile) return;
+
+    await updateJudging({
+      where: { id: judgingId },
+      data: { juryMemberId: profile.id },
+    });
+  };
+
+  const unClaimSubmission = async (judgingId: number) => {
+    if (!profile) return;
+
+    await updateJudging({
+      where: { id: judgingId },
+      data: { juryMemberId: null },
+    });
+  };
 
   const columns: DataTableColumn<Submission>[] = [
     {
       header: 'Time',
       field: 'submitTime',
-      render: (submission) => (
-        <Link className="cursor-pointer text-blue-700" to={`submissions/${submission.id}`}>
-          {formatRestTime(
-            (new Date(submission.submitTime).getTime() -
-              new Date(contest?.startTime ?? 0).getTime()) /
-              1000,
-          )}
-        </Link>
-      ),
+      render: (submission) =>
+        formatRestTime(
+          (new Date(submission.submitTime).getTime() -
+            new Date(contest?.startTime ?? 0).getTime()) /
+            1000,
+        ),
     },
     {
       header: 'Team',
@@ -60,8 +76,9 @@ export const SubmissionsList: FC = () => {
       field: 'problem',
       render: ({ problem }) => (
         <Link
-          className="cursor-pointer text-blue-700"
+          className="cursor-pointer text-blue-700 dark:text-blue-500"
           to={`/problems/${problem.id}`}
+          onClick={(e) => e.stopPropagation()}
           target="_blank"
           rel="noreferrer"
         >
@@ -91,31 +108,15 @@ export const SubmissionsList: FC = () => {
 
         return judging?.result ? (
           judging.verified ? (
-            `Yes by ${judging.juryMember.username}`
+            `Yes by ${judging.juryMember?.username}`
           ) : judging.juryMember ? (
             judging.juryMember.username === profile?.username ? (
-              <div
-                className="hover:bg-grey-100 cursor-pointer rounded-md bg-gray-200 p-2 text-center font-medium text-gray-600"
-                onClick={async () => {
-                  // await unClaim(submission.id);
-                  // await fetchAll();
-                }}
-              >
-                UnClaim
-              </div>
+              <Button onClick={() => unClaimSubmission(judging.id)}>Me (release)</Button>
             ) : (
               `Claimed by ${judging.juryMember?.username}`
             )
           ) : (
-            <div
-              className="hover:bg-grey-100 cursor-pointer rounded-md bg-gray-200 p-2 text-center font-medium text-gray-600"
-              onClick={async () => {
-                // await claim(submission.id);
-                // history.push(`/submissions/${submission.id}`);
-              }}
-            >
-              Claim
-            </div>
+            <Button onClick={() => claimSubmission(judging.id)}>Claim</Button>
           )
         ) : (
           '-'
@@ -162,7 +163,14 @@ export const SubmissionsList: FC = () => {
     },
   ];
 
-  return <DataTable rows={submissions} columns={columns} isLoading={isLoading} />;
+  return (
+    <DataTable
+      rows={submissions}
+      columns={columns}
+      isLoading={isLoading}
+      onRowClick={(submission) => navigate(`${submission.id}`)}
+    />
+  );
 };
 
 export function getJudgingRunColor(

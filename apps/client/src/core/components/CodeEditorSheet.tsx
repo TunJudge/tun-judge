@@ -6,7 +6,7 @@ import { FileKind } from '@prisma/client';
 
 import { downloadFile, uploadFile } from '@core/utils';
 
-import CodeEditor, { CodeEditorLanguages } from './CodeEditor';
+import { CodeEditor, CodeEditorLanguages } from './CodeEditor';
 
 export const CodeEditorSheet: FC<{
   fileName?: string;

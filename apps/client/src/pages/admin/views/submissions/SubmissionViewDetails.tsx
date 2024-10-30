@@ -1,56 +1,59 @@
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
-import classNames from 'classnames';
-import React from 'react';
+import { FC } from 'react';
+import { DataTable, DataTableColumn, cn } from 'tw-react-components';
 
-import { dateComparator, formatBytes, formatRestTime } from '@core/helpers';
-import { Judging, Submission } from '@core/models';
-import { resultMap } from '@core/types';
+import { JUDGING_RESULT_LABELS } from '@core/constants';
+import { formatBytes, formatRestTime } from '@core/utils';
 
-const SubmissionViewDetails: React.FC<{
+import { Judging, Submission } from './SubmissionView';
+
+export const SubmissionViewDetails: FC<{
   submission: Submission;
   highlightedJudging?: Judging;
   setHighlightedJudging: (judging: Judging) => void;
 }> = ({ submission, highlightedJudging, setHighlightedJudging }) => {
-  const columns: ListPageTableColumn<Judging>[] = [
+  const columns: DataTableColumn<Judging>[] = [
     {
       header: 'Team',
       field: 'id',
-      textAlign: 'center',
+      align: 'center',
       render: () => submission.team.name,
     },
     {
       header: 'Problem',
       field: 'id',
-      textAlign: 'center',
-      render: () => submission.problem.name,
+      align: 'center',
+      render: () => submission.problem.problem.name,
     },
     {
       header: 'Language',
       field: 'id',
-      textAlign: 'center',
+      align: 'center',
       render: () => submission.language.name,
     },
     {
       header: 'Result',
       field: 'result',
-      textAlign: 'center',
+      align: 'center',
       render: (judging) => (
         <b
-          className={classNames({
-            'text-green-600': judging.id === highlightedJudging?.id && judging.result === 'AC',
+          className={cn({
+            'text-green-600':
+              judging.id === highlightedJudging?.id && judging.result === 'ACCEPTED',
             'text-yellow-600': judging.id === highlightedJudging?.id && !judging.result,
             'text-red-600':
-              judging.id === highlightedJudging?.id && judging.result && judging.result !== 'AC',
+              judging.id === highlightedJudging?.id &&
+              judging.result &&
+              judging.result !== 'ACCEPTED',
           })}
         >
-          {resultMap[judging.result ?? 'PD']}
+          {JUDGING_RESULT_LABELS[judging.result ?? 'PENDING']}
         </b>
       ),
     },
     {
       header: 'Time',
       field: 'id',
-      textAlign: 'center',
+      align: 'center',
       render: (judging) =>
         `${Math.floor(
           judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runTime), 0) * 1000,
@@ -59,7 +62,7 @@ const SubmissionViewDetails: React.FC<{
     {
       header: 'Memory',
       field: 'id',
-      textAlign: 'center',
+      align: 'center',
       render: (judging) =>
         formatBytes(
           judging.runs.reduce<number>((pMax, run) => Math.max(pMax, run.runMemory), 0) * 1024,
@@ -68,7 +71,7 @@ const SubmissionViewDetails: React.FC<{
     {
       header: 'Sent',
       field: 'id',
-      textAlign: 'center',
+      align: 'center',
       render: () =>
         formatRestTime(
           (new Date(submission.submitTime).getTime() -
@@ -79,7 +82,7 @@ const SubmissionViewDetails: React.FC<{
     {
       header: 'Judged',
       field: 'id',
-      textAlign: 'center',
+      align: 'center',
       render: (judging) =>
         formatRestTime(
           (new Date(judging.startTime).getTime() -
@@ -90,25 +93,14 @@ const SubmissionViewDetails: React.FC<{
   ];
 
   return (
-    <div>
-      <DataTable
-        dataFetcher={() =>
-          Promise.resolve(
-            submission.judgings
-              .slice()
-              .filter((j) => j.valid)
-              .sort(dateComparator<Judging>('startTime', true)),
-          )
-        }
-        dataDependencies={[submission]}
-        columns={columns}
-        withoutActions
-        emptyMessage="Not judged yet"
-        notSortable
-        disabled={(judging) => judging.id !== highlightedJudging?.id}
-        onRowClick={setHighlightedJudging}
-      />
-    </div>
+    <DataTable
+      className="sticky top-0 z-10 flex-shrink-0"
+      rows={submission.judgings}
+      columns={columns}
+      noDataMessage="Not judged yet"
+      onRowClick={setHighlightedJudging}
+      rowClassName={(judging) => (judging.id !== highlightedJudging?.id ? 'opacity-50' : '')}
+    />
   );
 };
 

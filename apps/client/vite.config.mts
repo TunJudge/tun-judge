@@ -2,7 +2,6 @@
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -33,7 +32,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@core/components': '/src/core/components',
-      '@core/contexts': '/src/core/contexts/index.ts',
+      '@core/contexts': '/src/core/contexts',
+      '@core/constants': '/src/core/constants.ts',
       '@core/hooks': '/src/core/hooks',
       '@core/utils': '/src/core/utils',
       '@core/queries': '/src/core/queries',

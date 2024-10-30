@@ -54,7 +54,7 @@ export const PageTemplate = forwardRef<HTMLDivElement, Props>(
                 )}
               </>
             )}
-            {Icon && <Icon className="ml-2 mr-1 h-5 w-5" />}
+            {Icon && <Icon className="mx-2 h-5 w-5" />}
             {title}
             {filtersProps && <FiltersTrigger {...filtersProps} />}
           </Flex>

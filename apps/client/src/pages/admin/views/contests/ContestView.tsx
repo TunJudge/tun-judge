@@ -9,13 +9,13 @@ import { useFindFirstContest } from '@core/queries';
 export const ContestView: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { id: contestId } = useParams();
-  const currentTab = location.pathname.split('/').pop();
+  const { contestId } = useParams();
+  const currentTab = location.pathname.split('/')[3];
 
   const { data: contest } = useFindFirstContest({ where: { id: parseInt(contestId ?? '-1') } });
 
   return (
-    <Tabs className="w-full" value={currentTab} onValueChange={(tab) => navigate(tab)}>
+    <Tabs className="h-full w-full" value={currentTab} onValueChange={(tab) => navigate(tab)}>
       <PageTemplate
         icon={GraduationCapIcon}
         title={

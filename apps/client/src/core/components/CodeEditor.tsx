@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import AceEditor from 'react-ace';
 import { cn } from 'tw-react-components';
 
@@ -35,7 +35,7 @@ type CodeEditorProps = {
   onChange?: (value: string) => void;
 };
 
-const CodeEditor: React.FC<CodeEditorProps> = ({
+export const CodeEditor: FC<CodeEditorProps> = ({
   className,
   lang,
   value,
@@ -58,5 +58,3 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     />
   );
 };
-
-export default CodeEditor;

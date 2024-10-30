@@ -4,6 +4,8 @@ export * from './filters';
 export * from './CodeEditor';
 export * from './CodeEditorSheet';
 export * from './ContestCountdown';
+export * from './DiffViewer';
+export * from './DiffViewerSheet';
 export * from './Login';
 export * from './Logout';
 export * from './NavBar';
