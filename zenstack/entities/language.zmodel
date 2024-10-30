@@ -14,5 +14,9 @@ model Language {
 
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
   @@allow('read', (auth() == null || auth().roleName == 'team') && allowSubmit == true)
+  @@allow('read',
+    auth() != null && auth().roleName == 'judge-host' &&
+    submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]
+  )
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

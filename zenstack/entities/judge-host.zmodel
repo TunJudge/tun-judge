@@ -11,4 +11,8 @@ model JudgeHost {
   user        User         @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   submissions Submission[]
   judgings    Judging[]
+
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read', auth() != null && auth().roleName == 'judge-host' && active && userId == auth().id)
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

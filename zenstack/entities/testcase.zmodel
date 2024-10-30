@@ -20,5 +20,9 @@ model Testcase {
   @@index([sample])
   @@unique([problemId, rank])
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read',
+    auth() != null && auth().roleName == 'judge-host' &&
+    problem.contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]]
+  )
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

@@ -27,7 +27,7 @@ export class DockerService {
   async pullImage(tag: string): Promise<void> {
     try {
       await this.connection.getImage(tag).inspect();
-    } catch (e) {
+    } catch (_) {
       return new Promise<void>((resolve, reject) => {
         this.connection.pull(tag, {}, (error, stream) => {
           if (error) {

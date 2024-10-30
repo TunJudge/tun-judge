@@ -23,6 +23,7 @@ model Problem {
 
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
   @@allow('read', auth() != null && auth().roleName == 'team' && contests?[contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId])])
+  @@allow('read', auth() != null && auth().roleName == 'judge-host' && contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]])
   @@allow('read', auth() == null && contests?[contest.enabled == true && contest.public == true])
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }
@@ -46,6 +47,7 @@ model ContestProblem {
   @@unique([contestId, shortName])
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
   @@allow('read', auth() != null && auth().roleName == 'team' && contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]))
+  @@allow('read', auth() != null && auth().roleName == 'judge-host' && submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)])
   @@allow('read', auth() == null && contest.enabled == true && contest.public == true)
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

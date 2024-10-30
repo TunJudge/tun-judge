@@ -2,17 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { Socket, io } from 'socket.io-client';
 
 import config from '../config';
-import http from '../http/http.client';
+import { cookieStore } from '../http/http.client';
 
 @Injectable()
 export class SocketService {
   private readonly socket: Socket;
 
   constructor() {
-    const Cookie = http.cookieJar.getCookiesSync(http.url)[0]?.cookieString();
     this.socket = io(`${config.url}/ws`, {
       transports: ['websocket'],
-      extraHeaders: { Cookie },
+      extraHeaders: { Cookie: cookieStore.getCookieStringSync(config.url) },
     });
   }
 

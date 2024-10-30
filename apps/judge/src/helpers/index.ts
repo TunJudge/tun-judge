@@ -1,7 +1,12 @@
-import { JudgingRunResult, Problem } from '../models';
+import { JudgingRunResult } from '@prisma/client';
 
+import { Problem } from '../models';
+
+export * from './download-file';
+export * from './fix-error';
 export * from './spinner';
 export * from './submission-helper';
+export * from './super-json';
 
 export type GuardOutput = {
   usedTime: number;
@@ -10,8 +15,8 @@ export type GuardOutput = {
 };
 
 export function getResult(guardOutput: GuardOutput, problem: Problem): JudgingRunResult {
-  if (!guardOutput.exitCode) return 'AC';
-  if (guardOutput.usedTime >= problem.timeLimit * 1000) return 'TLE';
-  if (guardOutput.usedMemory >= problem.memoryLimit) return 'MLE';
-  return 'RE';
+  if (!guardOutput.exitCode) return 'ACCEPTED';
+  if (guardOutput.usedTime >= problem.timeLimit * 1000) return 'TIME_LIMIT_EXCEEDED';
+  if (guardOutput.usedMemory >= problem.memoryLimit) return 'MEMORY_LIMIT_EXCEEDED';
+  return 'RUNTIME_ERROR';
 }

@@ -1,4 +1,4 @@
-import { dots } from 'cli-spinners';
+import { default as CliSpinners } from 'cli-spinners';
 import { clearLine, cursorTo, moveCursor } from 'readline';
 
 export class Spinner {
@@ -9,9 +9,9 @@ export class Spinner {
     this.index = 0;
     this.interval = setInterval(() => {
       moveCursor(process.stdout, -1, 0);
-      process.stdout.write(dots.frames[this.index++]);
-      this.index %= dots.frames.length;
-    }, dots.interval);
+      process.stdout.write(CliSpinners.dots.frames[this.index++]);
+      this.index %= CliSpinners.dots.frames.length;
+    }, CliSpinners.dots.interval);
   }
 
   stop(): void {

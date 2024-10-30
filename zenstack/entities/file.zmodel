@@ -42,5 +42,19 @@ model File {
   @@allow('read', auth() != null && auth().roleName == 'team' && problems?[contests?[contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId])]])
   @@allow('read', auth() == null && problems?[contests?[contest.enabled == true && contest.public == true]])
   @@allow('read,create,update', auth() != null && auth().roleName == 'team' && (name == 'Submissions' || (startsWith(name, 'Submissions/') && contains(name, auth().team.name))) )
+  @@allow('read',
+    auth() != null && auth().roleName == 'judge-host' &&
+    (
+      executableSourceFile.problemsRunScript?[contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]]] ||
+      executableSourceFile.problemsCheckScript?[contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]]] ||
+      executableBuildScript.problemsRunScript?[contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]]] ||
+      executableBuildScript.problemsCheckScript?[contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]]] ||
+      testcaseInputFile.problem.contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]] ||
+      testcaseOutputFile.problem.contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]] ||
+      languageBuildScript.submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)] ||
+      submissionSourceFile.contest.submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]
+    )
+  )
+  @@allow('read,create,update', auth() != null && auth().roleName == 'judge-host' && (name == 'Submissions' || startsWith(name, 'Submissions/')))
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

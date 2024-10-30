@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { MD5 } from 'crypto-js';
 import { chmodSync, existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 
+import { FileKind, JudgingRunResult, Prisma } from '@prisma/client';
+
 import { GuardOutput, Spinner, SubmissionHelper, getResult } from '../helpers';
+import { uploadFile } from '../helpers/upload-file';
 import { JudgeLogger, getOnLog } from '../logger';
-import { File, Judging, JudgingRun, JudgingRunResult, Testcase } from '../models';
+import { Judging, Testcase } from '../models';
 import { DockerService, SocketService, SystemService } from '../services';
+import { prisma } from '../services/prisma.service';
 
 /**
  * The Executor assure the execution of the submission binary on each testcase
@@ -29,7 +32,7 @@ export class Executor {
     const {
       submission: { id, problem, language },
     } = judging;
-    const { testcases, runScript, checkScript } = problem;
+    const { testcases, runScript, checkScript } = problem.problem;
 
     // Make the run script executable
     chmodSync(this.submissionHelper.executableFilePath(runScript.id, runScript.sourceFile), '0775');
@@ -66,7 +69,7 @@ export class Executor {
       const guardOutput: GuardOutput = JSON.parse((await fs.readFile(guardOutputPath)).toString());
 
       // Get whether the result is 'AC', 'TLE', 'MLE' or 'RE' depending on the guard output
-      const result = getResult(guardOutput, problem);
+      const result = getResult(guardOutput, problem.problem);
 
       // In case of the exitCode of the running script is different then zero we stop running and report the result
       if (guardOutput.exitCode) {
@@ -90,8 +93,8 @@ export class Executor {
 
       // In case of the exitCode of the checking script is different then zero we stop running and report the result
       if (checkingResult.exitCode) {
-        await this.sendJudgingRun(judging, testcase, guardOutput, 'WA');
-        await this.systemService.setJudgingResult(judging, 'WA');
+        await this.sendJudgingRun(judging, testcase, guardOutput, 'WRONG_ANSWER');
+        await this.systemService.setJudgingResult(judging, 'WRONG_ANSWER');
 
         this.logger.log(`Running test ${testcase.rank}\tNOT OK!`);
 
@@ -115,7 +118,7 @@ export class Executor {
     }
 
     // In case all testcases passed then we report the result and prune the containers
-    await this.systemService.setJudgingResult(judging, 'AC');
+    await this.systemService.setJudgingResult(judging, 'ACCEPTED');
 
     this.logger.log(`Submission with id ${id} is correct!`);
 
@@ -128,55 +131,62 @@ export class Executor {
     guardOutput: GuardOutput,
     result: JudgingRunResult,
   ): Promise<void> {
-    const judgingRun: Partial<JudgingRun> = {
+    const judgingRun: Prisma.JudgingRunUncheckedCreateInput = {
       result: result,
       runTime: guardOutput.usedTime / 1000,
       runMemory: guardOutput.usedMemory,
-      testcase: testcase,
-      judging: judging,
+      testcaseId: testcase.id,
+      judgingId: judging.id,
       endTime: new Date(),
     };
+    const parentDirectoryName = `Submissions/${judging.submission.id}/Judgings/${judging.id}/Runs/${testcase.rank}`;
 
     const runOutputPath = this.submissionHelper.extraFilesPath('test.out');
     const runOutput = (await fs.readFile(runOutputPath)).toString().trim();
-    const payload = Buffer.from(runOutput).toString('base64');
-
-    judgingRun.runOutput = {
-      name: `program.out`,
-      type: 'text/plain',
-      size: runOutput.length,
-      md5Sum: MD5(payload).toString(),
-      content: { payload: payload },
-    } as File;
+    const outputBlob = new Blob([runOutput], { type: 'text/plain' });
+    const outputFile = new File([outputBlob], 'program.out', { type: 'text/plain' });
+    const programOutput = await uploadFile(outputFile, {
+      name: `${parentDirectoryName}/${outputFile.name}`,
+      type: outputFile.type,
+      size: outputFile.size,
+      md5Sum: '',
+      kind: FileKind.FILE,
+      parentDirectoryName,
+    });
+    judgingRun.runOutputFileName = programOutput.name;
 
     if (guardOutput.exitCode) {
       const errorOutputPath = this.submissionHelper.extraFilesPath('test.err');
       const errorOutput = (await fs.readFile(errorOutputPath)).toString().trim();
-      const payload = Buffer.from(errorOutput).toString('base64');
-
-      judgingRun.errorOutput = {
-        name: `program.err`,
-        type: 'text/plain',
-        size: errorOutput.length,
-        md5Sum: MD5(payload).toString(),
-        content: { payload: payload },
-      } as File;
+      const errorBlob = new Blob([errorOutput], { type: 'text/plain' });
+      const errorFile = new File([errorBlob], 'program.err', { type: 'text/plain' });
+      const programError = await uploadFile(errorFile, {
+        name: `${parentDirectoryName}/${errorFile.name}`,
+        type: errorFile.type,
+        size: errorFile.size,
+        md5Sum: '',
+        kind: FileKind.FILE,
+        parentDirectoryName,
+      });
+      judgingRun.errorOutputFileName = programError.name;
     }
 
     const checkerOutputPath = this.submissionHelper.extraFilesPath('checker.out');
     if (existsSync(checkerOutputPath)) {
       const checkerOutput = (await fs.readFile(checkerOutputPath)).toString().trim();
-      const payload = Buffer.from(checkerOutput).toString('base64');
-
-      judgingRun.checkerOutput = {
-        name: 'checker.out',
-        type: 'text/plain',
-        size: checkerOutput.length,
-        md5Sum: MD5(payload).toString(),
-        content: { payload: payload },
-      } as File;
+      const checkerBlob = new Blob([checkerOutput], { type: 'text/plain' });
+      const checkerFile = new File([checkerBlob], 'checker.out', { type: 'text/plain' });
+      const payload = await uploadFile(checkerFile, {
+        name: `${parentDirectoryName}/${checkerFile.name}`,
+        type: checkerFile.type,
+        size: checkerFile.size,
+        md5Sum: '',
+        kind: FileKind.FILE,
+        parentDirectoryName,
+      });
+      judgingRun.checkerOutputFileName = payload.name;
     }
 
-    return this.systemService.addJudgingRun(judging, judgingRun);
+    await prisma.judgingRun.create({ data: judgingRun });
   }
 }

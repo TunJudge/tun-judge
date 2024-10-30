@@ -20,12 +20,15 @@ model JudgingRun {
   judging               Judging          @relation(fields: [judgingId], references: [id], onDelete: Restrict, onUpdate: NoAction)
   testcaseId            Int
   testcase              Testcase         @relation(fields: [testcaseId], references: [id], onDelete: Restrict, onUpdate: NoAction)
-  runOutputFileName     String           @unique
-  runOutputFile         File             @relation("JudgingRunOutputFile", fields: [runOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
-  errorOutputFileName   String           @unique
-  errorOutputFile       File             @relation("JudgingRunErrorOutputFile", fields: [errorOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
-  checkerOutputFileName String           @unique
-  checkerOutputFile     File             @relation("JudgingRunCheckerOutputFile", fields: [checkerOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  runOutputFileName     String?          @unique
+  runOutputFile         File?            @relation("JudgingRunOutputFile", fields: [runOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  errorOutputFileName   String?          @unique
+  errorOutputFile       File?            @relation("JudgingRunErrorOutputFile", fields: [errorOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  checkerOutputFileName String?          @unique
+  checkerOutputFile     File?            @relation("JudgingRunCheckerOutputFile", fields: [checkerOutputFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
 
   @@unique([judgingId, testcaseId])
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read,create', auth() != null && auth().roleName == 'judge-host' && judging.judgeHost.active && judging.judgeHost.userId == auth().id)
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

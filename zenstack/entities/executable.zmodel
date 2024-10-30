@@ -21,5 +21,12 @@ model Executable {
   problemsCheckScript Problem[]      @relation("ProblemCheckScript")
 
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read',
+    auth() != null && auth().roleName == 'judge-host' &&
+    (
+      problemsRunScript?[contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]]] ||
+      problemsCheckScript?[contests?[submissions?[judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)]]]
+    )
+  )
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

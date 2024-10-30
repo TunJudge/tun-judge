@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { MD5 } from 'crypto-js';
 import { existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 
+import { FileKind } from '@prisma/client';
+
 import { Spinner, SubmissionHelper } from '../helpers';
+import { uploadFile } from '../helpers/upload-file';
 import { JudgeLogger, getOnLog } from '../logger';
-import { Executable, File, Judging } from '../models';
+import { Executable, Judging } from '../models';
 import { DockerService, ExecResult, SocketService, SystemService } from '../services';
+import { prisma } from '../services/prisma.service';
 
 /**
  * The Compiler assure the compilation of the submission and checker code source files.
@@ -28,26 +31,30 @@ export class Compiler {
     const { submission } = judging;
     const {
       problem: { checkScript },
-    } = submission;
+    } = submission.problem;
 
     const compileSubmissionResult = await this.compileSubmissionFile(judging);
 
     if (compileSubmissionResult.exitCode) {
-      this.logger.error(`Compiling submission file ${submission.file.name}\tNOT OK!`);
-      await this.systemService.setJudgingResult(judging, 'CE');
+      this.logger.error(`Compiling submission file ${submission.sourceFileName}\tNOT OK!`);
+      await this.systemService.setJudgingResult(judging, 'COMPILATION_ERROR');
       return false;
     }
-    this.logger.log(`Compiling submission file ${submission.file.name}\tOK!`);
+    this.logger.log(`Compiling submission file ${submission.sourceFileName}\tOK!`);
 
-    const compileCheckerResult = await this.compileCheckerFile(submission.problem.checkScript);
+    const compileCheckerResult = await this.compileCheckerFile(checkScript);
 
     if (compileCheckerResult) {
       if (compileCheckerResult.exitCode) {
-        this.logger.error(`Compiling executable file ${checkScript.sourceFile.name}\tNOT OK!`);
-        await this.systemService.setJudgingResult(judging, 'SE', compileCheckerResult.stdout);
+        this.logger.error(`Compiling executable file ${checkScript.sourceFileName}\tNOT OK!`);
+        await this.systemService.setJudgingResult(
+          judging,
+          'SYSTEM_ERROR',
+          compileCheckerResult.stdout,
+        );
         return false;
       }
-      this.logger.log(`Compiling executable file ${checkScript.sourceFile.name}\tOK!`);
+      this.logger.log(`Compiling executable file ${checkScript.sourceFileName}\tOK!`);
     }
 
     this.logger.log(`Submission with id ${submission.id} compiled!`);
@@ -56,10 +63,10 @@ export class Compiler {
 
   private async compileSubmissionFile(judging: Judging) {
     const {
-      submission: { id, file, language },
+      submission: { id, sourceFileName, language },
     } = judging;
 
-    this.logger.log(`Compiling submission file ${file.name}\t`, undefined, false);
+    this.logger.log(`Compiling submission file ${sourceFileName}\t`, undefined, false);
     const spinner = new Spinner();
 
     // Create docker container to compile the submission file
@@ -105,7 +112,7 @@ export class Compiler {
     );
     if (existsSync(checkerBinPath)) return undefined;
 
-    this.logger.log(`Compiling executable file ${checkScript.sourceFile.name}\t`, undefined, false);
+    this.logger.log(`Compiling executable file ${checkScript.sourceFileName}\t`, undefined, false);
     const spinner = new Spinner();
 
     // Create docker container to compile the checker file
@@ -146,18 +153,21 @@ export class Compiler {
     return compileCheckerResult;
   }
 
-  private async setJudgingCompileOutput(
-    judging: Judging,
-    compileSubmissionResult: ExecResult,
-  ): Promise<void> {
-    const payload = Buffer.from(compileSubmissionResult.stdout.trim()).toString('base64');
-    judging.compileOutput = {
-      name: 'compile.out',
-      type: 'text/plain',
-      size: compileSubmissionResult.stdout.length,
-      md5Sum: MD5(payload).toString(),
-      content: { payload: payload },
-    } as File;
-    await this.systemService.updateJudging(judging);
+  private async setJudgingCompileOutput(judging: Judging, result: ExecResult): Promise<void> {
+    const blob = new Blob([result.stdout.trim()], { type: 'text/plain' });
+    const file = new File([blob], 'compile.out', { type: 'text/plain' });
+    const compileOutput = await uploadFile(file, {
+      name: `Submissions/${judging.submission.id}/Judgings/${judging.id}/${file.name}`,
+      type: file.type,
+      size: file.size,
+      md5Sum: '',
+      kind: FileKind.FILE,
+      parentDirectoryName: `Submissions/${judging.submission.id}/Judgings/${judging.id}`,
+    });
+
+    await prisma.judging.update({
+      where: { id: judging.id },
+      data: { compileOutputFileName: compileOutput.name },
+    });
   }
 }

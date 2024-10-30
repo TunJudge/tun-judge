@@ -18,6 +18,7 @@ import { RolesGuard } from './guards';
 import { InitializersModule } from './initializers';
 import { RequestLoggerMiddleware } from './logger';
 import { ScoreboardModule } from './scoreboard';
+import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ScoreboardModule } from './scoreboard';
       extraProviders: [PrismaService],
     }),
     DatabaseModule,
+    WebsocketModule,
     InitializersModule,
     AuthModule,
     FilesModule,

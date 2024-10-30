@@ -1,37 +1,60 @@
-import axios, { AxiosRequestConfig, Method } from 'axios';
-import { wrapper as axiosCookieJarSupport } from 'axios-cookiejar-support';
+import makeFetchCookie from 'fetch-cookie';
+import { ReadableStream } from 'stream/web';
 import { CookieJar } from 'tough-cookie';
 
 import config from '../config';
 
-axiosCookieJarSupport(axios);
+export const cookieStore = new CookieJar();
+export const fetchCookie = makeFetchCookie(fetch, cookieStore);
 
 export class HttpClient {
   url = config.url ?? '';
-  cookieJar = new CookieJar();
 
-  get<T>(path: string, options?: AxiosRequestConfig): Promise<T> {
+  get<T>(path: string, options?: RequestInit): Promise<T> {
     return this.request<T>(path, 'GET', options);
   }
 
-  post<T>(path: string, body?: unknown, options?: AxiosRequestConfig): Promise<T> {
-    return this.request<T>(path, 'POST', { data: body, ...options });
+  post<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
+    return this.request<T>(path, 'POST', { body: JSON.stringify(body), ...options });
   }
 
-  put<T>(path: string, body?: unknown, options?: AxiosRequestConfig): Promise<T> {
-    return this.request<T>(path, 'PUT', { data: body, ...options });
+  put<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
+    return this.request<T>(path, 'PUT', { body: JSON.stringify(body), ...options });
   }
 
-  async request<T>(path: string, method: Method = 'GET', options?: AxiosRequestConfig): Promise<T> {
-    return (
-      await axios.request<T>({
-        url: `${this.url}/${path}`,
-        method: method,
-        withCredentials: true,
-        jar: this.cookieJar,
-        ...options,
-      })
-    ).data;
+  stream(path: string, options?: RequestInit): Promise<ReadableStream<Uint8Array>> {
+    return this.request<ReadableStream<Uint8Array>>(path, 'GET', options, true);
+  }
+
+  async request<T>(
+    path: string,
+    method = 'GET',
+    options?: RequestInit,
+    stream?: boolean,
+  ): Promise<T> {
+    const response = await fetchCookie(`${this.url}/${path}`, {
+      method: method,
+      credentials: 'include',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    });
+
+    if (!response.ok) {
+      throw await response.json();
+    }
+
+    if (stream) return response.body as T;
+
+    const text = await response.text();
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text as unknown as T;
+    }
   }
 }
 

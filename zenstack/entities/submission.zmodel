@@ -34,5 +34,6 @@ model Submission {
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
   @@allow('read', auth() != null && auth().roleName == 'team' && teamId == auth().teamId)
   @@allow('create', auth() != null && auth().roleName == 'team' && teamId == auth().teamId && contest.startTime <= now() && now() <= contest.endTime && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]) && language.allowSubmit == true && problem.allowSubmit == true)
+  @@allow('read,update', auth() != null && auth().roleName == 'judge-host' && (judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)))
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

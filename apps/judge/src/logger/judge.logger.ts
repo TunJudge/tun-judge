@@ -20,29 +20,29 @@ export class JudgeLogger extends ConsoleLogger {
     super(context);
   }
 
-  error(message: any, trace?: string, context?: string): any {
+  error(message: string, stack?: string, context?: string) {
     this.printMessage(message, clc.red, 'error', context || this.context, true, 'stderr');
-    trace && process.stderr.write(`${trace}\n`);
+    stack && process.stderr.write(`${stack}\n`);
   }
 
-  warn(message: any, context?: string, returnToLine = true): any {
+  warn(message: string, context?: string, returnToLine = true) {
     this.printMessage(message, clc.yellow, 'warn', context || this.context, returnToLine);
   }
 
-  log(message: any, context?: string, returnToLine = true): any {
+  log(message: string, context?: string, returnToLine = true) {
     this.printMessage(message, clc.green, 'log', context || this.context, returnToLine);
   }
 
-  debug(message: any, context?: string, returnToLine = true): any {
+  debug(message: string, context?: string, returnToLine = true) {
     this.printMessage(message, clc.magentaBright, 'debug', context || this.context, returnToLine);
   }
 
-  verbose(message: any, context?: string, returnToLine = true): any {
+  verbose(message: string, context?: string, returnToLine = true) {
     this.printMessage(message, clc.cyanBright, 'verbose', context || this.context, returnToLine);
   }
 
   printMessage(
-    message: any,
+    message: string,
     color: (message: string) => string,
     level: LogLevel,
     context = '',

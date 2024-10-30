@@ -29,6 +29,7 @@ model Contest {
   @@index([id, enabled])
   @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
   @@allow('read', auth() != null && auth().roleName == 'team' && enabled == true  && activateTime <= now() && (openToAllTeams == true || teams?[teamId == auth().teamId]))
+  @@allow('read', auth() != null && auth().roleName == 'judge-host' && enabled == true)
   @@allow('read', auth() == null && enabled == true && activateTime <= now() && public == true)
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

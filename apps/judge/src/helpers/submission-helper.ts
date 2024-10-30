@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { copyFileSync, mkdirSync } from 'fs';
-import { tmpdir } from 'os';
-import { join } from 'path';
+import { join, parse, resolve } from 'path';
 
-import { File, Submission, Testcase } from '../models';
+import { File } from '@prisma/client';
+
+import config from '../config';
+import { Submission, Testcase } from '../models';
 
 /**
  * SubmissionHelper helps creating generating the right folders and files paths
@@ -14,14 +16,13 @@ export class SubmissionHelper {
   private submission: Submission = {} as Submission;
   private readonly guardCppPath: string;
 
-  readonly workDir: string;
+  readonly workDir: string = resolve(config.workDir);
   readonly testLibPath: string;
 
   constructor() {
-    this.workDir = join(tmpdir(), 'tun-judge', 'workDir');
     mkdirSync(this.workDir, { recursive: true });
 
-    const originalAssetsDir = join(__dirname, '..', '..', 'assets');
+    const originalAssetsDir = join(__dirname, 'assets');
     this.testLibPath = join(originalAssetsDir, 'testlib.h');
     this.guardCppPath = join(originalAssetsDir, 'guard.cpp');
 
@@ -35,17 +36,17 @@ export class SubmissionHelper {
 
   runCmd = (testcase: Testcase): string[] => {
     const {
-      problem: { runScript },
-    } = this.submission;
+      problem: { timeLimit, memoryLimit, runScript },
+    } = this.submission.problem;
     return [
       'bash',
       '-c',
       [
         this.assetsFilePath('guard'),
-        this.submission.problem.timeLimit * 1000,
-        this.submission.problem.memoryLimit,
+        timeLimit * 1000,
+        memoryLimit,
         `'${this.executableFilePath(runScript.id, runScript.sourceFile)} ${this.binPath()}'`,
-        this.testcaseFilePath(testcase.id, testcase.input),
+        this.testcaseFilePath(testcase.id, testcase.inputFile),
         'test.out',
         'test.err',
       ].join(' '),
@@ -56,7 +57,7 @@ export class SubmissionHelper {
     this.languageFilePath(),
     this.filePath(),
     this.binPath(),
-    String(this.submission.problem.memoryLimit),
+    String(this.submission.problem.problem.memoryLimit),
   ];
 
   extraFilesPath = (filename: string): string => join(this.submissionDir(), filename);
@@ -64,12 +65,12 @@ export class SubmissionHelper {
   checkerRunCmd = (testcase: Testcase): string[] => {
     const {
       problem: { checkScript },
-    } = this.submission;
+    } = this.submission.problem;
     return [
       this.executableBinPath(checkScript.id, checkScript.sourceFile),
-      this.testcaseFilePath(testcase.id, testcase.input),
+      this.testcaseFilePath(testcase.id, testcase.inputFile),
       this.extraFilesPath('test.out'),
-      this.testcaseFilePath(testcase.id, testcase.output),
+      this.testcaseFilePath(testcase.id, testcase.outputFile),
       this.extraFilesPath('checker.out'),
     ];
   };
@@ -77,7 +78,7 @@ export class SubmissionHelper {
   checkerCompileCmd = (): string[] => {
     const {
       problem: { checkScript },
-    } = this.submission;
+    } = this.submission.problem;
     return [
       this.executableFilePath(checkScript.id, checkScript.buildScript),
       this.executableFilePath(checkScript.id, checkScript.sourceFile),
@@ -97,7 +98,8 @@ export class SubmissionHelper {
     return dir;
   };
 
-  filePath = (): string => join(this.submissionDir(), this.submission.file.name.replace(/ /g, '_'));
+  filePath = (): string =>
+    join(this.submissionDir(), parse(this.submission.sourceFileName).base.replace(/ /g, '_'));
 
   binPath = (): string => this.filePath().replace(/\.[^.]*$/g, '');
 
@@ -120,7 +122,7 @@ export class SubmissionHelper {
   };
 
   languageFilePath = (): string =>
-    join(this.languageFileDir(), this.submission.language.buildScript.name);
+    join(this.languageFileDir(), parse(this.submission.language.buildScript.name).base);
 
   testcaseDir = (id: number): string => {
     const dir = join(this.problemDir(), 'testcases', String(id));
@@ -135,7 +137,7 @@ export class SubmissionHelper {
   };
 
   testcaseFilePath = (id: number, file: File): string =>
-    join(this.testcaseFileDir(id, file), file.name);
+    join(this.testcaseFileDir(id, file), parse(file.name).base);
 
   executableDir = (id: number): string => {
     const dir = join(this.workDir, 'executables', String(id));
@@ -150,10 +152,10 @@ export class SubmissionHelper {
   };
 
   executableFilePath = (id: number, file: File): string =>
-    join(this.executableFileDir(id, file), file.name);
+    join(this.executableFileDir(id, file), parse(file.name).base);
 
   executableBinPath = (id: number, file: File): string =>
-    join(this.executableFileDir(id, file), file.name).replace(/\.[^.]*$/g, '');
+    join(this.executableFileDir(id, file), parse(file.name).name);
 
   assetsDir = (): string => {
     const dir = join(this.workDir, 'assets');
