@@ -14,7 +14,7 @@ export const FiltersTrigger: FC<
   return !hasFilters ? (
     <FiltersTriggerWrapper {...props}>
       <Badge
-        className="ml-2 h-7 cursor-pointer rounded-md border border-dashed border-slate-300 bg-transparent px-2 dark:border-slate-600 dark:bg-transparent"
+        className="border-border ml-2 h-7 cursor-pointer rounded-md border border-dashed bg-transparent px-2 dark:bg-transparent"
         prefixIcon={ListFilterIcon}
       >
         Filter
@@ -22,7 +22,7 @@ export const FiltersTrigger: FC<
     </FiltersTriggerWrapper>
   ) : (
     <Badge
-      className="ml-2 h-7 cursor-pointer rounded-md border border-dashed border-slate-300 bg-transparent px-2 dark:border-slate-600 dark:bg-transparent"
+      className="border-border ml-2 h-7 cursor-pointer rounded-md border border-dashed bg-transparent px-2 dark:bg-transparent"
       suffixIcon={XIcon}
       onClick={props.clearFilters}
     >

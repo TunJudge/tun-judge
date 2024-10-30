@@ -59,19 +59,23 @@ export const ChatBoxInput: FC<Props> = ({ form, clarification }) => {
   };
 
   return (
-    <form className="flex w-full gap-2" onSubmit={onSubmit}>
+    <form className="relative flex w-full gap-2 p-1" onSubmit={onSubmit}>
       <TextareaInput
+        inputClassName="border-none"
         value={message}
+        rows={4}
         placeholder="Write a reply..."
         onChange={({ target: { value } }) => setMessage(value)}
       />
       <Button
-        className="h-full"
+        className="absolute bottom-3 right-3"
         type="submit"
         color="blue"
         prefixIcon={SendIcon}
         disabled={(!isGeneral && !problem) || !message}
-      />
+      >
+        Send
+      </Button>
     </form>
   );
 };

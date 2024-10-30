@@ -28,7 +28,7 @@ const JudgeHostLogsViewer: React.FC<JudgeHostLogsViewerProps> = ({ hostname, dis
 
   return (
     <SimpleDialog title={`Judge Host '${hostname}' logs`} isOpen={!!hostname} onClose={dismiss}>
-      <div id="terminal-logs" className="h-96 overflow-auto rounded-md bg-gray-900 text-white">
+      <div id="terminal-logs" className="h-96 overflow-auto rounded-md bg-slate-900 text-white">
         {logs.map((log, index) => (
           <span key={index}>
             <Ansi>{log}</Ansi>

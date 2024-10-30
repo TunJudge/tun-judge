@@ -40,7 +40,7 @@ export const PageTemplate = forwardRef<HTMLDivElement, Props>(
         ref={ref}
       >
         <Flex
-          className={cn(headerBottomBorder && 'border-b p-3 dark:border-slate-700/80')}
+          className={cn(headerBottomBorder && 'border-b p-3')}
           align="center"
           justify="between"
           fullWidth

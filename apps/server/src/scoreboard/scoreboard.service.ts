@@ -56,8 +56,9 @@ export class ScoreboardService {
       where: {
         problemId,
         contestId: contest.id,
+        valid: true,
       },
-      include: { judgings: true },
+      include: { judgings: { where: { valid: true } } },
     });
 
     const submissions = allProblemSubmissions.filter(

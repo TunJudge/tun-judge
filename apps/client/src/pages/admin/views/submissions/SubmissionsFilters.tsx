@@ -17,7 +17,7 @@ const SubmissionsFilters: React.FC<{
   }, [fetchAllLanguages]);
 
   return (
-    <div className="grid gap-4 rounded bg-white p-4 shadow sm:grid-cols-4 dark:bg-gray-800">
+    <div className="grid gap-4 rounded bg-white p-4 shadow sm:grid-cols-4 dark:bg-slate-800">
       <DropDownInput<Filters>
         entity={filters}
         field="problems"

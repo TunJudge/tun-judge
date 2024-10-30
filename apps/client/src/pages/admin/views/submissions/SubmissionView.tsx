@@ -1,6 +1,15 @@
-import { CodeIcon, RefreshCwIcon, SendIcon } from 'lucide-react';
+import {
+  CheckIcon,
+  ClipboardPlusIcon,
+  ClipboardXIcon,
+  CodeIcon,
+  GrabIcon,
+  HandIcon,
+  RefreshCwIcon,
+  SendIcon,
+} from 'lucide-react';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Spinner, Tooltip } from 'tw-react-components';
 
 import { Prisma, User } from '@prisma/client';
@@ -37,7 +46,9 @@ export type JudgingRun = Judging['runs'][number];
 export type Testcase = JudgingRun['testcase'];
 
 export const SubmissionsView: FC = () => {
+  const { contestId } = useParams();
   const { profile } = useAuthContext();
+  const navigate = useNavigate();
   const { submissionId } = useParams();
 
   const [highlightedJudging, setHighlightedJudging] = useState<Judging>();
@@ -66,13 +77,21 @@ export const SubmissionsView: FC = () => {
   const { mutateAsync: updateSubmission } = useUpdateSubmission();
 
   const content = useDownloadedFile(submission?.sourceFileName);
-  const latestJudging = useMemo(
-    () => submission?.judgings.filter((j) => j.valid)[0],
-    [submission?.judgings],
-  );
+  const latestJudging = useMemo(() => {
+    const validJudgings = submission?.judgings.filter((j) => j.valid);
 
-  const setJudgingValid = (judgingId: number, ignore: boolean) =>
-    updateJudging({ where: { id: judgingId }, data: { valid: ignore } });
+    return (
+      validJudgings?.findLast((j) => j.result === 'ACCEPTED') ??
+      validJudgings?.[0] ??
+      submission?.judgings[0]
+    );
+  }, [submission?.judgings]);
+
+  const toggleSubmissionValid = () => {
+    if (!submission) return;
+
+    updateSubmission({ where: { id: submission.id }, data: { valid: !submission.valid } });
+  };
 
   const rejudge = async () => {
     if (!submission) return;
@@ -80,8 +99,11 @@ export const SubmissionsView: FC = () => {
     await updateSubmission({ where: { id: submission.id }, data: { judgeHostId: null } });
   };
 
-  const markVerified = (judgingId: number) =>
+  const markVerified = (judgingId: number) => {
     updateJudging({ where: { id: judgingId }, data: { verified: true } });
+
+    navigate(`/contests/${contestId}/submissions`);
+  };
 
   const claimSubmission = async (judgingId: number) => {
     if (!profile) return;
@@ -115,23 +137,27 @@ export const SubmissionsView: FC = () => {
       title={`Submission ${submission.id}`}
       actions={
         <>
-          {latestJudging?.result && (
+          {isSubmissionClaimedByMe(latestJudging, profile) && (
             <Button
-              color="blue"
-              onClick={() => setJudgingValid(latestJudging.id, !latestJudging.valid)}
+              color="gray"
+              prefixIcon={submission.valid ? ClipboardXIcon : ClipboardPlusIcon}
+              onClick={toggleSubmissionValid}
             >
               {submission.valid ? 'Ignore' : 'UnIgnore'}
             </Button>
           )}
-          {latestJudging?.result && latestJudging.verified && (
-            <Button color="red" onClick={rejudge}>
-              Rejudge
-            </Button>
-          )}
+          {latestJudging?.result &&
+            latestJudging.verified &&
+            isSubmissionClaimedByMe(latestJudging, profile) && (
+              <Button color="red" onClick={rejudge}>
+                Rejudge
+              </Button>
+            )}
           {latestJudging?.result && !latestJudging.verified && (
             <>
               <Button
                 color="blue"
+                prefixIcon={isSubmissionClaimedByMe(latestJudging, profile) ? HandIcon : GrabIcon}
                 onClick={async () =>
                   isSubmissionClaimedByMe(latestJudging, profile)
                     ? unClaimSubmission(latestJudging.id)
@@ -140,13 +166,16 @@ export const SubmissionsView: FC = () => {
               >
                 {isSubmissionClaimedByMe(latestJudging, profile) ? 'UnClaim' : 'Claim'}
               </Button>
-              <Button
-                className="whitespace-nowrap"
-                color="green"
-                onClick={async () => markVerified(latestJudging.id)}
-              >
-                Mark Verified
-              </Button>
+              {isSubmissionClaimedByMe(latestJudging, profile) && (
+                <Button
+                  className="whitespace-nowrap"
+                  color="green"
+                  prefixIcon={CheckIcon}
+                  onClick={() => markVerified(latestJudging.id)}
+                >
+                  Mark Verified
+                </Button>
+              )}
             </>
           )}
           <Tooltip content="Refresh" asChild>

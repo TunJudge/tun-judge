@@ -43,7 +43,7 @@ export const ProblemView: FC = () => {
           actions={<Button onClick={() => rejudge(problem.id)}>Rejudge</Button>}
           fullHeight={false}
         >
-          <Table className="overflow-auto border dark:border-slate-700">
+          <Table className="border-border overflow-auto border">
             <Table.Head className="sticky top-0">
               <Table.Row>
                 <Table.Cell>Field</Table.Cell>

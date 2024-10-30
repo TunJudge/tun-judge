@@ -24,13 +24,13 @@ export const ChatBoxHeader: FC<Props> = ({ form, clarification }) => {
   }, [form, isGeneral]);
 
   return clarification?.id ? (
-    <div className="mb-1 text-2xl font-medium">
+    <div className="p-3 text-2xl font-medium">
       {isGeneral ? 'General' : `${problem?.shortName} - ${problem?.problem.name}`}
     </div>
   ) : (
     <FormProvider {...form}>
       <form
-        className={cn('grid w-full gap-2', {
+        className={cn('grid w-full gap-2 p-3', {
           'grid-cols-1': isGeneral,
           'grid-cols-2': !isGeneral,
         })}

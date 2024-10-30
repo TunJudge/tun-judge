@@ -4,6 +4,7 @@ import {
   CogIcon,
   GraduationCapIcon,
   ServerIcon,
+  StarsIcon,
   UserRoundIcon,
   UsersRoundIcon,
 } from 'lucide-react';
@@ -12,9 +13,10 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Layout, Sidebar, SidebarProps } from 'tw-react-components';
 
 import { Scoreboard } from '@core/components';
+import { useActiveContest } from '@core/contexts';
 
-import { ContestsSection } from './ContestsSection';
 import { NavUser } from './NavUser';
+import { ClarificationsList } from './views/clarifications/ClarificationsList';
 import { ContestView } from './views/contests/ContestView';
 import { ContestsList } from './views/contests/ContestsList';
 import { ExecutablesList } from './views/executables/ExecutablesList';
@@ -29,6 +31,8 @@ import { TeamsList } from './views/teams/TeamsList';
 import { UsersList } from './views/users/UsersList';
 
 export const AdminLayout: FC = () => {
+  const { activeContests } = useActiveContest();
+
   const sidebarProps: SidebarProps = useMemo(
     () => ({
       header: (
@@ -94,11 +98,24 @@ export const AdminLayout: FC = () => {
             },
           ],
         },
+        {
+          type: 'group',
+          title: 'Active Contests',
+          hidden: !activeContests.length,
+          items: activeContests.map((contest) => ({
+            pathname: `contests/${contest.id}`,
+            title: contest.name,
+            Icon: StarsIcon,
+            badge: contest.scoreCaches.reduce(
+              (acc, { restrictedPending }) => acc + restrictedPending,
+              0,
+            ),
+          })),
+        },
       ],
-      extraContent: <ContestsSection />,
       footer: <NavUser />,
     }),
-    [],
+    [activeContests],
   );
 
   return (
@@ -110,9 +127,10 @@ export const AdminLayout: FC = () => {
         <Route path="teams/categories" element={<TeamCategoriesList />} />
         <Route path="contests" element={<ContestsList />} />
         <Route path="contests/:contestId" element={<ContestView />}>
+          <Route path="" element={<Navigate to="submissions" replace />} />
           <Route path="submissions" element={<SubmissionsList />} />
           <Route path="submissions/:submissionId" element={<SubmissionsView />} />
-          <Route path="clarifications" element={'Clarifications'} />
+          <Route path="clarifications/:clarificationId?" element={<ClarificationsList />} />
           <Route path="scoreboard" element={<Scoreboard />} />
           <Route path="*" element={<Navigate to="submissions" replace />} />
         </Route>

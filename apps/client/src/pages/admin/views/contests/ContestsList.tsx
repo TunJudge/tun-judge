@@ -1,5 +1,6 @@
 import { EditIcon, GraduationCapIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'lucide-react';
 import { FC, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Button,
   ConfirmDialog,
@@ -24,8 +25,8 @@ export type Contest = Prisma.ContestGetPayload<{
 
 export const ContestsList: FC = () => {
   const { showIds } = useLayoutContext();
-  const { profile } = useAuthContext();
-  const isUserAdmin = profile?.role.name === 'admin';
+  const { isUserAdmin } = useAuthContext();
+  const navigate = useNavigate();
 
   const [contest, setContest] = useState<Partial<Contest>>();
   const [deleteDialogState, setDeleteDialogState] = useState<{
@@ -121,6 +122,7 @@ export const ContestsList: FC = () => {
         columns={columns}
         isLoading={isLoading}
         sorting={{ sorting, onSortingChange: setSorting }}
+        onRowClick={(contest) => navigate(`/contests/${contest.id}`)}
         actions={[
           {
             icon: EditIcon,

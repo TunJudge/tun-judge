@@ -337,6 +337,7 @@ model JudgeHost {
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('update', auth() != null && auth().roleName == 'jury')
 /// @@allow('read', auth() != null && auth().roleName == 'team' && teamId == auth().teamId)
 /// @@allow('create', auth() != null && auth().roleName == 'team' && teamId == auth().teamId && contest.startTime <= now() && now() <= contest.endTime && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]) && language.allowSubmit == true && problem.allowSubmit == true)
 /// @@allow('read,update', auth() != null && auth().roleName == 'judge-host' && (judgeHost == null || (judgeHost.active && judgeHost.userId == auth().id)))
@@ -385,6 +386,7 @@ model Language {
 }
 
 /// @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+/// @@allow('create', auth() != null && auth().roleName == 'jury')
 /// @@allow('read,create', auth() != null && auth().roleName == 'team' && contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]) && (general == true || teamId == auth().teamId))
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Clarification {
@@ -400,6 +402,7 @@ model Clarification {
 }
 
 /// @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+/// @@allow('create', auth() != null && auth().roleName == 'jury')
 /// @@allow('read,create', auth() != null && auth().roleName == 'team' && clarification.contest.enabled == true && (clarification.contest.openToAllTeams == true || clarification.contest.teams?[teamId == auth().teamId]) && (clarification.general == true || clarification.teamId == auth().teamId))
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model ClarificationMessage {
@@ -414,6 +417,7 @@ model ClarificationMessage {
 }
 
 /// @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+/// @@allow('create', auth() != null && auth().roleName == 'jury')
 /// @@allow('read,create', auth() != null && auth().roleName == 'team' && message.clarification.contest.enabled == true && (message.clarification.contest.openToAllTeams == true || message.clarification.contest.teams?[teamId == auth().teamId]) && (message.clarification.general == true || message.clarification.teamId == auth().teamId))
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model ClarificationSeen {

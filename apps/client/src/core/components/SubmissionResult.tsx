@@ -21,10 +21,10 @@ export const SubmissionResult: FC<Props> = ({ submission }) => {
       className={cn({
         'text-green-700 dark:text-green-400': judging?.result === 'ACCEPTED',
         'text-red-700 dark:text-red-400': judging?.result && judging.result !== 'ACCEPTED',
-        'text-gray-500 dark:text-gray-400': !judging?.result,
+        'text-slate-500 dark:text-slate-400': !judging?.result,
       })}
     >
-      {JUDGING_RESULT_LABELS[judging?.result ?? 'PENDING']}
+      {submission.valid ? JUDGING_RESULT_LABELS[judging?.result ?? 'PENDING'] : 'Invalid'}
     </b>
   );
 };

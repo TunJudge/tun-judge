@@ -103,7 +103,7 @@ export const FiltersContent: FC<FiltersProps> = (props) => {
       ))}
       <FiltersTriggerWrapper {...props} fields={availableFields}>
         <Badge
-          className="h-7 w-7 cursor-pointer justify-center rounded-md border border-dashed border-slate-300 bg-transparent p-0 dark:border-slate-600"
+          className="border-border h-7 w-7 cursor-pointer justify-center rounded-md border border-dashed bg-transparent p-0"
           prefixIcon={PlusIcon}
         />
       </FiltersTriggerWrapper>

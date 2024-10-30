@@ -15,6 +15,7 @@ model Clarification {
   team      Team?                  @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+  @@allow('create', auth() != null && auth().roleName == 'jury')
   @@allow('read,create', auth() != null && auth().roleName == 'team' && contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]) && (general == true || teamId == auth().teamId))
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

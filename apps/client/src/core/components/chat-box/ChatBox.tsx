@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Flex, Sheet } from 'tw-react-components';
+import { Flex, Sheet, cn } from 'tw-react-components';
 
 import { Prisma } from '@prisma/client';
 
@@ -13,26 +13,32 @@ import { ChatBoxMessageList } from './ChatBoxMessageList';
 
 export type Clarification = Prisma.ClarificationGetPayload<{
   include: {
+    team: true;
     problem: { include: { problem: true } };
     messages: { include: { sentBy: true; seenBy: true } };
   };
 }>;
 
 type Props = {
+  className?: string;
   clarificationId?: number;
 };
 
-export const ChatBox: FC<Props> = ({ clarificationId }) => {
+export const ChatBox: FC<Props> = ({ className, clarificationId }) => {
   const { profile, isUserJury } = useAuthContext();
   const { currentContest } = useActiveContest();
 
-  const { data: clarification, isLoading } = useFindFirstClarification({
-    where: { id: clarificationId },
-    include: {
-      problem: { include: { problem: true } },
-      messages: { include: { sentBy: true, seenBy: true } },
+  const { data: clarification, isLoading } = useFindFirstClarification(
+    {
+      where: { id: clarificationId },
+      include: {
+        team: true,
+        problem: { include: { problem: true } },
+        messages: { include: { sentBy: true, seenBy: true } },
+      },
     },
-  });
+    { enabled: !!clarificationId },
+  );
 
   const form = useForm<Clarification>({
     defaultValues: { general: true },
@@ -73,7 +79,12 @@ export const ChatBox: FC<Props> = ({ clarificationId }) => {
   ]);
 
   return (
-    <Flex direction="column" fullHeight>
+    <Flex
+      className={cn('border-border gap-0 divide-y rounded-lg border', className)}
+      direction="column"
+      fullHeight
+      fullWidth
+    >
       <ChatBoxHeader form={form} clarification={clarification} />
       <ChatBoxMessageList clarification={clarification} />
       {(clarification?.teamId || profile?.teamId || isUserJury) && (

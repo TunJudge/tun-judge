@@ -1,7 +1,9 @@
+import { ClipboardPlusIcon, ClipboardXIcon } from 'lucide-react';
 import { FC } from 'react';
 import { DataTable, DataTableColumn, cn } from 'tw-react-components';
 
 import { JUDGING_RESULT_LABELS } from '@core/constants';
+import { useUpdateJudging } from '@core/queries';
 import { formatBytes, formatRestTime } from '@core/utils';
 
 import { Judging, Submission } from './SubmissionView';
@@ -11,6 +13,8 @@ export const SubmissionViewDetails: FC<{
   highlightedJudging?: Judging;
   setHighlightedJudging: (judging: Judging) => void;
 }> = ({ submission, highlightedJudging, setHighlightedJudging }) => {
+  const { mutateAsync: updateJudging } = useUpdateJudging();
+
   const columns: DataTableColumn<Judging>[] = [
     {
       header: 'Team',
@@ -98,6 +102,23 @@ export const SubmissionViewDetails: FC<{
       rows={submission.judgings}
       columns={columns}
       noDataMessage="Not judged yet"
+      actions={[
+        {
+          color: 'red',
+          icon: ClipboardXIcon,
+          label: 'Invalidate',
+          hide: (judging) => !judging.valid,
+          onClick: (judging) =>
+            updateJudging({ where: { id: judging.id }, data: { valid: false } }),
+        },
+        {
+          color: 'green',
+          icon: ClipboardPlusIcon,
+          label: 'Validate',
+          hide: (judging) => judging.valid,
+          onClick: (judging) => updateJudging({ where: { id: judging.id }, data: { valid: true } }),
+        },
+      ]}
       onRowClick={setHighlightedJudging}
       rowClassName={(judging) => (judging.id !== highlightedJudging?.id ? 'opacity-50' : '')}
     />

@@ -3,12 +3,12 @@ import { FC } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, DataTable, DataTableColumn } from 'tw-react-components';
 
-import { Judging, Prisma, Testcase } from '@prisma/client';
+import { Prisma, Testcase } from '@prisma/client';
 
 import { SubmissionResult } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useFindFirstContest, useFindManySubmission, useUpdateJudging } from '@core/queries';
-import { dateComparator, formatRestTime } from '@core/utils';
+import { formatRestTime } from '@core/utils';
 
 type Submission = Prisma.SubmissionGetPayload<{
   include: {
@@ -31,7 +31,11 @@ export const SubmissionsList: FC = () => {
       team: true,
       language: true,
       problem: { include: { problem: { include: { testcases: true } } } },
-      judgings: { include: { juryMember: true, runs: { include: { testcase: true } } } },
+      judgings: {
+        where: { valid: true },
+        orderBy: { startTime: 'desc' },
+        include: { juryMember: true, runs: { include: { testcase: true } } },
+      },
     },
     orderBy: { submitTime: 'desc' },
   });
@@ -100,11 +104,8 @@ export const SubmissionsList: FC = () => {
       header: 'Verified by',
       field: 'judgings',
       render: (submission) => {
-        const judging = submission.judgings
-          .slice()
-          .filter((j) => j.valid)
-          .sort(dateComparator<Judging>('startTime', true))
-          .shift();
+        const judging =
+          submission.judgings.findLast((j) => j.result === 'ACCEPTED') ?? submission.judgings[0];
 
         return judging?.result ? (
           judging.verified ? (
@@ -127,10 +128,8 @@ export const SubmissionsList: FC = () => {
       header: 'Test Results',
       field: 'judgings',
       render: (submission) => {
-        const judging = submission.judgings
-          .slice()
-          .filter((j) => j.valid)
-          .sort(dateComparator<Judging>('startTime', true));
+        const judging =
+          submission.judgings.findLast((j) => j.result === 'ACCEPTED') ?? submission.judgings[0];
 
         return (
           <div className="flex flex-wrap">
@@ -138,12 +137,12 @@ export const SubmissionsList: FC = () => {
               .slice()
               .sort((a, b) => a.rank - b.rank)
               .map((testcase) => {
-                const color = getJudgingRunColor(testcase, judging[0]);
+                const color = getJudgingRunColor(testcase, judging);
 
                 return color === 'gray' ? (
                   <MinusCircleIcon
                     key={`${submission.id}-${testcase.id}`}
-                    className="h-6 w-6 text-gray-600"
+                    className="h-6 w-6 text-slate-600"
                   />
                 ) : color === 'red' ? (
                   <XCircleIcon

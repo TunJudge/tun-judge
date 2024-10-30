@@ -48,12 +48,12 @@ export const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
       );
 
   return (
-    <nav className="w-full bg-gray-800 text-white">
+    <nav className="w-full bg-slate-800 text-white">
       <div className="mx-auto max-w-7xl px-2 md:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="mr-2 flex items-center md:hidden">
             <div
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-inset focus:ring-white"
+              className="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:bg-slate-700 hover:text-white focus:ring-2 focus:ring-inset focus:ring-white"
               onClick={() => setVisibleMenu(!visibleMenu)}
             >
               {!visibleMenu && (

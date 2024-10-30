@@ -58,7 +58,7 @@ export const ProblemSet: FC<{ className?: string; listMode?: boolean }> = ({
           >
             <Flex className="gap-1">
               {shortName} - {problem.name}
-              <span className="text-gray-500 dark:text-gray-400">
+              <span className="text-slate-500 dark:text-slate-400">
                 ({problem.timeLimit} s, {formatBytes(problem.memoryLimit * 1024)})
               </span>
             </Flex>
@@ -116,7 +116,7 @@ export const ProblemSet: FC<{ className?: string; listMode?: boolean }> = ({
               <Card
                 key={problem.shortName}
                 className={cn(
-                  'border-border relative flex w-full flex-col bg-white p-0 md:w-1/3 dark:bg-gray-800',
+                  'border-border relative flex w-full flex-col bg-white p-0 md:w-1/3 dark:bg-slate-800',
                   getProblemColor(problem),
                 )}
               >
@@ -124,7 +124,7 @@ export const ProblemSet: FC<{ className?: string; listMode?: boolean }> = ({
                   <span className="text-2xl">
                     {problem.shortName} - {problem.problem.name}
                   </span>
-                  <span className="text-gray-500 dark:text-gray-400">
+                  <span className="text-slate-500 dark:text-slate-400">
                     Limits: {problem.problem.timeLimit} s /{' '}
                     {formatBytes(problem.problem.memoryLimit * 1024)}
                   </span>

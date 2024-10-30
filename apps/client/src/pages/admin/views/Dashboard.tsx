@@ -89,12 +89,12 @@ const Dashboard: React.FC = observer(() => {
     <NoActiveContest />
   ) : (
     <div className="mx-auto space-y-4 overflow-auto p-4 xl:container dark:text-white">
-      <div className="flex items-center justify-center rounded-md bg-white p-2 shadow dark:bg-gray-800">
+      <div className="flex items-center justify-center rounded-md bg-white p-2 shadow dark:bg-slate-800">
         <div className="text-4xl font-medium">
           {currentContest ? currentContest.name : 'No Active Contest'}
         </div>
       </div>
-      <div className="divide-y rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
+      <div className="divide-y rounded-md bg-white shadow dark:divide-slate-700 dark:bg-slate-800">
         <div className="flex items-center justify-center p-2">
           <div className="text-2xl">Submissions Statistics</div>
         </div>
@@ -117,17 +117,17 @@ const Dashboard: React.FC = observer(() => {
           </div>
         </div>
       </div>
-      <div className="divide-y overflow-hidden rounded-md bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
+      <div className="divide-y overflow-hidden rounded-md bg-white shadow dark:divide-slate-700 dark:bg-slate-800">
         <div className="flex items-center justify-center p-2">
           <div className="text-2xl">Control Contest</div>
         </div>
-        <div className="grid grid-cols-2 divide-x text-center sm:grid-cols-5 dark:divide-gray-700">
+        <div className="grid grid-cols-2 divide-x text-center sm:grid-cols-5 dark:divide-slate-700">
           {controlActions.map(({ Icon, action, time, onClick, disabled, completed }, index) => (
             <div
               key={index}
               className={classNames('flex select-none items-center p-4 sm:col-auto', {
-                'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700': !disabled,
-                'bg-gray-50 text-gray-400 dark:bg-gray-600': disabled,
+                'cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700': !disabled,
+                'bg-slate-50 text-slate-400 dark:bg-slate-600': disabled,
                 'col-span-2': index === controlActions.length - 1,
               })}
               onClick={disabled || completed ? undefined : onClick(currentContest)}

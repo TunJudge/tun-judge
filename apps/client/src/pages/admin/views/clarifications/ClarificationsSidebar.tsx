@@ -1,73 +1,61 @@
-import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import { FC, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { Button, Flex } from 'tw-react-components';
 
-import { ClarificationsStore, PublicStore, useStore } from '@core/stores';
+import { useFindFirstContest, useFindManyClarification } from '@core/queries';
 
-import ClarificationGroupTab from './ClarificationGroupTab';
+import { ClarificationGroupTab } from './ClarificationGroupTab';
 
-const ClarificationsSidebar: React.FC = observer(() => {
-  const { data, item, setItem } = useStore<ClarificationsStore>('clarificationsStore');
-  const { currentContest } = useStore<PublicStore>('publicStore');
+export const ClarificationsSidebar: FC = () => {
+  const { contestId } = useParams();
 
   const [tabStatus, setTabStatus] = useState<Record<number | 'general', boolean>>({
     general: false,
   });
 
-  useEffect(() => {
-    if (currentContest) {
-      currentContest.problems.forEach((cp) =>
-        setTabStatus((tabStatus) => ({ ...tabStatus, [cp.problem.id]: false })),
-      );
-    }
-  }, [currentContest]);
+  const { data: contest } = useFindFirstContest({
+    where: { id: parseInt(contestId ?? '-1') },
+    include: { problems: { include: { problem: true } } },
+  });
+
+  const { data: clarifications = [] } = useFindManyClarification(
+    {
+      where: { contestId: parseInt(contestId ?? '-1') },
+      include: {
+        team: true,
+        problem: { include: { problem: true } },
+        messages: { include: { sentBy: true, seenBy: true } },
+      },
+    },
+    { enabled: !!contestId },
+  );
 
   const flipTabStatus = (tab: number | 'general') => () =>
     setTabStatus((tabStatus) => ({ ...tabStatus, [tab]: !tabStatus[tab] }));
 
   return (
-    <div className="w-96 overflow-auto rounded-md bg-white p-4 shadow-md dark:bg-gray-800">
-      <div className="flex select-none flex-col gap-4">
-        <div
-          className="cursor-pointer rounded-lg bg-blue-600 p-2 text-center text-white"
-          onClick={() =>
-            setItem({
-              general: true,
-              contest: currentContest,
-              messages: [],
-            } as any)
-          }
-        >
+    <Flex className="w-96 overflow-auto p-3" direction="column" fullHeight>
+      <Link to={`/contests/${contestId}/clarifications/new`}>
+        <Button className="w-full" color="blue">
           New Clarification
-        </div>
+        </Button>
+      </Link>
+      <ClarificationGroupTab
+        clarifications={clarifications.filter((clarification) => clarification.general)}
+        open={tabStatus.general}
+        onTabClick={flipTabStatus('general')}
+      />
+      {contest?.problems.map((contestProblem) => (
         <ClarificationGroupTab
-          clarifications={data.filter((clarification) => clarification.general)}
-          selectedClarifications={item}
-          open={tabStatus.general}
-          onTabClick={flipTabStatus('general')}
-          onClarificationClick={setItem}
+          key={contestProblem.id}
+          clarifications={clarifications.filter(
+            (clarification) => clarification.problemId === contestProblem.id,
+          )}
+          problem={contestProblem}
+          open={tabStatus[contestProblem.problem.id]}
+          onTabClick={flipTabStatus(contestProblem.problem.id)}
         />
-        {currentContest!.problems.map((contestProblem) => {
-          const filteredClarifications = data.filter(
-            (clarification) => clarification.problem?.id === contestProblem.problem.id,
-          );
-
-          if (!filteredClarifications.length) return undefined;
-
-          return (
-            <ClarificationGroupTab
-              key={contestProblem.problem.id}
-              clarifications={filteredClarifications}
-              selectedClarifications={item}
-              problem={contestProblem}
-              open={tabStatus[contestProblem.problem.id]}
-              onTabClick={flipTabStatus(contestProblem.problem.id)}
-              onClarificationClick={setItem}
-            />
-          );
-        })}
-      </div>
-    </div>
+      ))}
+    </Flex>
   );
-});
-
-export default ClarificationsSidebar;
+};

@@ -35,7 +35,7 @@ export const SubmissionsViewJudgingRuns: FC<{ judging?: Judging }> = ({ judging 
       {judging?.runs.map((run) => (
         <PageTemplate
           key={run.id}
-          className="overflow-visible rounded-lg bg-slate-200 dark:bg-gray-800 [&>div>div>button]:whitespace-nowrap"
+          className="border-border overflow-visible rounded-lg border [&>div>div>button]:whitespace-nowrap"
           icon={FlaskConicalIcon}
           title={
             <Flex className="gap-4 text-base" align="center">
@@ -44,7 +44,7 @@ export const SubmissionsViewJudgingRuns: FC<{ judging?: Judging }> = ({ judging 
                 className={cn({
                   'text-green-600': run.result === 'ACCEPTED',
                   'text-red-600': run.result && run.result !== 'ACCEPTED',
-                  'text-gray-600': !run.result,
+                  'text-slate-600': !run.result,
                 })}
               >
                 {JUDGING_RESULT_LABELS[run.result ?? 'PENDING']}
@@ -127,10 +127,10 @@ const OutputSection: FC<{
       <b>{title}</b>
       <pre
         className={cn(
-          'border-border mt-1 max-h-20 min-h-20 w-full overflow-auto rounded-md border p-2',
+          'border-border mt-1 max-h-20 min-h-20 w-full overflow-auto rounded-md border bg-slate-100 p-2 dark:bg-slate-800',
           {
             'text-black dark:text-white': !!content,
-            'text-gray-600 dark:text-gray-400': !content,
+            'text-slate-600 dark:text-slate-400': !content,
           },
         )}
       >
