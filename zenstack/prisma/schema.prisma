@@ -48,6 +48,8 @@ model InitialDataEntity {
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && sentMessages?[clarification.contest.enabled == true && (clarification.contest.openToAllTeams == true || clarification.contest.teams?[teamId == auth().teamId]) && (clarification.general == true || clarification.teamId == auth().teamId)])
+/// @@allow('read', auth() != null && auth().roleName == 'team' && seenMessages?[message.clarification.contest.enabled == true && (message.clarification.contest.openToAllTeams == true || message.clarification.contest.teams?[teamId == auth().teamId]) && (message.clarification.general == true || message.clarification.teamId == auth().teamId)])
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model User {
   id            Int                    @id() @default(autoincrement())
@@ -80,6 +82,8 @@ model Role {
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && contests?[contest.enabled == true])
+/// @@allow('read', auth() == null && contests?[contest.enabled == true && contest.public == true])
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Team {
   id             Int             @id() @default(autoincrement())
@@ -98,6 +102,8 @@ model Team {
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && contest.enabled == true)
+/// @@allow('read', auth() == null && contest.enabled == true && contest.public == true)
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model TeamContest {
   teamId    Int
@@ -148,6 +154,8 @@ model Contest {
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && contests?[contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId])])
+/// @@allow('read', auth() == null && contests?[contest.enabled == true && contest.public == true])
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Problem {
   id                Int              @id() @default(autoincrement())
@@ -163,29 +171,36 @@ model Problem {
   checkScript       Executable       @relation("ProblemCheckScript", fields: [checkScriptId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   testcases         Testcase[]
   contests          ContestProblem[]
-  submissions       Submission[]
-  clarifications    Clarification[]
-  scores            ScoreCache[]
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]))
+/// @@allow('read', auth() == null && contest.enabled == true && contest.public == true)
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model ContestProblem {
-  contestId   Int
-  contest     Contest @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  problemId   Int
-  problem     Problem @relation(fields: [problemId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  shortName   String
-  points      Int     @default(1)
-  allowSubmit Boolean @default(true)
-  allowJudge  Boolean @default(true)
-  color       String?
+  id             Int             @id() @default(autoincrement())
+  contestId      Int
+  contest        Contest         @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  problemId      Int
+  problem        Problem         @relation(fields: [problemId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  shortName      String
+  points         Int             @default(1)
+  allowSubmit    Boolean         @default(true)
+  allowJudge     Boolean         @default(true)
+  color          String
+  submissions    Submission[]
+  scores         ScoreCache[]
+  clarifications Clarification[]
 
   @@unique([contestId, shortName])
   @@index([contestId, problemId])
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && submissionSourceFile.teamId == auth().teamId)
+/// @@allow('read', auth() != null && auth().roleName == 'team' && problems?[contests?[contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId])]])
+/// @@allow('read', auth() == null && problems?[contests?[contest.enabled == true && contest.public == true]])
+/// @@allow('read,create,update', auth() != null && auth().roleName == 'team' && (name == 'Submissions' || (startsWith(name, 'Submissions/') && contains(name, auth().team.name))))
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model File {
   name                        String      @id()
@@ -270,6 +285,9 @@ model JudgingRun {
   @@unique([judgingId, testcaseId])
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && submission.teamId == auth().teamId)
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Judging {
   id                    Int            @id() @default(autoincrement())
   startTime             DateTime
@@ -303,22 +321,26 @@ model JudgeHost {
   judgings    Judging[]
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && teamId == auth().teamId)
+/// @@allow('create', auth() != null && auth().roleName == 'team' && teamId == auth().teamId && contest.startTime <= now() && now() <= contest.endTime && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]) && language.allowSubmit == true && problem.allowSubmit == true)
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Submission {
-  id             Int       @id() @default(autoincrement())
+  id             Int            @id() @default(autoincrement())
   submitTime     DateTime
-  valid          Boolean   @default(true)
-  sourceFileName String    @unique()
-  sourceFile     File      @relation(fields: [sourceFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  valid          Boolean        @default(true)
+  sourceFileName String         @unique()
+  sourceFile     File           @relation(fields: [sourceFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
   teamId         Int
-  team           Team      @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  team           Team           @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   contestId      Int
-  contest        Contest   @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  contest        Contest        @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   problemId      Int
-  problem        Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  problem        ContestProblem @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   languageId     Int
-  language       Language  @relation(fields: [languageId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  judgeHostId    Int
-  judgeHost      JudgeHost @relation(fields: [judgeHostId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  language       Language       @relation(fields: [languageId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  judgeHostId    Int?
+  judgeHost      JudgeHost?     @relation(fields: [judgeHostId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   judgings       Judging[]
 
   @@index([contestId, teamId])
@@ -331,6 +353,7 @@ model Submission {
 }
 
 /// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() == null || auth().roleName == 'team' && allowSubmit == true)
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Language {
   id              Int          @id() @default(autoincrement())
@@ -344,6 +367,9 @@ model Language {
   submissions     Submission[]
 }
 
+/// @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+/// @@allow('read,create', auth() != null && auth().roleName == 'team' && contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]) && (general == true || teamId == auth().teamId))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model Clarification {
   id        Int                    @id() @default(autoincrement())
   general   Boolean                @default(true)
@@ -351,11 +377,14 @@ model Clarification {
   contestId Int
   contest   Contest                @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   problemId Int?
-  problem   Problem?               @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  problem   ContestProblem?        @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   teamId    Int?
   team      Team?                  @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
+/// @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+/// @@allow('read,create', auth() != null && auth().roleName == 'team' && clarification.contest.enabled == true && (clarification.contest.openToAllTeams == true || clarification.contest.teams?[teamId == auth().teamId]) && (clarification.general == true || clarification.teamId == auth().teamId))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model ClarificationMessage {
   id              Int                 @id() @default(autoincrement())
   content         String
@@ -367,6 +396,9 @@ model ClarificationMessage {
   clarification   Clarification       @relation(fields: [clarificationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
+/// @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+/// @@allow('read,create', auth() != null && auth().roleName == 'team' && message.clarification.contest.enabled == true && (message.clarification.contest.openToAllTeams == true || message.clarification.contest.teams?[teamId == auth().teamId]) && (message.clarification.general == true || message.clarification.teamId == auth().teamId))
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model ClarificationSeen {
   userId    Int
   user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
@@ -376,23 +408,32 @@ model ClarificationSeen {
   @@id([userId, messageId])
 }
 
+/// @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]))
+/// @@allow('read', auth() == null && contest.enabled == true && contest.public == true)
+/// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model ScoreCache {
   contestId              Int
-  contest                Contest   @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  contest                Contest        @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   teamId                 Int
-  team                   Team      @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  team                   Team           @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   problemId              Int
-  problem                Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  submissions            Int       @default(0)
-  pending                Int       @default(0)
+  problem                ContestProblem @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  submissions            Int            @default(0)
+  pending                Int            @default(0)
   solveTime              DateTime?
-  correct                Boolean   @default(false)
-  firstToSolve           Boolean   @default(false)
-  restrictedSubmissions  Int       @default(0)
-  restrictedPending      Int       @default(0)
+  correct                Boolean        @default(false)
+  firstToSolve           Boolean        @default(false)
+  /// @deny('read', auth() != null && !auth().roleName in ['admin', 'jury'])
+  restrictedSubmissions  Int            @default(0)
+  /// @deny('read', auth() != null && !auth().roleName in ['admin', 'jury'])
+  restrictedPending      Int            @default(0)
+  /// @deny('read', auth() != null && !auth().roleName in ['admin', 'jury'])
   restrictedSolveTime    DateTime?
-  restrictedCorrect      Boolean   @default(false)
-  restrictedFirstToSolve Boolean   @default(false)
+  /// @deny('read', auth() != null && !auth().roleName in ['admin', 'jury'])
+  restrictedCorrect      Boolean        @default(false)
+  /// @deny('read', auth() != null && !auth().roleName in ['admin', 'jury'])
+  restrictedFirstToSolve Boolean        @default(false)
 
   @@unique([contestId, teamId, problemId])
   @@index([teamId])

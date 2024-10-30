@@ -1,32 +1,46 @@
-import { EyeIcon } from '@heroicons/react/outline';
-import DataTable, { ListPageTableColumn } from '@shared/data-table/DataTable';
-import { ChatBoxDialog } from '@shared/dialogs';
-import { observable } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { EyeIcon, SendIcon } from 'lucide-react';
+import { FC, useState } from 'react';
+import { Button, DataTable, DataTableColumn, Flex } from 'tw-react-components';
 
-import { countUnseenMessages, generalComparator } from '@core/helpers';
-import { Clarification } from '@core/models';
-import { ClarificationsStore, PublicStore, RootStore, useStore } from '@core/stores';
+import { ChatBoxDialog, Clarification, PageTemplate } from '@core/components';
+import { useActiveContest, useAuthContext } from '@core/contexts';
+import { useFindManyClarification } from '@core/queries';
+import { countUnseenMessages } from '@core/utils';
 
-const ClarificationsList: React.FC = observer(() => {
-  const { profile, updatesCount } = useStore<RootStore>('rootStore');
-  const { currentContest } = useStore<PublicStore>('publicStore');
-  const { fetchAllForTeam } = useStore<ClarificationsStore>('clarificationsStore');
+export const ClarificationsList: FC<{ className?: string }> = ({ className }) => {
+  const { profile } = useAuthContext();
+  const { currentContest } = useActiveContest();
 
-  const columns: ListPageTableColumn<Clarification>[] = [
+  const [clarificationId, setClarificationId] = useState<number>();
+
+  const { data: clarifications = [] } = useFindManyClarification(
+    {
+      where: {
+        contestId: currentContest?.id,
+        teamId: profile?.teamId,
+      },
+      include: {
+        problem: { include: { problem: true } },
+        messages: { include: { sentBy: true, seenBy: true } },
+      },
+    },
+    { refetchInterval: import.meta.env.MODE !== 'development' && 5000 },
+  );
+
+  const columns: DataTableColumn<Clarification>[] = [
     {
       header: 'Subject',
-      field: 'problem',
+      field: 'problemId',
       render: (clarification) => {
-        const unseenMessagesCount = countUnseenMessages(clarification, profile!);
+        const unseenMessagesCount = profile ? countUnseenMessages(clarification, profile) : 0;
+
         return (
-          <div className="flex w-full justify-between">
-            {clarification.general || !clarification.problem
+          <Flex fullWidth>
+            {clarification.general || !clarification.problemId
               ? 'General'
               : `Problem ${
                   currentContest?.problems?.find(
-                    (problem) => problem.problem.id === clarification.problem?.id,
+                    (problem) => problem.id === clarification.problemId,
                   )?.shortName ?? '-'
                 }`}
             {unseenMessagesCount > 0 && (
@@ -34,36 +48,34 @@ const ClarificationsList: React.FC = observer(() => {
                 {unseenMessagesCount}
               </div>
             )}
-          </div>
+          </Flex>
         );
       },
     },
   ];
 
-  const fetchAll = () =>
-    currentContest && profile?.team
-      ? fetchAllForTeam(currentContest.id, profile.team.id).then((result) =>
-          result.sort(generalComparator(true)),
-        )
-      : Promise.resolve([]);
-
   return (
-    <DataTable<Clarification>
-      header="Clarifications"
-      dataFetcher={fetchAll}
-      dataDependencies={[currentContest, updatesCount.clarifications]}
-      fetchOnClose
-      columns={columns}
-      canDelete={() => false}
-      ItemForm={ChatBoxDialog}
-      formItemInitValue={observable({
-        general: true,
-        team: profile?.team,
-        messages: [],
-      })}
-      editIcon={EyeIcon}
-    />
+    <PageTemplate
+      className={className}
+      title="Clarifications"
+      actions={<Button size="small" prefixIcon={SendIcon} onClick={() => setClarificationId(-1)} />}
+      isSubSection
+    >
+      <DataTable
+        rows={clarifications}
+        columns={columns}
+        onRowClick={(clarification) => setClarificationId(clarification.id)}
+        actions={[
+          {
+            icon: EyeIcon,
+            onClick: (clarification) => setClarificationId(clarification.id),
+          },
+        ]}
+      />
+      <ChatBoxDialog
+        clarificationId={clarificationId}
+        onClose={() => setClarificationId(undefined)}
+      />
+    </PageTemplate>
   );
-});
-
-export default ClarificationsList;
+};

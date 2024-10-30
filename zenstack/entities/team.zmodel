@@ -21,6 +21,8 @@ model Team {
   scores         ScoreCache[]
 
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read', auth() != null && auth().roleName == 'team' && contests?[contest.enabled == true])
+  @@allow('read', auth() == null && contests?[contest.enabled == true && contest.public == true])
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }
 
@@ -30,8 +32,10 @@ model TeamContest {
   contestId Int
   contest   Contest @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
-  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 
   @@unique([teamId, contestId])
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read', auth() != null && auth().roleName == 'team' && contest.enabled == true)
+  @@allow('read', auth() == null && contest.enabled == true && contest.public == true)
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

@@ -1,10 +1,12 @@
 import { FC } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { Block, Flex } from 'tw-react-components';
 
-import { ContestCountdown, NoActiveContest } from '@core/components';
+import { ContestCountdown, NoActiveContest, ProblemSet, Scoreboard } from '@core/components';
 import { useTimeLeftToContest } from '@core/hooks';
 
 import { TeamNavbar } from './TeamNavbar';
+import { HomeView } from './views/HomeView';
 
 export const TeamLayout: FC = () => {
   const timeLeftToContest = useTimeLeftToContest();
@@ -16,21 +18,15 @@ export const TeamLayout: FC = () => {
         {!Number.isFinite(timeLeftToContest) ? (
           <NoActiveContest />
         ) : (
-          timeLeftToContest && <ContestCountdown timeLeft={timeLeftToContest} />
+          timeLeftToContest > 0 && <ContestCountdown timeLeft={timeLeftToContest} />
         )}
+        <Routes>
+          <Route path="/" element={<HomeView />} />
+          <Route path="/problems" element={<ProblemSet />} />
+          <Route path="/scoreboard" element={<Scoreboard />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Block>
     </Flex>
   );
 };
-// /* {!currentContest ? (
-//   <NoActiveContest />
-// ) : leftToContest ? (
-//   <ContestCountdown leftTime={leftToContest} />
-// ) : (
-//   <Switch>
-//     <Route exact path="/" component={HomeView} />
-//     <Route exact path="/problems" component={ProblemSet} />
-//     <Route exact path="/scoreboard" component={Scoreboard} />
-//     <Route render={() => <Redirect to="/" />} />
-//   </Switch>
-// )} */

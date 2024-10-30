@@ -10,6 +10,10 @@ model ClarificationMessage {
   seenBy          ClarificationSeen[]
   clarificationId Int
   clarification   Clarification       @relation(fields: [clarificationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+  @@allow('read,create', auth() != null && auth().roleName == 'team' && clarification.contest.enabled == true && (clarification.contest.openToAllTeams == true || clarification.contest.teams?[teamId == auth().teamId]) && (clarification.general == true || clarification.teamId == auth().teamId))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }
 
 model ClarificationSeen {
@@ -19,4 +23,7 @@ model ClarificationSeen {
   message   ClarificationMessage @relation(fields: [messageId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@id([userId, messageId])
+  @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
+  @@allow('read,create', auth() != null && auth().roleName == 'team' && message.clarification.contest.enabled == true && (message.clarification.contest.openToAllTeams == true || message.clarification.contest.teams?[teamId == auth().teamId]) && (message.clarification.general == true || message.clarification.teamId == auth().teamId))
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

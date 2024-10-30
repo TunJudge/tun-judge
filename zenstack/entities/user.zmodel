@@ -26,5 +26,7 @@ model User {
   seenMessages  ClarificationSeen[]
 
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read', auth() != null && auth().roleName == 'team' && sentMessages?[clarification.contest.enabled == true && (clarification.contest.openToAllTeams == true || clarification.contest.teams?[teamId == auth().teamId]) && (clarification.general == true || clarification.teamId == auth().teamId)])
+  @@allow('read', auth() != null && auth().roleName == 'team' && seenMessages?[message.clarification.contest.enabled == true && (message.clarification.contest.openToAllTeams == true || message.clarification.contest.teams?[teamId == auth().teamId]) && (message.clarification.general == true || message.clarification.teamId == auth().teamId)])
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

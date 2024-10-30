@@ -27,7 +27,7 @@ root.render(
   <StrictMode>
     <Suspense fallback={<Spinner fullScreen />}>
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
         <ZenStackHooksProvider value={{ endpoint: '/api/rpc', fetch: myFetch }}>
           <LayoutContextProvider>
             <SidebarContextProvider>

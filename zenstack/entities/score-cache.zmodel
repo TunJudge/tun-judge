@@ -4,26 +4,30 @@ import 'problem'
 
 model ScoreCache {
   contestId              Int
-  contest                Contest   @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  contest                Contest        @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   teamId                 Int
-  team                   Team      @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  team                   Team           @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   problemId              Int
-  problem                Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  problem                ContestProblem @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-  submissions            Int       @default(0)
-  pending                Int       @default(0)
+  submissions            Int            @default(0)
+  pending                Int            @default(0)
   solveTime              DateTime?
-  correct                Boolean   @default(false)
-  firstToSolve           Boolean   @default(false)
+  correct                Boolean        @default(false)
+  firstToSolve           Boolean        @default(false)
 
-  restrictedSubmissions  Int       @default(0)
-  restrictedPending      Int       @default(0)
-  restrictedSolveTime    DateTime?
-  restrictedCorrect      Boolean   @default(false)
-  restrictedFirstToSolve Boolean   @default(false)
+  restrictedSubmissions  Int            @default(0) @deny('read', auth() != null && !(auth().roleName in ['admin', 'jury']))
+  restrictedPending      Int            @default(0) @deny('read', auth() != null && !(auth().roleName in ['admin', 'jury']))
+  restrictedSolveTime    DateTime?      @deny('read', auth() != null && !(auth().roleName in ['admin', 'jury']))
+  restrictedCorrect      Boolean        @default(false) @deny('read', auth() != null && !(auth().roleName in ['admin', 'jury']))
+  restrictedFirstToSolve Boolean        @default(false) @deny('read', auth() != null && !(auth().roleName in ['admin', 'jury']))
 
   @@index([teamId])
   @@index([problemId])
   @@index([contestId])
   @@unique([contestId, teamId, problemId])
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read', auth() != null && auth().roleName == 'team' && contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]))
+  @@allow('read', auth() == null && contest.enabled == true && contest.public == true)
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

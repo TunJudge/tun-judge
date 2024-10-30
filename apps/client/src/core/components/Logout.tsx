@@ -5,7 +5,7 @@ import { Spinner } from 'tw-react-components';
 import { useAuthContext } from '../contexts';
 import { request } from '../utils';
 
-export const Logout: FC<{ basePath?: string }> = ({ basePath = '/secure' }) => {
+export const Logout: FC = () => {
   const navigate = useNavigate();
   const { setLastConnectedTime } = useAuthContext();
   const req = useRef<Promise<void>>();
@@ -15,8 +15,8 @@ export const Logout: FC<{ basePath?: string }> = ({ basePath = '/secure' }) => {
 
     req.current = request('api/auth/logout')
       .then(() => setLastConnectedTime(undefined))
-      .finally(() => navigate(`${basePath}/login`));
-  }, [basePath, navigate, setLastConnectedTime]);
+      .finally(() => navigate('/'));
+  }, [navigate, setLastConnectedTime]);
 
   return <Spinner fullScreen />;
 };

@@ -38,5 +38,9 @@ model File {
   judgingRunCheckerOutputFile JudgingRun? @relation("JudgingRunCheckerOutputFile")
 
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read', auth() != null && auth().roleName == 'team' && submissionSourceFile.teamId == auth().teamId)
+  @@allow('read', auth() != null && auth().roleName == 'team' && problems?[contests?[contest.enabled == true && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId])]])
+  @@allow('read', auth() == null && problems?[contests?[contest.enabled == true && contest.public == true]])
+  @@allow('read,create,update', auth() != null && auth().roleName == 'team' && (name == 'Submissions' || (startsWith(name, 'Submissions/') && contains(name, auth().team.name))) )
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

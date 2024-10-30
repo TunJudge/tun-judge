@@ -1,6 +1,8 @@
 export * from './files';
 
+export * from './compareRoles';
 export * from './contestStartedAndNotOver';
+export * from './countUnseenMessages';
 export * from './dateComparator';
 export * from './formatBytes';
 export * from './formatRestTime';

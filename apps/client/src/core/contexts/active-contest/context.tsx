@@ -5,12 +5,9 @@ import { Prisma } from '@prisma/client';
 import { useFindManyContest } from '@core/queries';
 
 export type Contest = Prisma.ContestGetPayload<{
-  select: {
-    id: true;
-    name: true;
-    shortName: true;
-    startTime: true;
-    endTime: true;
+  include: {
+    problems: { include: { problem: true } };
+    scoreCaches: { include: { team: true } };
   };
 }>;
 
@@ -35,7 +32,10 @@ export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
       enabled: true,
       activateTime: { lte: now },
     },
-    select: { id: true, name: true, shortName: true, startTime: true, endTime: true },
+    include: {
+      problems: { include: { problem: true }, orderBy: { shortName: 'asc' } },
+      scoreCaches: { include: { team: true } },
+    },
     orderBy: { activateTime: 'asc' },
   });
 

@@ -568,27 +568,6 @@ const metadata = {
           isArray: true,
           backLink: 'problem',
         },
-        submissions: {
-          name: 'submissions',
-          type: 'Submission',
-          isDataModel: true,
-          isArray: true,
-          backLink: 'problem',
-        },
-        clarifications: {
-          name: 'clarifications',
-          type: 'Clarification',
-          isDataModel: true,
-          isArray: true,
-          backLink: 'problem',
-        },
-        scores: {
-          name: 'scores',
-          type: 'ScoreCache',
-          isDataModel: true,
-          isArray: true,
-          backLink: 'problem',
-        },
       },
       uniqueConstraints: {
         id: {
@@ -600,10 +579,16 @@ const metadata = {
     contestProblem: {
       name: 'ContestProblem',
       fields: {
+        id: {
+          name: 'id',
+          type: 'Int',
+          isId: true,
+          attributes: [{ name: '@default', args: [] }],
+          isAutoIncrement: true,
+        },
         contestId: {
           name: 'contestId',
           type: 'Int',
-          isId: true,
           isForeignKey: true,
           relationField: 'contest',
         },
@@ -632,7 +617,6 @@ const metadata = {
         shortName: {
           name: 'shortName',
           type: 'String',
-          isId: true,
         },
         points: {
           name: 'points',
@@ -652,10 +636,34 @@ const metadata = {
         color: {
           name: 'color',
           type: 'String',
-          isOptional: true,
+        },
+        submissions: {
+          name: 'submissions',
+          type: 'Submission',
+          isDataModel: true,
+          isArray: true,
+          backLink: 'problem',
+        },
+        scores: {
+          name: 'scores',
+          type: 'ScoreCache',
+          isDataModel: true,
+          isArray: true,
+          backLink: 'problem',
+        },
+        clarifications: {
+          name: 'clarifications',
+          type: 'Clarification',
+          isDataModel: true,
+          isArray: true,
+          backLink: 'problem',
         },
       },
       uniqueConstraints: {
+        id: {
+          name: 'id',
+          fields: ['id'],
+        },
         contestId_shortName: {
           name: 'contestId_shortName',
           fields: ['contestId', 'shortName'],
@@ -1397,7 +1405,7 @@ const metadata = {
         },
         problem: {
           name: 'problem',
-          type: 'Problem',
+          type: 'ContestProblem',
           isDataModel: true,
           backLink: 'submissions',
           isRelationOwner: true,
@@ -1420,6 +1428,7 @@ const metadata = {
         judgeHostId: {
           name: 'judgeHostId',
           type: 'Int',
+          isOptional: true,
           isForeignKey: true,
           relationField: 'judgeHost',
         },
@@ -1427,6 +1436,7 @@ const metadata = {
           name: 'judgeHost',
           type: 'JudgeHost',
           isDataModel: true,
+          isOptional: true,
           backLink: 'submissions',
           isRelationOwner: true,
           foreignKeyMapping: { id: 'judgeHostId' },
@@ -1565,7 +1575,7 @@ const metadata = {
         },
         problem: {
           name: 'problem',
-          type: 'Problem',
+          type: 'ContestProblem',
           isDataModel: true,
           isOptional: true,
           backLink: 'clarifications',
@@ -1740,7 +1750,7 @@ const metadata = {
         },
         problem: {
           name: 'problem',
-          type: 'Problem',
+          type: 'ContestProblem',
           isDataModel: true,
           backLink: 'scores',
           isRelationOwner: true,
@@ -1816,7 +1826,8 @@ const metadata = {
       'Clarification',
       'ScoreCache',
     ],
-    problem: ['Testcase', 'Submission', 'Clarification', 'ScoreCache'],
+    problem: ['Testcase'],
+    contestProblem: ['Submission', 'Clarification', 'ScoreCache'],
     submission: ['Judging'],
     clarification: ['ClarificationMessage'],
     clarificationMessage: ['ClarificationSeen'],

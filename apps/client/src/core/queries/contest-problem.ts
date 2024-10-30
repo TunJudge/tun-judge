@@ -734,6 +734,7 @@ export function useCheckContestProblem<TError = DefaultError>(
   args: {
     operation: PolicyCrudKind;
     where?: {
+      id?: number;
       contestId?: number;
       problemId?: number;
       shortName?: string;

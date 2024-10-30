@@ -5,7 +5,7 @@ export function isContestRunning(contest?: Contest): boolean {
   return (
     !!contest &&
     !!contest.endTime &&
-    new Date(contest.startTime).getTime() < now &&
-    now < new Date(contest.endTime).getTime()
+    new Date(contest.startTime).getTime() <= now &&
+    now <= new Date(contest.endTime).getTime()
   );
 }

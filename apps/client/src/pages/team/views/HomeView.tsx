@@ -1,21 +1,22 @@
-import ProblemSet from '@shared/ProblemSet';
-import Scoreboard from '@shared/Scoreboard';
-import React from 'react';
+import { FC } from 'react';
+import { Flex } from 'tw-react-components';
 
-import ClarificationsList from './ClarificationsList';
-import SubmissionsList from './SubmissionsList';
+import { ProblemSet, Scoreboard } from '@core/components';
 
-const HomeView: React.FC = () => (
-  <div className="flex flex-col items-center gap-4">
-    <Scoreboard className="pt-12" compact />
-    <div className="grid grid-cols-2 gap-4 px-4 xl:container">
-      <div className="flex flex-col gap-4">
-        <ProblemSet listMode />
-        <ClarificationsList />
-      </div>
-      <SubmissionsList />
-    </div>
-  </div>
+import { ClarificationsList } from './ClarificationsList';
+import { SubmissionsList } from './SubmissionsList';
+
+export const HomeView: FC = () => (
+  <Flex className="mx-auto px-3 md:max-w-7xl" direction="column" align="center" fullWidth>
+    <Scoreboard className="py-12" compact />
+    <Flex fullWidth>
+      <Flex className="gap-6" direction="column" fullWidth>
+        <ProblemSet className="p-0" listMode />
+        <ClarificationsList className="p-0" />
+      </Flex>
+      <Flex fullWidth>
+        <SubmissionsList className="p-0" />
+      </Flex>
+    </Flex>
+  </Flex>
 );
-
-export default HomeView;

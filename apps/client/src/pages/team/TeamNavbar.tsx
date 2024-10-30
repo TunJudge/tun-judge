@@ -1,9 +1,11 @@
 import { LogOutIcon, UploadIcon, UserIcon } from 'lucide-react';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button, DropdownMenu, ThemeSelector } from 'tw-react-components';
 
-import { NavBar } from '@core/components';
+import { Submission } from '@prisma/client';
+
+import { NavBar, SubmitForm } from '@core/components';
 import { useActiveContest, useAuthContext } from '@core/contexts';
 import { useTimeLeftToContest } from '@core/hooks';
 import { contestStartedAndNotOver } from '@core/utils';
@@ -17,7 +19,7 @@ export const TeamNavbar: FC = () => {
   const { currentContest } = useActiveContest();
   const timeLeftToContest = useTimeLeftToContest();
 
-  // const [submitFormOpen, setSubmitFormOpen] = useState<boolean>(false);
+  const [submission, setSubmission] = useState<Partial<Submission>>();
 
   const tabs = [
     { name: 'Problem Set', path: '/problems', hide: timeLeftToContest > 0 },
@@ -42,7 +44,7 @@ export const TeamNavbar: FC = () => {
             type: 'element',
             hide: !contestStartedAndNotOver(currentContest),
             element: (
-              <Button color="green" prefixIcon={UploadIcon}>
+              <Button color="green" prefixIcon={UploadIcon} onClick={() => setSubmission({})}>
                 Submit
               </Button>
             ),
@@ -79,15 +81,7 @@ export const TeamNavbar: FC = () => {
           },
         ]}
       />
-      {/* <SubmitForm
-        isOpen={submitFormOpen}
-        item={{} as Submission}
-        onClose={() => setSubmitFormOpen(false)}
-        onSubmit={async (submission) => {
-          await sendSubmission(currentContest!.id, profile!.team!.id, submission);
-          setSubmitFormOpen(false);
-        }}
-      /> */}
+      <SubmitForm submission={submission} onClose={() => setSubmission(undefined)} />
     </>
   );
 };

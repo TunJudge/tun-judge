@@ -36,10 +36,8 @@ export class AuthController {
     const prisma = new PrismaService();
 
     const user =
-      (await prisma.user.findUnique({
-        where: { id: userId },
-        include: { role: true },
-      })) ?? throwError<User>(new NotFoundException());
+      (await prisma.user.findUnique({ where: { id: userId } })) ??
+      throwError<User>(new NotFoundException());
 
     if (user.sessionId) store.destroy(user.sessionId);
 

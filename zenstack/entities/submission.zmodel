@@ -7,21 +7,21 @@ import 'judge-host'
 import 'judging'
 
 model Submission {
-  id             Int       @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   submitTime     DateTime
-  valid          Boolean   @default(true)
-  sourceFileName String    @unique
-  sourceFile     File      @relation(fields: [sourceFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
+  valid          Boolean        @default(true)
+  sourceFileName String         @unique
+  sourceFile     File           @relation(fields: [sourceFileName], references: [name], onDelete: Restrict, onUpdate: Restrict)
   teamId         Int
-  team           Team      @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  team           Team           @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   contestId      Int
-  contest        Contest   @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  contest        Contest        @relation(fields: [contestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   problemId      Int
-  problem        Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  problem        ContestProblem @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   languageId     Int
-  language       Language  @relation(fields: [languageId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  judgeHostId    Int
-  judgeHost      JudgeHost @relation(fields: [judgeHostId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  language       Language       @relation(fields: [languageId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  judgeHostId    Int?
+  judgeHost      JudgeHost?     @relation(fields: [judgeHostId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   judgings       Judging[]
 
   @@index([contestId, teamId])
@@ -31,4 +31,8 @@ model Submission {
   @@index([languageId])
   @@index([judgeHostId])
   @@index([submitTime])
+  @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
+  @@allow('read', auth() != null && auth().roleName == 'team' && teamId == auth().teamId)
+  @@allow('create', auth() != null && auth().roleName == 'team' && teamId == auth().teamId && contest.startTime <= now() && now() <= contest.endTime && (contest.openToAllTeams == true || contest.teams?[teamId == auth().teamId]) && language.allowSubmit == true && problem.allowSubmit == true)
+  @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

@@ -11,6 +11,8 @@ import { FC, useMemo } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Layout, Sidebar, SidebarProps } from 'tw-react-components';
 
+import { Scoreboard } from '@core/components';
+
 import { ContestsSection } from './ContestsSection';
 import { NavUser } from './NavUser';
 import { ContestView } from './views/contests/ContestView';
@@ -109,7 +111,7 @@ export const AdminLayout: FC = () => {
         <Route path="contests/:id" element={<ContestView />}>
           <Route path="submissions" element={<SubmissionsList />} />
           <Route path="clarifications" element={'Clarifications'} />
-          <Route path="scoreboard" element={'Scoreboard'} />
+          <Route path="scoreboard" element={<Scoreboard />} />
           <Route path="*" element={<Navigate to="submissions" replace />} />
         </Route>
         <Route path="problems" element={<ProblemsList />} />

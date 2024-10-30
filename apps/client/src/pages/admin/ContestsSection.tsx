@@ -1,39 +1,21 @@
 import { MessagesSquareIcon, PresentationIcon, SendIcon, StarsIcon } from 'lucide-react';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { DropdownMenu, Flex, Sidebar, useSidebar } from 'tw-react-components';
 
-import { useFindManyContest } from '@core/queries';
+import { useActiveContest } from '@core/contexts';
 
 export const ContestsSection: FC = () => {
   const { isMobile } = useSidebar();
-  const [now, setNow] = useState(new Date());
 
-  const { data: contests } = useFindManyContest({
-    where: {
-      enabled: true,
-      activateTime: { lte: now },
-    },
-    select: { id: true, name: true, scoreCaches: { select: { restrictedPending: true } } },
-    orderBy: { activateTime: 'asc' },
-  });
-
-  useEffect(() => {
-    if (import.meta.env.MODE === 'development') return;
-
-    const interval = setInterval(() => {
-      setNow(new Date());
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { activeContests } = useActiveContest();
 
   return (
     <Sidebar.Group>
       <Sidebar.GroupLabel>Active Contests</Sidebar.GroupLabel>
       <Sidebar.GroupContent>
         <Sidebar.Menu>
-          {contests?.map((contest) => {
+          {activeContests.map((contest) => {
             const totalPendingSubmissions = contest.scoreCaches.reduce(
               (acc, { restrictedPending }) => acc + restrictedPending,
               0,

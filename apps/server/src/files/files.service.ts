@@ -20,20 +20,34 @@ export class FilesService {
     return logPrismaOperation(this.prisma, 'file', 'findMany')({});
   }
 
-  async exists(@LogParam('name') name: string): Promise<boolean> {
-    const allFiles = await this.getAll();
-
-    return allFiles.some((file) => file.name === name);
+  exists(@LogParam('name') name: string): Promise<boolean> {
+    return logPrismaOperation(
+      this.prisma,
+      'file',
+      'count',
+    )({ where: { name } }).then((count) => count > 0);
   }
 
-  async getFileByName(@LogParam('name') name: string): Promise<File> {
-    const allFiles = await this.getAll();
-
-    return allFiles.find((file) => file.name === name) ?? throwError(new NotFoundException());
+  getFileByName(@LogParam('name') name: string): Promise<File> {
+    return (
+      logPrismaOperation(
+        this.prisma,
+        'file',
+        'findFirst',
+      )({
+        where: { name },
+      }) ?? throwError(new NotFoundException())
+    );
   }
 
-  async getFileByNamePrefix(@LogParam('namePrefix') namePrefix: string): Promise<File[]> {
-    return (await this.getAll()).filter((file) => file.name.startsWith(namePrefix));
+  getFileByNamePrefix(@LogParam('namePrefix') namePrefix: string): Promise<File[]> {
+    return logPrismaOperation(
+      this.prisma,
+      'file',
+      'findMany',
+    )({
+      where: { name: { startsWith: namePrefix } },
+    });
   }
 
   async update(@LogParam('name') name: string, file: Partial<File>): Promise<void> {

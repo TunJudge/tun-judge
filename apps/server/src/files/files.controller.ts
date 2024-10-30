@@ -27,7 +27,7 @@ import { unlink } from 'fs/promises';
 import multer from 'multer';
 import MultiStream from 'multistream';
 import { ClsService } from 'nestjs-cls';
-import { parse } from 'path';
+import { join, parse } from 'path';
 
 import { File, FileKind } from '@prisma/client';
 
@@ -221,7 +221,6 @@ export class FilesController {
   )
   async uploadFile(
     @Body('metadata') metadata: string,
-    @LogParam('fileName') @Body('fileName') _: string,
     @LogParam('chunkNumber') @Body('chunkNumber', ParseIntPipe) chunkNumber: number,
     @LogParam('totalChunks') @Body('totalChunks', ParseIntPipe) totalChunks: number,
     @LogParam('replace') @Query('replace', ParseBoolPipe) replace: boolean,
@@ -243,7 +242,10 @@ export class FilesController {
       let number = 1;
       while (await this.filesStorage.exists(finalName)) {
         const parsedPath = parse(fileMetadata.name);
-        finalName = `${parsedPath.name}-${number++}${parsedPath.ext}`;
+        finalName = join(
+          fileMetadata.parentDirectoryName ?? '',
+          `${parsedPath.name}-${number++}${parsedPath.ext}`,
+        );
       }
       fileMetadata.name = finalName;
     }

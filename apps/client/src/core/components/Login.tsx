@@ -12,7 +12,7 @@ type Credentials = {
   password: string;
 };
 
-export const Login: FC<{ basePath?: string }> = ({ basePath = '/' }) => {
+export const Login: FC = () => {
   const navigate = useNavigate();
   const { connected, setLastConnectedTime } = useAuthContext();
   const loginForm = useForm<Credentials>();
@@ -23,11 +23,11 @@ export const Login: FC<{ basePath?: string }> = ({ basePath = '/' }) => {
       body: JSON.stringify(credentials),
     });
     setLastConnectedTime(Date.now());
-    navigate(searchParameters.get('returnUrl') ?? basePath);
+    navigate(searchParameters.get('returnUrl') ?? '/');
   };
 
   if (connected) {
-    return <Navigate to={searchParameters.get('returnUrl') ?? basePath} replace />;
+    return <Navigate to={searchParameters.get('returnUrl') ?? '/'} replace />;
   }
 
   return (

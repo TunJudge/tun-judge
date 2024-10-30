@@ -13,7 +13,7 @@ import { dateComparator, formatRestTime } from '@core/utils';
 type Submission = Prisma.SubmissionGetPayload<{
   include: {
     team: true;
-    problem: { include: { testcases: true } };
+    problem: { include: { problem: { include: { testcases: true } } } };
     language: true;
     judgings: { include: { juryMember: true; runs: { include: { testcase: true } } } };
   };
@@ -29,7 +29,7 @@ export const SubmissionsList: FC = () => {
     where: { contestId: parseInt(contestId ?? '-1') },
     include: {
       team: true,
-      problem: { include: { testcases: true } },
+      problem: { include: { problem: { include: { testcases: true } } } },
       language: true,
       judgings: { include: { juryMember: true, runs: { include: { testcase: true } } } },
     },
@@ -65,7 +65,7 @@ export const SubmissionsList: FC = () => {
           target="_blank"
           rel="noreferrer"
         >
-          {problem.name}
+          {problem.problem.name}
         </Link>
       ),
     },
@@ -133,7 +133,7 @@ export const SubmissionsList: FC = () => {
 
         return (
           <div className="flex flex-wrap">
-            {submission.problem.testcases
+            {submission.problem.problem.testcases
               .slice()
               .sort((a, b) => a.rank - b.rank)
               .map((testcase) => {

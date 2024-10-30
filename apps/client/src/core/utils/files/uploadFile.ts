@@ -46,12 +46,11 @@ export async function uploadFile(
       const fileChunk = file.slice(start, Math.min(start + chunkSize, file.size));
       const formData = new FormData();
       formData.set('file', fileChunk);
-      formData.set('fileName', metadata.name);
       formData.set('metadata', JSON.stringify(metadata));
       formData.set('chunkNumber', `${chunkIndex}`);
       formData.set('totalChunks', `${totalChunks}`);
 
-      lastResult = await axios.post<FileInput>(`api/files?replace=${replace}`, formData, {
+      lastResult = await axios.post<FileInput>(`api/files?replace=${replace ?? false}`, formData, {
         onUploadProgress: ({ loaded, total = 1 }) => {
           const progressSoFar = (Math.min(chunkSize, file.size) * chunkIndex * 100) / file.size;
           const chunkProgress = (loaded * 100) / total;
