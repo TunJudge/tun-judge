@@ -16,7 +16,12 @@ export const ChatBoxMessageList: FC<Props> = ({ clarification }) => {
   if (!profile) return null;
 
   return (
-    <Flex className="overflow-y-auto p-3 dark:bg-slate-800" direction="column" fullHeight fullWidth>
+    <Flex
+      className="overflow-y-auto bg-slate-50 p-3 dark:bg-slate-800/80"
+      direction="column"
+      fullHeight
+      fullWidth
+    >
       {clarification?.messages.map((message, index) => (
         <Flex
           key={index}
@@ -27,7 +32,7 @@ export const ChatBoxMessageList: FC<Props> = ({ clarification }) => {
         >
           <span
             className={cn('max-w-max rounded-2xl p-3 px-4', {
-              'bg-slate-100 dark:bg-slate-900': compareRoles(profile, message.sentBy),
+              'bg-slate-200 dark:bg-slate-900': compareRoles(profile, message.sentBy),
               'bg-slate-300 dark:bg-slate-700': !compareRoles(profile, message.sentBy),
             })}
             ref={(el) =>

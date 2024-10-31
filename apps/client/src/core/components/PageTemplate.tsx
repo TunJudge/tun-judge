@@ -1,12 +1,21 @@
-import { LucideIcon } from 'lucide-react';
+import { ChevronRightIcon, LucideIcon } from 'lucide-react';
 import { ReactNode, forwardRef } from 'react';
-import { Flex, FlexProps, Separator, Sidebar, cn } from 'tw-react-components';
+import { Link } from 'react-router-dom';
+import { Button, Flex, FlexProps, Separator, Sidebar, cn } from 'tw-react-components';
 
 import { FiltersContent, FiltersProps, FiltersTrigger } from './filters';
+
+type BreadCrumbProps = {
+  title: ReactNode;
+  to?: string;
+  onClick?: () => void;
+  hide?: boolean;
+};
 
 type Props = Omit<FlexProps, 'title'> & {
   icon?: LucideIcon;
   title?: ReactNode;
+  breadcrumbs?: BreadCrumbProps[];
   actions?: ReactNode;
   bodyClassName?: string;
   filtersProps?: FiltersProps;
@@ -21,6 +30,7 @@ export const PageTemplate = forwardRef<HTMLDivElement, Props>(
       bodyClassName,
       icon: Icon,
       title,
+      breadcrumbs = [],
       actions,
       filtersProps,
       headerBottomBorder,
@@ -54,7 +64,30 @@ export const PageTemplate = forwardRef<HTMLDivElement, Props>(
                 )}
               </>
             )}
-            {Icon && <Icon className="mx-2 h-5 w-5" />}
+            {Icon && (
+              <Icon
+                className={cn(
+                  'ml-2 mr-2 h-5 w-5 flex-shrink-0',
+                  breadcrumbs.filter((breadcrumb) => !breadcrumb.hide).length && 'mr-0',
+                )}
+              />
+            )}
+            {breadcrumbs
+              .filter((breadcrumb) => !breadcrumb.hide)
+              .map((breadcrumb, index) => (
+                <Flex key={index} className="gap-0" align="center">
+                  {breadcrumb.to ? (
+                    <Link to={breadcrumb.to} onClick={breadcrumb.onClick}>
+                      <Button className="text-xl" variant="text">
+                        {breadcrumb.title}
+                      </Button>
+                    </Link>
+                  ) : (
+                    <span onClick={breadcrumb.onClick}>{breadcrumb.title}</span>
+                  )}
+                  <ChevronRightIcon className="h-5 w-5" />
+                </Flex>
+              ))}
             {title}
             {filtersProps && <FiltersTrigger {...filtersProps} />}
           </Flex>

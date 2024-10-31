@@ -17,6 +17,7 @@ import { useActiveContest } from '@core/contexts';
 
 import { NavUser } from './NavUser';
 import { ClarificationsList } from './views/clarifications/ClarificationsList';
+import { ContestForm } from './views/contests/ContestForm';
 import { ContestView } from './views/contests/ContestView';
 import { ContestsList } from './views/contests/ContestsList';
 import { ExecutablesList } from './views/executables/ExecutablesList';
@@ -128,6 +129,7 @@ export const AdminLayout: FC = () => {
         <Route path="contests" element={<ContestsList />} />
         <Route path="contests/:contestId" element={<ContestView />}>
           <Route path="" element={<Navigate to="submissions" replace />} />
+          <Route path="edit" element={<ContestForm />} />
           <Route path="submissions" element={<SubmissionsList />} />
           <Route path="submissions/:submissionId" element={<SubmissionsView />} />
           <Route path="clarifications/:clarificationId?" element={<ClarificationsList />} />

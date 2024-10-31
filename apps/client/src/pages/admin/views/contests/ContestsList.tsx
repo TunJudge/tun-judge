@@ -1,4 +1,4 @@
-import { EditIcon, GraduationCapIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'lucide-react';
+import { GraduationCapIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'lucide-react';
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -17,10 +17,8 @@ import { useSorting } from '@core/hooks';
 import { useDeleteContest, useFindManyContest } from '@core/queries';
 import { getDisplayDate } from '@core/utils';
 
-import { ContestForm } from './ContestForm';
-
-export type Contest = Prisma.ContestGetPayload<{
-  include: { problems: true; _count: { select: { teams: true; problems: true } } };
+type Contest = Prisma.ContestGetPayload<{
+  include: { _count: { select: { teams: true; problems: true } } };
 }>;
 
 export const ContestsList: FC = () => {
@@ -28,7 +26,6 @@ export const ContestsList: FC = () => {
   const { isUserAdmin } = useAuthContext();
   const navigate = useNavigate();
 
-  const [contest, setContest] = useState<Partial<Contest>>();
   const [deleteDialogState, setDeleteDialogState] = useState<{
     open: boolean;
     onConfirm: () => void;
@@ -40,7 +37,7 @@ export const ContestsList: FC = () => {
     isLoading,
     refetch,
   } = useFindManyContest({
-    include: { problems: true, _count: { select: { teams: true, problems: true } } },
+    include: { _count: { select: { teams: true, problems: true } } },
     orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
   });
   const { mutate: deleteContest } = useDeleteContest();
@@ -107,12 +104,7 @@ export const ContestsList: FC = () => {
       actions={
         <>
           <Button prefixIcon={RefreshCcw} onClick={() => refetch()} />
-          <Button
-            prefixIcon={PlusIcon}
-            onClick={() =>
-              setContest({ enabled: true, public: true, processBalloons: true, problems: [] })
-            }
-          />
+          <Button prefixIcon={PlusIcon} onClick={() => navigate('/contests/new/edit')} />
         </>
       }
       fullWidth
@@ -122,13 +114,8 @@ export const ContestsList: FC = () => {
         columns={columns}
         isLoading={isLoading}
         sorting={{ sorting, onSortingChange: setSorting }}
-        onRowClick={(contest) => navigate(`/contests/${contest.id}`)}
+        onRowClick={(contest) => navigate(`/contests/${contest.id}/edit`)}
         actions={[
-          {
-            icon: EditIcon,
-            hide: !isUserAdmin,
-            onClick: setContest,
-          },
           {
             color: 'red',
             icon: Trash2Icon,
@@ -149,11 +136,6 @@ export const ContestsList: FC = () => {
       >
         Are you sure you want to delete this contest?
       </ConfirmDialog>
-      <ContestForm
-        contest={contest}
-        onSubmit={() => setContest(undefined)}
-        onClose={() => setContest(undefined)}
-      />
     </PageTemplate>
   );
 };
