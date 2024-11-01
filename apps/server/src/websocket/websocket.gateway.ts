@@ -39,6 +39,7 @@ export class WebsocketGateway implements OnGatewayConnection {
   async handleConnection(client: Socket) {
     const user: User = ((client.request as Request).session as unknown as Session)?.passport?.user;
     const roleName = user?.role.name;
+
     if (['admin', 'jury'].includes(roleName)) {
       client.join('juries');
     } else if (roleName === 'judge-host') {

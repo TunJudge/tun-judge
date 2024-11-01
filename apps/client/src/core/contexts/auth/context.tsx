@@ -14,13 +14,7 @@ import { request } from '../../utils';
 
 export type User = Prisma.UserGetPayload<{ include: { role: true; team: true } }>;
 
-export const AuthContext = createContext<AuthContext<User>>({
-  connected: false,
-  isUserAdmin: false,
-  isUserJury: false,
-  setLastConnectedTime: () => undefined,
-  checkUserRole: () => false,
-});
+export const AuthContext = createContext<AuthContext<User> | undefined>(undefined);
 
 export type AuthContext<T extends User> = {
   connected: boolean;

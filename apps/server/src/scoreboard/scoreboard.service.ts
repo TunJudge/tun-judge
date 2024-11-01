@@ -58,7 +58,7 @@ export class ScoreboardService {
         contestId: contest.id,
         valid: true,
       },
-      include: { judgings: { where: { valid: true } } },
+      include: { judgings: { where: { valid: true }, orderBy: { startTime: 'asc' } } },
     });
 
     const submissions = allProblemSubmissions.filter(
@@ -128,7 +128,10 @@ export class ScoreboardService {
 }
 
 export function getLatestJudging(submission: Submission): Judging | undefined {
-  return submission.judgings.sort((a, b) => a.startTime.getTime() - b.startTime.getTime()).at(-1);
+  return (
+    submission.judgings.find((judging) => judging.result === 'ACCEPTED') ??
+    submission.judgings.at(-1)
+  );
 }
 
 export function submissionHasResult(

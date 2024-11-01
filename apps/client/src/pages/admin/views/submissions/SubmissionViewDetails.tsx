@@ -1,6 +1,6 @@
 import { ClipboardPlusIcon, ClipboardXIcon } from 'lucide-react';
 import { FC } from 'react';
-import { DataTable, DataTableColumn, cn } from 'tw-react-components';
+import { DataTable, DataTableColumn, cn, useLayoutContext } from 'tw-react-components';
 
 import { JUDGING_RESULT_LABELS } from '@core/constants';
 import { useUpdateJudging } from '@core/queries';
@@ -13,9 +13,18 @@ export const SubmissionViewDetails: FC<{
   highlightedJudging?: Judging;
   setHighlightedJudging: (judging: Judging) => void;
 }> = ({ submission, highlightedJudging, setHighlightedJudging }) => {
+  const { showIds } = useLayoutContext();
+
   const { mutateAsync: updateJudging } = useUpdateJudging();
 
   const columns: DataTableColumn<Judging>[] = [
+    {
+      header: '#',
+      field: 'id',
+      className: 'w-px',
+      align: 'center',
+      hide: !showIds,
+    },
     {
       header: 'Team',
       field: 'id',
@@ -98,7 +107,7 @@ export const SubmissionViewDetails: FC<{
 
   return (
     <DataTable
-      className="sticky top-0 z-10 flex-shrink-0"
+      className="flex-shrink-0"
       rows={submission.judgings}
       columns={columns}
       noDataMessage="Not judged yet"

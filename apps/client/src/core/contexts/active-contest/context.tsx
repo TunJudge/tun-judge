@@ -17,11 +17,7 @@ export type ActiveContest = {
   setCurrentContest: (contest?: Contest) => void;
 };
 
-export const ActiveContestContext = createContext<ActiveContest>({
-  activeContests: [],
-  currentContest: undefined,
-  setCurrentContest: () => undefined,
-});
+export const ActiveContestContext = createContext<ActiveContest | undefined>(undefined);
 
 export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
   const [now, setNow] = useState(new Date());

@@ -28,15 +28,10 @@ export class FilesService {
     )({ where: { name } }).then((count) => count > 0);
   }
 
-  getFileByName(@LogParam('name') name: string): Promise<File> {
+  async getFileByName(@LogParam('name') name: string): Promise<File> {
     return (
-      logPrismaOperation(
-        this.prisma,
-        'file',
-        'findFirst',
-      )({
-        where: { name },
-      }) ?? throwError(new NotFoundException())
+      (await logPrismaOperation(this.prisma, 'file', 'findFirst')({ where: { name } })) ||
+      throwError(new NotFoundException())
     );
   }
 

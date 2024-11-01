@@ -1,7 +1,13 @@
 import { useContext } from 'react';
 
-import { ActiveContest, ActiveContestContext } from './context';
+import { ActiveContestContext } from './context';
 
 export function useActiveContest() {
-  return useContext(ActiveContestContext) as ActiveContest;
+  const context = useContext(ActiveContestContext);
+
+  if (!context) {
+    throw new Error('useActiveContest must be used within a ActiveContestProvider');
+  }
+
+  return context;
 }

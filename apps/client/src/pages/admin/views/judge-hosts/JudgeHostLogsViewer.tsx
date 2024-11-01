@@ -2,30 +2,33 @@ import Ansi from 'ansi-to-react';
 import { FC, useEffect, useState } from 'react';
 import { Sheet } from 'tw-react-components';
 
+import { useWebSocketContext } from '@core/contexts';
+
 type JudgeHostLogsViewerProps = {
   hostname?: string;
   onClose: () => void;
 };
 
 export const JudgeHostLogsViewer: FC<JudgeHostLogsViewerProps> = ({ hostname, onClose }) => {
-  // const { socket } = useStore<RootStore>('rootStore');
+  const { socket } = useWebSocketContext();
 
   const [logs, setLogs] = useState<string[]>([]);
 
-  // useEffect(() => {
-  //   if (hostname) {
-  //     const event = `judgeHost-${hostname}-logs`;
-  //     socket.off(event);
-  //     socket.on(event, (logLine: string) => {
-  //       setLogs((logs) => [...logs, logLine]);
-  //       const terminalSegment = document.getElementById('terminal-logs');
-  //       terminalSegment && (terminalSegment.scrollTop = terminalSegment.scrollHeight);
-  //     });
-  //     return () => {
-  //       socket.off(event);
-  //     };
-  //   }
-  // }, [hostname, socket]);
+  useEffect(() => {
+    if (!hostname) return;
+
+    const event = `judgeHost-${hostname}-logs`;
+
+    socket.on(event, (logLine: string) => {
+      setLogs((logs) => [...logs, logLine]);
+      const terminalSegment = document.getElementById('terminal-logs');
+      terminalSegment && (terminalSegment.scrollTop = terminalSegment.scrollHeight);
+    });
+
+    return () => {
+      socket.off(event);
+    };
+  }, [hostname, socket]);
 
   return (
     <Sheet open={!!hostname} onOpenChange={(value) => !value && onClose()}>

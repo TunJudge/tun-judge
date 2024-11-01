@@ -8,7 +8,7 @@ const pipelineAsync = promisify(pipeline);
 
 export async function downloadFile(fileName: string, filePath: string) {
   const stream = await http.stream(`files/${encodeURIComponent(fileName)}`);
-  const writer = createWriteStream(filePath);
+  const writer = createWriteStream(filePath, { flags: 'w' });
 
   return pipelineAsync(stream, writer);
 }

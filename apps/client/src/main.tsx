@@ -6,7 +6,12 @@ import { createRoot } from 'react-dom/client';
 import { LayoutContextProvider, SidebarContextProvider, Spinner } from 'tw-react-components';
 import 'tw-react-components/css';
 
-import { ActiveContestProvider, AuthContextProvider, ToastContextProvider } from '@core/contexts';
+import {
+  ActiveContestProvider,
+  AuthContextProvider,
+  ToastContextProvider,
+  WebSocketContextProvider,
+} from '@core/contexts';
 import { Provider as ZenStackHooksProvider } from '@core/queries';
 
 import Root from './Root';
@@ -29,17 +34,19 @@ root.render(
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools buttonPosition="bottom-right" />
         <ZenStackHooksProvider value={{ endpoint: '/api/rpc', fetch: myFetch }}>
-          <LayoutContextProvider>
-            <SidebarContextProvider>
-              <AuthContextProvider>
-                <ToastContextProvider>
-                  <ActiveContestProvider>
-                    <Root />
-                  </ActiveContestProvider>
-                </ToastContextProvider>
-              </AuthContextProvider>
-            </SidebarContextProvider>
-          </LayoutContextProvider>
+          <WebSocketContextProvider>
+            <LayoutContextProvider>
+              <SidebarContextProvider>
+                <AuthContextProvider>
+                  <ToastContextProvider>
+                    <ActiveContestProvider>
+                      <Root />
+                    </ActiveContestProvider>
+                  </ToastContextProvider>
+                </AuthContextProvider>
+              </SidebarContextProvider>
+            </LayoutContextProvider>
+          </WebSocketContextProvider>
         </ZenStackHooksProvider>
       </QueryClientProvider>
     </Suspense>
