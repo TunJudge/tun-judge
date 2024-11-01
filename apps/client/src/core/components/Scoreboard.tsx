@@ -41,28 +41,20 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
     [activeContests, currentContest, id],
   );
 
-  // const { refreshScoreboardCache } = useStore<ContestsStore>('contestsStore');
-
   const [standing, setStanding] = useState<TeamStandingRow[]>([]);
 
   useEffect(() => {
     if (contest?.scoreCaches) {
       const cache: { [teamId: string]: TeamStandingRow } = {};
       for (const scoreCache of contest.scoreCaches) {
-        const {
-          team,
-          problemId,
-          correct,
-          pending,
-          solveTime,
-          submissions,
-          firstToSolve,
-          restrictedCorrect,
-          restrictedPending,
-          restrictedSolveTime,
-          restrictedSubmissions,
-          restrictedFirstToSolve,
-        } = scoreCache;
+        const { team, problemId } = scoreCache;
+        const correct = isUserJury ? scoreCache.restrictedCorrect : scoreCache.correct;
+        const pending = isUserJury ? scoreCache.restrictedPending : scoreCache.pending;
+        const solveTime = isUserJury ? scoreCache.restrictedSolveTime : scoreCache.solveTime;
+        const submissions = isUserJury ? scoreCache.restrictedSubmissions : scoreCache.submissions;
+        const firstToSolve = isUserJury
+          ? scoreCache.restrictedFirstToSolve
+          : scoreCache.firstToSolve;
 
         if (!cache[team.id]) {
           cache[team.id] = {
@@ -74,15 +66,16 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
           };
         }
 
-        const finalSolveTime = isUserJury ? restrictedSolveTime : solveTime;
+        const contestProblem = contest.problems.find(
+          (contestProblem) => contestProblem.id === problemId,
+        );
 
         const problemScore =
-          !correct || !finalSolveTime
+          !correct || !solveTime
             ? 0
             : Math.floor(
                 (submissions - 1) * 20 +
-                  (new Date(finalSolveTime).getTime() -
-                    new Date(contest.startTime || '').getTime()) /
+                  (new Date(solveTime).getTime() - new Date(contest.startTime || '').getTime()) /
                     60000,
               );
 
@@ -92,17 +85,17 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
         }
 
         cache[team.id].problemsScores.push({
-          problemName: contest.problems.find((p) => p.id === problemId)?.shortName ?? '',
-          pending: !!(isUserJury ? restrictedPending : pending),
-          correct: isUserJury ? restrictedCorrect : correct,
-          firstToSolve: isUserJury ? restrictedFirstToSolve : firstToSolve,
-          solvedTime: finalSolveTime
+          problemName: contestProblem?.shortName ?? '',
+          pending: !!pending,
+          correct: correct,
+          firstToSolve: firstToSolve,
+          solvedTime: solveTime
             ? formatRestTime(
-                (new Date(finalSolveTime).getTime() - new Date(contest.startTime).getTime()) / 1000,
+                (new Date(solveTime).getTime() - new Date(contest.startTime).getTime()) / 1000,
                 false,
               )
             : undefined,
-          numberOfAttempts: isUserJury ? restrictedSubmissions : submissions,
+          numberOfAttempts: submissions,
         });
       }
       setStanding(
@@ -158,21 +151,21 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
               {contest.problems
                 .slice()
                 .sort((a, b) => a.shortName.localeCompare(b.shortName))
-                .map((problem) => (
+                .map((contestProblem) => (
                   <Tooltip
-                    key={problem.shortName}
-                    content={`${problem.shortName} - ${problem.problem.name}`}
+                    key={contestProblem.shortName}
+                    content={`${contestProblem.shortName} - ${contestProblem.problem.name}`}
                     placement="top"
                     asChild
                   >
                     <th
                       className={cn('w-24 truncate', {
-                        'text-white': getRGBColorContrast(problem.color) < 0.5,
-                        'text-black': getRGBColorContrast(problem.color) > 0.5,
+                        'text-white': getRGBColorContrast(contestProblem.color) < 0.5,
+                        'text-black': getRGBColorContrast(contestProblem.color) > 0.5,
                       })}
-                      style={{ backgroundColor: problem.color }}
+                      style={{ backgroundColor: contestProblem.color }}
                     >
-                      {problem.shortName}
+                      {contestProblem.shortName}
                     </th>
                   </Tooltip>
                 ))}

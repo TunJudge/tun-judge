@@ -418,7 +418,8 @@ model ClarificationMessage {
 
 /// @@allow('read', auth() != null && auth().roleName in ['admin', 'jury'])
 /// @@allow('create', auth() != null && auth().roleName == 'jury')
-/// @@allow('read,create', auth() != null && auth().roleName == 'team' && message.clarification.contest.enabled == true && (message.clarification.contest.openToAllTeams == true || message.clarification.contest.teams?[teamId == auth().teamId]) && (message.clarification.general == true || message.clarification.teamId == auth().teamId))
+/// @@allow('read', auth() != null && auth().roleName == 'team' && message.clarification.contest.enabled == true && (message.clarification.contest.openToAllTeams == true || message.clarification.contest.teams?[teamId == auth().teamId]) && (message.clarification.general == true || message.clarification.teamId == auth().teamId))
+/// @@allow('create', auth() != null && auth().roleName == 'team' && message.clarification.contest.enabled == true && (message.clarification.contest.openToAllTeams == true || message.clarification.contest.teams?[teamId == auth().teamId]) && message.clarification.teamId == auth().teamId)
 /// @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 model ClarificationSeen {
   userId    Int

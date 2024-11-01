@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const ChatBoxInput: FC<Props> = ({ form, clarification }) => {
-  const { profile } = useAuthContext();
+  const { profile, isUserJury } = useAuthContext();
   const { currentContest } = useActiveContest();
 
   const { mutateAsync: createClarification } = useCreateClarification();
@@ -57,6 +57,8 @@ export const ChatBoxInput: FC<Props> = ({ form, clarification }) => {
 
     setMessage('');
   };
+
+  if (!isUserJury && isGeneral) return null;
 
   return (
     <form className="relative flex w-full gap-2 p-1" onSubmit={onSubmit}>

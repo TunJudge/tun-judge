@@ -1,9 +1,11 @@
 import React, { Fragment, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, cn } from 'tw-react-components';
 
 type NavItem = { hide?: boolean } & (
   | {
       type?: 'item';
+      link?: string;
       content: React.ReactNode;
       className?: string;
       testId?: string;
@@ -28,10 +30,12 @@ export const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
   const MenuItems = ({ items }: { items?: NavItem[] }) =>
     items
       ?.filter((item) => !item.hide)
-      .map((props, index) =>
-        props.type === 'element' ? (
-          <Fragment key={`element-${index}`}>{props.element}</Fragment>
-        ) : (
+      .map((props, index) => {
+        if (props.type === 'element') {
+          return <Fragment key={`element-${index}`}>{props.element}</Fragment>;
+        }
+
+        const content = (
           <Button
             key={`item-${index}`}
             className={cn(
@@ -44,8 +48,16 @@ export const NavBar: React.FC<Props> = ({ logo, leftItems, rightItems }) => {
           >
             {props.content}
           </Button>
-        ),
-      );
+        );
+
+        return props.link ? (
+          <Link key={`item-${index}`} to={props.link}>
+            {content}
+          </Link>
+        ) : (
+          content
+        );
+      });
 
   return (
     <nav className="w-full bg-slate-800 text-white">

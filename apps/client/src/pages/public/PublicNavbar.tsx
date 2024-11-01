@@ -22,7 +22,8 @@ const PublicNavbar: React.FC = observer(() => {
         </Link>
       }
       leftItems={tabs.map((tab) => ({
-        content: <Link to={tab.path}>{tab.name}</Link>,
+        link: tab.path,
+        content: tab.name,
         active: tab.path === location.pathname,
         hide: tab.hide,
       }))}

@@ -26,6 +26,12 @@ export const SubmissionsList: FC<{ className?: string }> = ({ className }) => {
 
   const columns: DataTableColumn<Submission>[] = [
     {
+      header: '#',
+      field: 'id',
+      className: 'w-px',
+      align: 'center',
+    },
+    {
       header: 'Time',
       field: 'submitTime',
       align: 'center',

@@ -15,19 +15,23 @@ export const ClarificationsList: FC<{ className?: string }> = ({ className }) =>
 
   const { data: clarifications = [] } = useFindManyClarification(
     {
-      where: {
-        contestId: currentContest?.id,
-        teamId: profile?.teamId,
-      },
       include: {
+        team: true,
         problem: { include: { problem: true } },
         messages: { include: { sentBy: true, seenBy: true } },
       },
+      orderBy: { id: 'desc' },
     },
     { refetchInterval: import.meta.env.MODE !== 'development' && 5000 },
   );
 
   const columns: DataTableColumn<Clarification>[] = [
+    {
+      header: '#',
+      field: 'id',
+      className: 'w-px',
+      align: 'center',
+    },
     {
       header: 'Subject',
       field: 'problemId',
