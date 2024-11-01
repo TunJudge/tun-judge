@@ -38,7 +38,7 @@ export const TeamCategoryForm: FC<Props> = ({ teamCategory, onClose, onSubmit })
 
       onSubmit?.(newTeamCategory?.id);
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast(
         'error',
         `Failed to ${id ? 'update' : 'create'} team category with error: ${error.message}`,

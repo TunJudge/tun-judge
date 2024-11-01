@@ -40,14 +40,14 @@ export function useSorting<T>(
     [mode, field, direction, searchParams, setSearchParams],
   );
 
-  const orderBy = useMemo(
+  const orderBy: OrderBy = useMemo(
     () =>
       (sorting.get('sortBy') ?? field ?? 'id')
         .split('.')
         .reverse()
-        .reduce<any>(
+        .reduce(
           (prev, curr) => ({ [curr]: prev }),
-          sorting.get('sortDirection') ?? direction ?? 'asc',
+          (sorting.get('sortDirection') ?? direction ?? 'asc') as unknown as OrderBy,
         ),
     [direction, field, sorting],
   );
@@ -65,3 +65,5 @@ export function useSorting<T>(
     [orderBy, sorting, field, direction, setSorting],
   );
 }
+
+type OrderBy = Record<string, 'asc' | 'desc' | object>;

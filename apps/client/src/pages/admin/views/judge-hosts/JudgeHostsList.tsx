@@ -5,8 +5,7 @@ import {
   ConfirmDialog,
   DataTable,
   DataTableColumn,
-  Flex,
-  cn,
+  Switch,
   useLayoutContext,
 } from 'tw-react-components';
 
@@ -15,8 +14,10 @@ import { Prisma } from '@prisma/client';
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
-import { useDeleteJudgeHost, useFindManyJudgeHost } from '@core/queries';
+import { useDeleteJudgeHost, useFindManyJudgeHost, useUpdateJudgeHost } from '@core/queries';
 import { getDisplayDate } from '@core/utils';
+
+import { JudgeHostLogsViewer } from './JudgeHostLogsViewer';
 
 type JudgeHost = Prisma.JudgeHostGetPayload<{
   include: { user: true };
@@ -32,25 +33,22 @@ export const JudgeHostsList: FC = () => {
     open: boolean;
     onConfirm: () => void;
   }>();
-  const { sorting, setSorting } = useSorting<JudgeHost>();
+  const { orderBy, sorting, setSorting } = useSorting<JudgeHost>('hostname');
 
   const {
     data: judgeHosts = [],
     isLoading,
     refetch,
-  } = useFindManyJudgeHost(
-    {
-      include: { user: true },
-      orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
-    },
-    { refetchInterval: 5000 },
-  );
-  const { mutate: deleteJudgeHost } = useDeleteJudgeHost();
+  } = useFindManyJudgeHost({ include: { user: true }, orderBy }, { refetchInterval: 5000 });
+  const { mutateAsync: updateJudgeHost } = useUpdateJudgeHost();
+  const { mutateAsync: deleteJudgeHost } = useDeleteJudgeHost();
 
   const columns: DataTableColumn<JudgeHost>[] = [
     {
       header: '#',
       field: 'id',
+      className: 'w-px',
+      align: 'center',
       hide: !showIds,
     },
     {
@@ -73,17 +71,12 @@ export const JudgeHostsList: FC = () => {
       align: 'center',
       render: (judgeHost) =>
         isUserAdmin ? (
-          <Flex className="select-none" justify="center">
-            <div
-              className={cn('cursor-pointer rounded px-3 py-2 text-white', {
-                'bg-red-600': judgeHost.active,
-                'bg-green-600': !judgeHost.active,
-              })}
-              // onClick={() => toggle(judgeHost.id, !judgeHost.active)}
-            >
-              {judgeHost.active ? 'Deactivate' : 'Activate'}
-            </div>
-          </Flex>
+          <Switch
+            checked={judgeHost.active}
+            onClick={() =>
+              updateJudgeHost({ where: { id: judgeHost.id }, data: { active: !judgeHost.active } })
+            }
+          />
         ) : judgeHost.active ? (
           'Yes'
         ) : (
@@ -95,16 +88,9 @@ export const JudgeHostsList: FC = () => {
       field: 'id',
       align: 'center',
       render: (judgeHost) => (
-        <Flex className="select-none" justify="center">
-          <div
-            className={cn('w-min cursor-pointer rounded bg-blue-600 px-3 py-2 text-white', {
-              disabled: !judgeHost.active,
-            })}
-            onClick={() => setHostname(judgeHost.hostname)}
-          >
-            Logs
-          </div>
-        </Flex>
+        <Button onClick={() => setHostname(judgeHost.hostname)} disabled={!judgeHost.active}>
+          Logs
+        </Button>
       ),
     },
   ];
@@ -131,7 +117,7 @@ export const JudgeHostsList: FC = () => {
     //       return 'red';
     //     }}
     //   />
-    //   <JudgeHostLogsViewer hostname={hostname} dismiss={() => setHostname(undefined)} />
+    //
     // </div>
     <PageTemplate
       icon={ServerIcon}
@@ -165,6 +151,7 @@ export const JudgeHostsList: FC = () => {
       >
         Are you sure you want to delete this judge host?
       </ConfirmDialog>
+      <JudgeHostLogsViewer hostname={hostname} onClose={() => setHostname(undefined)} />
     </PageTemplate>
   );
 };

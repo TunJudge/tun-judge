@@ -38,8 +38,8 @@ export const TestcasesList: FC<Props> = ({ problem }) => {
   }>();
   const [sorterOpen, setSorterOpen] = useState(false);
 
-  const { mutate: updateTestcase } = useUpdateTestcase();
-  const { mutate: deleteTestcase } = useDeleteTestcase();
+  const { mutateAsync: updateTestcase } = useUpdateTestcase();
+  const { mutateAsync: deleteTestcase } = useDeleteTestcase();
 
   const columns: DataTableColumn<Testcase>[] = [
     {

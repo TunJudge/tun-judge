@@ -27,17 +27,14 @@ export const UsersList: React.FC = observer(() => {
     open: boolean;
     onConfirm: () => void;
   }>();
-  const { sorting, setSorting } = useSorting<User>();
+  const { orderBy, sorting, setSorting } = useSorting<User>();
 
   const {
     data: users = [],
     isLoading,
     refetch,
-  } = useFindManyUser({
-    include: { role: true },
-    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
-  });
-  const { mutate: deleteUser } = useDeleteUser();
+  } = useFindManyUser({ include: { role: true, team: true }, orderBy });
+  const { mutateAsync: deleteUser } = useDeleteUser();
 
   const columns: DataTableColumn<User>[] = [
     {

@@ -43,16 +43,18 @@ export abstract class AbstractInitializer<Options = object> {
     return { content, size };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected async parseMetadataFile(filePath: string): Promise<any[]> {
     return JSON.parse((await fs.readFile(join(this.baseDir, filePath))).toString());
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected async parseDirectory(directoryName: string): Promise<any[]> {
-    return Promise.all(
-      (await fs.readdir(join(this.baseDir, directoryName), { withFileTypes: true }))
-        .filter((file) => file.isDirectory())
-        .map(async (dir) => this.parseMetadataFile(join(directoryName, dir.name, 'metadata.json'))),
-    );
+    const directory = (
+      await fs.readdir(join(this.baseDir, directoryName), { withFileTypes: true })
+    ).filter((file) => file.isDirectory())[0];
+
+    return this.parseMetadataFile(join(directoryName, directory.name, 'metadata.json'));
   }
 
   protected async createFileEntity(

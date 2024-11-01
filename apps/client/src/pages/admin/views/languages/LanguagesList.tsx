@@ -32,17 +32,14 @@ export const LanguagesList: FC = () => {
     open: boolean;
     onConfirm: () => void;
   }>();
-  const { sorting, setSorting } = useSorting<Language>();
+  const { orderBy, sorting, setSorting } = useSorting<Language>();
 
   const {
     data: languages = [],
     isLoading,
     refetch,
-  } = useFindManyLanguage({
-    include: { buildScript: true },
-    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
-  });
-  const { mutate: deleteLanguage } = useDeleteLanguage();
+  } = useFindManyLanguage({ include: { buildScript: true }, orderBy });
+  const { mutateAsync: deleteLanguage } = useDeleteLanguage();
 
   const columns: DataTableColumn<Language>[] = [
     {

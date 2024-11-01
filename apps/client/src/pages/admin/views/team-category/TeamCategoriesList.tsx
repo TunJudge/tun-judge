@@ -34,17 +34,14 @@ export const TeamCategoriesList: React.FC = observer(() => {
     open: boolean;
     onConfirm: () => void;
   }>();
-  const { sorting, setSorting } = useSorting<TeamCategory>();
+  const { orderBy, sorting, setSorting } = useSorting<TeamCategory>();
 
   const {
     data: teamCategories = [],
     isLoading,
     refetch,
-  } = useFindManyTeamCategory({
-    include: { teams: true },
-    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
-  });
-  const { mutate: deleteTeamCategory } = useDeleteTeamCategory();
+  } = useFindManyTeamCategory({ include: { teams: true }, orderBy });
+  const { mutateAsync: deleteTeamCategory } = useDeleteTeamCategory();
 
   const columns: DataTableColumn<TeamCategory>[] = [
     {

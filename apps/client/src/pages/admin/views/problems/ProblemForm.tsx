@@ -2,13 +2,11 @@ import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormDialog, FormInputs } from 'tw-react-components';
 
-import { FileKind } from '@prisma/client';
+import { FileKind, Problem } from '@prisma/client';
 
 import { useToastContext } from '@core/contexts';
 import { useFindManyExecutable, useUpsertProblem } from '@core/queries';
 import { uploadFile } from '@core/utils';
-
-import { Problem } from './ProblemsList';
 
 type Props = {
   problem?: Partial<Problem>;
@@ -45,7 +43,7 @@ export const ProblemForm: FC<Props> = ({ problem, onClose, onSubmit }) => {
     }
   }, [problem, runners, checkers, form]);
 
-  const handleSubmit = async ({ id = -1, _count: _, ...problem }: Problem) => {
+  const handleSubmit = async ({ id = -1, ...problem }: Problem) => {
     try {
       if (statementFile) {
         const statement = await uploadFile(statementFile, {

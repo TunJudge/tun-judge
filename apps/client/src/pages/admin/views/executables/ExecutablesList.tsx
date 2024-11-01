@@ -33,16 +33,10 @@ export const ExecutablesList: FC = () => {
     open: boolean;
     onConfirm: () => void;
   }>();
-  const { sorting, setSorting } = useSorting<Executable>();
+  const { orderBy, sorting, setSorting } = useSorting<Executable>();
 
-  const {
-    data: executables = [],
-    isLoading,
-    refetch,
-  } = useFindManyExecutable({
-    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
-  });
-  const { mutate: deleteExecutable } = useDeleteExecutable();
+  const { data: executables = [], isLoading, refetch } = useFindManyExecutable({ orderBy });
+  const { mutateAsync: deleteExecutable } = useDeleteExecutable();
 
   const columns: DataTableColumn<Executable>[] = [
     {

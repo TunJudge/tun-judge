@@ -16,6 +16,7 @@ import { config } from '../config';
 import { PrismaService } from '../db';
 import { AuthenticatedGuard, LoginGuard } from '../guards';
 import { store } from '../session';
+import { Session as AppSession } from '../types';
 import { throwError } from '../utils';
 
 @Controller('api/auth')
@@ -59,7 +60,7 @@ export class AuthController {
     const prisma = new PrismaService();
 
     await prisma.user.update({
-      where: { id: (req.session as any).passport?.user?.id ?? -1 },
+      where: { id: (req.session as unknown as AppSession).passport?.user?.id ?? -1 },
       data: { sessionId: null },
     });
     req.session.destroy(() => null);

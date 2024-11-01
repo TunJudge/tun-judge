@@ -10,7 +10,7 @@ import {
   useLayoutContext,
 } from 'tw-react-components';
 
-import { Prisma } from '@prisma/client';
+import { Problem } from '@prisma/client';
 
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
@@ -18,10 +18,6 @@ import { useSorting } from '@core/hooks';
 import { useDeleteProblem, useFindManyProblem } from '@core/queries';
 
 import { ProblemForm } from './ProblemForm';
-
-export type Problem = Prisma.ProblemGetPayload<{
-  include: { _count: { select: { testcases: true } } };
-}>;
 
 export const ProblemsList: React.FC = observer(() => {
   const navigate = useNavigate();
@@ -34,17 +30,10 @@ export const ProblemsList: React.FC = observer(() => {
     open: boolean;
     onConfirm: () => void;
   }>();
-  const { sorting, setSorting } = useSorting<Problem>();
+  const { orderBy, sorting, setSorting } = useSorting<Problem>();
 
-  const {
-    data: problems = [],
-    isLoading,
-    refetch,
-  } = useFindManyProblem({
-    include: { _count: { select: { testcases: true } } },
-    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
-  });
-  const { mutate: deleteProblem } = useDeleteProblem();
+  const { data: problems = [], isLoading, refetch } = useFindManyProblem({ orderBy });
+  const { mutateAsync: deleteProblem } = useDeleteProblem();
 
   const columns: DataTableColumn<Problem>[] = [
     {
@@ -70,11 +59,6 @@ export const ProblemsList: React.FC = observer(() => {
       header: 'Output Limit',
       field: 'outputLimit',
       render: (problem) => `${problem.outputLimit} Kb`,
-    },
-    {
-      header: 'Testcases',
-      field: '_count.testcases',
-      render: (problem) => problem._count.testcases,
     },
   ];
 

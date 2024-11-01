@@ -3,7 +3,7 @@ import { deserialize, serialize } from '@zenstackhq/runtime/browser';
 export function marshal(value: unknown) {
   const { data, meta } = serialize(value);
   if (meta) {
-    return JSON.stringify({ ...(data as any), meta: { serialization: meta } });
+    return JSON.stringify(Object.assign(data, { meta: { serialization: meta } }));
   } else {
     return JSON.stringify(data);
   }

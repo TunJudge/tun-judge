@@ -46,6 +46,7 @@ export function logPrismaOperation(
       throw error;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (prisma[entity][operation] as any)(params).then(onSuccess(time)).catch(onError(time));
   };
 }

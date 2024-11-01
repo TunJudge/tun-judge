@@ -30,7 +30,7 @@ export const ContestsList: FC = () => {
     open: boolean;
     onConfirm: () => void;
   }>();
-  const { sorting, setSorting } = useSorting<Contest>();
+  const { orderBy, sorting, setSorting } = useSorting<Contest>();
 
   const {
     data: contests = [],
@@ -38,9 +38,9 @@ export const ContestsList: FC = () => {
     refetch,
   } = useFindManyContest({
     include: { _count: { select: { teams: true, problems: true } } },
-    orderBy: sorting ? { [sorting.field]: sorting.direction } : undefined,
+    orderBy,
   });
-  const { mutate: deleteContest } = useDeleteContest();
+  const { mutateAsync: deleteContest } = useDeleteContest();
 
   const columns: DataTableColumn<Contest>[] = [
     {

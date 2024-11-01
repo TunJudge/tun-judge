@@ -7,7 +7,13 @@ import { Prisma, Testcase } from '@prisma/client';
 
 import { SubmissionResult } from '@core/components';
 import { useAuthContext } from '@core/contexts';
-import { useFindFirstContest, useFindManySubmission, useUpdateJudging } from '@core/queries';
+import { usePagination } from '@core/hooks';
+import {
+  useCountSubmission,
+  useFindFirstContest,
+  useFindManySubmission,
+  useUpdateJudging,
+} from '@core/queries';
 import { formatRestTime } from '@core/utils';
 
 type Submission = Prisma.SubmissionGetPayload<{
@@ -24,7 +30,12 @@ export const SubmissionsList: FC = () => {
   const { contestId } = useParams();
   const navigate = useNavigate();
 
+  const { currentPage, setCurrentPage } = usePagination();
+
   const { data: contest } = useFindFirstContest({ where: { id: parseInt(contestId ?? '-1') } });
+  const { data: totalItems = 0 } = useCountSubmission({
+    where: { contestId: parseInt(contestId ?? '-1') },
+  });
   const { data: submissions = [], isLoading } = useFindManySubmission({
     where: { contestId: parseInt(contestId ?? '-1') },
     include: {
@@ -38,6 +49,8 @@ export const SubmissionsList: FC = () => {
       },
     },
     orderBy: { submitTime: 'desc' },
+    skip: 25 * currentPage,
+    take: 25,
   });
   const { mutateAsync: updateJudging } = useUpdateJudging();
 
@@ -167,6 +180,7 @@ export const SubmissionsList: FC = () => {
       rows={submissions}
       columns={columns}
       isLoading={isLoading}
+      pagination={{ currentPage, setCurrentPage, totalItems, pageSize: 25 }}
       onRowClick={(submission) => navigate(`${submission.id}`)}
     />
   );

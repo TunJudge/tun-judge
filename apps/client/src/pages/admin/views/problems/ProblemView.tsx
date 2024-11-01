@@ -21,7 +21,7 @@ export const ProblemView: FC = () => {
     where: { id: parseInt(id ?? '-1') },
     include: { testcases: { include: { inputFile: true, outputFile: true } } },
   });
-  const { mutate: updateManySubmission } = useUpdateManySubmission();
+  const { mutateAsync: updateManySubmission } = useUpdateManySubmission();
 
   const rejudge = (problemId: number) =>
     updateManySubmission({ where: { problemId }, data: { judgeHostId: undefined } });

@@ -8,9 +8,10 @@ import {
 import { Request } from 'express';
 import { Server, Socket } from 'socket.io';
 
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 import { LogClass } from '../logger';
+import { Session, User } from '../types';
 
 type UpdateEvents =
   | 'contests'
@@ -21,16 +22,6 @@ type UpdateEvents =
   | 'clarifications';
 
 type Rooms = 'juries' | 'judgeHosts' | `team-${number}`;
-
-type User = Prisma.UserGetPayload<{
-  include: { role: true; team: true };
-}>;
-
-type Session = {
-  passport: {
-    user: User;
-  };
-};
 
 @LogClass
 @WebSocketGateway({ namespace: 'ws' })
