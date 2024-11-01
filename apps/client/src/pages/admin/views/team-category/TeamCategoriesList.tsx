@@ -105,11 +105,11 @@ export const TeamCategoriesList: React.FC = observer(() => {
   return (
     <PageTemplate
       icon={TagsIcon}
-      title="Teams"
+      title="Teams Categories"
       actions={
         <>
           <Button prefixIcon={RefreshCcw} onClick={() => refetch()} />
-          <Button prefixIcon={PlusIcon} onClick={() => setTeamCategory({})} />
+          <Button prefixIcon={PlusIcon} onClick={() => setTeamCategory({ visible: true })} />
         </>
       }
       fullWidth

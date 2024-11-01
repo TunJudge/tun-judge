@@ -7,7 +7,9 @@ import { Writable } from 'stream';
 import { File, FileKind, PrismaClient } from '@prisma/client';
 
 import { logger } from '../logger';
+import { LogClass } from '../logger';
 
+@LogClass
 export abstract class AbstractInitializer<Options = object> {
   private readonly baseDir = join(__dirname, 'assets/init-data');
 
@@ -50,11 +52,11 @@ export abstract class AbstractInitializer<Options = object> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected async parseDirectory(directoryName: string): Promise<any[]> {
-    const directory = (
-      await fs.readdir(join(this.baseDir, directoryName), { withFileTypes: true })
-    ).filter((file) => file.isDirectory())[0];
-
-    return this.parseMetadataFile(join(directoryName, directory.name, 'metadata.json'));
+    return Promise.all(
+      (await fs.readdir(join(this.baseDir, directoryName), { withFileTypes: true }))
+        .filter((file) => file.isDirectory())
+        .map(async (dir) => this.parseMetadataFile(join(directoryName, dir.name, 'metadata.json'))),
+    );
   }
 
   protected async createFileEntity(

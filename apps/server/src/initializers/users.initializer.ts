@@ -3,8 +3,10 @@ import { genSalt, hash } from 'bcrypt';
 
 import { PrismaClient } from '@prisma/client';
 
+import { LogClass } from '../logger';
 import { AbstractInitializer } from './abstract-initializer';
 
+@LogClass
 @Injectable()
 export class UsersInitializer extends AbstractInitializer {
   async _run(prisma: PrismaClient): Promise<void> {

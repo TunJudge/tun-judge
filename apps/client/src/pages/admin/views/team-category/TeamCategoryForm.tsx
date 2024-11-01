@@ -41,7 +41,7 @@ export const TeamCategoryForm: FC<Props> = ({ teamCategory, onClose, onSubmit })
     } catch (error: unknown) {
       toast(
         'error',
-        `Failed to ${id ? 'update' : 'create'} team category with error: ${error.message}`,
+        `Failed to ${id ? 'update' : 'create'} team category with error: ${error instanceof Error ? error.message : error}`,
       );
     }
   };
@@ -75,7 +75,6 @@ export const TeamCategoryForm: FC<Props> = ({ teamCategory, onClose, onSubmit })
         name="visible"
         label="Visible"
         description="Whether the teams under this category will be visible in the public scoreboard?"
-        defaultChecked={true}
       />
     </FormDialog>
   );

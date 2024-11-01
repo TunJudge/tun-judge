@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 import { FilesStorage } from '../files-storage';
+import { LogClass } from '../logger';
 import { AbstractInitializer } from './abstract-initializer';
 import { ContestsInitializer } from './contests.initializer';
 import { ExecutablesInitializer } from './executables.initializer';
@@ -13,6 +14,7 @@ import { TeamCategoriesInitializer } from './team-categories.initializer';
 import { TeamsInitializer } from './teams.initializer';
 import { UsersInitializer } from './users.initializer';
 
+@LogClass
 @Injectable()
 export class MainInitializer extends AbstractInitializer {
   constructor(

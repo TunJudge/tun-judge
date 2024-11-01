@@ -59,12 +59,13 @@ export class ScoreboardService {
         valid: true,
       },
       include: { judgings: { where: { valid: true }, orderBy: { startTime: 'asc' } } },
+      orderBy: { submitTime: 'asc' },
     });
 
     const submissions = allProblemSubmissions.filter(
       (submission) => submission.teamId === teamId && !hasCompileError(submission),
     );
-    const firstCorrectProblemSubmission = allProblemSubmissions.filter(isCorrect).shift();
+    const firstCorrectProblemSubmission = allProblemSubmissions.filter(isCorrect)[0];
 
     const scoreCache: Partial<ScoreCache> = {
       teamId,
@@ -127,20 +128,13 @@ export class ScoreboardService {
   };
 }
 
-export function getLatestJudging(submission: Submission): Judging | undefined {
-  return (
-    submission.judgings.find((judging) => judging.result === 'ACCEPTED') ??
-    submission.judgings.at(-1)
-  );
-}
-
 export function submissionHasResult(
   { verificationRequired }: Contest,
   results: JudgingResult[],
   inverse = false,
 ): (submission: Submission) => boolean {
   return (submission) => {
-    const judging = getLatestJudging(submission);
+    const judging = submission.judgings.at(-1);
     const answer =
       results.includes(judging?.result) && !(verificationRequired && !judging.verified);
 
@@ -152,7 +146,7 @@ export function submissionIsPending({
   verificationRequired,
 }: Contest): (submission: Submission) => boolean {
   return (submission) => {
-    const judging = getLatestJudging(submission);
+    const judging = submission.judgings.at(-1);
 
     return !judging?.result || (verificationRequired && !judging.verified);
   };

@@ -2,7 +2,7 @@ import { PlusIcon, Trash2Icon } from 'lucide-react';
 import { FC, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Block, Button, DataTable, Flex, FormInputs } from 'tw-react-components';
+import { Block, Button, DataTable, Flex, FormInputs, Spinner } from 'tw-react-components';
 
 import { ContestProblem, Prisma } from '@prisma/client';
 
@@ -28,7 +28,7 @@ export const ContestForm: FC = () => {
   const { contestId } = useParams();
   const navigate = useNavigate();
 
-  const { data: contest } = useFindFirstContest(
+  const { data: contest, isLoading } = useFindFirstContest(
     {
       where: { id: Number(contestId) },
       include: { problems: true },
@@ -75,7 +75,7 @@ export const ContestForm: FC = () => {
 
       toast('success', `Contest ${newContest?.id ? 'updated' : 'created'} successfully`);
 
-      navigate(`/contests/${newContest.id}`);
+      navigate(`/contests/${newContest.id}/edit`);
     } catch (error: unknown) {
       toast(
         'error',
@@ -83,6 +83,8 @@ export const ContestForm: FC = () => {
       );
     }
   };
+
+  if (contestId !== 'new' && (!contest || isLoading)) return <Spinner fullScreen />;
 
   return (
     <FormProvider {...form}>
@@ -192,6 +194,7 @@ export const ContestForm: FC = () => {
               }
             />
           }
+          fullHeight={false}
           isSubSection
         >
           <DataTable
@@ -284,6 +287,17 @@ export const ContestForm: FC = () => {
             ]}
           />
         </PageTemplate>
+        {isUserAdmin && (
+          <Flex justify="end">
+            <Button
+              type="submit"
+              color="green"
+              disabled={!form.formState.isDirty || form.formState.isSubmitting}
+            >
+              {contestId === 'new' ? 'Create' : 'Update'}
+            </Button>
+          </Flex>
+        )}
       </form>
     </FormProvider>
   );
