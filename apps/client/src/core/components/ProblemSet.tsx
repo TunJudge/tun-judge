@@ -16,10 +16,10 @@ import { Prisma, ScoreCache, Submission } from '@prisma/client';
 import { useActiveContest, useAuthContext } from '@core/contexts';
 import { contestStartedAndNotOver, dateComparator, formatBytes } from '@core/utils';
 
-import Balloon from '../../../public/assets/balloon.svg?react';
 import { NoActiveContest } from './NoActiveContest';
 import { PageTemplate } from './PageTemplate';
 import { SubmitForm } from './SubmitForm';
+import Balloon from './balloon.svg?react';
 
 type ContestProblem = Prisma.ContestProblemGetPayload<{
   include: { problem: true };

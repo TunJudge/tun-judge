@@ -139,7 +139,7 @@ export class Executor {
       judgingId: judging.id,
       endTime: new Date(),
     };
-    const parentDirectoryName = `Submissions/${judging.submission.id}/Judgings/${judging.id}/Runs/${testcase.rank}`;
+    const parentDirectoryName = `Submissions/${judging.submission.team.name}/${judging.submission.id}/Judgings/${judging.id}/Runs/${testcase.rank}`;
 
     const runOutputPath = this.submissionHelper.extraFilesPath('test.out');
     const runOutput = (await fs.readFile(runOutputPath)).toString().trim();

@@ -1,8 +1,8 @@
 import Ansi from 'ansi-to-react';
-import { FC, useEffect, useState } from 'react';
-import { Sheet } from 'tw-react-components';
+import { FC, useCallback, useState } from 'react';
+import { Button, Flex, Sheet } from 'tw-react-components';
 
-import { useWebSocketContext } from '@core/contexts';
+import { useOnWebSocketEvent } from '@core/hooks';
 
 type JudgeHostLogsViewerProps = {
   hostname?: string;
@@ -10,25 +10,15 @@ type JudgeHostLogsViewerProps = {
 };
 
 export const JudgeHostLogsViewer: FC<JudgeHostLogsViewerProps> = ({ hostname, onClose }) => {
-  const { socket } = useWebSocketContext();
-
   const [logs, setLogs] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (!hostname) return;
+  const updateLogs = useCallback((logLine: string) => {
+    setLogs((logs) => [...logs, logLine]);
+    const terminalSegment = document.getElementById('terminal-logs');
+    terminalSegment && (terminalSegment.scrollTop = terminalSegment.scrollHeight);
+  }, []);
 
-    const event = `judgeHost-${hostname}-logs`;
-
-    socket.on(event, (logLine: string) => {
-      setLogs((logs) => [...logs, logLine]);
-      const terminalSegment = document.getElementById('terminal-logs');
-      terminalSegment && (terminalSegment.scrollTop = terminalSegment.scrollHeight);
-    });
-
-    return () => {
-      socket.off(event);
-    };
-  }, [hostname, socket]);
+  useOnWebSocketEvent(`judgeHost-${hostname}-logs`, updateLogs);
 
   return (
     <Sheet open={!!hostname} onOpenChange={(value) => !value && onClose()}>
@@ -36,14 +26,24 @@ export const JudgeHostLogsViewer: FC<JudgeHostLogsViewerProps> = ({ hostname, on
         <Sheet.Header>
           <Sheet.Title>Judge Host '{hostname}' logs</Sheet.Title>
         </Sheet.Header>
-        <div id="terminal-logs" className="h-96 overflow-auto rounded-md bg-slate-900 text-white">
+        <Flex
+          id="terminal-logs"
+          className="gap-0 overflow-auto rounded-md bg-black p-2 text-white"
+          direction="column"
+          fullHeight
+          fullWidth
+        >
           {logs.map((log, index) => (
-            <span key={index}>
-              <Ansi>{log}</Ansi>
-              <br />
-            </span>
+            <Ansi key={index}>{log}</Ansi>
           ))}
-        </div>
+        </Flex>
+        <Sheet.Footer>
+          <Sheet.Close asChild>
+            <Button color="red" onClick={onClose}>
+              Close
+            </Button>
+          </Sheet.Close>
+        </Sheet.Footer>
       </Sheet.Content>
     </Sheet>
   );

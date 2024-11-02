@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Flex, Tooltip, cn } from 'tw-react-components';
 
 import { useActiveContest, useAuthContext } from '@core/contexts';
+import { useOnWebSocketEvent } from '@core/hooks';
 import { formatRestTime, getRGBColorContrast, request } from '@core/utils';
 
 import { NoActiveContest } from './NoActiveContest';
@@ -34,7 +35,7 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
   const { profile, isUserJury } = useAuthContext();
   const { id } = useParams<{ id: string }>();
 
-  const { currentContest, activeContests } = useActiveContest();
+  const { currentContest, activeContests, refreshContests } = useActiveContest();
 
   const contest = useMemo(
     () => (id ? activeContests.find((c) => c.id === +id) : currentContest),
@@ -42,6 +43,8 @@ export const Scoreboard: FC<Props> = ({ className, compact }) => {
   );
 
   const [standing, setStanding] = useState<TeamStandingRow[]>([]);
+
+  useOnWebSocketEvent('scoreboard', refreshContests);
 
   useEffect(() => {
     if (contest?.scoreCaches) {

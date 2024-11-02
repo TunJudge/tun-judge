@@ -9,7 +9,7 @@ import { prisma } from './prisma.service';
 @Injectable()
 export class SystemService {
   async getNextJudging(): Promise<Judging> {
-    const judgeHost = await prisma.judgeHost.findFirst({ where: { hostname: config.hostname } });
+    const judgeHost = await this.getOrCreateJudgeHost(config.hostname);
 
     if (!judgeHost?.active) return;
 
@@ -40,6 +40,7 @@ export class SystemService {
         language: { allowJudge: true },
       },
       include: {
+        team: true,
         problem: {
           include: {
             problem: {
@@ -69,6 +70,15 @@ export class SystemService {
     });
   }
 
+  async getOrCreateJudgeHost(hostname: string) {
+    return (
+      (await prisma.judgeHost.findFirst({ where: { hostname: config.hostname } })) ??
+      prisma.judgeHost.create({
+        data: { hostname, user: { connect: { username: config.username } } },
+      })
+    );
+  }
+
   async getOrCreateSubmissionJudging(submission: Submission, judgeHost: JudgeHost) {
     return (
       (await prisma.judging.findFirst({
@@ -84,6 +94,7 @@ export class SystemService {
           judgeHostId: judgeHost.id,
           submissionId: submission.id,
         },
+        include: { submission: true },
       })
     );
   }
@@ -96,6 +107,7 @@ export class SystemService {
         result: result,
         systemError: errorMessage,
       },
+      include: { submission: true },
     });
   }
 

@@ -3,6 +3,7 @@ import { FC } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Sidebar } from 'tw-react-components';
 
+import { useOnWebSocketEvent } from '@core/hooks';
 import { useFindFirstContest, useFindManyClarification } from '@core/queries';
 
 import { ClarificationGroupTab } from './ClarificationGroupTab';
@@ -15,7 +16,7 @@ export const ClarificationsSidebar: FC = () => {
     include: { problems: { include: { problem: true } } },
   });
 
-  const { data: clarifications = [] } = useFindManyClarification(
+  const { data: clarifications = [], refetch } = useFindManyClarification(
     {
       where: { contestId: parseInt(contestId ?? '-1') },
       include: {
@@ -26,6 +27,8 @@ export const ClarificationsSidebar: FC = () => {
     },
     { enabled: !!contestId },
   );
+
+  useOnWebSocketEvent('clarifications', refetch);
 
   return (
     <Sidebar className="[--sidebar-width:250px]" collapsible="none">

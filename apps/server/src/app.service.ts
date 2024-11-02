@@ -8,7 +8,7 @@ import { LogClass } from './logger';
 @LogClass
 @Injectable()
 export class AppService {
-  constructor(initializer: MainInitializer) {
-    initializer._run(new PrismaClient());
+  constructor(private readonly initializer: MainInitializer) {
+    this.initializer._run(new PrismaClient());
   }
 }

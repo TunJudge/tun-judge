@@ -5,7 +5,7 @@ import { FormDialog, FormInputs } from 'tw-react-components';
 import { FileKind, Submission } from '@prisma/client';
 
 import { useActiveContest, useAuthContext } from '@core/contexts';
-import { useCreateSubmission, useFindManyLanguage } from '@core/queries';
+import { useCountSubmission, useCreateSubmission, useFindManyLanguage } from '@core/queries';
 import { uploadFile } from '@core/utils';
 
 type Props = {
@@ -21,6 +21,17 @@ export const SubmitForm: FC<Props> = ({ submission, onClose }) => {
 
   const form = useForm<Submission>({ defaultValues: structuredClone(submission) });
 
+  const { data: submissionsCount } = useCountSubmission(
+    {
+      where: {
+        contestId: currentContest?.id,
+        teamId: profile?.teamId ?? undefined,
+        problemId: form.watch('problemId'),
+      },
+    },
+    { enabled: !!form.watch('problemId') },
+  );
+
   const { data: languages = [] } = useFindManyLanguage();
   const { mutateAsync } = useCreateSubmission();
 
@@ -33,7 +44,7 @@ export const SubmitForm: FC<Props> = ({ submission, onClose }) => {
 
     if (sourceFile) {
       const source = await uploadFile(sourceFile, {
-        name: `Submissions/${profile.team.name}/${sourceFile.name}`,
+        name: `Submissions/${profile.team.name}/p-${submission.problemId}-n-${submissionsCount}-${sourceFile.name}`,
         type: sourceFile.type,
         size: sourceFile.size,
         md5Sum: '',

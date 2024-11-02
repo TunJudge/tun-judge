@@ -9,7 +9,7 @@ import { JudgeLogger } from './logger';
 async function bootstrap() {
   const logger = new JudgeLogger('main');
   try {
-    console.log('Connecting to TunJudge...', config);
+    logger.log('Connecting to TunJudge...');
 
     await http.post(`api/auth/login`, {
       username: config.username,

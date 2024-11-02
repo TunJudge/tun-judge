@@ -17,8 +17,9 @@ import { Prisma, User } from '@prisma/client';
 import { CodeEditor, PageTemplate } from '@core/components';
 import { LANGUAGES_MAP } from '@core/constants';
 import { useAuthContext } from '@core/contexts';
-import { useDownloadedFile } from '@core/hooks';
+import { useDownloadedFile, useOnWebSocketEvent } from '@core/hooks';
 import { useFindFirstSubmission, useUpdateJudging, useUpdateSubmission } from '@core/queries';
+import { request } from '@core/utils';
 
 import { SubmissionViewDetails } from './SubmissionViewDetails';
 import { SubmissionsViewJudgingRuns } from './SubmissionViewJudgingRuns';
@@ -47,7 +48,7 @@ export type Testcase = JudgingRun['testcase'];
 
 export const SubmissionsView: FC = () => {
   const { contestId } = useParams();
-  const { profile } = useAuthContext();
+  const { profile, isUserAdmin } = useAuthContext();
   const navigate = useNavigate();
   const { submissionId } = useParams();
 
@@ -76,6 +77,8 @@ export const SubmissionsView: FC = () => {
   const { mutateAsync: updateJudging } = useUpdateJudging();
   const { mutateAsync: updateSubmission } = useUpdateSubmission();
 
+  useOnWebSocketEvent('judgings', refetch);
+
   const content = useDownloadedFile(submission?.sourceFileName);
   const latestJudging = useMemo(() => {
     const validJudgings = submission?.judgings.filter((j) => j.valid);
@@ -87,20 +90,23 @@ export const SubmissionsView: FC = () => {
     );
   }, [submission?.judgings]);
 
-  const toggleSubmissionValid = () => {
+  const toggleSubmissionValid = async () => {
     if (!submission) return;
 
-    updateSubmission({ where: { id: submission.id }, data: { valid: !submission.valid } });
+    await updateSubmission({ where: { id: submission.id }, data: { valid: !submission.valid } });
+    await request('api/scoreboard/refresh-score-cache', 'PATCH');
   };
 
   const rejudge = async () => {
     if (!submission) return;
 
     await updateSubmission({ where: { id: submission.id }, data: { judgeHostId: null } });
+    await request('api/scoreboard/refresh-score-cache', 'PATCH');
   };
 
-  const markVerified = (judgingId: number) => {
-    updateJudging({ where: { id: judgingId }, data: { verified: true } });
+  const markVerified = async (judgingId: number) => {
+    await updateJudging({ where: { id: judgingId }, data: { verified: true } });
+    await request('api/scoreboard/refresh-score-cache', 'PATCH');
 
     navigate(`/contests/${contestId}/submissions`);
   };
@@ -137,7 +143,7 @@ export const SubmissionsView: FC = () => {
       title={`Submission ${submission.id}`}
       actions={
         <>
-          {isSubmissionClaimedByMe(latestJudging, profile) && (
+          {(isSubmissionClaimedByMe(latestJudging, profile) || isUserAdmin) && (
             <Button
               color="gray"
               prefixIcon={submission.valid ? ClipboardXIcon : ClipboardPlusIcon}
@@ -148,7 +154,7 @@ export const SubmissionsView: FC = () => {
           )}
           {latestJudging?.result &&
             latestJudging.verified &&
-            isSubmissionClaimedByMe(latestJudging, profile) && (
+            (isSubmissionClaimedByMe(latestJudging, profile) || isUserAdmin) && (
               <Button color="red" onClick={rejudge}>
                 Rejudge
               </Button>

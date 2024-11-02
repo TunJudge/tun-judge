@@ -5,6 +5,7 @@ import { Judging, Prisma } from '@prisma/client';
 
 import { PageTemplate, SubmissionResult } from '@core/components';
 import { useActiveContest, useAuthContext } from '@core/contexts';
+import { useOnWebSocketEvent } from '@core/hooks';
 import { useFindManySubmission } from '@core/queries';
 import { dateComparator, formatRestTime, isContestRunning } from '@core/utils';
 
@@ -16,13 +17,20 @@ export const SubmissionsList: FC<{ className?: string }> = ({ className }) => {
   const { profile } = useAuthContext();
   const { currentContest } = useActiveContest();
 
-  const { data: submissions, isLoading } = useFindManySubmission(
+  const {
+    data: submissions,
+    isLoading,
+    refetch,
+  } = useFindManySubmission(
     {
       where: { contestId: currentContest?.id, teamId: profile?.teamId ?? undefined },
       include: { problem: true, language: true, judgings: true },
     },
     { enabled: isContestRunning(currentContest) },
   );
+
+  useOnWebSocketEvent('scoreboard', refetch);
+  useOnWebSocketEvent('submissions', refetch);
 
   const columns: DataTableColumn<Submission>[] = [
     {

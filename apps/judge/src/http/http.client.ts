@@ -22,6 +22,10 @@ export class HttpClient {
     return this.request<T>(path, 'PUT', { body: JSON.stringify(body), ...options });
   }
 
+  patch<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
+    return this.request<T>(path, 'PATCH', { body: JSON.stringify(body), ...options });
+  }
+
   stream(path: string, options?: RequestInit): Promise<ReadableStream<Uint8Array>> {
     return this.request<ReadableStream<Uint8Array>>(path, 'GET', options, true);
   }

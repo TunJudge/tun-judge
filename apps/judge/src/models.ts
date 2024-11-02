@@ -4,6 +4,7 @@ export type Judging = Prisma.JudgingGetPayload<{
   include: {
     submission: {
       include: {
+        team: true;
         problem: {
           include: {
             problem: {

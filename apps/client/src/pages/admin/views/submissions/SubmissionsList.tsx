@@ -7,7 +7,7 @@ import { Prisma, Testcase } from '@prisma/client';
 
 import { SubmissionResult } from '@core/components';
 import { useAuthContext } from '@core/contexts';
-import { usePagination } from '@core/hooks';
+import { useOnWebSocketEvent, usePagination } from '@core/hooks';
 import {
   useCountSubmission,
   useFindFirstContest,
@@ -36,7 +36,11 @@ export const SubmissionsList: FC = () => {
   const { data: totalItems = 0 } = useCountSubmission({
     where: { contestId: parseInt(contestId ?? '-1') },
   });
-  const { data: submissions = [], isLoading } = useFindManySubmission({
+  const {
+    data: submissions = [],
+    isLoading,
+    refetch,
+  } = useFindManySubmission({
     where: { contestId: parseInt(contestId ?? '-1') },
     include: {
       team: true,
@@ -53,6 +57,10 @@ export const SubmissionsList: FC = () => {
     take: 25,
   });
   const { mutateAsync: updateJudging } = useUpdateJudging();
+
+  useOnWebSocketEvent('judgings', refetch);
+  useOnWebSocketEvent('judgingRuns', refetch);
+  useOnWebSocketEvent('submissions', refetch);
 
   const claimSubmission = async (judgingId: number) => {
     if (!profile) return;

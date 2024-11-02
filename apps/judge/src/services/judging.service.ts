@@ -2,6 +2,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 
 import { SubmissionHelper, fixError } from '../helpers';
+import http from '../http/http.client';
 import { Compiler, Executor, Initializer } from '../judging-steps';
 import { JudgeLogger, getOnLog } from '../logger';
 import { Judging } from '../models';
@@ -57,6 +58,7 @@ export class JudgingService {
       await this.initializer.run(judging);
       const compilationSucceeded = await this.compiler.run(judging);
       compilationSucceeded && (await this.executor.run(judging));
+      await http.patch('api/scoreboard/refresh-score-cache');
     } catch (error: unknown) {
       const newError = fixError(error);
       this.logger.error(newError.message, newError.stack);

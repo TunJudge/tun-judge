@@ -12,7 +12,8 @@
       "@core/contexts": ["apps/client/src/core/contexts/index.ts"],
       "@core/hooks": ["apps/client/src/core/hooks/index.ts"],
       "@core/utils": ["apps/client/src/core/utils/index.ts"],
-      "@core/queries": ["apps/client/src/core/queries/index.ts"]
+      "@core/queries": ["apps/client/src/core/queries/index.ts"],
+      "@tun-judge/shared": ["libs/shared/src/index.ts"]
     }
   },
   "files": [],

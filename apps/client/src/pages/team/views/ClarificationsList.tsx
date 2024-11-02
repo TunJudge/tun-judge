@@ -4,6 +4,7 @@ import { Button, DataTable, DataTableColumn, Flex } from 'tw-react-components';
 
 import { ChatBoxDialog, Clarification, PageTemplate } from '@core/components';
 import { useActiveContest, useAuthContext } from '@core/contexts';
+import { useOnWebSocketEvent } from '@core/hooks';
 import { useFindManyClarification } from '@core/queries';
 import { countUnseenMessages } from '@core/utils';
 
@@ -13,7 +14,7 @@ export const ClarificationsList: FC<{ className?: string }> = ({ className }) =>
 
   const [clarificationId, setClarificationId] = useState<number>();
 
-  const { data: clarifications = [] } = useFindManyClarification(
+  const { data: clarifications = [], refetch } = useFindManyClarification(
     {
       include: {
         team: true,
@@ -24,6 +25,8 @@ export const ClarificationsList: FC<{ className?: string }> = ({ className }) =>
     },
     { refetchInterval: import.meta.env.MODE !== 'development' && 5000 },
   );
+
+  useOnWebSocketEvent('clarifications', refetch);
 
   const columns: DataTableColumn<Clarification>[] = [
     {

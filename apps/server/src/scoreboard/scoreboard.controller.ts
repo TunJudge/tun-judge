@@ -11,7 +11,7 @@ export class ScoreboardController {
   constructor(private readonly scoreboardService: ScoreboardService) {}
 
   @Patch('refresh-score-cache')
-  @Roles('jury', 'admin')
+  @Roles('admin', 'jury', 'judge-host')
   refreshScoreCache() {
     return this.scoreboardService.refreshScores();
   }

@@ -15,6 +15,7 @@ export type ActiveContest = {
   activeContests: Contest[];
   currentContest?: Contest;
   setCurrentContest: (contest?: Contest) => void;
+  refreshContests: () => void;
 };
 
 export const ActiveContestContext = createContext<ActiveContest | undefined>(undefined);
@@ -23,7 +24,7 @@ export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
   const [now, setNow] = useState(new Date());
   const [currentContest, setCurrentContest] = useState<Contest>();
 
-  const { data: contests = [] } = useFindManyContest({
+  const { data: contests = [], refetch } = useFindManyContest({
     where: {
       enabled: true,
       activateTime: { lte: now },
@@ -51,7 +52,12 @@ export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <ActiveContestContext.Provider
-      value={{ activeContests: contests, currentContest, setCurrentContest }}
+      value={{
+        activeContests: contests,
+        currentContest,
+        setCurrentContest,
+        refreshContests: refetch,
+      }}
     >
       {children}
     </ActiveContestContext.Provider>

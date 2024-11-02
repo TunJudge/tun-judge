@@ -18,6 +18,7 @@ import { RolesGuard } from './guards';
 import { InitializersModule } from './initializers';
 import { RequestLoggerMiddleware } from './logger';
 import { ScoreboardModule } from './scoreboard';
+import { WebsocketGateway } from './websocket/websocket.gateway';
 import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
@@ -36,14 +37,16 @@ import { WebsocketModule } from './websocket/websocket.module';
     }),
     ZenStackModule.registerAsync({
       global: true,
-      useFactory: (prisma: PrismaService, cls: ClsService) => ({
-        getEnhancedPrisma: () => enhance(prisma, { user: cls.get('auth') }),
-      }),
-      inject: [PrismaService, ClsService],
+      useFactory: (prisma: PrismaService, cls: ClsService, socketService: WebsocketGateway) => {
+        const spiedPrisma = socketService.spyOn(prisma);
+
+        return { getEnhancedPrisma: () => enhance(spiedPrisma, { user: cls.get('auth') }) };
+      },
+      inject: [PrismaService, ClsService, WebsocketGateway],
       extraProviders: [PrismaService],
     }),
     DatabaseModule,
-    WebsocketModule,
+    WebsocketModule.forRoot(),
     InitializersModule,
     AuthModule,
     FilesModule,

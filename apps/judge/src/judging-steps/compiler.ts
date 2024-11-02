@@ -154,20 +154,23 @@ export class Compiler {
   }
 
   private async setJudgingCompileOutput(judging: Judging, result: ExecResult): Promise<void> {
+    const parentDirectoryName = `Submissions/${judging.submission.team.name}/${judging.submission.id}/Judgings/${judging.id}`;
+
     const blob = new Blob([result.stdout.trim()], { type: 'text/plain' });
     const file = new File([blob], 'compile.out', { type: 'text/plain' });
     const compileOutput = await uploadFile(file, {
-      name: `Submissions/${judging.submission.id}/Judgings/${judging.id}/${file.name}`,
+      name: `${parentDirectoryName}/${file.name}`,
       type: file.type,
       size: file.size,
       md5Sum: '',
       kind: FileKind.FILE,
-      parentDirectoryName: `Submissions/${judging.submission.id}/Judgings/${judging.id}`,
+      parentDirectoryName,
     });
 
     await prisma.judging.update({
       where: { id: judging.id },
       data: { compileOutputFileName: compileOutput.name },
+      include: { submission: true },
     });
   }
 }

@@ -13,6 +13,7 @@ model JudgeHost {
   judgings    Judging[]
 
   @@allow('read', auth() != null && (auth().roleName == 'admin' || auth().roleName == 'jury'))
-  @@allow('read', auth() != null && auth().roleName == 'judge-host' && active && userId == auth().id)
+  @@allow('read', auth() != null && auth().roleName == 'judge-host' && userId == auth().id)
+  @@allow('create', auth() != null && auth().roleName == 'judge-host' && userId == auth().id)
   @@allow('create,update,delete', auth() != null && auth().roleName == 'admin')
 }

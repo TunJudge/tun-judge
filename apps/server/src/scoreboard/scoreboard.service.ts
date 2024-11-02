@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 
-import { Judging, JudgingResult, Prisma, ScoreCache } from '@prisma/client';
+import { JudgingResult, Prisma, ScoreCache } from '@prisma/client';
 
 import { PrismaService } from '../db';
 import { LogClass } from '../logger';
+import { WebsocketGateway } from '../websocket/websocket.gateway';
 
 type Contest = Prisma.ContestGetPayload<{ include: { teams: true; problems: true } }>;
 
@@ -15,6 +16,8 @@ type Submission = Prisma.SubmissionGetPayload<{ include: { judgings: true } }>;
 export class ScoreboardService {
   private readonly prisma: PrismaService = new PrismaService();
   private refreshing = false;
+
+  constructor(private readonly socketService: WebsocketGateway) {}
 
   @Interval(60 * 1000)
   async refreshScores(): Promise<void> {
@@ -28,6 +31,8 @@ export class ScoreboardService {
         include: { teams: true, problems: true },
       });
       await Promise.all(contests.map((contest) => this.refreshScoreForContest(contest)));
+
+      this.socketService.pingForUpdates('all', 'scoreboard');
     } finally {
       this.refreshing = false;
     }

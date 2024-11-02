@@ -38,6 +38,7 @@ export default defineConfig({
       '@core/hooks': '/src/core/hooks',
       '@core/utils': '/src/core/utils',
       '@core/queries': '/src/core/queries',
+      '@tun-judge/shared': 'libs/shared/src',
     },
   },
 
