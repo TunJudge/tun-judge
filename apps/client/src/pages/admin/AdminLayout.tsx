@@ -3,19 +3,21 @@ import {
   ClipboardListIcon,
   CogIcon,
   GraduationCapIcon,
+  LayoutDashboardIcon,
   ServerIcon,
   StarsIcon,
   UserRoundIcon,
   UsersRoundIcon,
 } from 'lucide-react';
 import { FC, useMemo } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Link, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout, Sidebar, SidebarProps } from 'tw-react-components';
 
 import { Scoreboard } from '@core/components';
 import { useActiveContest } from '@core/contexts';
 
 import { NavUser } from './NavUser';
+import { Dashboard } from './views/Dashboard';
 import { ClarificationsList } from './views/clarifications/ClarificationsList';
 import { ContestForm } from './views/contests/ContestForm';
 import { ContestView } from './views/contests/ContestView';
@@ -37,25 +39,28 @@ export const AdminLayout: FC = () => {
   const sidebarProps: SidebarProps = useMemo(
     () => ({
       header: (
-        <Sidebar.MenuButton size="lg">
-          <img
-            className="h-8 w-8 rounded-lg"
-            src="https://ui-avatars.com/api/?name=Tun_Judge&background=1d4ed8&color=fff"
-            alt="TunJudge"
-          />
-          <span className="text-lg font-semibold">Tun Judge</span>
-        </Sidebar.MenuButton>
+        <Link to="/">
+          <Sidebar.MenuButton size="lg">
+            <img
+              className="h-8 w-8 rounded-lg"
+              src="https://ui-avatars.com/api/?name=Tun_Judge&background=1d4ed8&color=fff"
+              alt="TunJudge"
+            />
+            <span className="text-lg font-semibold">Tun Judge</span>
+          </Sidebar.MenuButton>
+        </Link>
       ),
       items: [
+        {
+          type: 'item',
+          pathname: '',
+          title: 'Dashboard',
+          Icon: LayoutDashboardIcon,
+        },
         {
           type: 'group',
           title: 'Setup',
           items: [
-            // {
-            //   pathname: '',
-            //   title: 'Home',
-            //   Icon: HomeIcon,
-            // },
             {
               pathname: 'users',
               title: 'Users',
@@ -122,7 +127,7 @@ export const AdminLayout: FC = () => {
   return (
     <Layout className="p-0" sidebarProps={sidebarProps}>
       <Routes>
-        {/* <Route exact path="/" component={Dashboard} />*/}
+        <Route path="" element={<Dashboard />} />
         <Route path="users" element={<UsersList />} />
         <Route path="teams" element={<TeamsList />} />
         <Route path="teams/categories" element={<TeamCategoriesList />} />

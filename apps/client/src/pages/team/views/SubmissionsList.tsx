@@ -85,11 +85,13 @@ export const SubmissionsList: FC<{ className?: string }> = ({ className }) => {
             !judging ||
             !judging.result ||
             (currentContest?.verificationRequired && !judging.verified)
-          )
-            return 'bg-yellow-400 dark:bg-yellow-700';
+          ) {
+            return 'bg-yellow-200 dark:bg-yellow-800';
+          }
+
           return judging.result === 'ACCEPTED'
-            ? 'bg-green-400 dark:bg-green-700'
-            : 'bg-red-400 dark:bg-red-700';
+            ? 'bg-green-200 dark:bg-green-800'
+            : 'bg-red-200 dark:bg-red-800';
         }}
       />
     </PageTemplate>
