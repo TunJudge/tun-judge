@@ -158,7 +158,6 @@ jobs:
           secrets: |
             SESSION_SECRET=SESSION_SECRET:latest
             DATABASE_URL=TUN_JUDGE_DATABASE_URL:latest
-            DATABASE_DIRECT_URL=TUN_JUDGE_DATABASE_DIRECT_URL:latest
             REDIS_URL=TUN_JUDGE_REDIS_URL:latest
 
       - name: Show Output

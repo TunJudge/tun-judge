@@ -10,7 +10,6 @@ services:
       ENVIRONMENT: test
       LOG_LEVEL: debug
       DATABASE_URL: 'postgresql://tun-judge:tun-judge@db:5432/tun-judge?schema=public'
-      DATABASE_DIRECT_URL: 'postgresql://tun-judge:tun-judge@db:5432/tun-judge'
       SESSION_SECRET: secret
       REDIS_URL: 'redis://redis:6379'
     ports:
