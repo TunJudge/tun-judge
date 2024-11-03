@@ -1,7 +1,0 @@
-{
-  "name": "server",
-  "version": "0.0.1",
-  "description": "Server of the application",
-  "private": true,
-  "license": "MIT"
-}

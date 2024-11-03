@@ -1,10 +1,11 @@
 {
   "name": "@tun-judge/source",
-  "version": "0.0.0",
+  "version": "0.0.42",
   "license": "MIT",
   "private": true,
   "packageManager": "yarn@4.5.0",
   "scripts": {
+    "build": "nx run-many --target=build",
     "serve": "nx run-many --target=serve --projects=client,server",
     "judge:serve": "nx run judge:serve",
     "lint": "nx affected:lint",
