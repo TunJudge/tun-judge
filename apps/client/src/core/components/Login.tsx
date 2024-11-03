@@ -3,7 +3,7 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Card, Flex, FormInputs } from 'tw-react-components';
 
-import { version } from '../../../package.json';
+import { version } from '../../../../../package.json';
 import { useAuthContext } from '../contexts';
 import { request } from '../utils';
 

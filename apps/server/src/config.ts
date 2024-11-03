@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 
-import { version } from '../package.json';
+import { version } from '../../../package.json';
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ export const config = {
       directoryPath: process.env['SYSTEM_STORAGE_DIRECTORY_PATH'],
     },
     google: {
-      enabled: process.env['GOOGLE_STORAGE_ENABLED'] === 'true' ?? false,
+      enabled: process.env['GOOGLE_STORAGE_ENABLED'] === 'true',
       googleProjectId: process.env['GOOGLE_STORAGE_PROJECT_ID'],
       bucketName: process.env['GOOGLE_STORAGE_BUCKET_NAME'] ?? '',
     },
