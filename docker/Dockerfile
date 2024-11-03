@@ -7,8 +7,6 @@ RUN yarn workspaces focus --production
 
 FROM node:22-alpine as final-stage
 
-ARG PROJECT
-
 RUN apk add --update curl && rm -rf /var/cache/apk/*
 
 WORKDIR /usr/src/app

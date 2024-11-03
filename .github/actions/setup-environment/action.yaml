@@ -1,0 +1,63 @@
+name: 'Setup environment'
+description: 'This action will checkout code, setup node and retrieve the cache'
+
+inputs:
+  skip-install:
+    description: 'Skip Install1'
+    required: false
+outputs:
+  version:
+    description: 'Project version'
+    value: ${{ steps.version.outputs.version }}
+  cache-hit:
+    description: 'A boolean value to indicate an exact match was found for the key'
+    value: ${{ steps.yarn-cache.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set Yarn version
+      shell: bash
+      run: yarn set version 4.5.1
+
+    - name: Install NodeJs 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Derive appropriate SHAs for base and head for `nx affected` commands
+      uses: nrwl/nx-set-shas@v3
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      shell: bash
+      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+    - name: Restore yarn cache
+      uses: actions/cache@v4
+      id: yarn-cache
+      if: inputs.skip-install != 'true'
+      with:
+        path: |
+          ./.yarn/install-state.gz
+          ~/.cache/Cypress
+          ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: ${{ runner.os }}-yarn-
+
+    - name: Yarn Install
+      shell: bash
+      run: yarn install --immutable
+      if: inputs.skip-install != 'true'
+
+    - name: Retrieve commit message
+      id: commit_message
+      shell: bash
+      run: |
+        echo "commit_message=$(git log --no-merges -1 --pretty=format:"%s")" >> $GITHUB_OUTPUT
+
+    - name: Retrieve version
+      id: version
+      shell: bash
+      run: |
+        echo "version=$(node -e 'console.log(require("./package.json").version);')" >> $GITHUB_OUTPUT

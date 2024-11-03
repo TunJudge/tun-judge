@@ -1,0 +1,166 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency: ${{ github.ref }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-environment
+        id: setup
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Prettier
+        run: yarn prettier
+
+      - name: Generate Prisma Schema
+        run: yarn prisma:generate
+
+      - name: Build
+        run: yarn build
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Dependencies Docker image
+        uses: docker/build-push-action@v5
+        if: steps.setup.outputs.cache-hit != 'true'
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/tun-judge/dependencies:${{ hashFiles('yarn.lock') }}
+            ghcr.io/tun-judge/dependencies:latest
+
+      - name: Run docker compose up
+        if: false
+        run: |
+          docker compose -f docker-compose.test.yaml up -d app
+          sleep 30s
+        env:
+          DEPENDENCIES_TAG: ${{ hashFiles('yarn.lock') }}
+
+      - name: Run E2E tests
+        if: false
+        shell: bash
+        run: yarn e2e
+
+      - name: Run docker compose down
+        if: false
+        run: |
+          docker compose -f docker-compose.test.yaml logs
+          docker compose -f docker-compose.test.yaml down
+
+      - name: Save Build Output
+        uses: actions/cache/save@v4
+        with:
+          path: dist/apps
+          key: apps-${{ steps.setup.outputs.version }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    if: startsWith(github.event.head_commit.message, 'release')
+    needs: build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-environment
+        id: setup
+        with:
+          skip-install: 'true'
+
+      - name: Restore Build Output
+        uses: actions/cache/restore@v4
+        with:
+          path: dist/apps
+          key: apps-${{ steps.setup.outputs.version }}
+          fail-on-cache-miss: true
+
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Auth
+        id: docker-auth
+        uses: docker/login-action@v3
+        with:
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+          registry: europe-west1-docker.pkg.dev
+
+      - name: Build and push Server Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/server/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/tunjudge/server:${{ steps.setup.outputs.version }}
+            europe-west1-docker.pkg.dev/tun-judge-dev/docker/tun-judge-app:${{ steps.setup.outputs.version }}
+          build-args: |
+            DEPENDENCIES_TAG=${{ hashFiles('yarn.lock') }}
+
+      - name: Build and push Judge Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/judge/Dockerfile
+          push: true
+          tags: ghcr.io/tunjudge/judge:${{ steps.setup.outputs.version }}
+          build-args: |
+            DEPENDENCIES_TAG=${{ hashFiles('yarn.lock') }}
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          image: europe-west1-docker.pkg.dev/tun-judge-dev/docker/tun-judge-app:${{ steps.setup.outputs.version }}
+          service: tun-judge
+          region: europe-west1
+          env_vars: |
+            GOOGLE_PROJECT_ID=tun-judge-dev
+            GOOGLE_STORAGE_ENABLED=true
+            GOOGLE_STORAGE_BUCKET_NAME=tun-judge-files
+          secrets: |
+            SESSION_SECRET=SESSION_SECRET:latest
+            DATABASE_URL=TUN_JUDGE_DATABASE_URL:latest
+            DATABASE_DIRECT_URL=TUN_JUDGE_DATABASE_DIRECT_URL:latest
+            REDIS_URL=TUN_JUDGE_REDIS_URL:latest
+
+      - name: Show Output
+        shell: bash
+        run: echo ${{ steps.deploy.outputs.url }}

@@ -9,6 +9,8 @@ COPY --chown=node:node apps/judge/package.json ./package.json
 COPY --chown=node:node zenstack/prisma ./prisma
 COPY --chown=node:node dist/apps/judge ./judge
 
+RUN yarn prisma generate
+
 ENV ENVIRONMENT=production
 
 EXPOSE 3000
