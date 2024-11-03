@@ -48,8 +48,8 @@ jobs:
           file: docker/Dockerfile
           push: true
           tags: |
-            ghcr.io/tun-judge/dependencies:${{ hashFiles('yarn.lock') }}
-            ghcr.io/tun-judge/dependencies:latest
+            ghcr.io/tunjudge/dependencies:${{ hashFiles('yarn.lock') }}
+            ghcr.io/tunjudge/dependencies:latest
 
       - name: Run docker compose up
         if: false
