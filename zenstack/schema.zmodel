@@ -22,8 +22,13 @@ datasource db {
   url = env('DATABASE_URL')
 }
 
+generator server {
+  provider = 'prisma-client-js'
+}
+
 generator client {
   provider = 'prisma-client-js'
+  output   = "../../node_modules/.prisma/browser"
 }
 
 plugin hooks {

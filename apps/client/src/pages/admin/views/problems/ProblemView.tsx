@@ -3,9 +3,8 @@ import { FC } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Flex, Spinner, Table } from 'tw-react-components';
 
-import { Prisma } from '@prisma/client';
-
 import { PageTemplate } from '@core/components';
+import { Prisma } from '@core/prisma';
 import { useFindFirstProblem, useUpdateManySubmission } from '@core/queries';
 
 import { TestcasesList } from './testcases/TestcasesList';

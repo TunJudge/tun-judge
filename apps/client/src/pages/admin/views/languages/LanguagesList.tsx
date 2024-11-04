@@ -8,11 +8,10 @@ import {
   useLayoutContext,
 } from 'tw-react-components';
 
-import { Prisma } from '@prisma/client';
-
 import { CodeEditorSheet, PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { Prisma } from '@core/prisma';
 import { useDeleteLanguage, useFindManyLanguage } from '@core/queries';
 
 import { LanguageForm } from './LanguageForm';

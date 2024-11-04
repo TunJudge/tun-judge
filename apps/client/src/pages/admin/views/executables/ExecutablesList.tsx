@@ -8,11 +8,10 @@ import {
   useLayoutContext,
 } from 'tw-react-components';
 
-import { Executable, ExecutableType } from '@prisma/client';
-
 import { CodeEditorSheet, PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { Executable, ExecutableType } from '@core/prisma';
 import { useDeleteExecutable, useFindManyExecutable } from '@core/queries';
 
 import { ExecutableForm } from './ExecutableForm';

@@ -2,9 +2,8 @@ import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { FormDialog, FormInputs } from 'tw-react-components';
 
-import { FileKind, Submission } from '@prisma/client';
-
 import { useActiveContest, useAuthContext } from '@core/contexts';
+import { FileKind, Submission } from '@core/prisma';
 import { useCountSubmission, useCreateSubmission, useFindManyLanguage } from '@core/queries';
 import { uploadFile } from '@core/utils';
 

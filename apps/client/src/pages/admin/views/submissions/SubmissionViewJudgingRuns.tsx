@@ -2,11 +2,10 @@ import { EyeIcon, FlaskConicalIcon } from 'lucide-react';
 import { FC, useState } from 'react';
 import { Button, Flex, cn } from 'tw-react-components';
 
-import { JudgingRunResult } from '@prisma/client';
-
 import { CodeEditorSheet, DiffValues, DiffViewerSheet, PageTemplate } from '@core/components';
 import { JUDGING_RESULT_LABELS } from '@core/constants';
 import { useDownloadedFile } from '@core/hooks';
+import { JudgingRunResult } from '@core/prisma';
 import { downloadFile, formatBytes } from '@core/utils';
 
 import { Judging, JudgingRun } from './SubmissionView';

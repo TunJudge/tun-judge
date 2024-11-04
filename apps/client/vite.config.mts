@@ -32,6 +32,7 @@ export default defineConfig({
 
   resolve: {
     alias: {
+      '@core/prisma': 'node_modules/.prisma/browser/index-browser.js',
       '@core/components': '/src/core/components',
       '@core/contexts': '/src/core/contexts',
       '@core/constants': '/src/core/constants.ts',

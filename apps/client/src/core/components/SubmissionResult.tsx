@@ -1,8 +1,7 @@
 import { FC } from 'react';
 import { cn } from 'tw-react-components';
 
-import { Judging, Prisma } from '@prisma/client';
-
+import { Judging, Prisma } from '@core/prisma';
 import { dateComparator } from '@core/utils';
 
 import { JUDGING_RESULT_LABELS } from '../constants';

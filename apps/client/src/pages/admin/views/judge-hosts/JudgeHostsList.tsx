@@ -9,11 +9,10 @@ import {
   useLayoutContext,
 } from 'tw-react-components';
 
-import { Prisma } from '@prisma/client';
-
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { Prisma } from '@core/prisma';
 import { useDeleteJudgeHost, useFindManyJudgeHost, useUpdateJudgeHost } from '@core/queries';
 import { getDisplayDate } from '@core/utils';
 

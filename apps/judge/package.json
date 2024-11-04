@@ -1,0 +1,7 @@
+{
+  "name": "judge",
+  "version": "0.0.0",
+  "description": "Judge of the application",
+  "private": true,
+  "license": "MIT"
+}

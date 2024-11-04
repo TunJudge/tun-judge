@@ -4,10 +4,9 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Block, Button, DataTable, Flex, FormInputs, Spinner } from 'tw-react-components';
 
-import { ContestProblem, Prisma } from '@prisma/client';
-
 import { PageTemplate } from '@core/components';
 import { useAuthContext, useToastContext } from '@core/contexts';
+import { ContestProblem, Prisma } from '@core/prisma';
 import { useFindFirstContest, useFindManyProblem, useUpsertContest } from '@core/queries';
 import { getRandomHexColor } from '@core/utils';
 

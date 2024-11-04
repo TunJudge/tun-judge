@@ -1,4 +1,4 @@
-import { FileKind } from '@prisma/client';
+import { FileKind } from '@core/prisma';
 
 export type FileUpdateStatus = { metadata: FileInput; file: File } & (
   | { status: 'new' }

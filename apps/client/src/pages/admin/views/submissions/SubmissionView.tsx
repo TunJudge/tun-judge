@@ -12,12 +12,11 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Spinner, Tooltip } from 'tw-react-components';
 
-import { Prisma, User } from '@prisma/client';
-
 import { CodeEditor, PageTemplate } from '@core/components';
 import { LANGUAGES_MAP } from '@core/constants';
 import { useAuthContext } from '@core/contexts';
 import { useDownloadedFile, useOnWebSocketEvent } from '@core/hooks';
+import { Prisma, User } from '@core/prisma';
 import { useFindFirstSubmission, useUpdateJudging, useUpdateSubmission } from '@core/queries';
 import { request } from '@core/utils';
 

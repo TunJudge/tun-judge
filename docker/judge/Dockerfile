@@ -6,10 +6,11 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node docker/judge/start.sh ./start.sh
 COPY --chown=node:node apps/judge/package.json ./package.json
-COPY --chown=node:node zenstack/prisma ./prisma
 COPY --chown=node:node dist/apps/judge ./judge
+COPY --chown=node:node zenstack ./zenstack
 
-RUN yarn prisma generate
+RUN sed -i -E 's$\.\.\/apps\/client\/$./__ignore__/$g' ./zenstack/schema.zmodel
+RUN yarn zenstack generate --schema=./zenstack/schema.zmodel
 
 ENV ENVIRONMENT=production
 

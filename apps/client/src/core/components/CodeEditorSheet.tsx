@@ -2,8 +2,7 @@ import { FC, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { FormDialog } from 'tw-react-components';
 
-import { FileKind } from '@prisma/client';
-
+import { FileKind } from '@core/prisma';
 import { downloadFile, uploadFile } from '@core/utils';
 
 import { CodeEditor, CodeEditorLanguages } from './CodeEditor';

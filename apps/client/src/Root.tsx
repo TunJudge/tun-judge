@@ -3,10 +3,9 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Spinner } from 'tw-react-components';
 
-import { Role } from '@prisma/client';
-
 import { Logout } from '@core/components';
 import { useAuthContext } from '@core/contexts';
+import { Role } from '@core/prisma';
 
 import { AdminLayout } from './pages/admin/AdminLayout';
 import { PublicLayout } from './pages/public/PublicLayout';

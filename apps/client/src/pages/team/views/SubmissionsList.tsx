@@ -1,11 +1,10 @@
 import { FC } from 'react';
 import { DataTable, DataTableColumn } from 'tw-react-components';
 
-import { Judging, Prisma } from '@prisma/client';
-
 import { PageTemplate, SubmissionResult } from '@core/components';
 import { useActiveContest, useAuthContext } from '@core/contexts';
 import { useOnWebSocketEvent } from '@core/hooks';
+import { Judging, Prisma } from '@core/prisma';
 import { useFindManySubmission } from '@core/queries';
 import { dateComparator, formatRestTime, isContestRunning } from '@core/utils';
 

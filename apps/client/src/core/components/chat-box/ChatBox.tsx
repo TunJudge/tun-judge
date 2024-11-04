@@ -2,9 +2,8 @@ import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Flex, Sheet, cn } from 'tw-react-components';
 
-import { Prisma } from '@prisma/client';
-
 import { useActiveContest, useAuthContext } from '@core/contexts';
+import { Prisma } from '@core/prisma';
 import { useCreateManyClarificationSeen, useFindFirstClarification } from '@core/queries';
 
 import { ChatBoxHeader } from './ChatBoxHeader';

@@ -1,4 +1,4 @@
-import { Contest } from '@prisma/client';
+import { Contest } from '@core/prisma';
 
 export function isContestRunning(contest?: Contest): boolean {
   const now = Date.now();

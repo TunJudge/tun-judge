@@ -11,9 +11,8 @@ import {
   cn,
 } from 'tw-react-components';
 
-import { Prisma, ScoreCache, Submission } from '@prisma/client';
-
 import { useActiveContest, useAuthContext } from '@core/contexts';
+import { Prisma, ScoreCache, Submission } from '@core/prisma';
 import { contestStartedAndNotOver, dateComparator, formatBytes } from '@core/utils';
 
 import { NoActiveContest } from './NoActiveContest';

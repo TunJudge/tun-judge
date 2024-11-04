@@ -10,11 +10,10 @@ import {
   useLayoutContext,
 } from 'tw-react-components';
 
-import { Problem } from '@prisma/client';
-
 import { PageTemplate } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
+import { Problem } from '@core/prisma';
 import { useDeleteProblem, useFindManyProblem } from '@core/queries';
 
 import { ProblemForm } from './ProblemForm';

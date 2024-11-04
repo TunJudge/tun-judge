@@ -3,11 +3,10 @@ import { FC } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, DataTable, DataTableColumn } from 'tw-react-components';
 
-import { Prisma, Testcase } from '@prisma/client';
-
 import { SubmissionResult } from '@core/components';
 import { useAuthContext } from '@core/contexts';
 import { useOnWebSocketEvent, usePagination } from '@core/hooks';
+import { Prisma, Testcase } from '@core/prisma';
 import {
   useCountSubmission,
   useFindFirstContest,

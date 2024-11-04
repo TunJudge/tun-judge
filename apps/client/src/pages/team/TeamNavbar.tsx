@@ -3,11 +3,10 @@ import { FC, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button, DropdownMenu, ThemeSelector } from 'tw-react-components';
 
-import { Submission } from '@prisma/client';
-
 import { NavBar, SubmitForm } from '@core/components';
 import { useActiveContest, useAuthContext } from '@core/contexts';
 import { useTimeLeftToContest } from '@core/hooks';
+import { Submission } from '@core/prisma';
 import { contestStartedAndNotOver } from '@core/utils';
 
 import { ActiveContestSelector } from '../../core/components/ActiveContestSelector';

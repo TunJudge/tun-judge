@@ -7,6 +7,7 @@
     "strict": true,
     "types": ["vite/client"],
     "paths": {
+      "@core/prisma": ["node_modules/.prisma/browser"],
       "@core/components": ["apps/client/src/core/components/index.ts"],
       "@core/constants": ["apps/client/src/core/constants.ts"],
       "@core/contexts": ["apps/client/src/core/contexts/index.ts"],

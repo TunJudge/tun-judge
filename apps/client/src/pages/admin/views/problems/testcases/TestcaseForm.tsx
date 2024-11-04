@@ -2,9 +2,8 @@ import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormDialog, FormInputs } from 'tw-react-components';
 
-import { FileKind } from '@prisma/client';
-
 import { useToastContext } from '@core/contexts';
+import { FileKind } from '@core/prisma';
 import { useUpsertTestcase } from '@core/queries';
 import { uploadFile } from '@core/utils';
 

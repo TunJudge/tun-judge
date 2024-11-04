@@ -6,10 +6,11 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node docker/server/start.sh ./start.sh
 COPY --chown=node:node apps/server/package.json ./package.json
-COPY --chown=node:node zenstack ./zenstack
 COPY --chown=node:node dist/apps/server ./server
 COPY --chown=node:node dist/apps/client ./client
+COPY --chown=node:node zenstack ./zenstack
 
+RUN sed -i -E 's$\.\.\/apps\/client\/$./__ignore__/$g' ./zenstack/schema.zmodel
 RUN yarn zenstack generate --schema=./zenstack/schema.zmodel
 
 ENV ENVIRONMENT=production

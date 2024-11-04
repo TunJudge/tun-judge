@@ -1,4 +1,4 @@
-import { JudgingResult } from '@prisma/client';
+import { JudgingResult } from '@core/prisma';
 
 import { CodeEditorLanguages } from './components';
 

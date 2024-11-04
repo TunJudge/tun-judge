@@ -2,8 +2,7 @@ import { CloudUploadIcon } from 'lucide-react';
 import { FC, useRef } from 'react';
 import { Button } from 'tw-react-components';
 
-import { FileKind } from '@prisma/client';
-
+import { FileKind } from '@core/prisma';
 import { useCreateTestcase } from '@core/queries';
 import { uploadFile } from '@core/utils';
 

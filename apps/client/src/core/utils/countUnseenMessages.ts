@@ -1,6 +1,5 @@
-import { User } from '@prisma/client';
-
 import { Clarification } from '@core/components';
+import { User } from '@core/prisma';
 
 import { compareRoles } from './compareRoles';
 

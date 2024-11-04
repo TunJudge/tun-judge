@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User } from '@core/prisma';
 
 export function compareRoles(currentUser: User, sendingUser: User): boolean {
   if (currentUser.roleName === 'team') {

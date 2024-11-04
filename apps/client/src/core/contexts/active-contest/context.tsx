@@ -1,7 +1,6 @@
 import { FC, PropsWithChildren, createContext, useEffect, useState } from 'react';
 
-import { Prisma } from '@prisma/client';
-
+import { Prisma } from '@core/prisma';
 import { useFindManyContest } from '@core/queries';
 
 export type Contest = Prisma.ContestGetPayload<{
