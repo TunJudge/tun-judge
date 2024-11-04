@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.45](https://github.com/TunJudge/tun-judge/compare/v0.0.42...v0.0.45) (2024-11-04)
+
+
+### Bug Fixes
+
+* docker/judge/Dockerfile to reduce vulnerabilities ([14e3766](https://github.com/TunJudge/tun-judge/commit/14e3766973cc96574c6583f3f479a7e93d22d901))
+* docker/judge/Dockerfile to reduce vulnerabilities ([6c67c25](https://github.com/TunJudge/tun-judge/commit/6c67c25e6ea4528421699003d67f714483d467a8))
+* docker/judge/Dockerfile to reduce vulnerabilities ([0efce81](https://github.com/TunJudge/tun-judge/commit/0efce81993aeaf04595f522f0c4e9d8283b86ea1))
+* docker/judge/Dockerfile to reduce vulnerabilities ([d875d91](https://github.com/TunJudge/tun-judge/commit/d875d919fc55cf87684afbc63d2bd3517f727688))
+* docker/server/Dockerfile to reduce vulnerabilities ([e1f05d8](https://github.com/TunJudge/tun-judge/commit/e1f05d842f986742169e17c5441614ac0b66fa88))
+* docker/server/Dockerfile to reduce vulnerabilities ([e796f9c](https://github.com/TunJudge/tun-judge/commit/e796f9c10b7b09086d042092a1a83b199d9ee281))
+* docker/server/Dockerfile to reduce vulnerabilities ([818e202](https://github.com/TunJudge/tun-judge/commit/818e2024dddaa1610a408244d3536d85dfd75fe8))
+* docker/server/Dockerfile to reduce vulnerabilities ([ae3352d](https://github.com/TunJudge/tun-judge/commit/ae3352dd5ad345992fb4f24c52cb9b24a6adf674))
+* fix user form submit action ([94d469b](https://github.com/TunJudge/tun-judge/commit/94d469bda699f9d3555b919d8e1b3b47f5a286d7))
+* update languages docker images names ([2c441d5](https://github.com/TunJudge/tun-judge/commit/2c441d5de701ac190e89b8b7d416a9ebd2226e4b))
+
 ### [0.0.43](https://github.com/NaN-Projects/tun-judge/compare/v0.0.42...v0.0.43) (2021-10-22)
 
 ### Bug Fixes
