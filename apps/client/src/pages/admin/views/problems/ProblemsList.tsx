@@ -1,6 +1,5 @@
 import { ClipboardListIcon, EditIcon, PlusIcon, RefreshCcw, Trash2Icon } from 'lucide-react';
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Button,
@@ -18,7 +17,7 @@ import { useDeleteProblem, useFindManyProblem } from '@core/queries';
 
 import { ProblemForm } from './ProblemForm';
 
-export const ProblemsList: React.FC = observer(() => {
+export const ProblemsList: FC = () => {
   const navigate = useNavigate();
   const { showIds } = useLayoutContext();
   const { profile } = useAuthContext();
@@ -115,4 +114,4 @@ export const ProblemsList: React.FC = observer(() => {
       />
     </PageTemplate>
   );
-});
+};

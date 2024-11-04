@@ -2,8 +2,10 @@ import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormDialog, FormInputs } from 'tw-react-components';
 
-import { User, useToastContext } from '@core/contexts';
+import { useToastContext } from '@core/contexts';
 import { useFindManyRole, useUpsertUser } from '@core/queries';
+
+import { User } from './UsersList';
 
 type Props = {
   user?: Partial<User>;

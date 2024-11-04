@@ -1,6 +1,5 @@
 import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UsersRoundIcon } from 'lucide-react';
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import {
   Button,
   ConfirmDialog,
@@ -21,7 +20,7 @@ export type Team = Prisma.TeamGetPayload<{
   include: { category: true; users: true; contests: true };
 }>;
 
-export const TeamsList: React.FC = observer(() => {
+export const TeamsList: FC = () => {
   const { showIds } = useLayoutContext();
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
@@ -124,4 +123,4 @@ export const TeamsList: React.FC = observer(() => {
       />
     </PageTemplate>
   );
-});
+};

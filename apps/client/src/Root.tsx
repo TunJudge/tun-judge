@@ -1,5 +1,4 @@
-import { observer } from 'mobx-react';
-import React from 'react';
+import React, { FC } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Spinner } from 'tw-react-components';
 
@@ -21,7 +20,7 @@ function renderLayout(role?: Role): React.ReactNode {
   return <PublicLayout />;
 }
 
-export const Root: React.FC = observer(() => {
+export const Root: FC = () => {
   const { profile, connected } = useAuthContext();
 
   return (
@@ -32,6 +31,6 @@ export const Root: React.FC = observer(() => {
       </Routes>
     </BrowserRouter>
   );
-});
+};
 
 export default Root;

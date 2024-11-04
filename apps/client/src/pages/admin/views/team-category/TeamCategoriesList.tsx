@@ -7,8 +7,7 @@ import {
   TagsIcon,
   Trash2Icon,
 } from 'lucide-react';
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import { Button, ConfirmDialog, DataTable, DataTableColumn, cn } from 'tw-react-components';
 
 import { PageTemplate } from '@core/components';
@@ -24,7 +23,7 @@ export type TeamCategory = Prisma.TeamCategoryGetPayload<{
   include: { teams: true };
 }>;
 
-export const TeamCategoriesList: React.FC = observer(() => {
+export const TeamCategoriesList: FC = () => {
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
 
@@ -151,4 +150,4 @@ export const TeamCategoriesList: React.FC = observer(() => {
       />
     </PageTemplate>
   );
-});
+};

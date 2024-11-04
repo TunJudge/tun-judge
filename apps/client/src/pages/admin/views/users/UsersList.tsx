@@ -1,6 +1,5 @@
 import { EditIcon, PlusIcon, RefreshCcw, Trash2Icon, UserRoundIcon } from 'lucide-react';
-import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import {
   Button,
   ConfirmDialog,
@@ -9,15 +8,21 @@ import {
   useLayoutContext,
 } from 'tw-react-components';
 
+import { Prisma } from '@prisma/client';
+
 import { PageTemplate } from '@core/components';
-import { User, useAuthContext } from '@core/contexts';
+import { useAuthContext } from '@core/contexts';
 import { useSorting } from '@core/hooks';
 import { useDeleteUser, useFindManyUser } from '@core/queries';
 import { getDisplayDate } from '@core/utils';
 
 import { UserForm } from './UserForm';
 
-export const UsersList: React.FC = observer(() => {
+export type User = Prisma.UserGetPayload<{
+  include: { role: true };
+}>;
+
+export const UsersList: FC = () => {
   const { showIds } = useLayoutContext();
   const { profile } = useAuthContext();
   const isUserAdmin = profile?.role.name === 'admin';
@@ -33,7 +38,7 @@ export const UsersList: React.FC = observer(() => {
     data: users = [],
     isLoading,
     refetch,
-  } = useFindManyUser({ include: { role: true, team: true }, orderBy });
+  } = useFindManyUser({ include: { role: true }, orderBy });
   const { mutateAsync: deleteUser } = useDeleteUser();
 
   const columns: DataTableColumn<User>[] = [
@@ -129,4 +134,4 @@ export const UsersList: React.FC = observer(() => {
       />
     </PageTemplate>
   );
-});
+};

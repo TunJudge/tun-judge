@@ -1,5 +1,4 @@
-import { observer } from 'mobx-react';
-import React from 'react';
+import { FC } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ThemeSelector } from 'tw-react-components';
 
@@ -8,7 +7,7 @@ import { useTimeLeftToContest } from '@core/hooks';
 
 import { ActiveContestSelector } from '../../core/components/ActiveContestSelector';
 
-const PublicNavbar: React.FC = observer(() => {
+const PublicNavbar: FC = () => {
   const location = useLocation();
   const timeLeftToContest = useTimeLeftToContest();
 
@@ -38,6 +37,6 @@ const PublicNavbar: React.FC = observer(() => {
       ]}
     />
   );
-});
+};
 
 export default PublicNavbar;
