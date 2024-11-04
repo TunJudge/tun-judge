@@ -95,29 +95,6 @@ export const JudgeHostsList: FC = () => {
   ];
 
   return (
-    // <div className="p-4">
-    //   <DataTable<JudgeHost>
-    //     header="Judge Hosts"
-    //     dataFetcher={fetchAll}
-    //     dataDependencies={[updateCount]}
-    //     columns={columns}
-    //     onDelete={remove}
-    //     withoutActions={!isUserAdmin}
-    //     rowBackgroundColor={(judgeHost) => {
-    //       if (!judgeHost.active) return 'white';
-
-    //       const diff = Date.now() - new Date(judgeHost.pollTime).getTime();
-    //       if (diff < 30000) {
-    //         return 'green';
-    //       }
-    //       if (diff < 60000) {
-    //         return 'yellow';
-    //       }
-    //       return 'red';
-    //     }}
-    //   />
-    //
-    // </div>
     <PageTemplate
       icon={ServerIcon}
       title="JudgeHosts"
@@ -129,6 +106,17 @@ export const JudgeHostsList: FC = () => {
         columns={columns}
         isLoading={isLoading}
         sorting={{ sorting, onSortingChange: setSorting }}
+        rowClassName={(judgeHost) => {
+          if (!judgeHost.active || !judgeHost.pollTime) return 'bg-white';
+
+          const diff = Date.now() - new Date(judgeHost.pollTime).getTime();
+
+          if (diff < 30000) return 'bg-green-200 dark:bg-green-800';
+
+          if (diff < 60000) return 'bg-yellow-200 dark:bg-yellow-800';
+
+          return 'bg-red-200 dark:bg-red-800';
+        }}
         actions={[
           {
             color: 'red',

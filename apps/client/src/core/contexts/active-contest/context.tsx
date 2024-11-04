@@ -23,7 +23,11 @@ export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
   const [now, setNow] = useState(new Date());
   const [currentContest, setCurrentContest] = useState<Contest>();
 
-  const { data: contests = [], refetch } = useFindManyContest({
+  const {
+    data: contests = [],
+    isLoading,
+    refetch,
+  } = useFindManyContest({
     where: {
       enabled: true,
       activateTime: { lte: now },
@@ -46,8 +50,10 @@ export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    if (isLoading) return;
+
     setCurrentContest(contests[0]);
-  }, [contests]);
+  }, [contests, isLoading]);
 
   return (
     <ActiveContestContext.Provider
