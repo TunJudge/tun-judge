@@ -22,6 +22,7 @@ export const ActiveContestContext = createContext<ActiveContest | undefined>(und
 export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
   const [now, setNow] = useState(new Date());
   const [currentContest, setCurrentContest] = useState<Contest>();
+  const [activeContests, setActiveContests] = useState<Contest[]>([]);
 
   const {
     data: contests = [],
@@ -52,13 +53,14 @@ export const ActiveContestProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (isLoading) return;
 
+    setActiveContests(contests);
     setCurrentContest(contests[0]);
   }, [contests, isLoading]);
 
   return (
     <ActiveContestContext.Provider
       value={{
-        activeContests: contests,
+        activeContests,
         currentContest,
         setCurrentContest,
         refreshContests: refetch,
