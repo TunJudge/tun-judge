@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.49](https://github.com/TunJudge/tun-judge/compare/v0.0.48...v0.0.49) (2024-11-04)
+
+
+### Bug Fixes
+
+* disable async refresh score ([7ce6ed3](https://github.com/TunJudge/tun-judge/commit/7ce6ed38772d1392fe51ef4fb6933b1d1b230659))
+
 ### [0.0.48](https://github.com/TunJudge/tun-judge/compare/v0.0.47...v0.0.48) (2024-11-04)
 
 ### [0.0.47](https://github.com/TunJudge/tun-judge/compare/v0.0.46...v0.0.47) (2024-11-04)
