@@ -19,7 +19,6 @@ export class ScoreboardService {
 
   constructor(private readonly socketService: WebsocketGateway) {}
 
-  @Interval(60 * 1000)
   async refreshScores(): Promise<void> {
     if (this.refreshing) return;
 
