@@ -3,7 +3,7 @@
   "version": "0.0.51",
   "license": "MIT",
   "private": true,
-  "packageManager": "yarn@4.5.0",
+  "packageManager": "yarn@4.5.1",
   "scripts": {
     "build": "nx run-many --target=build",
     "serve": "nx run-many --target=serve --projects=client,server",
@@ -178,7 +178,7 @@
     "commitAll": true
   },
   "volta": {
-    "node": "22.8.0",
-    "yarn": "4.5.0"
+    "node": "22.11.0",
+    "yarn": "4.5.1"
   }
 }
