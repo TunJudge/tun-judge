@@ -1,0 +1,88 @@
+{
+  "name": "docs",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/docs/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "docusaurus": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "docusaurus",
+            "cwd": "apps/docs"
+          }
+        ]
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "command": "docusaurus build --out-dir=../../dist/apps/docs",
+        "cwd": "apps/docs",
+        "inputs": ["{root}/docs/*.(md|mdx)", "{root}/docs/**/*.(md|mdx)"],
+        "outputs": ["apps/docs/build"],
+        "styles": ["apps/docs/src/custom.scss"]
+      }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docusaurus start",
+        "cwd": "apps/docs",
+        "styles": ["apps/docs/src/custom.scss"]
+      }
+    },
+    "swizzle": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docusaurus swizzle",
+        "cwd": "apps/docs"
+      }
+    },
+    "clear": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docusaurus clear",
+        "cwd": "apps/docs"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docusaurus serve --dir=../../dist/apps/docs",
+        "cwd": "apps/docs"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docusaurus deploy",
+        "cwd": "apps/docs"
+      }
+    },
+    "write-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docusaurus write-translations",
+        "cwd": "apps/docs"
+      }
+    },
+    "write-heading-ids": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docusaurus write-heading-ids",
+        "cwd": "apps/docs"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "browserslist": {
+      "production": [">0.5%", "not dead", "not op_mini all"],
+      "development": ["last 3 chrome version", "last 3 firefox version", "last 5 safari version"]
+    }
+  }
+}

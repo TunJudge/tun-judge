@@ -70,6 +70,13 @@ jobs:
           docker compose -f docker-compose.test.yaml logs
           docker compose -f docker-compose.test.yaml down
 
+      - name: Deploy the docs website
+        uses: JamesIves/github-pages-deploy-action@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          branch: gh-pages
+          folder: dist/apps/docs
+
       - name: Save Build Output
         uses: actions/cache/save@v4
         with:
